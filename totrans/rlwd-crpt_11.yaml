@@ -3,25 +3,30 @@
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 9 安全传输
 - en: This chapter covers
   id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 这一章涵盖了
 - en: Secure transport protocols
   id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 安全传输协议
 - en: The Transport Layer Security (TLS) protocol
   id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 传输层安全协议（TLS）
 - en: The Noise protocol framework
   id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 噪声协议框架
 - en: The heaviest use of cryptography today is most probably to encrypt communications.
     After all, cryptography was invented for this purpose. To do this, applications
     generally do not make use of cryptographic primitives like authenticated encryption
@@ -31,17 +36,20 @@
   id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 今天加密通信最大的使用量可能是为了加密通信。毕竟，加密学就是为了这个目的而发明的。为了做到这一点，应用程序通常不直接使用像认证加密这样的加密原语，而是使用更复杂的协议来抽象加密原语的使用。我将这些协议称为*安全传输协议*，因为没有更好的术语。
 - en: 'In this chapter, you will learn about the most widely used secure transport
     protocol: the Transport Layer Security (TLS) protocol. I will also lightly cover
     other secure transport protocols and how they differ from TLS.'
   id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，你将了解到最广泛使用的安全传输协议：传输层安全协议（TLS）。我也会简要介绍其他安全传输协议以及它们与TLS的区别。
 - en: 9.1 The SSL and TLS secure transport protocols
   id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.1 SSL 和 TLS 安全传输协议
 - en: In order to understand why *transport protocols* (protocols used to encrypt
     communications between machines) are a thing, let’s walk through a motivating
     scenario. When you enter, say, `http://example.com` in your web browser, your
@@ -55,6 +63,7 @@
   id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了理解为什么*传输协议*（用于加密机器间通信的协议）是必要的，让我们通过一个激励场景来走一遍。当你在浏览器中输入，比如说，`http://example.com`，你的浏览器会使用多个协议来连接到一个网络服务器并获取你请求的页面。其中一个是*超文本传输协议*（HTTP），你的浏览器用它来告诉另一边的网络服务器它感兴趣的是哪个页面。HTTP使用的是一种人类可读的格式。这意味着你可以查看正在通过网络发送和接收的HTTP消息，并且不需要任何其他工具就可以阅读它们。但这对于你的浏览器来与网络服务器通信还不够。
 - en: 'HTTP messages are encapsulated into other types of messages, called *TCP frames*,
     which are defined in the Transmission Control Protocol (TCP). TCP is a binary
     protocol, and thus, it is not human-readable: you need a tool to understand the
@@ -65,6 +74,7 @@
   id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: HTTP消息被封装到其他类型的消息中，称为*TCP帧*，这些帧在传输控制协议（TCP）中定义。TCP是一个二进制协议，因此，它不是人类可读的：你需要一个工具来理解TCP帧的字段。TCP消息进一步被封装到Internet协议（IP）中，并且IP消息进一步被封装到其他东西中。这被称为*Internet协议套件*，因为它是许多书籍的主题，我不会进一步深入讨论这个。
 - en: 'Back to our scenario, as there’s a confidentiality issue that we need to talk
     about. Anyone sitting on the wire in between your browser and the web server of
     [example.com](http://example.com) has an interesting position: they can passively
@@ -73,6 +83,7 @@
   id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 回到我们的场景，因为存在保密性问题，我们需要谈论一下。任何坐在你的浏览器和[example.com](http://example.com)的网络服务器之间的线上的人都有一个有趣的位置：他们可以被动地观察和读取你的请求以及服务器的响应。更糟糕的是，中间人攻击者也可以主动篡改和重新排序消息。这并不好。
 - en: Imagine your credit card information leaking out every time you buy something
     on the internet, your passwords being stolen when you log into a website, your
     pictures and private messages pilfered as you send those to your friends, and
@@ -469,6 +480,8 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*一个或多个密钥交换算法*——TLS 1.3定义了用于协商的以下算法：ECDH与P-256、P-384、P-521、X25519、X448，以及FFDH与RFC
+    7919中定义的群。这些内容在第5章中有介绍。TLS的先前版本也提供了RSA密钥交换（在第6章中介绍），但它们已在最新版本中删除。'
 - en: '*Two (for different parts of the handshake) or more digital signature algorithms*—TLS
     1.3 specifies RSA PKCS#1 version 1.5 and the newer RSA-PSS, as well as more recent
     elliptic curve algorithms like ECDSA and EdDSA. I talked about these in chapter
@@ -478,6 +491,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*握手的不同部分需要两个或更多数字签名算法*——TLS 1.3规定了RSA PKCS#1版本1.5和更新的RSA-PSS，以及更近期的椭圆曲线算法如ECDSA和EdDSA。这些内容在第7章有介绍。请注意，数字签名是用散列函数指定的，这使得你可以协商使用，例如，RSA-PSS与SHA-256或SHA-512。'
 - en: '*One or more hash functions to be used with HMAC and HKDF*—TLS 1.3 specifies
     SHA-256 and SHA-384, two instances of the SHA-2 hash function. (You learned about
     SHA-2 in chapter 2.) This choice of hash function is unrelated to the one used
@@ -488,6 +502,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*用于HMAC和HKDF的一个或多个散列函数*——TLS 1.3指定了SHA-256和SHA-384，这是SHA-2散列函数的两个实例。（你在第2章学习过SHA-2。）这种散列函数的选择与数字签名算法使用的散列函数无关。作为提醒，HMAC是你在第3章学习的消息认证码，而HKDF是我们在第8章介绍的密钥派生函数。'
 - en: '*One or more authenticated encryption algorithms*—These can include AES-GCM
     with keys of 128 or 256 bits, ChaCha20-Poly1305, and AES-CCM. I talked about all
     of these in chapter 4.'
@@ -495,16 +510,19 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*一个或多个经过身份验证的加密算法*——这些可以包括128位或256位密钥的AES-GCM，ChaCha20-Poly1305和AES-CCM。这些内容在第4章有介绍。'
 - en: The server then responds with a *ServerHello* message, which contains one of
     each type of cryptographic algorithm, cherry-picked from the client’s selection.
     The following illustration depicts this response.
   id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后服务器以*ServerHello*消息回复，其中包含从客户端的选择中精选出的每种类型的加密算法。下图描述了这个响应。
 - en: '![](../Images/09_01_UN01.jpg)'
   id: totrans-66
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/09_01_UN01.jpg)'
 - en: If the server is unable to find an algorithm it supports, it aborts the connection.
     Although in some cases, the server does not have to abort the connection and can
     ask the client to provide more information instead. To do this, the server replies
@@ -514,16 +532,19 @@
   id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果服务器无法找到支持的算法，它将中止连接。但在某些情况下，服务器不必中止连接，而是可以要求客户端提供更多信息。为此，服务器将以一条称为*HelloRetryRequest*的消息回复，要求提供缺失的信息。然后客户端可以重新发送其ClientHello，这次带上额外请求的信息。
 - en: TLS and forward-secure key exchanges
   id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: TLS和前向安全密钥交换
 - en: The key exchange is the most important part of the TLS handshake! Without it,
     there’s obviously no symmetric key being negotiated. But for a key exchange to
     happen, the client and the server must first trade their respective public keys.
   id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 密钥交换是TLS握手中最重要的部分！没有它，显然就没有对称密钥的协商。但是要进行密钥交换，客户端和服务器必须首先交换各自的公钥。
 - en: 'In TLS 1.2 and previous versions, the client and the server start a key exchange
     only after both participants agree on which key exchange algorithm to use. This
     happens during a negotiation phase. TLS 1.3 optimizes this flow by attempting
@@ -630,6 +651,7 @@
   id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦临时公钥交换完成，就会执行密钥交换，并且可以推导出密钥。TLS 1.3 在不同时间点推导出不同的密钥，以使用独立密钥加密不同的阶段。
 - en: The first two messages, the ClientHello and the ServerHello, cannot be encrypted
     because no public keys were traded at this point. But after that, as soon as the
     key exchange happens, TLS 1.3 encrypts the rest of the handshake. (This is unlike
@@ -637,6 +659,8 @@
   id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 前两条消息，即 ClientHello 和 ServerHello，在此时不能加密，因为此时没有交换公钥。但是在此之后，一旦密钥交换发生，TLS 1.3
+    就会加密握手的其余部分。（这与之前的 TLS 版本不同，之前的版本没有加密任何握手消息。）
 - en: To derive the different keys, TLS 1.3 uses HKDF with the hash function negotiated.
     HKDF-Extract is used on the output of the key exchange to remove any biases, while
     HKDF-Expand is used with different `info` parameters to derive the encryption
@@ -649,10 +673,15 @@
   id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了推导出不同的密钥，TLS 1.3 使用与协商的哈希函数的 HKDF。在密钥交换的输出上使用 HKDF-Extract 来消除任何偏差，而使用不同的
+    `info` 参数与 HKDF-Expand 来推导出加密密钥。例如，`tls13` `c` `hs` `traffic`（表示“客户端握手流量”）用于推导出客户端在握手期间加密到服务器的对称密钥，而
+    `tls13` `s` `ap` `traffic`（表示“服务器应用流量”）用于推导出服务器在握手之后加密到客户端的对称密钥。请记住，*未经身份验证* 的密钥交换是不安全的！接下来，您将看到
+    TLS 如何解决此问题。
 - en: TLS authentication and the web public key infrastructure
   id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: TLS 身份验证和 web 公钥基础设施
 - en: 'After some negotiations and after the key exchange has taken place, the handshake
     must go on. What happens next is the other most important part of TLS—*authentication*.
     You saw in chapter 5 on key exchanges that it is trivial to intercept a key exchange
@@ -664,6 +693,8 @@
   id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 经过一些协商和密钥交换之后，握手必须继续。接下来发生的是 TLS 的另一个最重要的部分 —— *身份验证*。在密钥交换的第 5 章中，您看到拦截密钥交换并冒充密钥交换的一方或双方是微不足道的。在本节中，我将解释您的浏览器如何通过密码验证确保它正在与正确的网站通信，而不是与冒充者通信。但首先，让我们退一步。实际上，TLS
+    1.3 握手分为三个不同的阶段（如图 9.4 所示）：
 - en: '*Key exchange*—This phase contains the *ClientHello* and *ServerHello* messages
     that provide some negotiation and perform the key exchange. All messages including
     handshake messages after this phase are encrypted.'
@@ -671,6 +702,7 @@
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '*密钥交换* —— 此阶段包含提供一些协商并执行密钥交换的 *ClientHello* 和 *ServerHello* 消息。此阶段之后的所有消息，包括握手消息，在此阶段之后都将被加密。'
 - en: '*Server parameters*—Messages in this phase contain additional negotiation data
     from the server. This is negotiation data that does not have to be contained in
     the first message of the server and that could benefit from being encrypted.'
@@ -678,31 +710,38 @@
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '*服务器参数* —— 此阶段的消息包含来自服务器的附加协商数据。这是不必包含在服务器的第一条消息中的协商数据，但是可以受益于加密。'
 - en: '*Authentication*—This phase includes authentication information from both the
     server and the client.'
   id: totrans-90
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '*身份验证* —— 此阶段包括来自服务器和客户端的身份验证信息。'
 - en: '![](../Images/09_04.jpg)'
   id: totrans-91
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/09_04.jpg)'
 - en: 'Figure 9.4 A TLS 1.3 handshake is divided into three phases: the key exchange
     phase, the server parameters phase, and (finally) the authentication phase.'
   id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 9.4 TLS 1.3 握手分为三个阶段：密钥交换阶段、服务器参数阶段以及（最后）身份验证阶段。
 - en: On the web, authentication in TLS is usually one-sided. Only the browser verifies
     that google.com, for example, is indeed google.com, but google.com does not verify
     who you are (or at least not as part of TLS).
   id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 在网络上，TLS 中的身份验证通常是单向的。只有浏览器验证例如 google.com 是否确实是 google.com，但是 google.com 不验证您是谁（或至少不是作为
+    TLS 的一部分）。
 - en: Mutually-authenticated TLS
   id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 双向认证的 TLS
 - en: Client authentication is often delegated to the application layer for the web,
     most often via a form asking you for your credentials. That being said, client
     authentication can also happen in TLS if requested by the server during the server
@@ -790,12 +829,14 @@
   id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 在此之后，CA可以对网站的公钥提供签名。由于CA的签名通常有效期数年，我们称其为长期签名公钥（与临时公钥相对）。更具体地说，CA实际上并不签署公钥，而是签署*证书*（稍后详细介绍）。证书包含长期公钥，以及一些额外重要的元数据，如网页的域名。
 - en: To prove to your browser that the server it is talking to is indeed google.com,
     the server sends a *certificate chain* as part of the TLS handshake. The chain
     comprises
   id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了向您的浏览器证明其正在与google.com通信，服务器在TLS握手的一部分发送一个*证书链*。该链包括
 - en: Its own leaf certificate, containing (among others) the domain name ([google
     .com](http://google.com), for example), Google’s long-term signing public key,
     as well as a CA’s signature
@@ -803,20 +844,24 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 其自身的叶子证书，包含（其他内容）域名（[google .com](http://google.com)，例如），谷歌的长期签名公钥，以及CA的签名
 - en: A chain of intermediate CA certificates from the one that signed Google’s certificate
     to the root CA that signed the last intermediate CA
   id: totrans-108
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 从签署谷歌证书的中间CA证书链到签署最后一个中间CA的根CA的一系列中间CA证书
 - en: This is a bit wordy so I illustrated this in figure 9.5.
   id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 这有点冗长，所以我在图9.5中进行了说明。
 - en: '![](../Images/09_05.jpg)'
   id: totrans-110
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/09_05.jpg)'
 - en: Figure 9.5 Web browsers only have to trust a relatively small set of root CAs
     in order to trust the whole web. These CAs are stored in what is called a *trust
     store*. In order for a website to be trusted by a browser, the website must have
@@ -826,6 +871,8 @@
   id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 图9.5 Web浏览器只需信任相对较小的一组根CA即可信任整个网络。这些CA存储在所谓的*信任存储*中。为了让浏览器信任网站，该网站必须将其叶子证书签名为这些CA之一。有时根CA只签署中间CA，然后中间CA签署其他中间CA或叶子证书。这就是所谓的Web
+    PKI。
 - en: The certificate chain is sent in a certificate TLS message by the server and
     by the client as if the client has been asked to authenticate. Following this,
     the server can use its certified long-term key pair to sign all handshake messages
@@ -834,6 +881,7 @@
   id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器通过TLS消息和客户端发送证书链，就好像要求客户端进行身份验证一样。随后，服务器可以使用其经过认证的长期密钥对来签署所有已接收和先前发送的握手消息，这称为*CertificateVerify*消息。图9.6回顾了这个流程，其中只有服务器对自己进行身份验证。
 - en: The signature in the CertificateVerify message proves to the client what the
     server has so far seen. Without this signature, a MITM attacker could intercept
     the server’s handshake messages and replace the ephemeral public key of the server
@@ -843,10 +891,12 @@
   id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: CertificateVerify消息中的签名向客户端证明了服务器目前所见的内容。如果没有此签名，中间人攻击者可以拦截服务器的握手消息，并替换ServerHello消息中包含的服务器的临时公钥，从而使攻击者能够成功冒充服务器。请花点时间理解在CertificateVerify签名存在的情况下，攻击者为何不能替换服务器的临时公钥。
 - en: '![](../Images/09_06.jpg)'
   id: totrans-114
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/09_06.jpg)'
 - en: Figure 9.6 The authentication part of a handshake starts with the server sending
     a certificate chain to the client. The certificate chain starts with the leaf
     certificate (the certificate containing the website’s public key and additional
@@ -856,10 +906,12 @@
   id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 图9.6 握手的身份验证部分始于服务器向客户端发送证书链。证书链以叶子证书开始（包含网站的公钥和附加元数据，如域名），并以浏览器信任的根证书结束。每个证书都包含上面证书的签名。
 - en: Story time
   id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 故事时间
 - en: 'A few years ago, I was hired to review a custom TLS protocol made by a large
     company. It turned out that their protocol had the server provide a signature
     that did not cover the ephemeral key. When I told them about the issue, the whole
@@ -869,6 +921,7 @@
   id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 几年前，我被聘请来审查一个大公司制作的自定义 TLS 协议。结果他们的协议让服务器提供了一个不包含临时密钥的签名。当我告诉他们这个问题时，整个房间沉默了整整一分钟。这当然是一个重大错误：一个能够拦截自定义握手并用自己的密钥替换临时密钥的攻击者将成功冒充服务器。
 - en: The lesson here is that it is important not to reinvent the wheel. Secure transport
     protocols are hard to get right, and if history has shown anything, they can fail
     in many unexpected ways. Instead, you should rely on mature protocols like TLS
@@ -877,6 +930,8 @@
   id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里的教训是重复造轮子很重要。安全传输协议很难正确实现，如果历史已经表明了什么，那就是它们可能以许多意想不到的方式失败。相反，你应该依赖于成熟的协议如
+    TLS，并确保你使用的是一个受到大量公众关注的流行实现。
 - en: Finally, in order to officially end the handshake, both sides of the connection
     must send a *Finished* message as part of the authentication phase. A Finished
     message contains an authentication tag produced by HMAC, instantiated with the
@@ -889,15 +944,18 @@
   id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，为了正式结束握手，连接的双方都必须在身份验证阶段发送一个 *Finished* 消息。Finished 消息包含一个由 HMAC 生成的认证标签，用于与会话协商的哈希函数。这允许客户端和服务器告诉对方，“这些是我在这个握手过程中发送和接收的所有消息的顺序。”如果握手被中间人攻击者拦截和篡改，这个完整性检查允许参与者检测并中止连接。这尤其有用，因为一些握手模式*没有*签名（稍后详细介绍）。
 - en: Before heading to a different aspect of the handshake, let’s look at X.509 certificates.
     They are an important detail of many cryptographic protocols.
   id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 在继续谈握手的不同方面之前，让我们先来看看 X.509 证书。它们是许多密码协议的重要细节。
 - en: Authentication via X.509 certificates
   id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过 X.509 证书进行身份验证
 - en: While certificates are optional in TLS 1.3 (you can always use plain keys),
     many applications and protocols, not just the web, make heavy use of them in order
     to certify additional metadata. Specifically, the X.509 certificate standard version
@@ -905,6 +963,8 @@
   id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然在 TLS 1.3 中证书是可选的（您始终可以使用普通密钥），但许多应用程序和协议，不仅仅是网络，都大量使用它们来认证额外的元数据。具体来说，使用了
+    X.509 证书标准第 3 版。
 - en: 'X.509 is a pretty old standard that was meant to be flexible enough to be used
     in a multitude of scenarios: from email to web pages. The X.509 standard uses
     a description language called *Abstract Syntax Notation One* (ASN.1) to specify
@@ -913,6 +973,8 @@
   id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: X.509 是一个相当古老的标准，旨在足够灵活，可以用于多种场景：从电子邮件到网页。X.509 标准使用了一种称为 *Abstract Syntax Notation
+    One* (ASN.1) 的描述语言来指定证书中包含的信息。在 ASN.1 中描述的数据结构如下所示：
 - en: '[PRE2]'
   id: totrans-124
   prefs: []
@@ -922,6 +984,7 @@
   id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以把它看作是一个包含三个字段的结构：
 - en: '`tbsCertificate`—The to-be-signed certificate. This contains all the information
     that one wants to certify. For the web, this can contain a domain name (google.com,
     for example), a public key, an expiration date, and so on.'
@@ -929,35 +992,42 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`tbsCertificate` — 待签名的证书。这包含了想要认证的所有信息。对于网络，这可以包含域名（例如 google.com）、公钥、过期日期等。'
 - en: '`signatureAlgorithm`—The algorithm used to sign the certificate.'
   id: totrans-127
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`signatureAlgorithm` — 用于签署证书的算法。'
 - en: '`signatureValue`—The signature from a CA.'
   id: totrans-128
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`signatureValue` — 来自 CA 的签名。'
 - en: Exercise
   id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 练习
 - en: The values `signatureAlgorithm` and `signatureValue` are not contained in the
     actual certificate, `tbsCertificate`. Do you know why?
   id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 值 `signatureAlgorithm` 和 `signatureValue` 不包含在实际的证书 `tbsCertificate` 中。你知道为什么吗？
 - en: You can easily check what’s in an X.509 certificate by connecting to any website
     using HTTPS and then using your browser functionalities to observe the certificate
     chain sent by the server. See figure 9.7 for an example.
   id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可以通过使用HTTPS连接到任何网站，然后使用浏览器功能观察服务器发送的证书链来轻松检查X.509证书中的内容。请参见图9.7以获取示例。
 - en: '![](../Images/09_07.jpg)'
   id: totrans-132
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/09_07.jpg)'
 - en: Figure 9.7 Using Chrome’s Certificate Viewer, we can observe the certificate
     chain sent by Google’s server. The root CA is Global Sign, which is trusted by
     your browser. Down the chain, an intermediate CA called GTS CA 101 is trusted
@@ -967,6 +1037,9 @@
   id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 图9.7 使用Chrome的证书查看器，我们可以观察到谷歌服务器发送的证书链。根CA是Global Sign，这是您的浏览器信任的。在链中，一个名为GTS
+    CA 101的中间CA由于其证书包含来自Global Sign的签名而受到信任。反过来，谷歌的叶子证书，适用于*.google.com（google.com，mail.google.com等），包含来自GTS
+    CA 101的签名。
 - en: 'You might encounter X.509 certificates as .pem files, which is some base64-encoded
     content surrounded by some human-readable hint of what the base64-encoded data
     contains (here, a certificate). The following snippet represents the content of
@@ -974,6 +1047,7 @@
   id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可能会遇到以.pem文件形式存在的X.509证书，其中包含一些被base64编码的内容，周围包含一些人类可读的提示，说明base64编码的数据包含的内容（这里是一个证书）。以下代码片段表示.pem格式证书的内容：
 - en: '[PRE3]'
   id: totrans-135
   prefs: []
@@ -987,10 +1061,13 @@
   id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您解码被`BEGIN` `CERTIFICATE`和`END` `CERTIFICATE`包围的base64内容，您将得到一个*Distinguished
+    Encoding Rules*（DER）编码的证书。DER是一种*确定性*（只有一种编码方式）的二进制编码，用于将X.509证书转换为字节。所有这些编码对新手来说通常相当令人困惑！我在图9.8中总结了所有这些。
 - en: '![](../Images/09_08.jpg)'
   id: totrans-137
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/09_08.jpg)'
 - en: Figure 9.8 On the top left corner, an X.509 certificate is written using the
     ASN.1 notation. It is then transformed into bytes that can be signed via the DER
     encoding. As this is not text that can easily be copied around or recognized by
@@ -999,6 +1076,7 @@
   id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 图9.8 在左上角，使用ASN.1表示法编写了一个X.509证书。然后将其转换为可以通过DER编码进行签名的字节。由于这不是可以轻松复制或被人类识别的文本，因此进行了base64编码。最后一步是使用PEM格式将base64数据包装在一些方便的上下文信息中。
 - en: DER only encodes information as “here is an integer” or “this is a bytearray.”
     Field names described in ASN.1 (like `tbsCertificate`) are lost after encoding.
     Decoding DER without the knowledge of the original ASN.1 description of what each
@@ -1009,6 +1087,7 @@
   id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: DER只编码信息为“这是一个整数”或“这是一个字节数组”。在编码后，ASN.1中描述的字段名称（如`tbsCertificate`）将丢失。因此，如果没有原始ASN.1描述每个字段真正含义的知识，解码DER就毫无意义。像OpenSSL这样的便捷命令行工具允许您解码和将DER编码的证书内容翻译成人类术语。例如，如果您下载google.com的证书，您可以使用以下代码片段在终端中显示其内容。
 - en: '[PRE4]'
   id: totrans-140
   prefs: []
@@ -1023,10 +1102,12 @@
   id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管如此，X.509证书颇具争议。在2012年，一组研究人员将验证X.509证书戏称为“世界上最危险的代码”。这是因为DER编码是一个难以正确解析的协议，而X.509证书的复杂性可能导致许多错误具有潜在的破坏性。因此，我不建议任何现代应用程序使用X.509证书，除非必须使用。
 - en: Pre-shared keys and session resumption in TLS or how to avoid key exchanges
   id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 预共享密钥和TLS中的会话恢复，或者如何避免密钥交换
 - en: Key exchanges can be costly and are sometimes not needed. For example, you might
     have two machines that only connect to each other, and you might not want to have
     to deal with a public key infrastructure in order to secure their communications.
@@ -1036,6 +1117,8 @@
   id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 密钥交换可能是昂贵的，有时是不必要的。例如，您可能有两台只连接到彼此的机器，并且您可能不想为了保护它们之间的通信而处理公钥基础结构。TLS 1.3 提供了一种使用*预共享密钥*（PSKs）避免这种开销的方法。PSK
+    只是客户端和服务器都知道的一个密钥，可以用来为会话导出对称密钥。
 - en: In TLS 1.3, a PSK handshake works by having the client advertise in its ClientHello
     message that it supports a list of PSK identifiers. If the server recognizes one
     of the PSK IDs, it can say so in its response (the ServerHello message), and both
@@ -1045,10 +1128,14 @@
   id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 TLS 1.3 中，PSK 握手的工作原理是使客户端在其 ClientHello 消息中宣布它支持一系列 PSK 标识符。如果服务器识别其中一个 PSK
+    ID，它可以在其响应中（ServerHello 消息）表示如此，然后双方可以避免进行密钥交换（如果他们想要的话）。通过这样做，认证阶段被跳过，使得握手结束时的
+    Finished 消息成为防止中间人攻击的重要手段。
 - en: Client random and server random
   id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 客户端随机和服务器随机
 - en: An avid reader might have noticed that ephemeral public keys brought randomness
     to the session, and without them the symmetric session keys at the end of the
     handshake might end up always being the same. Using different symmetric keys for
@@ -1059,6 +1146,8 @@
   id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个热心的读者可能已经注意到，临时公钥为会话带来了随机性，如果没有它们，握手结束时的对称会话密钥可能始终相同。为不同的会话使用不同的对称密钥非常重要，因为您不希望这些会话被关联起来。更糟糕的是，由于会话之间的加密消息可能不同，这可能导致使用
+    nonce 重用及其灾难性后果（见第 4 章）。
 - en: To mitigate this, both the ClientHello and ServerHello messages have a `random`
     field, which is randomly generated for every new session (and often referred to
     as *client random* and *server random*). As these random values are used in the
@@ -1067,6 +1156,8 @@
   id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了减轻这一点，客户端Hello和服务器Hello消息都有一个`random`字段，为每个新会话随机生成（通常称为*客户端随机*和*服务器随机*）。由于这些随机值用于在
+    TLS 中导出对称密钥，因此它有效地为每个新连接的会话对称密钥进行了随机化。
 - en: Another use case for PSKs is *session resumption*. Session resumption is about
     reusing secrets created from a previous session or connection. If you have already
     connected to google.com and have already verified their certificate chain, performed
@@ -1077,6 +1168,8 @@
   id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: PSK 的另一个用例是*会话恢复*。会话恢复是指重用从先前会话或连接创建的密钥的过程。如果您已经连接到 google.com 并已验证其证书链，执行了密钥交换，同意了共享密钥等等，为什么在几分钟或几小时后重新访问时还要再做一次这个过程呢？TLS
+    1.3 提供了一种在成功执行握手后生成 PSK 的方法，该方法可用于后续连接，以避免必须重新执行完整的握手。
 - en: If the server wants to offer this feature, it can send a New Session Ticket
     message at any time during the post-handshake phase. The server can create so-called
     *session tickets* in several ways. For example, the server can send an identifier,
@@ -1087,11 +1180,14 @@
   id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果服务器想提供此功能，它可以在后握手阶段的任何时候发送一个新的会话票证消息。服务器可以通过几种方式创建所谓的*会话票证*。例如，服务器可以发送一个与数据库中相关信息关联的标识符。这不是唯一的方式，但由于这种机制相当复杂，而且大多数情况下并不必要，所以我在本章中不会深入讨论更多。接下来，让我们看看
+    TLS 中最简单的部分——通信最终如何加密。
 - en: 9.2.2 How TLS 1.3 encrypts application data
   id: totrans-150
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 9.2.2 TLS 1.3 如何加密应用数据
 - en: 'Once a handshake takes place and symmetric keys derived, both the client and
     the server can send each other encrypted application data. This is not all: TLS
     also ensures that such messages cannot be replayed nor reordered! To do this,
@@ -1102,10 +1198,12 @@
   id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦握手完成并派生了对称密钥，客户端和服务器都可以相互发送加密的应用程序数据。TLS还确保这样的消息不能被重播或重新排序！为了做到这一点，认证加密算法使用的nonce从一个固定值开始，并在每个新消息中递增。如果消息被重播或重新排序，nonce将与预期值不同，解密将失败。当发生这种情况时，连接将被终止。
 - en: Hiding the plaintext’s length
   id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 隐藏明文长度
 - en: As you learned in chapter 4, encryption does not always hide the length of what
     is being encrypted. TLS 1.3 comes with *record padding* that you can configure
     to pad application data with a random number of zero bytes before encrypting it,
@@ -1116,6 +1214,8 @@
   id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如您在第4章中学到的，加密并不总是隐藏被加密内容的长度。TLS 1.3附带了*记录填充*，您可以配置为在加密之前使用随机数量的零字节填充应用程序数据，从而有效地隐藏消息的真实长度。尽管如此，可能存在去除添加噪声的统计攻击，并且不容易缓解它们。如果您确实需要这种安全属性，您应该参考TLS
+    1.3规范。
 - en: Starting with TLS 1.3, if a server decides to allow it, clients have the possibility
     to send encrypted data as part of their first series of messages, right after
     the ClientHello message. This means that browsers do not necessarily have to wait
@@ -1126,6 +1226,7 @@
   id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 从TLS 1.3开始，如果服务器决定允许，客户端可以在ClientHello消息之后的第一系列消息中发送加密数据。这意味着浏览器不一定需要等到握手结束才开始向服务器发送应用数据。这种机制称为*早期数据*或*0-RTT*（零往返时间）。它只能与PSK的组合一起使用，因为它允许在ClientHello消息期间派生对称密钥。
 - en: Note This feature was quite controversial during the development of the TLS
     1.3 standard because a passive attacker can replay an observed ClientHello followed
     by the encrypted 0-RTT data. This is why 0-RTT must be used only with application
@@ -1133,6 +1234,7 @@
   id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 这个特性在TLS 1.3标准制定过程中引起了很大争议，因为被动攻击者可以重放观察到的ClientHello，然后是加密的0-RTT数据。这就是为什么只能使用0-RTT来传输可以安全重播的应用程序数据。
 - en: For the web, browsers treat every GET query as *idempotent*, meaning that GET
     queries should not change state on the server side and are only meant to retrieve
     data (unlike POST queries, for example). This is, of course, not always the case,
@@ -1142,11 +1244,13 @@
   id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于网络，浏览器将每个GET查询视为*幂等*，这意味着GET查询不应更改服务器端的状态，只能用于检索数据（与POST查询不同）。当然，并不总是如此，应用程序可以随心所欲。因此，如果您面临是否使用0-RTT的决定，最简单的方法就是不要使用它。
 - en: 9.3 The state of the encrypted web today
   id: totrans-157
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.3 加密网络的当前状态
 - en: Today, standards are pushing for the deprecation of all versions of SSL and
     TLS that are not TLS versions 1.2 and TLS 1.3\. Yet, due to legacy clients and
     servers, many libraries and applications continue to support older versions of
@@ -1156,12 +1260,14 @@
   id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 如今，标准推动废弃所有不是TLS版本1.2和TLS 1.3的SSL和TLS版本。然而，由于旧客户端和服务器，许多库和应用程序仍然支持协议的旧版本（有时直到SSL版本3！）。这并不是一件简单的事情，由于需要防御的漏洞数量，许多难以实现的缓解措施必须得到维护。
 - en: Warning Using TLS 1.3 (and TLS 1.2) is considered secure and best practice.
     Using any lower version means that you will need to consult experts and will have
     to figure out how to avoid known vulnerabilities.
   id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 使用TLS 1.3（和TLS 1.2）被认为是安全和最佳实践。使用任何更低版本意味着您将需要咨询专家，并且必须想办法避免已知的漏洞。
 - en: By default, browsers still connect to web servers using HTTP, and websites still
     have to manually ask a CA to obtain a certificate. This means that with the current
     protocols, the web will never be fully encrypted, although some estimates show
@@ -1169,6 +1275,8 @@
   id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，浏览器仍然使用 HTTP 连接到 Web 服务器，网站仍然必须手动向 CA 申请证书。这意味着使用当前协议，Web 永远不会完全加密，尽管一些估计显示截至
+    2019 年全球 Web 流量的 90% 已加密。
 - en: The fact that, by default, your browser always uses an insecure connection is
     also an issue. Web servers nowadays usually redirect users accessing their pages
     using HTTP toward HTTPS. Web servers can also (and often do) tell browsers to
@@ -1179,6 +1287,9 @@
   id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，您的浏览器始终使用不安全的连接也是一个问题。现今的 Web 服务器通常会将通过 HTTP 访问其页面的用户重定向到 HTTPS。Web 服务器还可以（而且通常会）告诉浏览器使用
+    HTTPS 进行后续连接。这是通过一个名为*HTTP 严格传输安全*（HSTS）的 HTTPS 响应头完成的。然而，对网站的第一次连接仍然不受保护（除非用户考虑在地址栏中键入
+    `https`），并且可以被拦截以移除到 HTTPS 的重定向。
 - en: In addition, other web protocols like *NTP* (to get the current time) and *DNS*
     (to obtain the IP behind a domain name) are currently largely unencrypted and
     vulnerable to MITM attacks. While there are research efforts to improve the status
@@ -1186,6 +1297,7 @@
   id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，其他像*NTP*（获取当前时间）和*DNS*（获取域名背后的 IP）等 Web 协议目前主要是未加密的，并容易受到中间人攻击。虽然有研究努力改善现状，但这些都是需要注意的攻击向量。
 - en: There’s another threat to TLS users—misbehaving CAs. What if, today, a CA decides
     to sign a certificate for your domain and a public key that it controls? If it
     can obtain a MITM position, it could start impersonating your website to your
@@ -1195,6 +1307,8 @@
   id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: TLS 用户面临的另一个威胁是行为不端的 CA。如果今天，一个 CA 决定为您的域名签发证书和它控制的公钥，会怎么样？如果它可以获取 MITM 位置，它可以开始冒充您的网站向您的用户发送消息。如果您控制连接的客户端部分，明显的解决方案是要么不使用
+    Web PKI（并依赖自己的 PKI），要么将特定证书或公钥*固定*。
 - en: 'Certificate or public key pinning are techniques where a server’s certificate
     (usually rather a hash of it), or the public key, is directly hardcoded in the
     client code. If the server does not present the expected certificate, or the certificate
@@ -1207,18 +1321,21 @@
   id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 证书或公钥固定是一种技术，其中服务器的证书（通常是其哈希），或者公钥，直接硬编码在客户端代码中。如果服务器未提供预期的证书，或者证书不包含预期的长期公钥，客户端会在握手的认证阶段中中止连接。这种做法通常在移动应用程序中使用，因为它们确切地知道服务器的公钥或证书应该是什么样子的（不像浏览器必须连接到无数的服务器）。然而，硬编码证书和公钥并非总是可行的，还有其他两种机制共存来处理不良证书：
 - en: '*Certificate revocation*—As the name indicates, this allows a CA to revoke
     a certificate and warn browsers about it.'
   id: totrans-165
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*证书吊销*—顾名思义，这允许 CA 撤销证书并警告浏览器。'
 - en: '*Certificate monitoring*—This is a relatively new system that forces CAs to
     publicly log every certificate signed.'
   id: totrans-166
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*证书监控*—这是一个相对较新的系统，强制 CA 公开记录每个签发的证书。'
 - en: The story of certificate revocation has historically been bumpy. The first solution
     proposed was *Certificate Revocation Lists* (CRLs), which allowed CAs to maintain
     a list of revoked certificates, those that were no longer considered valid. The
@@ -1227,6 +1344,8 @@
   id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 证书吊销的故事在历史上一直曲折。首先提出的解决方案是*证书吊销列表*（CRLs），它允许 CA 维护一份吊销的证书列表，即不再被视为有效的证书。CRLs
+    的问题在于它们可能会变得相当庞大，并且需要不断检查。
 - en: 'CRLs were deprecated in favor of *Online Certificate Status Protocol* (OCSP),
     which are simple web interfaces that you can query to see if a certificate is
     revoked or not. OCSP has its own share of problems: it requires CAs to have a
@@ -1239,16 +1358,19 @@
   id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: CRLs已被淘汰，取而代之的是*在线证书状态协议*（OCSP），这是一种简单的网络接口，您可以查询以查看证书是否被吊销。OCSP也有自己的问题：它要求CA拥有一个高度可用的服务来回答OCSP请求，它会向CA泄漏网络流量信息，并且浏览器经常决定忽略超时的OCSP请求（以不干扰用户体验）。目前的解决方案是通过*OCSP装订*来增强OCSP：网站负责查询CA签署其证书状态的响应，并在TLS握手期间将响应附加（装订）到其证书上。我在图9.9中回顾了这三种解决方案。
 - en: '![](../Images/09_09.jpg)'
   id: totrans-169
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/09_09.jpg)'
 - en: 'Figure 9.9 Certificate revocation on the web has had three popular solutions:
     Certificate Revocation Lists (CRLs), Online Certificate Status Protocol (OCSP),
     and OCSP stapling.'
   id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 图9.9 网络上的证书吊销有三种流行的解决方案：证书吊销列表（CRLs）、在线证书状态协议（OCSP）和OCSP装订。
 - en: Certificate revocation might not seem to be a prime feature to support (especially
     for smaller systems compared to the World Wide Web) until a certificate gets compromised.
     Like a car seatbelt, certificate revocation is a security feature that is useless
@@ -1257,6 +1379,7 @@
   id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 证书吊销可能看起来不是一个主要的支持功能（特别是对比全球网络的较小系统），直到证书被 compromise。就像汽车安全带一样，证书吊销是一个大部分时间无用但在罕见情况下可能拯救生命的安全功能。这就是我们在安全领域所说的“深度防御”。
 - en: Note For the web, certificate revocation has largely proven to be a good decision.
     In 2014, the Heartbleed bug turned out to be one of the most devastating bugs
     in the history of SSL and TLS. The most widely used SSL/TLS implementation (OpenSSL)
@@ -1266,6 +1389,7 @@
   id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 对于网络来说，证书吊销在很大程度上被证明是一个明智的决定。在2014年，心脏出血漏洞证明是SSL和TLS历史上最具破坏性的漏洞之一。最广泛使用的SSL/TLS实现（OpenSSL）被发现存在*缓冲区过读*漏洞（超出数组限制的读取），允许任何人向任何OpenSSL服务器发送一个特制消息并接收其内存转储，通常会显示其长期私钥。
 - en: Yet, if a CA truly misbehaves, it can decide not to revoke malicious certificates
     or not to report them. The problem is that we are blindly trusting a non-negligible
     number of actors (the CAs) to do the right thing. To solve this issue at scale,
@@ -1279,6 +1403,7 @@
   id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，如果CA真的行为不端，它可以决定不吊销恶意证书或不报告它们。问题在于我们在盲目地信任一定数量的行为者（CA）做正确的事情。为了在规模上解决这个问题，*证书透明度*在2012年由谷歌提出。证书透明度的背后思想是强制CA将每个颁发的证书添加到一个巨大的证书日志中供所有人查看。为了做到这一点，像Chrome这样的浏览器现在会拒绝那些不包含在公共日志中的证书。这种透明度允许您检查是否为您拥有的域错误颁发了证书（过去应该没有其他证书除了您以前请求的）。
 - en: Note that a Certificate Transparency relies on people monitoring logs for their
     own domain to catch bad certificates *after the fact*. CAs also have to react
     fast and revoke mis-issued certificates once detected. In extreme cases, browsers
@@ -1288,11 +1413,13 @@
   id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，证书透明度依赖于人们监控自己域的日志以在事后捕捉到不良证书。CA也必须迅速做出反应，一旦检测到错误颁发的证书就吊销它们。在极端情况下，浏览器有时会从信任存储中移除行为不端的CA。因此，证书透明度并不像证书或公钥固定那样强大，可以减轻CA的不端行为。
 - en: 9.4 Other secure transport protocols
   id: totrans-175
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.4 其他安全传输协议
 - en: 'You’ve now learned about TLS, which is the most popular protocol to encrypt
     communications. You’re not done yet, though. TLS is not the only one in the secure
     transport protocol class. Many other protocols exist, and you might most likely
@@ -1301,18 +1428,21 @@
   id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 您现在已经了解了TLS，这是加密通信的最流行协议。但是，您还没有完成。TLS并不是安全传输协议类中唯一的协议。还有许多其他协议存在，您很可能已经在使用它们。然而，大多数都是类似TLS的协议，定制以支持特定用例。例如：
 - en: '*Secure Shell (SSH)*—The most widely used protocol and application to securely
     connect to a remote terminal on a different machine.'
   id: totrans-177
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*Secure Shell (SSH)*—用于安全连接到不同机器上的远程终端的最广泛使用的协议和应用程序。'
 - en: '*Wi-Fi Protected Access (WPA)*—The most popular protocol to connect devices
     to private network access points or to the internet.'
   id: totrans-178
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*Wi-Fi Protected Access (WPA)*—连接设备到私人网络访问点或互联网的最流行协议。'
 - en: '*IPSec*—One of the most popular virtual network protocols (VPNs) used to connect
     different private networks together. It is mostly used by companies to link different
     office networks. As its name indicates, it acts at the IP layer and is often found
@@ -1322,6 +1452,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*IPSec*—用于连接不同私人网络的最流行的虚拟网络协议（VPN）之一。它主要由公司用于连接不同办公网络。正如其名称所示，它在IP层起作用，通常在路由器、防火墙和其他网络设备中找到。另一个流行的VPN是OpenVPN，它直接使用TLS。'
 - en: All of these protocols typically reimplement the handshake/post-handshake paradigm
     and sprinkle some of their own flavors on it. Re-inventing the wheel is not without
     issues, as for example, several of the Wi-Fi protocols have been broken. To finish
@@ -1330,11 +1461,13 @@
   id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有这些协议通常重新实现握手/后握手范式并在其上添加一些自己的特色。重新发明轮子并非没有问题，例如，几种Wi-Fi协议已经被破解。为了完成本章，我想向您介绍*噪声协议框架*。噪声是TLS的一个更现代的替代品。
 - en: '9.5 The Noise protocol framework: A modern alternative to TLS'
   id: totrans-181
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.5 噪声协议框架：TLS的现代替代品
 - en: TLS is now quite mature and considered a solid solution in most cases, due to
     the attention it gets. Yet, TLS adds a lot of overhead to applications that make
     use of it, due to historical reasons, backward compatibility constraints, and
@@ -1344,6 +1477,7 @@
   id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于历史原因、向后兼容性约束和整体复杂性，TLS现在已经相当成熟，并在大多数情况下被认为是一个可靠的解决方案。然而，TLS给使用它的应用程序增加了很多开销，这是由于历史原因、向后兼容性约束和整体复杂性。实际上，在许多情况下，您可能不需要TLS提供的所有功能，尤其是在您控制所有端点的情况下。下一个最佳解决方案被称为*噪声协议框架*。
 - en: The Noise protocol framework removes the run-time complexity of TLS by avoiding
     all negotiation in the handshake. A client and a server running Noise follow a
     linear protocol that does not branch. Contrast this to TLS, which can take many
@@ -1352,6 +1486,7 @@
   id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 噪声协议框架通过避免握手中的所有协商来消除TLS的运行时复杂性。运行噪声的客户端和服务器遵循一个不分支的线性协议。与可以根据不同握手消息中包含的信息采取许多不同路径的TLS相比，噪声将所有复杂性推到设计阶段。
 - en: Developers who want to use the Noise protocol framework must decide what ad
     hoc instantiation of the framework they want their application to use. (This is
     why it is called a protocol *framework* and not a protocol.) As such, they must
@@ -1363,11 +1498,13 @@
   id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 想要使用噪声协议框架的开发人员必须决定他们的应用程序要使用框架的什么特定实例。 (这就是为什么它被称为协议*框架*而不是协议。) 因此，他们必须首先决定将使用什么加密算法，哪一端的连接被认证，是否使用任何预共享密钥等。之后，协议被实现并变成一系列严格的消息，如果需要在维护与无法更新的设备的向后兼容性的同时稍后更新协议可能会成为问题。
 - en: 9.5.1 The many handshakes of Noise
   id: totrans-185
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 9.5.1 噪声的许多握手
 - en: The Noise protocol framework offers different *handshake patterns* that you
     can choose from. Handshake patterns typically come with a name that indicates
     what is going on. For example, the *IK* handshake pattern indicates that the client’s
@@ -1379,6 +1516,9 @@
   id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: Noise 协议框架提供了不同的*握手模式*供您选择。握手模式通常带有指示正在进行的操作的名称。例如，*IK* 握手模式表示客户端的公钥作为握手的一部分被发送（第一个
+    *I* 表示*即时*），并且服务器的公钥已被客户端预先知道（*K* 表示*已知*）。一旦选择了握手模式，使用它的应用程序将永远不会尝试执行任何其他可能的握手模式。与
+    TLS 相反，这使得 Noise 在实践中成为一个简单而线性的协议。
 - en: 'In the rest of this section, I will use a handshake pattern called *NN* to
     explain how Noise works. It is simple enough for to explain, but insecure because
     of the two *N* ’s indicating that no authentication takes place on both sides.
@@ -1386,6 +1526,8 @@
   id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节的其余部分中，我将使用一个名为 *NN* 的握手模式来解释 Noise 的工作原理。这个模式足够简单来解释，但是不安全，因为有两个 *N* 表示双方都没有进行认证。在
+    Noise 的术语中，该模式被写成这样：
 - en: '[PRE5]'
   id: totrans-188
   prefs: []
@@ -1398,6 +1540,7 @@
   id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 每一行代表一个消息模式，箭头指示消息的方向。每个消息模式都是一系列标记的连续（这里只有两个：`e` 和 `ee`），指示连接的两侧需要做什么：
 - en: '`->` `e`—Means that the client must generate an ephemeral key pair and send
     the public key to the server. The server interprets this message differently:
     it must receive an ephemeral public key and store it.'
@@ -1405,6 +1548,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`->` `e`—表示客户端必须生成临时密钥对并将公钥发送给服务器。服务器解释此消息方式不同：它必须接收临时公钥并存储它。'
 - en: '`<-` `e,` `ee`—Means that the server must generate an ephemeral key pair and
     send the public key to the client, then it must do a Diffie-Hellman (DH) key exchange
     with the client’s ephemeral (the first `e`) and its own ephemeral (the second
@@ -1414,6 +1558,8 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`<-` `e,` `ee`—表示服务器必须生成临时密钥对，并将公钥发送给客户端，然后必须与客户端的临时（第一个 `e`）和自己的临时（第二个 `e`）进行
+    Diffie-Hellman（DH）密钥交换。另一方面，客户端必须从服务器接收临时公钥，并使用它进行 DH 密钥交换。'
 - en: Note Noise uses a combination of defined tokens in order to specify different
     types of handshakes. For example, the `s` token means a *static key* (another
     word for *long-term key*) as opposed to an ephemeral key, and the token `es` means
@@ -1422,6 +1568,8 @@
   id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 Noise 使用一组定义的标记来指定不同类型的握手方式。例如，`s` 标记表示*静态密钥*（另一个词是*长期密钥*），而不是临时密钥，而 `es`
+    标记表示两个参与者必须使用客户端的临时密钥和服务器的静态密钥进行 DH 密钥交换。
 - en: 'There’s more to it: at the end of each message pattern (`->` `e` and `<-` `e,`
     `ee`), the sender also gets to transmit a payload. If a DH key exchange has happened
     previously, which is not the case in the first message pattern, `->` `e`, the
@@ -1431,11 +1579,14 @@
   id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 这还不止：在每个消息模式（`->` `e` 和 `<-` `e,` `ee`）的结尾，发送方还可以传输有效载荷。如果先前进行了 DH 密钥交换（这在第一个消息模式
+    `->` `e` 中并非如此），则有效载荷将被加密和验证。在握手结束时，双方派生一组对称密钥，并开始像 TLS 一样加密通信。
 - en: 9.5.2 A handshake with Noise
   id: totrans-194
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 9.5.2 使用 Noise 进行握手
 - en: 'One particularity of Noise is that it continuously authenticates its handshake
     transcript. To achieve this, both sides maintain two variables: a hash (`h`) and
     a chaining key (`ck`). Each handshake message sent or received is hashed with
@@ -1443,10 +1594,13 @@
   id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: Noise 的一个特点是它持续验证其握手记录。为了实现这一点，双方维护两个变量：哈希（`h`）和链接密钥（`ck`）。发送或接收的每个握手消息都与上一个
+    `h` 值一起进行哈希处理。我在图 9.10 中说明了这一点。
 - en: '![](../Images/09_10.jpg)'
   id: totrans-196
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/09_10.jpg)'
 - en: Figure 9.10 In the Noise protocol framework, each side of the connection keeps
     track of a digest `h` of all messages that have been sent and received during
     the handshake. When a message is sent and encrypted with an authenticated encryption
@@ -1455,6 +1609,7 @@
   id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 在噪声协议框架中，连接的每一侧都跟踪一条摘要`h`，其中包括在握手期间发送和接收的所有消息。当发送消息并使用带有相关数据的认证加密（AEAD）算法进行加密时，当前的`h`值将用作相关数据，以便对到目前为止的握手进行认证。
 - en: At the end of each message pattern, a (potentially empty) payload is encrypted
     with an authenticated encryption with associated data (AEAD) algorithm (covered
     in chapter 4). When this happens, the `h` value is authenticated by the associated
@@ -1464,6 +1619,7 @@
   id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 在每个消息模式结束时，一个（可能为空的）有效负载将使用带有相关数据的认证加密（AEAD）算法（在第4章中介绍）进行加密。发生这种情况时，`h`值将通过AEAD的相关数据字段进行认证。这使得噪声能够持续验证连接的双方是否以相同的消息序列和相同的顺序进行查看。
 - en: In addition, every time a DH key exchange happens (several can happen during
     a handshake), its output is fed along with the previous chaining key (`ck`) to
     HKDF, which derives a new chaining key and a new set of symmetric keys to use
@@ -1472,10 +1628,12 @@
   id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，每当进行DH密钥交换时（在握手期间可能会发生多次），其输出将连同前一个链密钥（`ck`）一起输入到HKDF中，该密钥将导出一个新的链密钥和一组新的对称密钥，以用于对随后的消息进行认证和加密。我在图9.11中说明了这一点。
 - en: '![](../Images/09_11.jpg)'
   id: totrans-200
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/09_11.jpg)'
 - en: Figure 9.11 In the Noise protocol framework, each side of the connection keeps
     track of a *chaining key*, `ck`. This value is used to derive a new chaining key
     and new encryption keys to be used in the protocol every time a DH key exchange
@@ -1483,6 +1641,7 @@
   id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 在噪声协议框架中，连接的每一侧都跟踪一个*链密钥*，`ck`。每次执行DH密钥交换时，此值都用于导出新的链密钥和新的加密密钥，以在协议中使用。
 - en: This makes Noise a simple protocol at run time; there is no branching and both
     sides of the connection simply do what they need to do. Libraries implementing
     Noise are also extremely simple and end up being a few hundred lines compared
@@ -1492,11 +1651,13 @@
   id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 这使得噪声在运行时成为一个简单的协议；没有分支，连接的双方只需做他们需要做的事情。实现噪声的库也非常简单，最终只有几百行代码，而TLS库有数十万行代码。虽然噪声使用起来更复杂，需要了解噪声如何工作的开发人员将其集成到应用程序中，但它是TLS的强大替代品。
 - en: Summary
   id: totrans-203
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 摘要
 - en: Transport Layer Security (TLS) is a secure transport protocol to encrypt communications
     between machines. It was previously called Secure Sockets Layer (SSL) and is sometimes
     still referred to as SSL.
@@ -1504,18 +1665,21 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 传输层安全性（TLS）是一种安全传输协议，用于加密机器之间的通信。它以前被称为安全套接字层（SSL），有时仍然被称为SSL。
 - en: TLS works on top of TCP and is used daily to protect connections between browsers,
     web servers, mobile applications, and so on.
   id: totrans-205
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: TLS在TCP之上运行，并且每天都用于保护浏览器、网络服务器、移动应用程序等之间的连接。
 - en: To protect sessions on top of User Datagram Protocol (UDP), TLS has a variant
     called Datagram Transport Layer Security (DTLS) that works with UDP.
   id: totrans-206
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 为了在用户数据报协议（UDP）之上保护会话，TLS有一种称为数据报传输层安全性（DTLS）的变体，它与UDP一起使用。
 - en: TLS and most other transport security protocols have a handshake phase (in which
     the secure negotiation is created) and a post-handshake phase (in which communications
     are encrypted using keys derived from the first phase).
@@ -1523,6 +1687,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: TLS和大多数其他传输安全协议都有一个握手阶段（在此阶段创建安全协商）和一个后握手阶段（在此阶段使用从第一阶段导出的密钥进行加密通信）。
 - en: To avoid delegating too much trust to the web public key infrastructure, applications
     making use of TLS can use certificate and public key pinning to only allow secure
     communications with specific certificates or public keys.
@@ -1530,6 +1695,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 为了避免向Web公钥基础设施委托过多的信任，使用TLS的应用程序可以使用证书和公钥固定来仅允许与特定证书或公钥进行安全通信。
 - en: As a defense-in-depth measure, systems can implement certificate revocation
     (to remove compromised certificates) and monitoring (to detect compromised certificates
     or CAs).
@@ -1537,12 +1703,14 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 作为深度防御措施，系统可以实现证书吊销（以删除受损的证书）和监视（以检测到受损的证书或CA）。
 - en: In order to avoid TLS complexity and size and whether you control both sides
     of the connection, you can use the Noise protocol framework.
   id: totrans-210
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 为了避免 TLS 的复杂性和大小以及连接双方是否受控制，可以使用 Noise 协议框架。
 - en: To use Noise, one must decide what variant of a handshake they want to use when
     designing the protocol. Due to this, it is much simpler and secure than TLS, but
     less flexible.
@@ -1550,3 +1718,4 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 要使用 Noise，必须在设计协议时决定要使用哪种握手的变体。因此，它比 TLS 更简单、更安全，但灵活性较差。

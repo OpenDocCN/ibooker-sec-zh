@@ -1,19 +1,24 @@
 - en: 10 End-to-end encryption
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
 - en: End-to-end encryption and its importance
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Different attempts at solving email encryption
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: How end-to-end encryption is changing the landscape of messaging
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -22,6 +27,7 @@
     web: hundreds of certificate authorities (CAs) trusted by your browser and operating
     system. While not perfect, this system has worked so far for the web, which is
     a complex network of participants who know nothing of each other.'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
 - en: This problem of finding ways to trust others (and their public keys) and making
@@ -32,15 +38,18 @@
     in the current encryption algorithms we use. When it comes to encryption, most
     engineering challenges are not about the algorithms themselves anymore, but about
     who Alice and Bob are and how to prove it.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
 - en: Cryptography does not provide one solution to trust but many different ones
     that are more or less practical, depending on the context. In this chapter, I
     will survey some of the different techniques that people and applications use
     to create trust between users.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
 - en: 10.1 Why end-to-end encryption?
+  id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -51,6 +60,7 @@
     message to Lord Bob without anyone in the middle being able to see it. Nowadays,
     many applications like email and messaging exist to connect users, and most of
     them seldom encrypt messages from soup to nuts.'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
 - en: 'You might ask, isn’t TLS enough? In theory, it could be. You learned in chapter
@@ -63,9 +73,11 @@
     are *trusted third parties* of the protocol. That is to say, we have to trust
     these parts of the system in order for the protocol to be considered secure (spoiler
     alert: that’s not a great protocol).'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_01.jpg)'
+  id: totrans-11
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.1 In most systems, a central server (top diagram) relays messages
@@ -73,8 +85,10 @@
     central server, which can thus see all user messages. A protocol providing end-to-end
     encryption (bottom diagram) encrypts communications from one user up to its intended
     recipient, preventing any server in the middle from observing messages in cleartext.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 图10.1 在大多数系统中，一个中央服务器（顶部图表）在用户之间传递消息。通常在用户和中央服务器之间建立安全连接，因此中央服务器可以看到所有用户消息。提供端到端加密的协议（底部图表）将通信从一个用户加密到其预期接收者，防止中间任何服务器观察明文消息。
 - en: 'In practice, much worse topologies exist. Communications between a user and
     a server can go through many network hops, and some of these hops might be machines
     that look at the traffic (often referred to as *middleboxes*). Even if traffic
@@ -85,8 +99,10 @@
     or within a data center, and so on. This adds to the attack surface as traffic
     is now visible in the clear in more places. Sometimes, TLS termination is done
     for “bad” reasons: to intercept, record, and spy on traffic.'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 在实践中，存在更糟糕的拓扑结构。用户和服务器之间的通信可能经过许多网络跳点，其中一些跳点可能是查看流量的机器（通常称为*中间盒*）。即使流量被加密，有些中间盒被设置为终止TLS连接（我们称之为*终止TLS*），然后要么从那一点开始明文转发流量，要么与下一个跳点建立另一个TLS连接。有时终止TLS是出于“好”的原因：为了更好地过滤流量，地理上或数据中心内部平衡连接等。这增加了攻击面，因为流量现在在更多地方以明文形式可见。有时，终止TLS是出于“坏”的原因：为了拦截、记录和监视流量。
 - en: In 2015, Lenovo was caught selling laptops with pre-installed custom CAs (covered
     in chapter 9) and software. The software was MITM’ing HTTPS connections using
     Lenovo’s CAs and injecting ads into web pages. More concerning, large countries
@@ -95,8 +111,10 @@
     In 2013, Edward Snowden leaked a massive number of documents from NSA showing
     the abuses of many governments (not just the US) in spying on people’s communications
     by intercepting the internet cables that link the world together.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 2015年，联想被发现销售预装有自定义CA（在第9章中介绍）和软件的笔记本电脑。该软件使用联想的CA进行HTTPS连接的中间人攻击，并向网页注入广告。更令人担忧的是，像中国和俄罗斯这样的大国被发现在互联网上重定向流量，使其经过他们的网络以拦截和观察连接。2013年，爱德华·斯诺登泄露了来自NSA的大量文件，显示了许多政府（不仅仅是美国）在通过拦截连接世界的互联网电缆来监视人们通信方面的滥用行为。
 - en: Owning and seeing user data is also a liability for companies. As I’ve mentioned
     many times in this book, breaches and hacks happen way too often and can be devastating
     for the credibility of a company. From a legal standpoint, laws like the General
@@ -105,48 +123,64 @@
     prevent companies and people involved from even mentioning that they have received
     the letters (so-called gag orders) can be seen as additional cost and stress to
     an organization, too, unless you have nothing much to share.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 拥有和查看用户数据对公司也是一种责任。正如我在本书中多次提到的那样，数据泄震和黑客攻击发生得太频繁，可能对公司的信誉造成毁灭性打击。从法律角度来看，像《通用数据保护条例》（GDPR）这样的法律可能会让组织付出巨额代价。政府要求，比如臭名昭著的国家安全信函（NSLs），有时会阻止公司和相关人员甚至提及他们收到了信函（所谓的禁言令），这也可以被视为对组织的额外成本和压力，除非你没有太多可以分享的内容。
 - en: Bottom line, if you’re using a popular online application, chances are that
     one or more governments already have access or have the ability to gain access
     to everything you wrote or uploaded there. Depending on an application’s *threat
     model* (what the application wants to protect against) or the threat model of
     an application’s most vulnerable users, end-to-end encryption plays a major role
     in ensuring confidentiality and privacy of end users.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 总的来说，如果你正在使用一个流行的在线应用程序，很可能一个或多个政府已经可以访问或有能力访问你在那里写下或上传的所有内容。根据应用程序的*威胁模型*（应用程序想要防范的威胁）或应用程序最容易受到攻击的用户的威胁模型，端到端加密在确保最终用户的机密性和隐私方面发挥着重要作用。
 - en: This chapter covers different techniques and protocols that have been created
     in order to create trust between people. In particular, you will learn about how
     email encryption works today and how secure messaging is changing the landscape
     of end-to-end encrypted communications.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章介绍了为建立人与人之间的信任而创建的不同技术和协议。特别是，你将了解当今电子邮件加密的工作原理以及安全消息传递如何改变端到端加密通信的格局。
 - en: 10.2 A root of trust nowhere to be found
+  id: totrans-18
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 10.2 无处可寻的信任根源
 - en: 'One of the simplest scenarios for end-to-end encryption is the following: Alice
     wants to send an encrypted file to Bob over the internet. With all the cryptographic
     algorithms you learned about in the first chapters of this book, you can probably
     think of a way to do this. For example'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 最简单的端到端加密场景之一是：Alice想要通过互联网向Bob发送加密文件。通过本书前几章学到的所有加密算法，你可能可以想到一种方法来实现这一点。例如
 - en: Bob sends his public key to Alice.
+  id: totrans-20
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: Bob向Alice发送他的公钥。
 - en: Alice encrypts the file with Bob’s public key and sends it to Bob.
+  id: totrans-21
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: Alice用Bob的公钥加密文件并发送给Bob。
 - en: Perhaps Alice and Bob can meet in real life or use another secure channel they
     already share to exchange the public key in the first message. If this is possible,
     we say that they have an *out-of-band* way of creating trust. This is not always
     the case, though. You can imagine me including my own public key in this book
     and asking you to use it to send me an encrypted message at some email address.
     Who says my copyeditor did not replace the public key with hers?
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 或许Alice和Bob可以在现实生活中见面，或者使用他们已经共享的另一个安全渠道来在第一条消息中交换公钥。如果这是可能的，我们称他们有一种*out-of-band*的方式来建立信任。然而，并非总是如此。你可以想象我在这本书中包含了我的公钥，并要求你使用它向我发送加密消息到某个电子邮件地址。谁说我的编辑没有用她的公钥替换我的公钥呢？
 - en: 'Same for Alice: how does she figure out if the public key she received truly
     is Bob’s public key? It’s possible that someone in the middle could have tampered
     with the first message. As you will see in this chapter, cryptography has no real
@@ -154,17 +188,23 @@
     in different scenarios. The reason why there is no true solution is that we are
     trying to bridge reality (real human beings) with a theoretical cryptographic
     protocol.'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于Alice也是一样：她如何确定她收到的公钥是否真的是Bob的公钥？中间某人可能篡改了第一条消息。正如你将在本章中看到的，密码学对于这个信任问题没有真正的答案。相反，它提供了不同的解决方案来帮助不同的情况。没有真正解决方案的原因是我们试图将现实（真实的人类）与理论的加密协议联系起来。
 - en: '*This whole business of protecting public keys from tampering is the single
     most difficult problem in practical public key applications. It is the ‘Achilles
     heel’ of public key cryptography, and a lot of software complexity is tied up
     in solving this one problem*.'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: '*保护公钥免受篡改的整个过程是实际公钥应用中最困难的问题。这是公钥密码学的“阿喀琉斯之踵”，许多软件复杂性都与解决这一问题有关*。'
 - en: '—Zimmermann et al. (“PGP User’s Guide Volume I: Essential Topics,” 1992)'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: —Zimmermann等人（“PGP用户指南第一卷：基本主题”，1992）
 - en: Going back to our simple setup where Alice wants to send a file to Bob, and
     assuming that their untrusted connection is all they have, they have somewhat
     of an impossible trust issue at hand. Alice has no good way of knowing for sure
@@ -173,8 +213,10 @@
     key in the first message, then the protocol is safe. Even if the messages are
     being passively recorded, it is too late for an attacker to come after the fact
     to decrypt the second message.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 回到我们简单的设置，Alice想要向Bob发送文件，并假设他们不受信任的连接是他们唯一拥有的，他们面临着一种几乎不可能解决的信任问题。Alice没有好的方法确切地知道什么才是Bob的真正公钥。这是一种鸡生蛋蛋生鸡的情况。然而，让我指出，如果没有恶意的*主动*中间人攻击者在第一条消息中替换了Bob的公钥，那么协议是安全的。即使消息被被动记录，攻击者也来不及事后解密第二条消息。
 - en: Of course, relying on the fact that your chances of being actively MITM’d are
     *not too high* is not the best way to undertake cryptography. We, unfortunately,
     often do not have a way to avoid this. For example, Google Chrome ships with a
@@ -184,8 +226,11 @@
     from? From the laptop you bought. But where did this laptop come from? As you
     can quickly see, it’s “turtles all the way down.” At some point, you will have
     to trust that something was done right.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，依赖于你被主动中间人攻击的机会*不太高*并不是进行密码学的最佳方式。不幸的是，我们通常无法避免这种情况。例如，Google Chrome 预装了一组证书颁发机构（CA），它选择信任这些机构，但你最初是如何获取
+    Chrome 的呢？也许你使用了操作系统的默认浏览器，它依赖于自己的一组 CA。但这些又是从哪里来的呢？从你购买的笔记本电脑。但这台笔记本电脑又是从哪里来的呢？很快你就会发现，这是“无穷的乌龟”。在某个时刻，你将不得不相信某件事是正确的。
 - en: A threat model typically chooses to stop addressing issues after a specific
     turtle and considers that any turtle further down is out-of-scope. This is why
     the rest of the chapter will assume that you have a secure way to obtain some
@@ -193,12 +238,16 @@
     trust, something that a protocol can build security on top of. A root of trust
     can be a secret or a public value that we start the protocol with or an out-of-band
     channel that we can use to obtain them.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 威胁模型通常选择在特定的层次停止解决问题，并认为任何更深层次的问题都不在范围之内。这就是为什么本章的其余部分将假设你有一种安全的方式来获取一些*信任根源*。所有基于密码学的系统都依赖于一个信任根源，一个协议可以在其上构建安全性的东西。信任根源可以是一个我们用来启动协议的秘密或公共值，或者是一个我们可以用来获取它们的带外信道。
 - en: 10.3 The failure of encrypted email
+  id: totrans-29
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 10.3 加密电子邮件的失败
 - en: Email was created as (and is still today) an *unencrypted* protocol. We can
     only blame a time where security was second thought. Email encryption started
     to become more than just an idea after the release of a tool called *Pretty Good
@@ -209,47 +258,66 @@
     his 1994 essay “Why Do You Need PGP?”, Philip Zimmermann ends with “PGP empowers
     people to take their privacy into their own hands. There’s a growing social need
     for it. That’s why I wrote it.”
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 电子邮件被创建为（今天仍然是）一个*未加密*的协议。我们只能责怪一个安全性是次要考虑的时代。电子邮件加密开始变得不再只是一个想法，是在1991年发布了一个名为*Pretty
+    Good Privacy*（PGP）的工具之后。当时，PGP 的创造者 Phil Zimmermann 决定在同一年早些时候几乎成为法律的一项法案发布 PGP。该法案允许美国政府从任何电子通信公司和制造商获取所有语音和文本通信。在他1994年的文章“为什么你需要
+    PGP？”中，Philip Zimmermann 结束时说：“PGP 让人们能够掌握自己的隐私。这是一个日益增长的社会需求。这就是为什么我写了它。”
 - en: The protocol was finally standardized in RFC 2440 as *OpenPGP* in 1998 and caught
     traction with the release of the open source implementation, *GNU Privacy Guard*
     (GPG), around the same time. Today, GPG is still the main implementation, and
     people interchangeably use the terms GPG and PGP to pretty much mean the same
     thing.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 该协议最终在1998年的 RFC 2440 中标准化为*OpenPGP*，并随着开源实现*GNU Privacy Guard*（GPG）的发布而受到关注。今天，GPG
+    仍然是主要的实现，人们可以互换使用术语 GPG 和 PGP 来几乎表示相同的意思。
 - en: 10.3.1 PGP or GPG? And how does it work?
+  id: totrans-32
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 10.3.1 PGP 还是 GPG？它是如何工作的？
 - en: 'PGP, or OpenPGP, works by simply making use of hybrid encryption (covered in
     chapter 6). The details are in RFC 4880, the last version of OpenPGP, and can
     be simplified to the following steps:'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: PGP，或者 OpenPGP，通过简单地使用混合加密（在第6章中介绍）来工作。详细信息在 RFC 4880 中，这是 OpenPGP 的最新版本，可以简化为以下步骤：
 - en: The sender creates an email. At this point the email’s content is compressed
     before it is encrypted.
+  id: totrans-34
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 发件人创建一封电子邮件。在加密之前，电子邮件的内容会被压缩。
 - en: The OpenPGP implementation generates a random symmetric key and symmetrically
     encrypts the email using the symmetric key.
+  id: totrans-35
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: OpenPGP 实现生成一个随机对称密钥，并使用该对称密钥对电子邮件进行对称加密。
 - en: The symmetric key is asymmetrically encrypted to each recipient’s public key
     (using the techniques you learned in chapter 6).
+  id: totrans-36
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 对称密钥被非对称加密到每个接收者的公钥上（使用你在第6章学到的技术）。
 - en: All of the intended recipients’ encrypted versions of the symmetric key are
     concatenated with the encrypted message. The email body is replaced with this
     blob of data and sent to all recipients.
+  id: totrans-37
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: To decrypt an email, a recipient uses their private key to decrypt the symmetric
     key, then decrypts the content of the email using the decrypted symmetric key.
+  id: totrans-38
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
@@ -259,25 +327,31 @@
     encrypted in step 2\. Finally, so that the recipient can figure out what public
     key to use to verify the signature, the sender’s public key is sent along the
     encrypted email in step 4\. I illustrate the PGP flow in figure 10.2.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_02.jpg)'
+  id: totrans-40
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.2 PGP’s goal is to encrypt and sign messages. When integrated with
     email clients it does not care about hiding the subject or other metadata.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
 - en: Exercise
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
 - en: Do you know why the email’s content is compressed before it is encrypted and
     not after?
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
 - en: There’s nothing inherently wrong with this design at first sight. It seems to
     prevent MITM attackers from seeing your email’s content, although the subject
     and other email headers are not encrypted.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
 - en: Note It is important to note that cryptography cannot always hide all metadata.
@@ -287,6 +361,7 @@
     their IP addresses are, what the length of the messages they send and receive
     is, who they commonly talk to (their social graphs), and so on. A lot of engineering
     is put into hiding this type of metadata.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
 - en: Yet, in the details, PGP is actually quite bad. The OpenPGP standard and its
@@ -296,6 +371,7 @@
     been signed might be able to tamper with the encrypted content to some degree,
     depending on the exact encryption algorithm used. For this reason alone, I would
     not recommend anyone to use PGP today.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
 - en: A surprising flaw of PGP comes from the fact that the signing and encryption
@@ -303,6 +379,7 @@
     of this naive composition of cryptographic algorithms, one can re-encrypt a signed
     email they received and send that to another recipient. This effectively allows
     Bob to send you the email Alice sent him as if you were the intended recipient!
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
 - en: If you’re wondering, signing the ciphertext instead of the plaintext is still
@@ -310,9 +387,11 @@
     and add their own signature instead. In effect, Bob could pretend that he sent
     you an email that was actually coming from Alice. I recapitulate these two signing
     issues in figure 10.3.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_03.jpg)'
+  id: totrans-49
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.3 In the top diagram, Alice encrypts a message and signature over
@@ -322,12 +401,15 @@
     also signs the encrypted message instead of the plaintext content. Bob, who intercepts
     the encrypted message, can replace the signature with his own, fooling Charles
     into thinking that he wrote the content of the message.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
 - en: Exercise
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
 - en: Can you think of an unambiguous way of signing a message?
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
 - en: The icing on the cake is that the algorithm does not provide *forward secrecy*
@@ -336,33 +418,40 @@
     now be decrypted. You can still force forward secrecy by changing your PGP key,
     but this process is not straightforward (you can, for example, sign your new key
     with your older key) and most users just don’t bother. To recap, remember that
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
 - en: PGP uses old cryptographic algorithms.
+  id: totrans-54
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: PGP does not have authenticated encryption and is, thus, not secure if used
     without signatures.
+  id: totrans-55
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Due to bad design, receiving a signed message doesn’t necessarily mean we were
     the intended recipient.
+  id: totrans-56
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: There is no forward secrecy by default.
+  id: totrans-57
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 10.3.2 Scaling trust between users with the web of trust
+  id: totrans-58
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: 'So why am I really talking about PGP here? Well, there is something interesting
     about PGP that I haven’t talked about yet: how do you obtain and how can you trust
     other people’s public keys? The answer is that in PGP, you build trust yourself!'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
 - en: 'OK, what does that mean? Imagine that you install GPG and decide that you want
@@ -373,13 +462,16 @@
     your friends signed and encrypted messages with OpenPGP. But this is tedious.
     Do you have to do this for every person you want to email? Of course not. Let’s
     take the following scenario:'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
 - en: You have obtained Bob’s public key in real life and, thus, you trust it.
+  id: totrans-61
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: You do not have Mark’s public key, but Bob does and he trusts it.
+  id: totrans-62
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -389,23 +481,28 @@
     public key and add it to your repertoire. This is the main idea behind PGP’s concept
     of *decentralized* trust. It is called the *web of trust* (WOT) as figure 10.4
     illustrates.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_04.jpg)'
+  id: totrans-64
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.4 The web of trust (WOT) is the concept that users can transitively
     trust other users by relying on signatures. In this figure, we can see that Alice
     trusts Bob who trusts Charles. Alice can use Bob’s signature over Charles’s identity
     and public key to trust Charles as well.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
 - en: You will sometimes see “key parties” at conferences, where people meet in real
     life and sign their respective public keys. But most of that is role-playing,
     and, in practice, few people rely on the WOT to enlarge their PGP circle.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
 - en: 10.3.3 Key discovery is a real issue
+  id: totrans-67
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -418,6 +515,7 @@
     than to spy on emails. In some settings, we can relax our threat model and allow
     for a trusted authority to attest to identities and public keys. Think of a company
     managing their employees’ emails, for example.'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
 - en: In 1995, the RSA company proposed *Secure/Multipurpose Internet Mail Extensions*
@@ -428,6 +526,7 @@
     has with PGP. As companies have processes in place to onboard and offboard employees,
     it makes sense for them to start using protocols like S/MIME in order to bootstrap
     trust in their internal email ecosystem.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
 - en: It is important to note that both PGP and S/MIME are generally used over the
@@ -437,6 +536,7 @@
     only the body of an email is encrypted not the subject or any of the other email
     headers. S/MIME, like PGP, is also quite an old protocol that uses outdated cryptography
     and practices. Like PGP, it does not offer authenticated encryption.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
 - en: 'Recent research (Efail: “Breaking S/MIME and OpenPGP Email Encryption using
@@ -444,8 +544,10 @@
     showed that most of them were vulnerable to *exfiltration attacks*, where an attacker
     who observes encrypted emails can retrieve the content by sending tampered versions
     to the recipients.'
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 最近的研究（Efail：“利用渗透通道破解 S/MIME 和 OpenPGP 电子邮件加密”）关于在电子邮件客户端中集成这两种协议显示，大多数客户端都容易受到*渗透攻击*的影响，攻击者可以通过发送篡改版本的加密邮件给接收者来检索内容。
 - en: In the end, these shortcomings might not even matter, as most emails being sent
     and received in the world move along the global network unencrypted. PGP has proven
     to be quite difficult to use for nontechnical, as well as advanced, users who
@@ -454,77 +556,109 @@
     email without using encryption, quoting the whole thread in cleartext. On top
     of that, the poor (or nonexistent) support for PGP by popular email clients hasn’t
     helped.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 最终，这些缺点甚至可能无关紧要，因为世界上发送和接收的大多数电子邮件都在全球网络上未加密传输。对于非技术人员以及需要理解 PGP 的许多微妙之处和流程才能加密他们的电子邮件的高级用户来说，PGP
+    使用起来相当困难。例如，经常会看到用户在不使用加密的情况下回复加密邮件，以明文引用整个线程。此外，流行电子邮件客户端对 PGP 的支持（或根本没有支持）也没有帮助。
 - en: '*In the 1990s, I was excited about the future, and I dreamed of a world where
     everyone would install GPG. Now I’m still excited about the future, but I dream
     of a world where I can uninstall it*.'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: '*在 1990 年代，我对未来感到兴奋，梦想着一个每个人都会安装 GPG 的世界。现在，我仍然对未来感到兴奋，但我梦想着一个我可以卸载它的世界*。'
 - en: —Moxie Marlinspike (“GPG and Me,” 2015)
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: —Moxie Marlinspike（“GPG 和我”，2015）
 - en: For these reasons, PGP has slowly been losing support (for example, Golang removed
     support for PGP from its standard library in 2019), while more and more real-world
     cryptography applications are aiming at replacing PGP and solving its usability
     problems. Today, it is hard to argue that email encryption will ever have the
     same level of success and adoption that, for example, HTTPS has.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于这些原因，PGP 已经逐渐失去了支持（例如，Golang 在 2019 年从其标准库中移除了对 PGP 的支持），而越来越多的真实世界的加密应用程序正致力于取代
+    PGP 并解决其可用性问题。如今，很难争辩电子邮件加密会像 HTTPS 那样取得相同的成功和普及。
 - en: '*If messages can be sent in plaintext, they will be sent in plaintext. Email
     is end-to-end unencrypted by default. The foundations of electronic mail are plaintext.
     All mainstream email software expects plaintext. In meaningful ways, the Internet
     email system is simply designed not to be encrypted*.'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: '*如果消息可以以明文发送，它们就会以明文发送。电子邮件默认是端到端未加密的。电子邮件的基础是明文。所有主流电子邮件软件都期望明文。在某种意义上，互联网电子邮件系统简单地设计成不加密*。'
 - en: —Thomas Ptacek (“Stop Using Encrypted Email,” 2020)
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: —Thomas Ptacek（“停止使用加密电子邮件”，2020）
 - en: 10.3.4 If not PGP, then what?
+  id: totrans-78
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 10.3.4 如果不是 PGP，那又是什么呢？
 - en: I spent several pages talking about how a simple design like PGP can fail in
     a lot of different and surprising ways in practice. Yes, I would recommend against
     using PGP. While email encryption is still an unsolved problem, alternatives are
     being developed to replace different PGP use cases.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 我花了几页的篇幅讨论了像 PGP 这样简单的设计在实践中可能以许多不同和令人惊讶的方式失败。是的，我建议不要使用 PGP。虽然电子邮件加密仍然是一个未解决的问题，但正在开发替代方案来取代不同的
+    PGP 使用情况。
 - en: '*saltpack* is a similar protocol and message format to PGP. It attempts to
     fix some of the PGP flaws I’ve talked about. In 2021, saltpack’s main implementations
     are keybase ([https://keybase.io](https://keybase.io)) and keys.pub ([https://keys.pub](https://keys.pub)).
     Figure 10.5 illustrates the keys.pub tool.'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: '*saltpack* 是一种类似于 PGP 的协议和消息格式。它试图修复我所谈到的一些 PGP 的缺陷。在 2021 年，saltpack 的主要实现是
+    keybase（[https://keybase.io](https://keybase.io)）和 keys.pub（[https://keys.pub](https://keys.pub)）。图
+    10.5 展示了 keys.pub 工具。'
 - en: '![](../Images/10_05.jpg)'
+  id: totrans-81
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/10_05.jpg)'
 - en: Figure 10.5 keys.pub is a native desktop application that implements the saltpack
     protocol. You can use it to import other people’s public keys and to encrypt and
     sign messages to them.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 10.5 keys.pub 是一个实现 saltpack 协议的本地桌面应用程序。您可以使用它导入其他人的公钥，并向他们加密和签名消息。
 - en: These implementations have all moved away from WOT and allow users to broadcast
     their public keys on different social networks in order to instill their identity
     into their public keys (as figure 10.6 illustrates). PGP could obviously not have
     anticipated this key discovery mechanism as it predates the boom of social networks.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_06.jpg)'
+  id: totrans-84
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.6 A keybase user broadcasting their public key on the Twitter social
     network. This allows other users to obtain additional proof that his identity
     is linked to a specific public key.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
 - en: On the other hand, most secure communication nowadays is far from a one-time
     message, and the use of these tools is less and less relevant. In the next section,
     I talk about *secure messaging*, one of the fields that aims to replace the communication
     aspect of PGP.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
 - en: '10.4 Secure messaging: A modern look at end-to-end encryption with Signal'
+  id: totrans-87
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -532,6 +666,7 @@
     Communication, or, Why Not To Use PGP.” Unlike PGP or S/MIME, OTR is not used
     to encrypt emails but, instead, chat messages; specifically, it extends a chat
     protocol called the *Extensible Messaging and Presence Protocol* (XMPP).
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
 - en: One of the distinctive features of OTR was *deniability*—a claim that recipients
@@ -541,6 +676,7 @@
     messages themselves. By contrast, with PGP, messages are signed and are, thus,
     the inverse of deniable—messages are *non-repudiable*. To my knowledge, none of
     these properties have actually been tested in court.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
 - en: In 2010, the Signal mobile phone application (then called TextSecure) was released,
@@ -549,6 +685,7 @@
     protocols*, where no central entity was required for the network to work. The
     Signal mobile application largely departed from tradition by running a central
     service and offering a single official Signal client application.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
 - en: While Signal prevents interoperability with other servers, the Signal protocol
@@ -557,11 +694,13 @@
     The Signal protocol is truly a success story, transparently being used by billions
     of people including journalists, targets of government surveillance, and even
     my 92-year-old grandmother (I swear I did not make her install it).
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
 - en: 'It is interesting to look at how Signal works because it attempts to fix many
     of the flaws that I previously mentioned with PGP. In this section, I will go
     over each one of the following interesting features of Signal:'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
 - en: How can we do better than the WOT? Is there a way to upgrade the existing social
@@ -571,6 +710,7 @@
     long-lasting secure communication channel. Users are then free to check if the
     first exchange was MITM’d by matching their session secret out of band and at
     any point in the future.
+  id: totrans-93
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -578,6 +718,7 @@
     with someone? The first part of the Signal protocol is like most secure transport
     protocols: it’s a key exchange, but a particular one called *Extended Triple Diffie-Hellman*
     (X3DH). More on that later.'
+  id: totrans-94
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -585,6 +726,7 @@
     is important because conversations between users can span years, and a compromise
     at some point in time should not reveal years of communication. Signal addresses
     this with something called a *symmetric ratchet*.
+  id: totrans-95
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -592,13 +734,16 @@
     that game over? Can we also recover from that? Signal introduces a new security
     property called *post-compromise security* (PCS) and addresses this with what
     is called a *Diffie-Hellman* (DH) *ratchet*.
+  id: totrans-96
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Let’s get started! First, we’ll see how Signal’s flavor of TOFU works.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
 - en: '10.4.1 More user-friendly than the WOT: Trust but verify'
+  id: totrans-98
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -608,15 +753,18 @@
     called a *key-signing party*) to confirm one another’s keys, but this was cumbersome
     and inconvenient in many and various ways. It is really rare today to see people
     signing each other’s PGP keys.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
 - en: The way most people use applications like PGP, OTR, Signal, and so on, is to
     blindly trust a key the first time they see it and to reject any future changes
     (as figure 10.7 illustrates). This way, only the first connection can be attacked
     (and this only by an active MITM attacker).
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_07.jpg)'
+  id: totrans-101
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.7 Trust on first use (TOFU) allows Alice to trust her first connection
@@ -624,15 +772,18 @@
     is an easy mechanism to build trust when the chances that the first connection
     is actively MITM’d are low. The association between a public key and the identity
     (here Bob) can also be verified after the fact in a different channel.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
 - en: While TOFU is not the best security model, it is often the best we have and
     has proven extremely useful. The Secure Shell (SSH) protocol, for example, is
     often used by trusting the server’s public key during the initial connection (see
     figure 10.8) and by rejecting any future change.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_08.jpg)'
+  id: totrans-104
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.8 SSH clients use trust on first use. The first time you connect to
@@ -640,6 +791,7 @@
     between the SSH server and the public key displayed. If the public key of the
     SSH server later changes (right picture), your SSH client prevents you from connecting
     to it.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
 - en: While TOFU systems trust the first key they see, they still allow the user to
@@ -648,6 +800,7 @@
     which are most often hexadecimal representations of public keys or hashes of public
     keys. This verification is, of course, done out of band. (If the SSH connection
     is compromised, then the verification is compromised as well.)
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
 - en: Note Of course, if users do not verify fingerprints, then they can be MITM’d
@@ -655,30 +808,37 @@
     have to deal with when bringing end-to-end encryption at scale. Indeed, the failure
     of the WOT shows that security-focused applications must keep usability in mind
     to get widely adopted.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
 - en: 'In the Signal mobile application, a fingerprint between Alice and Bob is computed
     by:'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
 - en: Hashing Alice’s identity key prefixed by her username (a phone number in Signal)
     and interpreting a truncation of that digest as a series of numbers
+  id: totrans-109
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Doing the same for Bob
+  id: totrans-110
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Displaying the concatenation of the two series of numbers to the user
+  id: totrans-111
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Applications like Signal make use of *QR codes* to let users verify fingerprints
     more easily as these codes can be lengthy. Figure 10.9 illustrates this use case.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_09.jpg)'
+  id: totrans-113
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.9 With Signal, you can verify the authenticity and confidentiality
@@ -688,13 +848,16 @@
     code, which encodes this information in a scannable format. Signal also hashes
     the session secret instead of the two users’ public keys, allowing them to verify
     one large string instead of two.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
 - en: Next, let’s see how the Signal protocol works under the hood—specifically, how
     Signal manages to be forward secure.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
 - en: '10.4.2 X3DH: the Signal protocol’s handshake'
+  id: totrans-116
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -703,6 +866,7 @@
     conversation with Bob if Bob was not online. The Signal protocol, on the other
     hand, is *asynchronous* (like email), meaning that Alice can start (and continue)
     a conversation with people that are offline.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
 - en: Remember that *forward secrecy* (covered in chapter 9) means that a compromise
@@ -711,17 +875,20 @@
     ephemeral Diffie-Hellman (DH) key pairs. In this section, you will see how Signal
     uses *non-interactive* key exchanges (key exchanges where one side is potentially
     offline) that are still forward secure. OK, let’s get going.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
 - en: 'To start a conversation with Bob, Alice initiates a key exchange with him.
     Signal’s key exchange, X3DH, combines three (or more) DH key exchanges into one.
     But before you learn how that works, you need to understand the three different
     types of DH keys that Signal uses:'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
 - en: '*Identity keys*—These are the long-term keys that represent the users. You
     can imagine that if Signal only used identity keys, then the scheme would be fairly
     similar to PGP, and there would be no forward secrecy.'
+  id: totrans-120
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -729,6 +896,7 @@
     when the recipient of a new conversation is not online, Signal has users upload
     multiple *single-use* public keys. They are simply ephemeral keys that are uploaded
     in advance and are deleted after being used.'
+  id: totrans-121
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -739,14 +907,17 @@
     someone can still use your signed prekey to add forward secrecy up to the last
     time you changed your signed prekey. This also means that you have to periodically
     rotate your signed prekey (for example, every week).'
+  id: totrans-122
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: This is enough to preview what the flow of a conversation creation in Signal
     looks like. Figure 10.10 presents an overview.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_10.jpg)'
+  id: totrans-124
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.10 Signal’s flow starts with a user registering with a number of public
@@ -755,26 +926,32 @@
     creates an initial message using the output of the key exchange. After receipt
     of the message, Bob can perform the same on his side to initialize and continue
     the conversation.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
 - en: 'Let’s go over each of these steps in more depth. First, a user registers by
     sending the following:'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
 - en: One identity key
+  id: totrans-127
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: One signed prekey and its signature
+  id: totrans-128
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: A defined number of one-time prekeys
+  id: totrans-129
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: At this point, it is the responsibility of the user to periodically rotate the
     signed prekey and upload new one-time prekeys. I recap this flow in figure 10.11.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
 - en: Note Signal makes use of the identity key to perform signatures over signed
@@ -783,47 +960,58 @@
     in their case, there should be no issue. This does not mean that this would work
     in *your* case and with *your* key exchange algorithm. I would advise against
     using a key for different purposes in general.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_11.jpg)'
+  id: totrans-132
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.11 Building on figure 10.10, the first step is for a user to register
     by generating a number of DH key pairs and sending the public parts to a central
     server.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
 - en: 'After the step introduced in figure 10.11, Alice (going back to our example)
     would then start a conversation with Bob by retrieving:'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
 - en: Bob’s identity key.
+  id: totrans-135
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Bob’s current signed prekey and its associated signature.
+  id: totrans-136
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: If there are still some, one of Bob’s one-time prekeys (the server then deletes
     the one-time prekey sent to Alice).
+  id: totrans-137
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Alice can verify that the signature over the signed prekey is correct. She
     then performs the X3DH handshake with:'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
 - en: All of the public keys from Bob
+  id: totrans-139
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: An ephemeral key pair that she generates for the occasion in order to add forward
     secrecy
+  id: totrans-140
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Her own identity key
+  id: totrans-141
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -831,22 +1019,27 @@
     her messages to Bob (more on that in the next section). X3DH is composed of three
     (optionally, four) DH key exchanges, grouped into one. The DH key exchanges are
     between:'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
 - en: The identity key of Alice and the signed prekey of Bob
+  id: totrans-143
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: The ephemeral key of Alice and the identity key of Bob
+  id: totrans-144
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: The ephemeral key of Alice and the signed prekey of Bob
+  id: totrans-145
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: If Bob still has a one-time prekey available, his one-time prekey and the ephemeral
     key of Alice
+  id: totrans-146
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
@@ -857,9 +1050,11 @@
     of this is analyzed in more depth in the X3DH specification ([https://signal.org/docs/specifications/x3dh/](https://signal.org/docs/specifications/x3dh/)),
     which I encourage you to read if you want to know more as it is well written.
     Figure 10.12 recaps this flow.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_12.jpg)'
+  id: totrans-148
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.12 Building on figure 10.10, to send a message to Bob, Alice fetches
@@ -867,6 +1062,7 @@
     one of Bob’s one-time prekeys. After performing different key exchanges with the
     different keys, all outputs are concatenated and passed into a KDF to produce
     an output used in a subsequent post-X3DH protocol to encrypt messages to Bob.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
 - en: Alice now can send Bob her identity public key, the ephemeral public key she
@@ -876,9 +1072,11 @@
     reason, I skip illustrating the last step of this flow.) If Alice used one of
     Bob’s one-time prekeys, Bob gets rid of it. What happens after X3DH is done? Let’s
     look at that next.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
 - en: '10.4.3 Double Ratchet: Signal’s post-handshake protocol'
+  id: totrans-151
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -888,18 +1086,22 @@
     in months, Signal introduces *forward secrecy* at the message level. In this section,
     you will learn how this post-handshake protocol (called the *Double Ratchet*)
     works.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
 - en: But first, imagine a simple post-X3DH protocol. Alice and Bob could have taken
     the output of X3DH as a session key and use it to encrypt messages between them
     as figure 10.13 illustrates.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_13.jpg)'
+  id: totrans-154
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.13 Naively, a post-X3DH protocol could simply use the output of X3DH
     as a session key to encrypt messages between Alice and Bob.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
 - en: We usually want to separate the keys used for different purposes though. What
@@ -907,21 +1109,25 @@
     the Double Ratchet specification) to a KDF in order to derive two other keys.
     Alice can use one key to encrypt messages to Bob, and Bob can use the other key
     to encrypt messages to Alice. I illustrate this in figure 10.14.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_14.jpg)'
+  id: totrans-157
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.14 Building on figure 10.13, a better post-X3DH protocol would make
     use of a KDF with the output of the key exchanges to differentiate keys used to
     encrypt Bob’s and Alice’s messages. Here Alice’s sending key is the same as Bob’s
     receiving key, and Bob’s sending key is the same as Alice’s receiving key.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
 - en: This approach could be enough, but Signal notes that texting sessions can last
     for years. This is unlike the TLS sessions of chapter 9 that are usually expected
     to be short-lived. Because of this, if at any point in time the session key is
     stolen, all previously recorded messages can be decrypted!
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
 - en: To fix this, Signal introduced what is called a *symmetric ratchet* (as figure
@@ -932,9 +1138,11 @@
     the other hand, will have to do the same but with the receiving chain key. Thus,
     by compromising one sending key or sending chain key, an attacker cannot recover
     previous keys. (And the same is true when receiving messages.)
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_15.jpg)'
+  id: totrans-161
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.15 Building on figure 10.14, forward secrecy can be introduced in
@@ -942,6 +1150,7 @@
     time one needs to send a message, and ratcheting another chain key every time
     one receives a message. Thus, the compromise of a sending or receiving chain key
     does not allow an attacker to recover previous ones.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
 - en: Good. We now have forward secrecy baked into our protocol and at the message
@@ -951,6 +1160,7 @@
     all previous messages in cleartext next to the key. Nevertheless, if both users
     in a conversation decide to delete previous messages (for example, by using Signal’s
     “disappearing messages” feature), the forward secrecy property is achieved.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
 - en: 'The Signal protocol has one last interesting thing I want to talk about: PCS
@@ -959,6 +1169,7 @@
     can still manage to recover as the protocol will heal itself. Of course, if the
     attacker still has access to your device after a compromise, then this is for
     nothing.'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
 - en: PCS can work only by reintroducing new entropy that a nonpersistent compromise
@@ -967,48 +1178,58 @@
     the Signal protocol continuously performs key exchanges in what is called a *DH
     ratchet*. Every message sent by the protocol comes with the current ratchet public
     key as figure 10.16 illustrates.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_16.jpg)'
+  id: totrans-166
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.16 The Diffie-Hellman (DH) ratchet works by advertising a ratchet
     public key in every message sent. This ratchet public key can be the same as the
     previous one, or it can advertise a new ratchet public key if a participant decides
     to refresh theirs.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
 - en: When Bob notices a new ratchet key from Alice, he must perform a new DH key
     exchange with Alice’s new ratchet key and Bob’s own ratchet key. The output can
     then be used with the symmetric ratchet to decrypt the messages received. I illustrate
     this in figure 10.17.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_17.jpg)'
+  id: totrans-169
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.17 When receiving a new ratchet public key from Alice, Bob must do
     a key exchange with it and his own ratchet key to derive decryption keys. This
     is done with the symmetric ratchet. Alice’s messages can then be decrypted.
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
 - en: Another thing that Bob must do when receiving a new ratchet key is to generate
     a new random ratchet key for himself. With his new ratchet key, he can perform
     another key exchange with Alice’s new ratchet key, which he then uses to encrypt
     messages to her. This should look like figure 10.18.
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_18.jpg)'
+  id: totrans-172
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.18 Building on figure 10.17, after receiving a new ratchet key Bob
     must also generate a new ratchet key for himself. This new ratchet key is used
     to derive encryption keys and is advertised to Alice in his next series of messages
     (up until he receives a new ratchet key from Alice).
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
 - en: 'This back and forth of key exchanges is mentioned as a “ping-pong” in the Double
     Ratchet specification:'
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
 - en: '*This results in a “ping-pong” behavior as the parties take turns replacing
@@ -1016,31 +1237,38 @@
     might learn the value of a current ratchet private key, but that private key will
     eventually be replaced with an uncompromised one. At that point, the Diffie-Hellman
     calculation between ratchet key pairs will define a DH output unknown to the attacker*.'
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
 - en: —The Double Ratchet Algorithm
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
 - en: Finally, the combination of the DH ratchet and the symmetric ratchet is called
     the *Double Ratchet*. It’s a bit dense to visualize as one diagram, but figure
     10.19 attempts to do so.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_19.jpg)'
+  id: totrans-178
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.19 The Double Ratchet (from Alice’s point of view) combines the DH
     ratchet (on the left) with the symmetric ratchet (on the right). This provides
     PCS as well as forward secrecy to the post-X3DH protocol. In the first message,
     Alice does not yet know Bob’s ratchet key so she uses his presigned key instead.
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
 - en: I know this last diagram is quite dense, so I encourage you to take a look at
     Signal’s specifications, which are published on [https://signal.org/docs](https://signal.org/docs).
     They provide another well-written explanation of the protocol.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
 - en: 10.5 The state of end-to-end encryption
+  id: totrans-181
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -1050,6 +1278,7 @@
     by open source and federated protocols like XMPP (via the OMEMO extension) and
     Matrix (a modern alternative to IRC). On the other hand, PGP and S/MIME are being
     dropped as published attacks have led to a loss of trust.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
 - en: What if you want to write your own end-to-end encrypted messaging app? Unfortunately,
@@ -1059,21 +1288,26 @@
     and can be hard to use correctly. On the other hand, you might have better luck
     using a decentralized open source solution like Matrix, which might prove easier
     to integrate with. This is what the French government has done.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
 - en: Before we close this chapter, there are also a number of open questions and
     active research problems that I want to talk about. For example
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
 - en: Group messaging
+  id: totrans-185
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Support for multiple devices
+  id: totrans-186
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Better security assurances than TOFU
+  id: totrans-187
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1086,9 +1320,11 @@
     super well. It is also not too hard for the server to figure out what are the
     group members when it sees Alice, for example, sending several messages of the
     same length to Bob and Charles (figure 10.20).'
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/10_20.jpg)'
+  id: totrans-189
   prefs: []
   type: TYPE_IMG
 - en: Figure 10.20 There are two ways to approach end-to-end encryption for group
@@ -1097,12 +1333,14 @@
     a good approach to hide group membership from the server. A server-side fanout
     approach lets the server forward a message to each group chat participant. This
     is a good approach to reduce the number of messages sent from the client’s perspective.
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
 - en: WhatsApp, on the other hand, uses a variant of the Signal protocol where the
     server is aware of group chat membership. This change allows a participant to
     send a single encrypted message to the server that, in turn, will have the responsibility
     to forward it to the group members. This is called *server-side fanout*.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
 - en: Another problem of group chat is *scaling* to groups of a large memberset. For
@@ -1110,6 +1348,7 @@
     Layer Security* (MLS) standard to tackle secure group messaging at scale. But
     there seems to be a lot of work to be done, and one can wonder, is there really
     any confidentiality in a group chat with more than a hundred participants?
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
 - en: Note This is still an area of active research, and different approaches come
@@ -1117,6 +1356,7 @@
     chat protocol seems to provide *transcript consistency*, a cryptographic property
     that ensures that all participants of a group chat see the same messages in the
     same order.
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
 - en: Support for multiple devices is either not a thing or implemented in various
@@ -1127,6 +1367,7 @@
     of your friends’ devices. Matrix, for example, has a user sign their own devices.
     Other users then can trust all your devices as one entity by verifying their associated
     signatures.
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
 - en: Finally, I mentioned that the TOFU model is also not the greatest as it is based
@@ -1137,9 +1378,11 @@
     is similar to the Certificate Transparency protocol that I talked about in chapter
     9\. There is also some research making use of the blockchain technology that I’ll
     talk about in chapter 12 on cryptocurrencies.
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
 - en: Summary
+  id: totrans-196
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -1147,12 +1390,14 @@
     A protocol implementing end-to-end encryption is more resilient to vulnerabilities
     that can happen in servers sitting in between users and can greatly simplify legal
     requirements for companies.
+  id: totrans-197
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: End-to-end encryption systems need a way to bootstrap trust between users. This
     trust can come from a public key that we already know or an out-of-band channel
     that we trust.
+  id: totrans-198
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1160,23 +1405,27 @@
     yet none of them are considered safe to use as they make use of old cryptographic
     algorithms and practices. They also have poor integration with email clients that
     have been shown to be vulnerable to different attacks in practice.
+  id: totrans-199
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: PGP uses a web of trust (WOT) model, where users sign each other public keys
     in order to allow others to trust them.
+  id: totrans-200
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
 - en: S/MIME uses a public key infrastructure to build trust between participants.
     It is most commonly used in companies and universities.
+  id: totrans-201
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
 - en: An alternative to PGP is saltpack, which fixes a number of issues while relying
     on social networks to discover other people’s public keys.
+  id: totrans-202
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1184,12 +1433,14 @@
     encryption in mind. On the other hand, modern messaging protocols and applications
     are considered better alternatives to encrypted emails as they are built with
     end-to-end encryption in mind.
+  id: totrans-203
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The Signal protocol is used by most messaging applications to secure end-to-end
     communications between users. Signal messenger, WhatsApp, Facebook Messenger,
     and Skype all advertise their use of the Signal protocol to secure messages.
+  id: totrans-204
   prefs:
   - PREF_IND
   - PREF_UL
@@ -1198,6 +1449,7 @@
     end-to-end encrypted messaging. Federated protocols are open protocols that anyone
     can interoperate with (as opposed to centralized protocols that are limited to
     a single application).
+  id: totrans-205
   prefs:
   - PREF_IND
   - PREF_UL

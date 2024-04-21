@@ -1,22 +1,32 @@
 - en: 2 Hash functions
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 2 哈希函数
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章内容包括
 - en: Hash functions and their security properties
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 哈希函数及其安全属性
 - en: The widely adopted hash functions in use today
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 当今广泛采用的哈希函数
 - en: Other types of hashing that exist
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 存在的其他类型的哈希函数
 - en: Attributing global unique identifiers to anything, that’s the promise of the
     first cryptographic construction you’ll learn about in this chapter—the *hash
     function*. Hash functions are everywhere in cryptography—everywhere! Informally,
@@ -26,86 +36,122 @@
     useful to build many other constructions in cryptography. In this chapter, you
     will learn everything there is to know about hash functions and why they are so
     versatile.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 将全局唯一标识符分配给任何东西，这就是您将在本章中学到的第一个密码构造的承诺——*哈希函数*。哈希函数在密码学中随处可见——随处可见！非正式地说，它们以您希望的任何数据作为输入，并返回一个唯一的字节串。给定相同的输入，哈希函数始终会产生相同的字节串。这可能看起来像无足轻重的事情，但这个简单的构造在构建密码学中的许多其他构造时非常有用。在本章中，您将学到有关哈希函数的一切以及它们为什么如此多才多艺。
 - en: 2.1 What is a hash function?
+  id: totrans-6
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 2.1 什么是哈希函数？
 - en: 'In front of you, a download button is taking a good chunk of the page. You
     can read the letters *DOWNLOAD*, and clicking this seems to redirect you to a
     different website containing a file. Below it, lies a long string of unintelligible
     letters:'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 在你面前，一个下载按钮占据了页面的很大一部分。您可以读到字母*DOWNLOAD*，点击这个似乎会将您重定向到包含文件的不同网站。下面是一长串难以理解的字母：
 - en: '[PRE0]'
+  id: totrans-8
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'It is followed by what looks like an acronym of some sort: `sha256sum`. Sound
     familiar? You’ve probably downloaded something in your past life that was also
     accompanied with such an odd string (figure 2.1).'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 紧接着是一个看起来像是某种首字母缩写的东西：`sha256sum`。听起来耳熟吗？你可能在以前的生活中下载过一些伴随着这样奇怪字符串的东西（见图 2.1）。
 - en: '![](../Images/02_01.jpg)'
+  id: totrans-10
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_01.jpg)'
 - en: Figure 2.1 A web page linking to an external website containing a file. The
     external website cannot modify the content of the file because the first page
     provides a hash or digest of the file, which ensures the integrity over the downloaded
     file.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 2.1 一个链接到包含文件的外部网站的网页。外部网站无法修改文件的内容，因为第一页提供了文件的哈希或摘要，这确保了下载的文件的完整性。
 - en: 'If you’ve ever wondered what was to be done with that long string:'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您曾经想知道那串长字符串要做什么：
 - en: Click the button to download the file
+  id: totrans-13
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 点击按钮下载文件
 - en: Use the SHA-256 algorithm to *hash* the downloaded file
+  id: totrans-14
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 使用 SHA-256 算法对下载的文件进行*哈希*处理
 - en: Compare the output (the digest) with the long string displayed on the web page
+  id: totrans-15
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将输出（摘要）与网页上显示的长字符串进行比较
 - en: This allows you to verify that you downloaded the right file.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 这使您能够验证您下载了正确的文件。
 - en: Note The output of a hash function is often called a *digest* or a *HASH*. I
     use the two words interchangeably throughout this book. Others might call it a
     *checksum* or a *sum*, which I avoid, as those terms are primarily used by noncryptographic
     hash functions and could lead to more confusion. Just keep that in mind when different
     codebases or documents use different terms.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 注 哈希函数的输出通常称为*摘要*或*HASH*。我在本书中交替使用这两个词。其他人可能称其为*校验和*或*和*，但我避免使用这些术语，因为这些术语主要用于非密码哈希函数，可能会导致更多的混淆。当不同的代码库或文档使用不同的术语时，请记住这一点。
 - en: 'To try hashing something, you can use the popular OpenSSL library. It offers
     a multipurpose command-line interface (CLI) that comes by default in a number
     of systems including macOS. For example, this can be done by opening the terminal
     and writing the following line:'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 要尝试对某些东西进行哈希处理，您可以使用流行的 OpenSSL 库。它提供了一个多功能的命令行界面（CLI），在包括 macOS 在内的许多系统中默认提供。例如，可以通过打开终端并输入以下命令来完成这项工作：
 - en: '[PRE1]'
+  id: totrans-19
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: With the command, we used the SHA-256 hash function to transform the input (the
     downloaded file) into a unique identifier (the value echoed by the command). What
     do these extra steps provide? They provide *integrity and authenticity*. It tells
     you that what you downloaded is indeed the file you were meant to download.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过该命令，我们使用了 SHA-256 哈希函数将输入（下载的文件）转换为一个唯一标识符（命令所回显的值）。这些额外的步骤提供了什么？它们提供了*完整性和真实性*。它告诉你，你下载的确实是你打算下载的文件。
 - en: All of this works, thanks to a security property of the hash function called
     *second pre-image resistance*. This math-inspired term means that from the long
     output of the hash function, `f63e...`, you cannot find another file that will
     hash to the same output, `f63e....` In practice, it means that this digest is
     closely tied to the file you’re downloading and that no attacker should be able
     to fool you by giving you a different file.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有这些都是由哈希函数的一个安全属性实现的，称为*第二原像抗性*。这个数学启发的术语意味着从哈希函数的长输出中，`f63e...`，你不能找到另一个会散列到相同输出`f63e....`的文件。在实践中，这意味着这个摘要与您正在下载的文件紧密相关，并且没有攻击者应该能够通过给您不同的文件来愚弄您。
 - en: The hexadecimal notation
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 十六进制表示
 - en: By the way, the long output string `f63e...` represents binary data displayed
     in *hexadecimal* (a base-16 encoding, using numbers from 0 to 9 and letters from
     *a* to *f* to represent several bits of data). We could have displayed the binary
@@ -116,8 +162,10 @@
     most widely used encodings are hexadecimal and base64\. The larger the base, the
     less space it takes to display a binary string, but at some point, we run out
     of human-readable characters.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 顺便说一句，长输出字符串`f63e...`表示十六进制中显示的二进制数据（一种基于16的编码，使用数字0到9和字母a到f来表示几位数据）。我们可以用0和1（基数2）来显示二进制数据，但这将占用更多的空间。相反，十六进制编码允许我们为每8位（1字节）遇到的数据写2个字母数字字符。它对人类来说有点可读，并且占用更少的空间。有其他方式来为人类消费编码二进制数据，但最广泛使用的两种编码是十六进制和base64。基数越大，显示二进制字符串所需的空间就越少，但在某些时候，我们会用完人类可读的字符。
 - en: Note that this long digest is controlled by the owner(s) of the web page, and
     it could easily be replaced by anyone who can modify the web page. (If you are
     not convinced, take a moment to think about it.) This means that we need to trust
@@ -128,20 +176,28 @@
     trusted mechanism that gave us the digest (HTTPS in this case). We will talk about
     HTTPS in chapter 9, but for now, imagine that it magically allows you to communicate
     securely with a website.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，这个长摘要由网页的所有者（们）控制，任何可以修改网页的人都可以轻松地替换它。（如果你还不相信，请花点时间考虑一下。）这意味着我们需要信任给我们摘要的页面，它的所有者以及用于检索页面的机制（尽管我们不需要信任给我们下载文件的页面）。在这个意义上，*哈希函数本身并不提供完整性*。下载文件的完整性和真实性来自于与给出摘要的受信任机制的摘要结合起来（在本例中是HTTPS）。我们将在第9章讨论HTTPS，但现在，想象它神奇地允许你与网站安全通信。
 - en: Back to our hash function, which can be visualized as the black box in figure
     2.2\. Our black box takes a single input and gives out a single output.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 回到我们的哈希函数，它可以被可视化为图2.2中的黑匣子。我们的黑匣子接受单个输入并产生单个输出。
 - en: '![](../Images/02_02.jpg)'
+  id: totrans-26
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_02.jpg)'
 - en: Figure 2.2 A hash function takes an arbitrary-length input (a file, a message,
     a video, and so on) and produces a fixed-length output (for example, 256 bits
     for SHA-256). Hashing the same input produces the same digest or hash.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 图2.2 哈希函数接受任意长度的输入（文件、消息、视频等）并产生固定长度的输出（例如，SHA-256的256位）。对相同输入进行哈希处理会产生相同的摘要或哈希。
 - en: 'The *input* of this function can be of any size. It can even be empty. The
     *output* is always of the same length and *deterministic* : it always produces
     the same result if given the same input. In our example, SHA-256 always provides
@@ -149,56 +205,80 @@
     in hexadecimal. One major property of a hash function is that one cannot revert
     the algorithm, meaning that one shouldn’t be able to find the input from just
     the output. We say that hash functions are *one-way*.'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个函数的*输入*可以是任意大小。它甚至可以是空的。*输出*始终具有相同的长度和*确定性*：如果给定相同的输入，它总是产生相同的结果。在我们的例子中，SHA-256始终提供256位（32字节）的输出，始终以十六进制的64个字母数字字符编码。哈希函数的一个主要特性是不能逆转算法，这意味着不能仅凭输出就找到输入。我们说哈希函数是*单向*的。
 - en: To illustrate how a hash function works in practice, we’ll hash different inputs
     with the SHA-256 hash function using the same OpenSSL CLI. The following terminal
     session shows this.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了说明哈希函数在实践中是如何工作的，我们将使用相同的OpenSSL CLI对不同的输入使用SHA-256哈希函数进行哈希。以下终端会话显示了这一点。
 - en: '[PRE2]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: ❶ Hashing the same input produces the same result.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 对相同输入进行哈希会产生相同的结果。
 - en: ❷ A tiny change in the input completely changes the output.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 输入中的微小变化会完全改变输出。
 - en: ❸ The output is always of the same size, no matter the input size.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 输出始终相同大小，无论输入大小如何。
 - en: In the next section, we will see what are the exact security properties of hash
     functions.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一节中，我们将看到哈希函数的确切安全性质是什么。
 - en: 2.2 Security properties of a hash function
+  id: totrans-35
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 2.2 哈希函数的安全性质
 - en: Hash functions in applied cryptography are constructions that were commonly
     defined to provide three specific security properties. This definition has changed
     over time as we will see in the next sections. But for now, let’s define the three
     strong foundations that make up a hash function. This is important as you need
     to understand where hash functions can be useful and where they will not work.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 应用密码学中的哈希函数是常见的构造，通常被定义为提供三种特定安全性质。随着我们将在接下来的部分中看到的，这个定义随着时间的推移而改变。但是现在，让我们定义构成哈希函数的三个强基础。这很重要，因为您需要了解哈希函数可以在哪里有用，以及它们不起作用的地方。
 - en: The first one is *pre-image resistance*. This property ensures that no one should
     be able to reverse the hash function in order to recover the input given an output.
     In figure 2.3, we illustrate this “one-wayness” by imagining that our hash function
     is like a blender, making it impossible to recover the ingredients from the produced
     smoothie.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一个是*原像抗性*。这个属性确保没有人应该能够反转哈希函数以恢复给定输出的输入。在图2.3中，我们通过想象我们的哈希函数就像一个搅拌机，使得从制作的冰沙中恢复原料变得不可能。
 - en: '![](../Images/02_03.jpg)'
+  id: totrans-38
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_03.jpg)'
 - en: Figure 2.3 Given the digest produced by a hash function (represented as a blender
     here), it is impossible (or technically so hard we assume it will never happen)
     to reverse it and find the original input used. This security property is called
     *pre-image resistance*.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 图2.3 给定哈希函数产生的摘要（这里表示为搅拌机），逆转它并找到使用的原始输入是不可能的（或者在技术上如此困难，我们假设永远不会发生）。这种安全性质被称为*原像抗性*。
 - en: 'Warning Is this true if your input is small? Let’s say that it’s either *oui*
     or *non*, then it is easy for someone to hash all the possible 3-letter words
     and find out what the input was. What if your input space is small? Meaning that
@@ -207,48 +287,68 @@
     of the week or the hour can still hash all possible sentences until it produces
     the correct output. As such, this first pre-image security property has an obvious
     caveat: *you can’t hide something that is too small or that is predictable*.'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 如果您的输入很小，这是真的吗？假设它是*oui*或*non*，那么有人很容易对所有可能的3个字母单词进行哈希，找出输入是什么。如果您的输入空间很小呢？意味着您总是对句子的变体进行哈希，例如，“我将在星期一凌晨3点回家。”在这种情况下，一个人可以预测这一点，但不知道确切的星期几或小时，仍然可以对所有可能的句子进行哈希，直到产生正确的输出。因此，这个第一个原像安全性质有一个明显的警告：*您无法隐藏太小或可预测的东西*。
 - en: 'The second property is *second pre-image resistance*. We already saw this security
     property when we wanted to protect the integrity of a file. The property says
     the following: if I give you an input and the digest it hashes to, you should
     not be able to find a different input that hashes to the same digest. Figure 2.4
     illustrates this principle.'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二个属性是*第二原像抗性*。当我们想要保护文件的完整性时，我们已经看到了这个安全性质。该属性表明：如果我给你一个输入和它哈希到的摘要，你不应该能够找到一个不同的输入，其哈希到相同的摘要。图2.4说明了这个原则。
 - en: '![](../Images/02_04.jpg)'
+  id: totrans-42
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_04.jpg)'
 - en: Figure 2.4 Considering an input and its associated digest, one should never
     be able to find a different input that hashes to the same output. This security
     property is called *second pre-image resistance*.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 图2.4 考虑一个输入及其相关的摘要，一个人永远不应该能够找到一个不同的输入，其哈希值相同。这种安全性质被称为*第二原像抗性*。
 - en: Note that *we do not control the first input*. This emphasis is important to
     understand the next security property for hash functions.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意*我们无法控制第一个输入*。这种强调对于理解哈希函数的下一个安全性质非常重要。
 - en: Finally, the third property is *collision resistance*. It guarantees that no
     one should be able to produce two different inputs that hash to the same output
     (as seen in figure 2.5). Here an attacker can choose the two inputs, unlike the
     previous property that fixes one of the inputs.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，第三个属性是*碰撞抗性*。它保证没有人能够产生两个不同的输入，其哈希为相同的输出（如图2.5所示）。在这里，攻击者可以选择两个输入，不像前一个属性固定了其中一个输入。
 - en: '![](../Images/02_05.jpg)'
+  id: totrans-46
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_05.jpg)'
 - en: Figure 2.5 One should never be able to find two inputs (represented on the left
     as two random blobs of data) that hash to the same output value (on the right).
     This security property is called *collision resistance*.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 图2.5 永远不应该找到两个输入（在左侧表示为两个随机数据块）哈希为相同的输出值（在右侧）。这种安全属性称为*碰撞抗性*。
 - en: People often confuse collision resistance and second pre-image resistance. Take
     a moment to understand the differences.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 人们经常混淆碰撞抗性和第二原像抗性。花点时间理解它们的区别。
 - en: The random oracle
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 随机预言机
 - en: In addition, hash functions are usually designed so that their digests are *unpredictable
     and random*. This is useful because one cannot always prove a protocol to be secure,
     thanks to one of the security properties of a hash function we talked about (like
@@ -258,39 +358,55 @@
     random oracle, which is said to return completely random outputs in response,
     and like a hash function, giving it the same input twice returns the same output
     twice.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 另外，哈希函数通常设计成它们的摘要是*不可预测和随机*的。这是有用的，因为人们并不总是能够证明一个协议是安全的，多亏了我们讨论过的哈希函数的安全属性之一（比如碰撞抗性，例如）。许多协议实际上是在*随机预言机模型*中被证明的，在这种协议中，一个名为随机预言机的虚构和理想的参与者被使用。在这种类型的协议中，可以将任何输入作为请求发送给该随机预言机，据说它以完全随机的输出作为响应返回，并且像哈希函数一样，给它相同的输入两次会返回相同的输出两次。
 - en: Proofs in this model are sometimes controversial as we don’t know for sure if
     we can replace these random oracles with real hash functions (in practice). Yet,
     many legitimate protocols are proven secure using this method, where hash functions
     are seen as more ideal than they probably are.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个模型中的证明有时是有争议的，因为我们不确定我们是否可以用真实的哈希函数（在实践中）替换这些随机预言机。然而，许多合法的协议是通过这种方法被证明是安全的，其中哈希函数被视为比它们实际上更理想的东西。
 - en: 2.3 Security considerations for hash functions
+  id: totrans-52
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 2.3 哈希函数的安全考虑
 - en: 'So far, we saw three security properties of a hash function:'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，我们看到了哈希函数的三个安全属性：
 - en: Pre-image resistance
+  id: totrans-54
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 原像抗性
 - en: Second pre-image resistance
+  id: totrans-55
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第二原像抗性
 - en: Collision resistance
+  id: totrans-56
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 碰撞抗性
 - en: These security properties are often meaningless on their own; it all depends
     on how you make use of the hash function. Nonetheless, it is important that we
     understand some limitations here before we look at some of the real-world hash
     functions.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些安全属性通常单独来看毫无意义；一切都取决于你如何使用哈希函数。尽管如此，重要的是在我们看一些现实世界的哈希函数之前，我们要理解这里的一些限制。
 - en: First, these security properties assume that you are (reasonably) using the
     hash function. Imagine that I either hash the word *yes* or the word *no*, and
     I then publish the digest. If you have some idea of what I am doing, you can simply
@@ -304,8 +420,10 @@
     breaking the second pre-image resistance?” Second pre-image resistance is merely
     saying that it is extremely hard to find another input, so hard we assume it’s
     in practice impossible but not theoretically impossible.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，这些安全属性假定你（合理地）使用哈希函数。想象一下，我要么对单词*yes*进行哈希，要么对单词*no*进行哈希，然后我发布摘要。如果你对我在做什么有一些想法，你可以简单地对这两个词进行哈希，并将结果与我给你的结果进行比较。因为没有涉及到任何秘密，而且我们使用的哈希算法是公开的，所以你可以这样做。事实上，你可能会认为这会破坏哈希函数的前像抗性，但我会认为你的输入不够“随机”。此外，由于哈希函数接受任意长度的输入并始终产生相同长度的输出，也有无限数量的输入哈希到相同的输出。同样，你可能会说，“嗯，这不是在破坏第二前像抗性吗？”第二前像抗性仅仅是说找到另一个输入是极其困难的，困难到我们认为在实践中是不可能的，但在理论上是可能的。
 - en: 'Second, the size of the digest *does* matter. This is not a peculiarity of
     hash functions by any means. All cryptographic algorithms must care about the
     size of their parameters in practice. Let’s imagine the following extreme example.
@@ -317,8 +435,10 @@
     size* that a hash function *must* produce in practice: 256 bits (or 32 bytes).
     With this large an output, collisions should be out of reach unless a breakthrough
     happens in computing.'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次，摘要的大小*确实*很重要。这并不是哈希函数的奇特之处。在实践中，所有的加密算法都必须关心它们参数的大小。让我们想象一下以下极端情况。我们有一个哈希函数，它以均匀随机的方式生成长度为2位的输出（意味着它将`00`作为输出的概率为25%，`01`为25%，以此类推）。你不需要做太多工作就能产生碰撞：在对几个随机输入字符串进行哈希之后，你应该能够找到两个哈希到相同输出的字符串。因此，哈希函数在实践中*必须*产生的*最小输出大小*是256位（或32字节）。有了这么大的输出，除非计算方面发生突破，否则碰撞应该是不可能的。
 - en: How was this number obtained? In real-world cryptography, algorithms aim for
     a minimum of 128 bits of security. It means that an attacker who wants to break
     an algorithm (providing 128-bit security) has to perform around 2128 operations
@@ -327,63 +447,88 @@
     mentioned earlier, it needs to provide at least 128 bits of security against all
     three attacks. The easiest attack is usually to find collisions due to the *birthday
     bound*.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个数字是怎么得到的呢？在实际的密码学中，算法的目标是提供至少128位的安全性。这意味着一个想要攻破算法（提供128位安全性）的攻击者必须执行大约2128次操作（例如，尝试所有长度为128位的可能输入字符串将需要2128次操作）。为了让哈希函数提供前面提到的所有三个安全属性，它需要提供至少128位的安全性来抵御所有三种攻击。通常，最简单的攻击是由于*生日悖论*导致的碰撞查找。
 - en: The birthday bound
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 生日悖论
 - en: The birthday bound takes its roots from probability theory in which the birthday
     problem reveals some unintuitive results. How many people do you need in a room
     so that with at least a 50% chance, two people share the same birthday (that’s
     a collision). It turns out that 23 people taken at random are enough to reach
     these odds! Weird right?
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 生日悖论根源于概率论，其中生日问题揭示了一些不直观的结果。在一个房间里，至少需要多少人才能有至少50%的机会两人拥有相同的生日（即发生碰撞）。事实证明，随机选择的23人就足够达到这个概率！很奇怪，对吧？
 - en: This is called the *birthday paradox*. In practice, when we randomly generate
     strings from a space of 2^N possibilities, you can expect with a 50% chance that
     someone will find a collision after having generated approximately 2^(N/2) strings.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 这被称为 *生日悖论*。实际上，当我们从 2^N 个可能性中随机生成字符串时，你可以期望有 50% 的概率在生成约 2^(N/2) 个字符串后发现冲突。
 - en: If our hash function generates random outputs of 256 bits, the space of all
     outputs is of size 2^(256). This means that collisions can be found with good
     probability after generating 2^(128) digests (due to the birthday bound). This
     is the number we’re aiming for, and this is why hash functions at a minimum must
     provide 256-bit outputs.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果我们的哈希函数生成了 256 位的随机输出，所有输出的空间大小为 2^(256)。这意味着在生成了 2^(128) 个摘要之后，可以以较高的概率找到冲突（由于生日悖论）。这是我们的目标数字，这也是哈希函数最少必须提供
+    256 位输出的原因。
 - en: 'Certain constraints sometimes push developers to reduce the size of a digest
     by *truncating it* (removing some of its bytes). In theory, this is possible but
     can greatly reduce security. In order to achieve 128-bit security at a minimum,
     a digest must not be truncated under:'
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 有时某些约束会迫使开发人员通过 *截断*（移除其中的一些字节）来减小摘要的大小。理论上，这是可能的，但会大大降低安全性。为了至少实现 128 位安全性，摘要不得被截断为：
 - en: 256 bits for collision resistance
+  id: totrans-66
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 256 位用于防冲突
 - en: 128 bits for pre-image and second pre-image resistance
+  id: totrans-67
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 128 位用于前像和第二前像防护
 - en: This means that depending on what property one relies on, the output of a hash
     function can be truncated to obtain a shorter digest.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 这意味着根据依赖的属性，哈希函数的输出可以被截断以获得更短的摘要。
 - en: 2.4 Hash functions in practice
+  id: totrans-69
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 2.4 实践中的哈希函数
 - en: As we said earlier, in practice, hash functions are rarely used alone. They
     are most often combined with other elements to either create a cryptographic primitive
     or a cryptographic protocol. We will look at many examples of using hash functions
     to build more complex objects in this book, but this section describes a few different
     ways hash functions have been used in the real world.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我们之前所说的，在实践中，哈希函数很少单独使用。它们通常与其他元素结合在一起，以创建密码原语或密码协议。在本书中，我们将看到许多使用哈希函数构建更复杂对象的例子，但本节描述了在现实世界中哈希函数的几种不同用法。
 - en: 2.4.1 Commitments
+  id: totrans-71
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2.4.1 承诺
 - en: Imagine that you know that a stock in the market will increase in value and
     reach $50 in the coming month, but you really can’t tell your friends about it
     (for some legal reason perhaps). You still want to be able to tell your friends
@@ -392,33 +537,48 @@
     To do this, hash the sentence and give your friends the output. A month later,
     reveal the sentence. Your friends will be able to hash the sentence to observe
     that indeed, it is producing the same output.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象一下，你知道市场上的一只股票将会增值并在未来一个月达到 50 美元，但由于某种法律原因，你真的不能告诉你的朋友（也许是出于某种法律原因）。尽管如此，你仍然希望能够事后告诉你的朋友你知道这件事，因为你自以为是（不要否认）。你可以做的是承诺一句话，如“股票
+    *X* 下个月将达到 50 美元。” 为此，将该句话哈希，并将输出给你的朋友。一个月后，揭示这句话。你的朋友将能够哈希这句话以观察到确实产生了相同的输出。
 - en: 'This is what we call a *commitment scheme*. Commitments in cryptography generally
     try to achieve two properties:'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是我们所说的 *承诺方案*。密码学中的承诺通常试图实现两个属性：
 - en: '*Hiding*—A commitment must hide the underlying value.'
+  id: totrans-74
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*隐藏* —— 一个承诺必须隐藏底层值。'
 - en: '*Binding*—A commitment must hide a single value. In other words, if you commit
     to a value *x*, you shouldn’t be able to later successfully reveal a different
     value *y*.'
+  id: totrans-75
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*绑定* —— 一个承诺必须隐藏一个单一值。换句话说，如果你承诺一个值 *x*，你不应该能够后来成功地透露一个不同的值 *y*。'
 - en: Exercise
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 练习
 - en: Can you tell if a hash function provides hiding and binding if used as a commitment
     scheme?
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果将哈希函数用作承诺方案，你能否判断它是否提供了隐藏和绑定？
 - en: 2.4.2 Subresource integrity
+  id: totrans-78
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2.4.2 子资源完整性
 - en: 'It happens (often) that web pages import external JavaScript files. For example,
     a lot of websites use Content Delivery Networks (CDNs) to import JavaScript libraries
     or web-framework-related files in their pages. Such CDNs are placed in strategic
@@ -426,28 +586,40 @@
     goes rogue and decides to serve malicious JavaScript files, this could be a real
     issue. To counter this, web pages can use a feature called *subresource integrity*
     that allows the inclusion of a digest in the import tag:'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 有时（经常）网页会导入外部 JavaScript 文件。例如，很多网站使用内容传送网络（CDN）在其页面中导入 JavaScript 库或与 web 框架相关的文件。这些
+    CDN 被放置在战略位置，以便快速向访问者传递这些文件。然而，如果 CDN 走向歧途并决定提供恶意的 JavaScript 文件，这可能是一个真正的问题。为了应对这种情况，网页可以使用一个名为*子资源完整性*的功能，允许在导入标签中包含摘要：
 - en: '[PRE3]'
+  id: totrans-80
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: This is exactly the same scenario we talked about in the introduction of this
     chapter. Once the JavaScript file is retrieved, the browser hashes it (using SHA-256)
     and verifies that it corresponds to the digest that was hardcoded in the page.
     If it checks out, the JavaScript file gets executed as its integrity has been
     verified.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 这恰好是我们在本章开头讨论过的情景。一旦检索到 JavaScript 文件，浏览器对其进行哈希处理（使用 SHA-256），并验证其是否与页面中硬编码的摘要相对应。如果验证通过，JavaScript
+    文件将被执行，因为其完整性已经得到验证。
 - en: 2.4.3 BitTorrent
+  id: totrans-82
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2.4.3 BitTorrent
 - en: Users (called *peers*) around the world use the BitTorrent protocol to share
     files directly among each other (what we also call *peer-to-peer*). To distribute
     a file, it is cut into chunks and each chunk is individually hashed. These hashes
     are then shared as a source of trust to represent the file to download.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 世界各地的用户（称为*对等体*）使用 BitTorrent 协议直接在彼此之间共享文件（我们也称之为*点对点*）。为了分发一个文件，它被切成块，每个块都被单独散列。然后这些哈希值作为信任源被共享以代表要下载的文件。
 - en: BitTorrent has several mechanisms to allow a peer to obtain the different chunks
     of a file from different peers. In the end, the integrity of the entire file is
     verified by hashing each of the downloaded chunks and matching the output to its
@@ -455,15 +627,22 @@
     example, the following “magnet link” represents the Ubuntu operating system, v19.04\.
     It is a digest (represented in hexadecimal) obtained from hashing the metadata
     about the file as well as all the chunks’ digests.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: BitTorrent 有几种机制允许对等体从不同的对等体获取文件的不同块。最后，通过对下载的每个块进行哈希处理并将输出与各自已知的摘要（在重新组装文件之前）匹配来验证整个文件的完整性。例如，以下“磁铁链接”代表
+    Ubuntu 操作系统，v19.04。它是通过对文件的元数据以及所有块的摘要进行哈希处理而获得的摘要（以十六进制表示）。
 - en: '[PRE4]'
+  id: totrans-85
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: 2.4.4 Tor
+  id: totrans-86
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2.4.4 Tor
 - en: The Tor browser’s goal is to give individuals the ability to browse the internet
     anonymously. Another feature is that one can create hidden web pages, whose physical
     locations are difficult to track. Connections to these pages are secured via a
@@ -475,64 +654,91 @@
     you can authenticate the public key of the hidden web page you’re visiting and
     be sure that you’re talking to the right page (and not an impersonator). If this
     is not clear, don’t worry, I’ll mention this again in chapter 9.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: Tor 浏览器的目标是让个人能够匿名浏览互联网。另一个特性是，可以创建隐藏的网页，其物理位置难以追踪。与这些页面的连接通过使用网页的公钥进行保护的协议来保护。（我们将在第9章讨论会话加密时详细了解其工作原理。）例如，Silk
+    Road曾是毒品的eBay，直到被FBI查封，可以通过 Tor 浏览器中的`silkroad6ownowfk` `.onion`访问。这个base32字符串实际上代表了Silk
+    Road的公钥的哈希值。因此，通过知道洋葱地址，你可以验证你正在访问的隐藏网页的公钥，并确保你正在与正确的页面交流（而不是冒充者）。如果这不清楚，不用担心，我会在第9章再次提到这一点。
 - en: Exercise
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 练习
 - en: By the way, there is no way this string represents 256 bits (32 bytes), right?
     How is this secure then, according to what you learned in section 2.3? Also, can
     you guess how the Dread Pirate Roberts (the pseudonym of Silk Road’s webmaster)
     managed to obtain a hash that contains the name of the website?
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 顺便说一句，这个字符串不可能代表256位（32字节），对吗？那么根据你在第2.3节学到的内容，这样是安全的吗？另外，你能猜到 Dread Pirate
+    Roberts（Silk Road的网站管理员的化名）是如何获得一个包含网站名称的哈希值的吗？
 - en: 'In all examples in this section, a hash function provided *content integrity*
     or *authenticity* in situations where:'
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节的所有示例中，哈希函数提供了*内容完整性*或*真实性*，用于以下情况：
 - en: Someone might tamper with the content being hashed.
+  id: totrans-91
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 有人可能会篡改被哈希的内容。
 - en: The hash is securely communicated to you.
+  id: totrans-92
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 哈希已经安全地传达给你。
 - en: We sometimes also say that we *authenticate* something or someone. It is important
     to understand that if the hash is not obtained securely, then anyone can replace
     it with the hash of something else! Thus, it does not provide integrity by itself.
     The next chapter on message authentication code will fix this by introducing *secrets*.
     Let’s now look at what actual hash function algorithms you can use.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们有时也会说我们*认证*某物或某人。重要的是要理解，如果哈希不是安全地获取的，那么任何人都可以用其他内容的哈希替换它！因此，它本身不提供完整性。下一章关于消息认证码将通过引入*密钥*来修复这一点。现在让我们看看你可以使用哪些实际的哈希函数算法。
 - en: 2.5 Standardized hash functions
+  id: totrans-94
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 2.5 标准化的哈希函数
 - en: We mentioned SHA-256 in our previous example, which is only one of the hash
     functions we can use. Before we go ahead and list the recommended hash functions
     of our time, let’s first mention other algorithms that people use in real-world
     applications that are not considered cryptographic hash functions.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们之前的示例中提到了SHA-256，这只是我们可以使用的哈希函数之一。在我们继续列出我们这个时代推荐的哈希函数之前，让我们先提到其他在实际应用中人们使用但不被视为加密哈希函数的算法。
 - en: First, functions like CRC32 are *not* cryptographic hash functions but error-detecting
     code functions. While they helpfully detect some simple errors, they provide none
     of the previously mentioned security properties and are not to be confused with
     the hash functions we are talking about (even though they might share the name
     sometimes). Their output is usually referred to as a *checksum*.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，像CRC32这样的函数*不是*加密哈希函数，而是错误检测代码函数。虽然它们有助于检测一些简单的错误，但它们没有提供先前提到的任何安全属性，并且不应与我们正在讨论的哈希函数混淆（尽管它们有时可能会共享名称）。它们的输出通常称为*校验和*。
 - en: Second, popular hash functions like MD5 and SHA-1 are considered broken nowadays.
     While they were both the standardized and widely accepted hash functions of the
     1990s, MD5 and SHA-1 were shown to be broken in 2004 and 2016, respectively, when
     collisions were published by different research teams. These attacks were successful
     partly because of advances in computing, but mostly because flaws were found in
     the way the hash functions were designed.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次，像MD5和SHA-1这样的流行哈希函数如今被认为是不安全的。尽管它们曾经是20世纪90年代的标准和广泛接受的哈希函数，但MD5和SHA-1在2004年和2016年被不同研究团队发布的碰撞攻击显示出是不安全的。这些攻击部分成功是因为计算机技术的进步，但主要是因为在哈希函数设计中发现了缺陷。
 - en: Deprecation is hard
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 废弃是困难的
 - en: Both MD5 and SHA-1 were considered good hash functions until researchers demonstrated
     their lack of resistance from collisions. It remains that today, their pre-image
     and second pre-image resistance have not been affected by any attack. This does
@@ -543,24 +749,34 @@
     to more secure ones because of legacy and backward compatibility reasons. As the
     book is meant to last in time and be a beam of bright light for the future of
     real-world cryptography, this will be the last time I mention these hash functions.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 直到研究人员展示了它们缺乏抵抗碰撞的能力之前，MD5和SHA-1都被认为是良好的哈希函数。尽管如今它们的原像和第二原像抵抗力尚未受到任何攻击的影响，但这对我们并不重要，因为我们只想在本书中谈论安全算法。尽管如此，你仍然会看到一些人在只依赖这些算法的原像抵抗力而不依赖它们的碰撞抵抗力的系统中使用MD5和SHA-1。这些人经常争辩说，由于遗留和向后兼容性原因，他们无法将哈希函数升级为更安全的函数。由于本书意在长期存在并成为真实世界密码学未来的一束明亮光芒，这将是我最后一次提到这些哈希函数。
 - en: The next two sections introduce SHA-2 and SHA-3, which are the two most widely
     used hash functions. Figure 2.6 introduces these functions.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来的两个小节介绍了SHA-2和SHA-3，这是两个最广泛使用的哈希函数。图2.6介绍了这些函数。
 - en: '![](../Images/02_06.jpg)'
+  id: totrans-101
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_06.jpg)'
 - en: Figure 2.6 SHA-2 and SHA-3, the two most widely adopted hash functions. SHA-2
     is based on the Merkle–Damgård construction, while SHA-3 is based on the sponge
     construction.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 图2.6 SHA-2和SHA-3，两种最广泛采用的哈希函数。SHA-2基于Merkle–Damgård构造，而SHA-3基于海绵构造。
 - en: 2.5.1 The SHA-2 hash function
+  id: totrans-103
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2.5.1 SHA-2哈希函数
 - en: Now that we have seen what hash functions are and had a glimpse at their potential
     use cases, it remains to be seen which hash functions we can use in practice.
     In the next two sections, I introduce two widely accepted hash functions, and
@@ -569,8 +785,10 @@
     the black box descriptions I gave should be enough. But nevertheless, it is interesting
     to see how these cryptographic primitives were designed by cryptographers in the
     first place.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们已经了解了哈希函数是什么，也瞥见了它们的潜在用途，接下来需要看看在实践中我们可以使用哪些哈希函数。在接下来的两节中，我介绍了两种广泛接受的哈希函数，并且从内部给出了它们工作的高级解释。这些高级解释不应该提供关于如何使用哈希函数的更深入见解，因为我给出的黑盒描述应该足够了。但尽管如此，了解这些加密原语是如何由密码学家设计的还是很有趣的。
 - en: 'The most widely adopted hash function is the *Secure Hash Algorithm 2* (SHA-2).
     SHA-2 was invented by NSA and standardized by NIST in 2001\. It was meant to add
     itself to the aging Secure Hash Algorithm 1 (SHA-1) already standardized by NIST.
@@ -579,150 +797,212 @@
     SHA-384, and SHA-512\. In addition, two other versions, SHA-512/224 and SHA-512/256,
     provide 224-bit and 256-bit output, respectively, by truncating the result of
     SHA-512.'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 最广泛采用的哈希函数是 *安全哈希算法 2*（SHA-2）。SHA-2 由 NSA 发明，并于 2001 年由 NIST 标准化。它旨在添加到 NIST
+    已经标准化的老化的安全哈希算法 1（SHA-1）中。SHA-2 提供了 4 个不同的版本，分别产生输出长度为 224、256、384 或 512 位。它们各自的名称省略了算法的版本：SHA-224、SHA-256、SHA-384
+    和 SHA-512。此外，另外两个版本，SHA-512/224 和 SHA-512/256，通过截断 SHA-512 的结果分别提供了 224 位和 256
+    位的输出。
 - en: In the following terminal session, we call each variant of SHA-2 with the OpenSSL
     CLI. Observe that calling the different variants with the same input produces
     outputs of the specified lengths that are completely different.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 在以下的终端会话中，我们使用 OpenSSL CLI 调用了 SHA-2 的各个变种。请注意，使用相同的输入调用不同的变种会产生完全不同长度的输出。
 - en: '[PRE5]'
+  id: totrans-107
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: Nowadays, people mostly use SHA-256, which provides the minimum 128 bits of
     security needed for our three security properties, while more paranoid applications
     make use of SHA-512\. Now, let’s look at a simplified explanation of how SHA-2
     works.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，人们主要使用 SHA-256，它提供了我们三个安全性属性所需的最低 128 位安全性，而更多防范性的应用则使用 SHA-512。现在，让我们看一下
+    SHA-2 如何工作的简化解释。
 - en: The Exclusive OR operation
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 异或运算
 - en: To understand what follows, you need to understand the *XOR* (exclusive OR)
     operation. XOR is a bitwise operation, meaning that it operates on bits. The following
     figure shows how this works. XOR is ubiquitous in cryptography, so make you sure
     you remember it.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 要理解接下来的内容，你需要理解 *XOR*（异或）操作。XOR 是位操作，意味着它在位上操作。下图显示了它的工作原理。XOR 在密码学中无处不在，所以确保你记住它。
 - en: '![](../Images/02_06_UN01.jpg)'
+  id: totrans-111
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_06_UN01.jpg)'
 - en: Exclusive OR or XOR (often denoted as ⊕) operates on 2 bits. It is similar to
     the OR operation except for the case where both operands are 1s.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 异或（Exclusive OR 或 XOR，通常表示为 ⊕）操作作用于 2 位。它类似于 OR 操作，但当两个操作数都是 1 时不同。
 - en: It all starts with a special function called a *compression function*. A compression
     function takes two inputs of some size and produces one output of the size of
     one of the inputs. Put simply, it takes some data and returns less data. Figure
     2.7 illustrates this.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 一切都始于一个称为 *压缩函数* 的特殊函数。压缩函数接受某些大小的两个输入，并产生一个输入大小的输出。简而言之，它接受一些数据并返回较少的数据。图 2.7
+    说明了这一点。
 - en: '![](../Images/02_07.jpg)'
+  id: totrans-114
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_07.jpg)'
 - en: Figure 2.7 A compression function takes two different inputs of size *X* and
     *Y* (here both 16 bytes) and returns an output of size either *X* or *Y*.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 2.7 压缩函数接受两个不同大小的输入 *X* 和 *Y*（这里都是 16 字节），并返回一个大小为 *X* 或 *Y* 的输出。
 - en: While there are different ways of building a compression function, SHA-2 uses
     the *Davies–Meyer* method (see figure 2.8), which relies on a *block cipher* (a
     cipher that can encrypt a fixed-size block of data). I mentioned the AES block
     cipher in chapter 1, but you haven’t yet learned about it. For now, accept the
     compression function as a black box until you read chapter 4 on authenticated
     encryption.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然构建压缩函数有不同的方法，但 SHA-2 使用了 *Davies–Meyer* 方法（见图 2.8），它依赖于一个 *分组密码*（可以加密固定大小的数据块的密码）。我在第一章中提到了
+    AES 分组密码，但你还没有学习过它。目前，接受压缩函数是一个黑盒，直到你在第四章中学习了认证加密。
 - en: '![](../Images/02_08.jpg)'
+  id: totrans-117
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_08.jpg)'
 - en: Figure 2.8 An illustration of a compression function built via the Davies–Meyer
     construction. The compression function’s first input (the *input block*) is used
     as the key to a block cipher. The second input (the *intermediate value*) is used
     as input to be encrypted by the block cipher. It is then used again by XORing
     itself with the output of the block cipher.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 图2.8 展示了通过戴维斯-迈耶构造构建的压缩函数的示意图。压缩函数的第一个输入（输入块）用作块密码的密钥。第二个输入（中间值）用作要由块密码加密的输入。然后，它再次通过与块密码的输出进行异或来使用自身。
 - en: SHA-2 is a *Merkle–Damgård* construction, which is an algorithm (invented by
     Ralph Merkle and Ivan Damgård independently) that hashes a message by iteratively
     calling such a compression function. Specifically, it works by going through the
     following two steps.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: SHA-2是一种默克尔-达姆高构造，这是一种通过迭代调用这样的压缩函数对消息进行哈希的算法（由拉尔夫·默克尔和伊万·达姆高独立发明）。具体而言，它通过以下两个步骤进行。
 - en: First, it applies a *padding* to the input we want to hash, then cuts the input
     into blocks that can fit into the compression function. Padding means to append
     specific bytes to the input in order to make its length a multiple of some block
     size. Cutting the padded input into chunks of the same block size allows us to
     fit these in the first argument of the compression function. For example, SHA-256
     has a block size of 512 bit. Figure 2.9 illustrates this step.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，它对我们要哈希的输入应用填充，然后将输入切成可以适应压缩函数的块。填充意味着向输入附加特定字节，以使其长度成为某个块大小的倍数。将填充后的输入切成相同块大小的块使我们能够将这些块放入压缩函数的第一个参数中。例如，SHA-256的块大小为512位。图2.9说明了这一步骤。
 - en: '![](../Images/02_09.jpg)'
+  id: totrans-121
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_09.jpg)'
 - en: Figure 2.9 The first step of the Merkle–Damgård construction is to add some
     padding to the input message. After this step, the input length should be a multiple
     of the input size of the compression function in use (for example, 8 bytes). To
     do this, we add 5 bytes of padding at the end to make it 32 bytes. We then cut
     the messages into 4 blocks of 8 bytes.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 图2.9 默克尔-达姆高构造的第一步是向输入消息添加一些填充。此步骤完成后，输入长度应为所使用压缩函数的输入大小的倍数（例如，8字节）。为此，我们在末尾添加5字节填充使其为32字节。然后，我们将消息分割成4个8字节的块。
 - en: Second, it iteratively applies the compression function to the message blocks,
     using the previous output of the compression function as second argument to the
     compression function. The final output is the *digest*. Figure 2.10 illustrates
     this step.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次，它迭代地将压缩函数应用于消息块，使用前一个压缩函数的输出作为压缩函数的第二个参数。最终输出是摘要。图2.10说明了这一步骤。
 - en: '![](../Images/02_10.jpg)'
+  id: totrans-124
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_10.jpg)'
 - en: Figure 2.10 The Merkle–Damgård construction iteratively applies a compression
     function to each block of the input to be hashed and the output of the previous
     compression function. The final call to the compression function directly returns
     the digest.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 图2.10 默克尔-达姆高构造迭代地对要散列的每个输入块和上一个压缩函数的输出应用压缩函数。对压缩函数的最终调用直接返回摘要。
 - en: And this is how SHA-2 works, by iteratively calling its compression function
     on fragments of the input until everything is processed into a final digest.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是SHA-2的工作原理，通过迭代调用其压缩函数对输入的片段进行处理，直到全部处理为最终摘要。
 - en: Note The Merkle–Damgård construction is proven collision resistant if the compression
     function itself is. Thus, the security of the *arbitrary-length input* hash function
     is reduced to the security of a *fixed-sized* compression function, which is easier
     to design and analyze. Therein lies the ingenuity of the Merkle–Damgård construction.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，如果压缩函数本身是证明碰撞抵抗的，那么默克尔-达姆高构造就被证明是抗碰撞的。因此，任意长度输入的哈希函数的安全性降低到一个固定大小的压缩函数的安全性，这更容易设计和分析。这就是默克尔-达姆高构造的巧妙之处。
 - en: In the beginning, the second argument to the compression function is usually
     fixed and standardized to be a “nothing-up-my-sleeve” value. Specifically, SHA-256
     uses the square roots of the first prime numbers to derive this value. A nothing-up-my-sleeve
     value is meant to convince the cryptographic community that it was not chosen
     to make the hash function weaker (for example, in order to create a backdoor).
     This is a popular concept in cryptography.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 起初，压缩函数的第二个参数通常被固定和标准化为“无暗藏的”值。具体来说，SHA-256使用第一个质数的平方根来导出这个值。无暗藏值的目的是让密码学界相信它不是为了使哈希函数更弱（例如，为了创建后门）而选择的。这是密码学中的一个流行概念。
 - en: Warning While SHA-2 is a perfectly fine hash function to use, it is not suitable
     for hashing secrets. This is because of a downside of the Merkle–Damgård construction,
     which makes SHA-2 vulnerable to an attack (called a *length-extension attack*)
     if used to hash secrets. We will talk about this in more detail in the next chapter.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：虽然SHA-2是一个完全可以使用的哈希函数，但不适合用于哈希秘密信息。这是因为Merkle–Damgård结构的一个缺点，使得SHA-2在处理秘密信息时容易受到攻击（称为*长度扩展攻击*）。我们将在下一章节中更详细地讨论这个问题。
 - en: 2.5.2 The SHA-3 hash function
+  id: totrans-130
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2.5.2 SHA-3哈希函数
 - en: 'As I mentioned earlier, both the MD5 and SHA-1 hash functions were broken somewhat
     recently. These two functions made use of the same Merkle–Damgård construction
     I described in the previous section. Because of this, and the fact that SHA-2
     is vulnerable to length-extension attacks, NIST decided in 2007 to organize an
     open competition for a new standard: *SHA-3*. This section introduces the newer
     standard and attempts to give a high-level explanation of its inner workings.'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我之前提到的，最近一段时间，MD5和SHA-1哈希函数都被破解了。这两个函数都使用了我在前一节中描述的相同的Merkle–Damgård结构。因此，由于SHA-2容易受到长度扩展攻击的影响，NIST于2007年决定组织一个新标准的公开竞赛：*SHA-3*。本节介绍了这个更新的标准，并试图对其内部工作原理进行高层次的解释。
 - en: In 2007, 64 different candidates from different international research teams
     entered the SHA-3 contest. Five years later, Keccak, one of the submissions, was
     nominated as the winner and took the name SHA-3\. In 2015, SHA-3 was standardized
     in the FIPS Publication 202 ([https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf)).
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 2007年，来自不同国际研究团队的64个不同候选者参加了SHA-3竞赛。五年后，其中一个提交的算法Keccak被提名为获胜者，并取名为SHA-3。2015年，SHA-3被标准化为FIPS出版物202（[https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf)）。
 - en: 'SHA-3 observes the three previous security properties we talked about and provides
     as much security as the SHA-2 variants. In addition, it is not vulnerable to length-extension
     attacks and can be used to hash secrets. For this reason, it is now the recommended
@@ -730,8 +1010,10 @@
     the full name SHA-3 in their named variants: SHA-3-224, SHA-3-256, SHA-3-384,
     and SHA-3-512\. Thus, similarly to SHA-2, SHA-3-256 provides 256 bits of output,
     for example. Let me now take a few pages to explain how SHA-3 works.'
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: SHA-3遵循我们之前讨论的三个安全属性，并提供与SHA-2变种一样多的安全性。此外，它不容易受到长度扩展攻击，并且可以用于哈希秘密信息。因此，现在推荐使用它作为哈希函数。它提供与SHA-2相同的变种，这次在它们的命名变种中标明了全名SHA-3：SHA-3-224、SHA-3-256、SHA-3-384和SHA-3-512。因此，类似于SHA-2，例如，SHA-3-256提供256位的输出。现在让我花几页的篇幅来解释SHA-3的工作原理。
 - en: 'SHA-3 is a cryptographic algorithm built on top of a *permutation*. The easiest
     way to understand a permutation is to imagine the following: you have a set of
     elements on the left and the same set of elements on the right. Now trace arrows
@@ -739,130 +1021,184 @@
     arrow starting from and terminating to it. You now have one permutation. Figure
     2.11 illustrates this principle. By definition, any permutation is also *reversible*,
     meaning that from the output we can find the input.'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: SHA-3是建立在*置换*之上的密码算法。理解置换的最简单方法是想象以下：你在左边有一组元素，在右边也有同样的一组元素。现在画箭头从左边的每个元素指向右边。每个元素只能有一个从它开始并结束的箭头。现在你有了一个置换。图2.11说明了这个原理。根据定义，任何置换也是*可逆*的，这意味着从输出我们可以找到输入。
 - en: '![](../Images/02_11.jpg)'
+  id: totrans-135
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_11.jpg)'
 - en: Figure 2.11 An example permutation acting on four different shapes. You can
     use the permutation described by the arrows in the middle picture to transform
     a given shape.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 图2.11 一个作用在四种不同形状上的示例置换。您可以使用中间图片中描述的置换来转换给定的形状。
 - en: SHA-3 is built with a *sponge construction*, a different construction from Merkle–Damgård
     that was invented as part of the SHA-3 competition. It is based on a particular
     permutation called *keccak-f* that takes an input and returns an output of the
     same size.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: SHA-3是建立在*海绵构造*上的，这是SHA-3竞赛中发明的一种不同于Merkle–Damgård的构造。它基于一个特定的置换称为*keccak-f*，它接受一个输入并返回相同大小的输出。
 - en: Note We won’t explain how keccak-f was designed, but you will get an idea in
     chapter 4 about this because it substantially resembles the AES algorithm (with
     the exception that it doesn’t have a key). This is no accident, as one of the
     inventors of AES was also one of the inventors of SHA-3.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 我们不会解释keccak-f是如何设计的，但是你将在第4章中对此有一个概念，因为它与AES算法实质上是相似的（除了它没有密钥）。这不是偶然的，因为AES的发明者之一也是SHA-3的发明者之一。
 - en: In the next few pages, I use an 8-bit permutation to illustrate how the sponge
     construction works. Because the permutation is set in stone, you can imagine that
     figure 2.12 is a good illustration of the mapping created by this permutation
     on all possible 8-bit inputs. Compared to our previous explanation of a permutation,
     you can also imagine that each possible 8-bit string is what we represented as
     different shapes (`000...` is a triangle, `100...` is a square, and so on).
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 在接下来的几页中，我将使用一个8位排列来说明海绵结构的工作原理。因为排列已经固定，你可以想象图 2.12 很好地说明了这个排列在所有可能的8位输入上创建的映射。与我们之前对排列的解释相比，你也可以想象每个可能的8位字符串是我们所代表的不同形状（`000...`是一个三角形，`100...`是一个正方形，等等）。
 - en: '![](../Images/02_12.jpg)'
+  id: totrans-140
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_12.jpg)'
 - en: Figure 2.12 A sponge construction makes use of a specified permutation *f*.
     By operating on an input, our example permutation creates a mapping between all
     possible input of 8 bits and all possible output of 8 bits.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 2.12 一个海绵结构利用了一个指定的排列 *f*。通过作用于输入，我们的示例排列创建了一个映射，将所有可能的8位输入和所有可能的8位输出联系起来。
 - en: To use a permutation in our sponge construction, we also need to define an arbitrary
     division of the input and the output into a *rate* and a *capacity*. It’s a bit
     weird but stick with it. Figure 2.13 illustrates this process.
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 要在我们的海绵结构中使用一个排列，我们还需要定义一个将输入和输出分成 *速率* 和 *容量* 的任意划分。这有点奇怪，但请坚持。图 2.13 说明了这个过程。
 - en: '![](../Images/02_13.jpg)'
+  id: totrans-143
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_13.jpg)'
 - en: 'Figure 2.13 The permutation *f* randomizes an input of size 8 bits into an
     output of the same size. In a sponge construction, this permutation’s input and
     output are divided into two parts: the rate (of size *r* and the capacity (of
     size *c*).'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 2.13 排列 *f* 将一个大小为8位的输入随机化为一个相同大小的输出。在海绵结构中，这个排列的输入和输出被分成两部分：速率（大小为 *r*）和容量（大小为
+    *c*）。
 - en: Where we set the limit between the rate and the capacity is arbitrary. Different
     versions of SHA-3 use different parameters. We informally point out that the capacity
     is to be treated like a secret, and the larger it is, the more secure the sponge
     construction.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们设置速率和容量之间的限制是任意的。不同版本的SHA-3使用不同的参数。我们非正式地指出容量应该像一个秘密一样对待，而且容量越大，海绵结构就越安全。
 - en: Now, like all good hash functions, we need to be able to hash something, right?
     Otherwise, it’s a bit useless. To do that, we simply XOR (⊕) the input with the
     rate of the permutation’s input. In the beginning, this is just a bunch of 0s.
     As we pointed out earlier, the capacity is treated like a secret, so we won’t
     XOR anything with it. Figure 2.14 illustrates this.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，像所有良好的哈希函数一样，我们需要能够哈希一些东西，对吧？否则，它有点没用。为了做到这一点，我们简单地将输入与排列的输入速率进行异或（⊕）。起初，这只是一堆0。正如我们之前指出的，容量被视为一个秘密，所以我们不会与之进行任何异或运算。图
+    2.14 说明了这一点。
 - en: '![](../Images/02_14.jpg)'
+  id: totrans-147
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_14.jpg)'
 - en: Figure 2.14 To absorb the 5 bits of input `00101`, a sponge construction with
     a rate of 5 bits can simply XOR the 5 bits with the rate (which is initialized
     to 0s). The permutation then randomizes the state.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 2.14 要吸收输入的5位 `00101`，一个速率为5位的海绵结构可以简单地将这5位与速率进行异或（其初始化为0）。然后置换混淆状态。
 - en: The output obtained should now look random (although we can trivially find what
     the input is as a permutation is reversible by definition). What if we want to
     ingest a larger input? Well, similarly to what we did with SHA-2, we would
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在获得的输出看起来应该是随机的（尽管我们可以轻松地找到输入，因为按照定义排列是可逆的）。如果我们想要输入更大的输入呢？嗯，类似于我们对SHA-2所做的，我们会
 - en: Pad the input if necessary, then divide the input into blocks of the rate size.
+  id: totrans-150
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 如果需要，填充输入，然后将输入分成速率大小的块。
 - en: Iteratively call the permutation while XORing each block with the input of a
     permutation and permuting the *state* (the intermediate value output by the last
     operation) after each block has been XORed.
+  id: totrans-151
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 迭代地调用排列，同时对每个块与排列的输入进行异或，并在每个块与排列的输入进行异或后对 *状态*（上次操作输出的中间值）进行排列。
 - en: I ignore the padding in the rest of these explanations for the sake of simplification,
     but padding is an important step of the process to distinguish between inputs
     like `0` and `00`, for example. Figure 2.15 pictures these two steps.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了简化起见，我在其余的解释中忽略了填充，但填充是区分诸如`0`和`00`之类的输入的重要步骤。图2.15展示了这两个步骤。
 - en: '![](../Images/02_15.jpg)'
+  id: totrans-153
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_15.jpg)'
 - en: Figure 2.15 In order to absorb inputs larger than the rate size, a sponge construction
     iteratively XORs input blocks with the rate and permutates the result.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 图2.15 为了吸收比速率大小更大的输入，海绵构造会迭代地对输入块与速率进行异或运算，并对结果进行排列。
 - en: So far so good, but we still haven’t produced a digest. To do this, we can simply
     use the rate of the last state of the sponge (again, we are not touching the capacity).
     To obtain a longer digest, we can continue to permute and read from the rate part
     of the state as figure 2.16 shows.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止一切顺利，但我们还没有生成摘要。为了做到这一点，我们可以简单地使用海绵的最后状态的速率（再次强调，我们不会触及容量）。要获得更长的摘要，我们可以继续对状态的速率部分进行排列和读取，正如图2.16所示。
 - en: '![](../Images/02_16.jpg)'
+  id: totrans-156
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_16.jpg)'
 - en: Figure 2.16 To obtain a digest with the sponge construction, one iteratively
     permutes the state and retrieves as much rate (the upper part of the state) as
     needed.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 图2.16 为了使用海绵构造获取摘要，需要迭代地排列状态并检索尽可能多的速率（状态的上部）。
 - en: And this is how SHA-3 works. Because it is a *sponge construction*, ingesting
     the input is naturally called *absorbing* and creating the digest is called *squeezing*.
     The sponge is specified with a 1,600-bit permutation using different values for
     *r* and *c*, depending on the security advertised by the different versions of
     SHA-3.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是SHA-3的工作原理。因为它是一个*海绵构造*，所以摄取输入自然被称为*吸收*，创建摘要被称为*挤压*。海绵采用一个1,600比特的置换，根据SHA-3不同版本广告的安全性，使用不同的*r*和*c*值进行规定。
 - en: SHA-3 is a random oracle
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: SHA-3 是一个随机神谕
 - en: 'I talked about random oracles earlier: an ideal and fictional construction
     that returns perfectly random responses to queries and repeats itself if we query
     it with the same input twice. It turns out that the sponge construction behaves
@@ -872,12 +1208,16 @@
     in its design (which is what happened during the SHA-3 competition). The fact
     that SHA-3 can be modeled as a random oracle instantly gives it the security properties
     we would expect from a hash function.'
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 我之前提到过随机神谕：这是一个理想的虚构构造，对查询返回完全随机的响应，并且如果我们用相同的输入两次查询它，它会重复自己。事实证明，只要构造所使用的置换看起来足够随机，海绵构造的行为就会接近随机神谕。我们如何证明这种置换的安全性质？我们最好的方法是尝试多次破解它，直到我们对其设计有了强烈的信心（这就是SHA-3竞赛期间发生的情况）。SHA-3可以被建模为随机神谕的事实立即赋予了它我们期望从哈希函数得到的安全属性。
 - en: '2.5.3 SHAKE and cSHAKE: Two extendable output functions (XOF)'
+  id: totrans-161
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2.5.3 SHAKE 和 cSHAKE：两个可扩展输出函数（XOF）
 - en: 'I introduced the two major hash function standards: SHA-2 and SHA-3\. These
     are well-defined hash functions that take arbitrary-length inputs and produce
     random-looking and fixed-length outputs. As you will see in later chapters, cryptographic
@@ -886,8 +1226,10 @@
     introduced a more versatile primitive called an *extendable output function* or
     *XOF* (pronounced “zoff ”). This section introduces the two standardized XOFs:
     SHAKE and cSHAKE.'
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 我介绍了两个主要的哈希函数标准：SHA-2和SHA-3。这些都是明确定义的哈希函数，可以接受任意长度的输入，并产生看起来随机而固定长度的输出。正如您将在后面的章节中看到的，加密协议经常需要这种类型的原语，但不希望受到哈希函数摘要的固定大小的限制。因此，SHA-3标准引入了一个更具多功能性的原语，称为*可扩展输出函数*或*XOF*（发音为“zoff”）。本节介绍了两个标准化的XOF：SHAKE和cSHAKE。
 - en: '*SHAKE*, specified in FIPS 202 along with SHA-3, can be seen as a hash function
     that returns an output of an arbitrary length. SHAKE is fundamentally the same
     construction as SHA-3, except that it is faster and permutes as much as you want
@@ -896,38 +1238,50 @@
     to derive keys, and so on. I will talk about the different applications of SHAKE
     again in this book; for now, imagine that SHAKE is like SHA-3 except that it provides
     an output of any length you might want.'
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: '*SHAKE*，在FIPS 202中规定，可以看作是返回任意长度输出的哈希函数。SHAKE基本上与SHA-3相同的构造，只是它更快，并在挤压阶段中可以排列任意数量的排列。生成不同大小的输出非常有用，不仅用于创建摘要，还用于创建随机数，派生密钥等。我将在本书中再次讨论SHAKE的不同应用；现在，想象一下SHAKE就像SHA-3，只是它提供任何你想要的长度的输出。'
 - en: 'This construction is so useful in cryptography that one year after SHA-3 was
     standardized, NIST published its Special Publication 800-185 containing a *customizable
     SHAKE* called *cSHAKE*. cSHAKE is pretty much exactly like SHAKE, except that
     it also takes a customization string. This customization string can be empty,
     or it can be any string you want. Let’s first see an example of using cSHAKE in
     pseudocode:'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种构造在密码学中非常有用，以至于在SHA-3标准化一年后，NIST发布了其特殊出版物800-185，其中包含了一个称为*cSHAKE*的*可定制SHAKE*。cSHAKE与SHAKE几乎完全相同，只是它还接受一个自定义字符串。这个自定义字符串可以为空，也可以是任何您想要的字符串。让我们首先看一个在伪代码中使用cSHAKE的示例：
 - en: '[PRE6]'
+  id: totrans-165
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: As you can see, the two digests differ even though cSHAKE is as deterministic
     as SHAKE and SHA-3\. This is because a different customization string was used.
     A *customization string* allows you to customize your XOF! This is useful in some
     protocols where, for example, different hash functions must be used in order to
     make a proof work. We call this *domain separation*.
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如您所看到的，尽管cSHAKE与SHAKE和SHA-3一样确定性，但两个摘要不同。这是因为使用了不同的自定义字符串。*自定义字符串*允许您自定义您的XOF！这在一些协议中非常有用，例如，必须使用不同的哈希函数才能使证明有效。我们称之为*领域分离*。
 - en: 'As a golden rule in cryptography: if the same cryptographic primitive is used
     in different use cases, do not use it with the same key (if it takes a key) or/and
     apply domain separation. You will see more examples of domain separation as we
     survey cryptographic protocols in later chapters.'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为密码学中的黄金法则：如果相同的密码原语用于不同的用例，不要使用相同的密钥（如果需要密钥）和/或应用领域分离。在后续章节中，我们将在调查密码协议时看到更多领域分离的示例。
 - en: Warning NIST tends to specify algorithms that take parameters in bits instead
     of bytes. In the example, a length of 256 bits was requested. Imagine if you had
     requested a length of 16 bytes and got 2 bytes instead, due to the program thinking
     you had requested 16 bits of output. This issue is sometimes called a *bit attack*.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告NIST倾向于指定以比特为单位而不是字节的参数算法。在示例中，请求了256比特的长度。想象一下，如果您请求了16字节的长度，却得到了2字节，因为程序认为您请求了16比特的输出。这个问题有时被称为*比特攻击*。
 - en: As with everything in cryptography, the length of cryptographic strings like
     keys, parameters, and outputs is strongly tied to the security of the system.
     It is important that one does not request too short outputs from SHAKE or cSHAKE.
@@ -937,43 +1291,60 @@
     can be done if the security of the system is carefully analyzed. For example,
     if collision resistance does not matter in the protocol making use of the value,
     pre-image resistance only needs 128-bit long outputs from SHAKE or cSHAKE.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 与密码学中的一切一样，像密钥、参数和输出这样的密码字符串的长度与系统的安全性密切相关。重要的是不要从SHAKE或cSHAKE请求太短的输出。*使用256比特的输出永远不会错*，因为它提供了128比特的安全性，可以抵御碰撞攻击。但是，现实世界的密码学有时在可能使用较短的密码值的受限环境中运行。如果系统的安全性经过仔细分析，可以这样做。例如，如果协议中不需要碰撞抵抗，只需要从SHAKE或cSHAKE获得128比特长的输出。
 - en: 2.5.4 Avoid ambiguous hashing with TupleHash
+  id: totrans-170
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2.5.4 避免使用TupleHash进行模糊哈希
 - en: In this chapter, I have talked about different types of cryptographic primitives
     and cryptographic algorithms. This included
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我已经讨论了不同类型的密码原语和密码算法。这包括
 - en: The SHA-2 hash function, which is vulnerable to length-extension attacks but
     still widely used when no secrets are hashed
+  id: totrans-172
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: SHA-2 哈希函数，容易受到长度扩展攻击的攻击，但在没有秘密被哈希时仍然广泛使用
 - en: The SHA-3 hash function, which is the recommended hash function nowadays
+  id: totrans-173
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: SHA-3 哈希函数，现在是推荐使用的哈希函数
 - en: The SHAKE and cSHAKE XOFs, which are more versatile tools than hash functions
     because they offer a variable output length
+  id: totrans-174
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: SHAKE 和 cSHAKE XOFs，比哈希函数更多变的工具，因为它们提供可变的输出长度
 - en: I will talk about one more handy function, *TupleHash*, which is based on cSHAKE
     and specified in the same standard as cSHAKE. TupleHash is an interesting function
     that allows one to hash a *tuple* (a list of something). To explain what TupleHash
     is and why it is useful, let me tell you a story.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 我将讨论另一个方便的函数，*TupleHash*，它基于 cSHAKE 并在与 cSHAKE 相同的标准中指定。TupleHash 是一个有趣的函数，它允许对*元组*（一些东西的列表）进行哈希。为了解释
+    TupleHash 是什么以及它为什么有用，让我给你讲个故事。
 - en: 'A few years ago I was tasked to review a cryptocurrency as part of my work.
     It included basic features one would expect from a cryptocurrency: accounts, payments,
     and so on. Transactions between users would contain metadata about who is sending
     how much to whom. It would also include a small fee to compensate the network
     for processing the transaction.'
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 几年前，作为工作的一部分，我被委派审查一个加密货币。它包括一个加密货币应有的基本功能：账户、支付等。用户之间的交易将包含有关谁向谁发送多少的元数据。它还包括一笔小费用以补偿网络处理交易所需的成本。
 - en: Alice, for example, can send transactions to the network, but to have them accepted,
     she needs to include proof that the transaction came from her. For this, she can
     hash the transaction and sign it (I gave a similar example in chapter 1). Anyone
@@ -982,70 +1353,99 @@
     (MITM) attacker who intercepts the transaction before it reaches the network would
     not be able to tamper with the transaction. This is because the hash would change,
     and the signature would then not verify the new transaction digest.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，艾丽斯可以向网络发送交易，但要让它们被接受，她需要包含证明该交易来自她的证据。为此，她可以对交易进行哈希并签名（我在第 1 章中给出了一个类似的例子）。任何人都可以对交易进行哈希并验证哈希上的签名，以查看这是否是艾丽斯打算发送的交易。图
+    2.17 说明了一个中间人（MITM）攻击者在交易到达网络之前截取交易后，将无法篡改交易。这是因为哈希将会改变，然后签名将不会验证新的交易摘要。
 - en: '![](../Images/02_17.jpg)'
+  id: totrans-178
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_17.jpg)'
 - en: Figure 2.17 Alice sends a transaction as well as a signature over the hash of
     the transaction. If a MITM attacker attempts to tamper with the transaction, the
     hash will be different and, thus, the attached signature will be incorrect.
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 2.17 艾丽斯发送一个交易以及对交易哈希的签名。如果中间人攻击者试图篡改交易，哈希将会不同，因此附加的签名也将不正确。
 - en: You will see in chapter 7 that such an attacker is, of course, unable to forge
     Alice’s signature on a new digest. And thanks to the second pre-image resistance
     of the hash function used, the attacker cannot find a totally different transaction
     that would hash to the same digest either.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 你将在第 7 章看到，这样的攻击者当然无法伪造艾丽斯在新摘要上的签名。并且由于所使用的哈希函数的第二预像抗性，攻击者也无法找到一个完全不同的交易，其哈希为相同的摘要。
 - en: 'Is our MITM attacker harmless? We’re not out of the woods yet. Unfortunately,
     for the cryptocurrency I was auditing, the transaction was hashed by simply concatenating
     each field:'
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的中间人攻击者无害吗？我们还没有脱离危险。不幸的是，对于我审计的加密货币，交易是通过简单地串联每个字段进行哈希的：
 - en: '[PRE7]'
+  id: totrans-182
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: What appeared as totally fine, actually completely broke the cryptocurrency’s
     payment system. Doing this trivially allows an attacker to break the second pre-image
     resistance of the hash function. Take a few moments to think about how you could
     find a different transaction that hashes to the same digest, `34d6...`.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 表面上看似乎一切正常，实际上完全破坏了加密货币的支付系统。这样做很容易使攻击者打破哈希函数的第二预像抗性。花点时间思考一下你如何找到一个不同的交易，其哈希为`34d6...`。
 - en: 'What happens if we move one digit from the *fee* field to the *amount* field?
     One can see that the following transaction hashes to the same digest Alice signed:'
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果我们将一个数字从*fee*字段移到*amount*字段会发生什么？人们可以看到以下交易哈希到了同样的摘要，艾丽斯签署了：
 - en: '[PRE8]'
+  id: totrans-185
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 'And thus, a MITM attacker who would want Bob to receive a bit more money would
     be able to modify the transaction without invalidating the signature. As you’ve
     probably guessed, this is what TupleHash solves. It allows you to unambiguously
     hash a list of fields by using non-ambiguous encoding. What happens in reality
     is something close to the following (with the `||` string concatenation operation):'
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，一个想让鲍勃获得更多钱的中间人攻击者可以修改交易而不使签名无效。正如您可能已经猜到的那样，这就是TupleHash解决的问题。它允许您通过使用非模糊编码来明确地对字段列表进行哈希处理。实际上发生的情况与以下内容类似（使用`||`字符串连接操作）：
 - en: '[PRE9]'
+  id: totrans-187
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: The input is this time constructed by prefixing each field of the transaction
     with its length. Take a minute to understand why this solves our issue. In general,
     one can use any hash function safely by always making sure to *serialize* the
     input before hashing it. Serializing the input means that there always exists
     a way to *deserialize* it (meaning to recover the original input). If one can
     deserialize the data, then there isn’t any ambiguity on field delimitation.
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 这次输入是通过在交易的每个字段前加上其长度来构造的。花点时间理解为什么这样解决了我们的问题。一般来说，通过在对其进行哈希处理之前始终确保*序列化*输入，可以安全地使用任何哈希函数。序列化输入意味着始终存在一种方法来*反序列化*它（即恢复原始输入）。如果可以反序列化数据，则字段分隔就不会存在任何歧义。
 - en: 2.6 Hashing passwords
+  id: totrans-189
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 2.6 密码哈希
 - en: You have seen several useful functions in this chapter that either are hash
     functions or extend hash functions. But before you can jump to the next chapter,
     I need to mention *password hashing*.
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，您已经看到了几个有用的函数，这些函数要么是哈希函数，要么是扩展哈希函数。但在您跳转到下一章之前，我需要提到*密码哈希*。
 - en: 'Imagine the following scenario: you have a website (which would make you a
     webmaster) and you want to have your users register and log in to the site, so
     you create two web pages for these two respective features. Suddenly, you wonder,
@@ -1058,25 +1458,35 @@
     to steal this database would then be able to log in as any user. Storing the passwords
     in cleartext is now less than ideal and you would like to have a better way to
     deal with this.'
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象一下以下情景：您有一个网站（这将使您成为网站管理员），您希望用户注册并登录到该网站，因此您为这两个功能分别创建了两个网页。突然间，您想知道，您将如何存储他们的密码？您在数据库中以明文存储这些密码吗？起初似乎没有什么问题，您认为。但这并不完美。人们倾向于在各处重复使用相同的密码，如果（或者当）您遭受攻击并且攻击者设法倾倒所有用户的密码，这对您的用户来说将是不好的，对您的平台声誉也将是不好的。您再仔细考虑一下，您意识到一个攻击者如果能够窃取这个数据库，那么他将能够以任何用户的身份登录。以明文存储密码现在不再理想，您希望有更好的处理方式。
 - en: 'One solution could be to hash your passwords and only store the digests. When
     someone logs in to your website, the flow would be similar to the following:'
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 一种解决方案可能是对密码进行哈希处理，然后仅存储摘要。当有人登录到您的网站时，流程将类似于以下内容：
 - en: You receive the user’s password.
+  id: totrans-193
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 您收到用户的密码。
 - en: You hash the password they give you and get rid of the password.
+  id: totrans-194
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 您对用户提供的密码进行哈希处理并丢弃密码。
 - en: You compare the digest with what you had stored previously; if it matches, the
     user is logged in.
+  id: totrans-195
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 您将摘要与先前存储的内容进行比较；如果匹配，则用户已登录。
 - en: 'The flow allows you to handle users’ passwords for a limited time. Still, an
     attacker that gets into your servers can stealthily remain to log passwords from
     this flow until you detect its presence. We acknowledge that this is still not
@@ -1084,21 +1494,27 @@
     also call this *defense in depth*, which is the act of layering imperfect defenses
     in hope that an attacker will not defeat all of those layers. This is what real-world
     cryptography is also about. But other problems exist with this solution:'
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 该流程允许您在有限时间内处理用户的密码。但是，一旦攻击者进入您的服务器，就可以悄悄地保留从该流程中记录密码，直到您察觉到其存在。我们承认这仍然不是一个完美的情况，但我们仍然改进了网站的安全性。在安全领域，我们也称之为*深度防御*，即通过分层不完美的防御措施，希望攻击者无法击败所有这些层次。这也是现实世界的加密学所涉及的内容。但是，这种解决方案还存在其他问题：
 - en: '*If an attacker retrieves hashed passwords, a brute force attack or an exhaustive
     search (trying all possible passwords) can be undertaken.* This would test each
     attempt against the whole database. Ideally, we would want an attacker to only
     be able to attack one hashed password at a time.'
+  id: totrans-197
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*如果攻击者获取了哈希密码，可以进行暴力破解攻击或穷举搜索（尝试所有可能的密码）。* 这将针对整个数据库测试每个尝试。理想情况下，我们希望攻击者只能一次攻击一个哈希密码。'
 - en: '*Hash functions are supposed to be as fast.* Attackers can leverage this to
     brute force (many, many passwords per second). Ideally, we would have a mechanism
     to slow down such attacks.'
+  id: totrans-198
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*哈希函数应该尽可能快。* 攻击者可以利用这一点进行暴力破解（每秒尝试许多密码）。理想情况下，我们应该有一种机制来减慢这种攻击。'
 - en: 'The first issue has been commonly solved by using *salts*, which are random
     values that are public and different for each user. We use a salt along with the
     user’s password when hashing it, which in some sense is like using a per-user
@@ -1106,8 +1522,11 @@
     for every user. Because each user uses a different hash function, an attacker
     cannot precompute large tables of passwords (called *rainbow tables*), hoping
     to test those against the whole database of stolen password hashes.'
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一个问题通常通过使用 *盐* 解决，盐是公开的随机值，每个用户都不同。当我们对用户的密码进行哈希处理时，我们使用一个盐，这在某种程度上类似于在 cSHAKE
+    中使用每个用户的自定义字符串：它实际上为每个用户创建了一个不同的哈希函数。由于每个用户使用不同的哈希函数，攻击者无法预先计算大量密码（称为 *彩虹表*），希望将其与窃取的密码哈希数据库整个测试相匹配。
 - en: The second issue is solved with *password hashes*, which are designed to be
     slow. The current state-of-the-art choice for this is *Argon2*, the winner of
     the Password Hashing Competition ([https://password-hashing.net](https://password-hashing.net))
@@ -1116,8 +1535,13 @@
     In practice, other nonstandard algorithms like PBKDF2, bcrypt, and scrypt are
     also used. The problem is that these can be used with insecure parameters and
     are, thus, not straightforward to configure in practice.
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二个问题通过 *密码哈希* 解决，这些密码哈希设计为缓慢。目前用于此的最先进选择是 *Argon2*，它是从 2013 年到 2015 年举办的密码哈希竞赛
+    ([https://password-hashing.net](https://password-hashing.net)) 的获胜者。本文撰写时（2021
+    年），Argon2 正在按计划标准化为 RFC ([https://datatracker.ietf.org/doc/draft-irtf-cfrg-argon2/](https://datatracker.ietf.org/doc/draft-irtf-cfrg-argon2/))。在实践中，还使用其他非标准算法，如
+    PBKDF2、bcrypt 和 scrypt。问题在于这些算法可能使用不安全的参数，并且因此在实践中配置起来并不简单。
 - en: In addition, only Argon2 and scrypt defend against heavy optimizations from
     attackers as other schemes are not memory hard. The term *memory hard* means that
     the algorithm can only be optimized through the optimization of memory access.
@@ -1126,72 +1550,102 @@
     can put around a CPU), memory-hard functions are slow to run on any type of device.
     This is a desired property when you want to prevent attackers from getting a non-negligible
     speed advantage in evaluating a function.
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，只有 Argon2 和 scrypt 能够抵御来自攻击者的重度优化，因为其他方案不是内存硬化的。术语 *内存硬化* 意味着算法只能通过内存访问的优化来进行优化。换句话说，优化其余部分并不会带来太大好处。由于即使使用专用硬件（CPU
+    周围只能放置那么多缓存），内存硬化函数在任何类型的设备上运行速度都很慢。当你想要防止攻击者在评估函数时获得非可忽略的速度优势时，这是一种期望的属性。
 - en: Figure 2.18 reviews the different types of hash functions you saw in this chapter.
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 2.18 回顾了本章中你所看到的不同类型的哈希函数。
 - en: '![](../Images/02_18.jpg)'
+  id: totrans-203
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/02_18.jpg)'
 - en: 'Figure 2.18 In this chapter, you saw four types of hash functions: (1) the
     normal kind that provide a unique random-looking identifier for arbitrary-length
     inputs; (2) extendable output functions that are similar but provide an arbitrary-length
     output; (3) tuple hash functions that unambiguously list hash values; and (4)
     password-hashing functions that can’t be easily optimized in order to store passwords
     safely.'
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 2.18 在本章中，你看到了四种类型的哈希函数：(1) 普通类型的哈希函数为任意长度的输入提供了一个唯一的随机标识符；(2) 可扩展输出函数与普通类型类似，但提供了任意长度的输出；(3)
+    元组哈希函数清楚地列出了哈希值；以及 (4) 无法轻易优化以安全存储密码的密码哈希函数。
 - en: Summary
+  id: totrans-205
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 摘要
 - en: A hash function provides collision resistance, pre-image resistance, and second
     pre-image resistance.
+  id: totrans-206
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 哈希函数提供碰撞抗性、前像抗性和第二前像抗性。
 - en: Pre-image resistance means that one shouldn’t be able to find the input that
     produced a digest.
+  id: totrans-207
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 前像抗性意味着不应该能够找到产生摘要的输入。
 - en: Second pre-image resistance means that from an input and its digest, one shouldn’t
     be able to find a different input that hashes to the same digest.
+  id: totrans-208
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第二前像抗性意味着从一个输入及其摘要出发，不应该能够找到一个产生相同摘要的不同输入。
 - en: Collision resistance means that one shouldn’t be able to find two random inputs
     that hash to the same output.
+  id: totrans-209
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 碰撞抗性意味着不应该能够找到两个随机输入，它们的哈希值相同。
 - en: The most widely adopted hash function is SHA-2, while the recommended hash function
     is SHA-3 due to SHA-2’s lack of resistance to length-extension attacks.
+  id: totrans-210
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 最广泛采用的哈希函数是SHA-2，而推荐的哈希函数是SHA-3，因为SHA-2缺乏对长度扩展攻击的抵抗力。
 - en: SHAKE is an extendable output function (XOF) that acts like a hash function
     but provides an arbitrary-length digest.
+  id: totrans-211
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: SHAKE是一种可扩展输出函数（XOF），它的行为类似于哈希函数，但提供任意长度的摘要。
 - en: cSHAKE (for customizable SHAKE) allows one to easily create instances of SHAKE
     that behave like different XOFs. This is called domain separation.
+  id: totrans-212
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: cSHAKE（用于定制SHAKE）允许轻松创建行为像不同XOF的SHAKE实例。这被称为域分离。
 - en: Objects should be serialized before being hashed in order to avoid breaking
     the second pre-image resistance of the hash function. Algorithms like TupleHash
     automatically take care of this.
+  id: totrans-213
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对象在进行哈希处理之前应进行序列化，以避免破坏哈希函数的第二前像抗性。像TupleHash这样的算法会自动处理这一点。
 - en: Hashing passwords make use of slower hash functions designed specifically for
     that purpose. Argon2 is the state-of-the-art choice.
+  id: totrans-214
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对密码进行哈希处理时使用的是专门设计用于此目的的较慢的哈希函数。Argon2是最先进的选择。

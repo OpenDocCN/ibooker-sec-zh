@@ -1,12 +1,16 @@
 - en: Part 3 Attack resistance
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第三部分 攻击抵抗
 - en: Unlike parts 1 and 2, part 3 isn’t primarily concerned with fundamentals or
     development. Instead, everything revolves around Mallory as she devastates the
     other characters with attacks such as cross-site scripting, open redirect attacks,
     SQL injection, cross-site request forgery, clickjacking, and more. This is the
     most adversarial portion of the book. In each chapter, attacks don’t complement
     the main idea; attacks *are* the main idea.
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 与第1部分和第2部分不同，第3部分主要关注的不是基础知识或发展。相反，一切都围绕着Mallory展开，她用跨站脚本、开放式重定向攻击、SQL注入、跨站请求伪造、点击劫持等攻击摧毁其他角色。这是书中最具对抗性的部分。在每一章中，攻击不是为了补充主要思想；攻击*就是*主要思想。

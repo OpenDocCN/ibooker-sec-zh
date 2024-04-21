@@ -1,176 +1,257 @@
 - en: 12 Working with the operating system
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 12 使用操作系统
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章内容包括
 - en: Enforcing filesystem-level authorization with the `os` module
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用`os`模块强制执行文件系统级别的授权
 - en: Creating temp files with the `tempfile` module
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用`tempfile`模块创建临时文件
 - en: Invoking external executables with the `subprocess` module
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用`subprocess`模块调用外部可执行文件
 - en: Resisting shell injection and command injection
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 抵御 shell 注入和命令注入
 - en: The last few chapters were a lot about authorization. You learned about users,
     groups, and permissions. I start this chapter by applying these concepts to filesystem
     access. Afterward, I show you how to safely invoke external executables from within
     Python. Along the way, you’ll learn how to identify and resist two types of injection
     attacks. This sets the tone for the rest of the book, which focuses exclusively
     on attack resistance.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 最近的几章都涉及授权。你学习了用户、组和权限。我通过将这些概念应用于文件系统访问来开始本章。此后，我将向你展示如何安全地从 Python 中调用外部可执行文件。在此过程中，你将学习如何识别和抵御两种类型的注入攻击。这为本书的其余部分奠定了基调，专注于攻击抵御。
 - en: 12.1 Filesystem-level authorization
+  id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 12.1 文件系统级别的授权
 - en: 'Like most programming languages Python natively supports filesystem access;
     third-party libraries are not necessary. Filesystem-level authorization involves
     less work than application-level authorization because you don’t need to enforce
     anything; your operating system already does this. In this section, I’ll show
     you how to do the following:'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 像大多数编程语言一样，Python 本地支持文件系统访问；不需要第三方库。文件系统级别的授权比应用程序级别的授权工作量少，因为你不需要执行任何操作；你的操作系统已经做了这个。在这一部分中，我将向你展示如何执行以下操作：
 - en: Open a file securely
+  id: totrans-9
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 安全地打开文件
 - en: Safely create temporary files
+  id: totrans-10
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 安全地创建临时文件
 - en: Read and modify file permissions
+  id: totrans-11
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 读取和修改文件权限
 - en: 12.1.1 Asking for permission
+  id: totrans-12
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.1.1 请求权限
 - en: Over the past few decades, many acronyms have become popular within the Python
     community. One represents a coding style known as *easier to ask for forgiveness
     than permission* (*EAFP*). EAFP style assumes preconditions are true, then catches
     exceptions when they are false.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 在过去几十年里，Python 社区中出现了许多缩写词。其中一个代表一种编码风格，称为*宁愿请求宽恕，而不是先请求允许*（*EAFP*）。EAFP 风格假设前提条件为真，然后在它们为假时捕获异常。
 - en: 'For example, the following code opens a file with the assumption of sufficient
     access permissions. The program makes no attempt to ask the operating system if
     it has permission to read the file; instead, the program asks for forgiveness
     with an `except` statement if permission is denied:'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: '例如，以下代码假设具有足够的访问权限来打开文件。程序不尝试询问操作系统是否有权限读取文件；相反，如果权限被拒绝，程序通过`except`语句请求宽恕： '
 - en: '[PRE0]'
+  id: totrans-15
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: ❶ Assumes permission, doesn’t ask for it
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 假设权限，不要求权限
 - en: ❷ Asks for forgiveness
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 请求宽恕
 - en: EAFP contrasts with another coding style known as *look before you leap* (*LBYL*).
     This style checks for preconditions first, then acts. EAFP is characterized by
     `try` and `except` statements; LBYL is characterized by `if` and `then` statements.
     EAFP has been called *optimistic*; LBYL has been called *pessimistic*.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: EAFP 与另一种编码风格相对应，称为*先尝试，再请求允许*（*LBYL*）。这种风格首先检查前提条件，然后执行。EAFP 的特点是`try`和`except`语句；LBYL
+    的特点是`if`和`then`语句。EAFP 被称为*乐观*；LBYL 被称为*悲观*。
 - en: 'The following code is an example of LBYL; it opens a file, but first it looks
     to see if it has sufficient access permissions. Notice that this code is vulnerable
     to accidental and malicious race conditions. A bug or an attacker may take advantage
     of the time between the return of the `os.access` function and the call to the
     `open` function. This coding style also results in more trips to the filesystem:'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码是 LBYL 的一个示例；它打开一个文件，但首先查看它是否具有足够的访问权限。注意，这段代码容易受到意外和恶意竞争条件的影响。一个错误或攻击者可能利用`os.access`函数返回和调用`open`函数之间的时间间隔。这种编码风格还会导致更多的文件系统访问：
 - en: '[PRE1]'
+  id: totrans-20
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: ❶ Looks
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 看
 - en: ❷ Leaps
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 跳
 - en: Some people in the Python community have a strong preference for EAFP over LBYL;
     I’m not one of them. I have *no* preference and I use *both* styles on a case-by-case
     basis. In this particular case, I use EAFP instead of LBYL for the sake of security.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: Python 社区中有些人强烈偏爱 EAFP 而不是 LBYL；我不是其中之一。我没有偏好，我根据具体情况使用*两种*风格。在这个特定的案例中，出于安全考虑，我使用
+    EAFP 而不是 LBYL。
 - en: EAFP vs. LBYL
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: EAFP 对比 LBYL
 - en: 'Apparently, Guido van Rossum, the creator of Python, doesn’t have a strong
     preference for EAFP either. Van Rossum once wrote the following to the Python-Dev
     mailing list ([https://mail.python.org/pipermail/python-dev/2014-March/133118.html](https://mail.python.org/pipermail/python-dev/2014-March/133118.html)):'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 显然，Python 的创始人 Guido van Rossum 对 EAFP 也没有强烈偏好。Van Rossum 曾在 Python-Dev 邮件列表中写道（[https://mail.python.org/pipermail/python-dev/2014-March/133118.html](https://mail.python.org/pipermail/python-dev/2014-March/133118.html)）：
 - en: . . . I disagree with the position that EAFP is better than LBYL, or “generally
     recommended” by Python. (Where do you get that? From the same sources that are
     so obsessed with DRY they'd rather introduce a higher-order-function than repeat
     one line of code? :-)
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: . . . 我不同意 EAFP 比 LBYL 更好，或者“Python 通常推荐”的立场。（你从哪里得到的？从那些如此痴迷于 DRY，宁愿引入高阶函数而不重复一行代码的来源？
+    :-)
 - en: 12.1.2 Working with temp files
+  id: totrans-27
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.1.2 使用临时文件
 - en: Python natively supports temp file usage with a dedicated module, `tempfile`;
     there is no need to spawn a subprocess when working with temp files. The `tempfile`
     module contains a handful of high-level utilities and some low-level functions.
     These tools create temp files in the safest way possible. Files created this way
     are not executable, and only the creating user can read or write to them.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: Python 本身支持使用专用模块 `tempfile` 进行临时文件使用；在处理临时文件时无需生成子进程。`tempfile` 模块包含一些高级工具和一些低级函数。这些工具以最安全的方式创建临时文件。以这种方式创建的文件不可执行，只有创建用户可以读取或写入它们。
 - en: 'The `tempfile.TemporaryFile` function is the preferred way to create temp files.
     This high-level utility creates a temp file and returns an object representation
     of it. When you use this object in a `with` statement, as shown in bold in the
     following code, it assumes the responsibility of closing and deleting the temp
     file for you. In this example, a temporary file is created, opened, written to,
     read from, closed, and deleted:'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: '`tempfile.TemporaryFile` 函数是创建临时文件的首选方式。这个高级工具创建一个临时文件并返回其对象表示。当您在 `with` 语句中使用这个对象时，如下面代码中所示，它会为您关闭和删除临时文件。在这个例子中，创建一个临时文件，打开，写入，读取，关闭和删除：'
 - en: '[PRE2]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: ❶ Creates and opens a temp file
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 创建并打开一个临时文件
 - en: ❷ Writes to the file
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 写入文件
 - en: ❸ Reads from the file
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 从文件中读取
 - en: ❹ Exits the block, closing and deleting the file
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 退出块，关闭并删除文件
 - en: '`TemporaryFile` has a couple of alternatives to address corner cases. Replace
     it with `NamedTemporaryFile` if you require a temp file with a visible name. Replace
     it with `SpooledTemporaryFile` if you need to buffer data in memory before writing
     it to the filesystem.'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: '`TemporaryFile` 有一些替代方案来解决边缘情况。如果需要一个具有可见名称的临时文件，请将其替换为 `NamedTemporaryFile`。如果需要在将数据写入文件系统之前在内存中缓冲数据，请将其替换为
+    `SpooledTemporaryFile`。'
 - en: The `tempfile.mkstemp` and `tempfile.mkdtemp` functions are low-level alternatives
     for creating temp files and temp directories, respectively. These functions safely
     create a temp file or directory and return the path. This is just as secure as
     the aforementioned high-level utilities, but you must assume responsibility for
     closing and deleting every resource you create with them.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: '`tempfile.mkstemp` 和 `tempfile.mkdtemp` 函数是创建临时文件和临时目录的低级替代方案，分别。这些函数安全地创建临时文件或目录并返回路径。这与前述高级工具一样安全，但您必须承担关闭和删除使用它们创建的每个资源的责任。'
 - en: WARNING Do not confuse `tempfile.mkstemp` or `tempfile.mkdtemp` with `tempfile.mktemp`.
     The names of these functions differ by only one character, but they are very different.
     The `tempfile.mktemp` function was deprecated by `tempfile.mkstemp` and `tempfile.mkdtemp`
     for security reasons.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 不要混淆 `tempfile.mkstemp` 或 `tempfile.mkdtemp` 与 `tempfile.mktemp`。这些函数的名称仅相差一个字符，但它们是非常不同的。`tempfile.mktemp`
+    函数由于安全原因已被 `tempfile.mkstemp` 和 `tempfile.mkdtemp` 废弃。
 - en: Never use `tempfile.mktemp`. In the past, this function was used to generate
     an unused filesystem path. The caller would then use this path to create and open
     a temp file. This, unfortunately, is another example of when you shouldn’t use
@@ -178,177 +259,261 @@
     the creation of the temp file. During this time, an attacker can create a file
     at the same path. From this position, the attacker can write malicious content
     to a file your system will eventually trust.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 永远不要使用`tempfile.mktemp`。过去，这个函数被用来生成一个未使用的文件系统路径。调用者然后会使用这个路径来创建和打开一个临时文件。不幸的是，这是另一个你不应该使用LBYL编程的例子。考虑一下`mktemp`返回和临时文件创建之间的时间窗口。在这段时间内，攻击者可以在相同的路径上创建一个文件。从这个位置，攻击者可以向系统信任的文件写入恶意内容。
 - en: 12.1.3 Working with filesystem permissions
+  id: totrans-39
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.1.3 处理文件系统权限
 - en: Every operating system supports the notion of users and groups. Every filesystem
     maintains metadata about each file and directory. Users, groups, and filesystem
     metadata determine how an operating system enforces filesystem-level authorization.
     In this section, I cover several Python functions designed to modify filesystem
     metadata. Unfortunately, much of this functionality is fully supported on only
     UNIX-like systems
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个操作系统都支持用户和组的概念。每个文件系统都维护关于每个文件和目录的元数据。用户、组和文件系统元数据决定操作系统如何执行文件系统级别的授权。在本节中，我将介绍几个设计用于修改文件系统元数据的Python函数。不幸的是，这些功能在只有类UNIX系统上完全支持。
 - en: 'UNIX-like filesystem metadata designates an owner, a group, and three classes:
     user, group, and others. Each *class* represents three permissions: read, write,
     and execute. The user and group classes apply to the owner and group assigned
     to the file. The other class applies to everyone else.'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 类UNIX文件系统元数据指定一个所有者、一个组和三个类别：用户、组和其他人。每个*类别*代表三个权限：读取、写入和执行。用户和组类别适用于分配给文件的所有者和组。其他类别适用于其他所有人。
 - en: For example, suppose Alice, Bob, and Mallory have operating system accounts.
     A file owned by Alice is assigned to a group named `observers`. Bob is a member
     of this group; Alice and Mallory are not. The permissions and classes of this
     file are represented by the rows and columns of table 12.1.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，假设Alice、Bob和Mallory有操作系统账户。一个由Alice拥有的文件分配给一个名为`observers`的组。Bob是这个组的成员；Alice和Mallory不是。这个文件的权限和类别由表12.1的行和列表示。
 - en: Table 12.1 Permissions by class
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 表12.1 按类别的权限
 - en: '|  | Owner | Group | Others |'
+  id: totrans-44
   prefs: []
   type: TYPE_TB
+  zh: '|  | 拥有者 | 组 | 其他 |'
 - en: '| Read | Yes | Yes | No |'
+  id: totrans-45
   prefs: []
   type: TYPE_TB
+  zh: '| 读取 | 是 | 是 | 否 |'
 - en: '| Write | Yes | No | No |'
+  id: totrans-46
   prefs: []
   type: TYPE_TB
+  zh: '| 写入 | 是 | 否 | 否 |'
 - en: '| Execute | No | No | No |'
+  id: totrans-47
   prefs: []
   type: TYPE_TB
+  zh: '| 执行 | 否 | 否 | 否 |'
 - en: 'When Alice, Bob, or Mallory try to access the file, the operating system applies
     the permissions of only the most local class:'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 当Alice、Bob或Mallory尝试访问文件时，操作系统仅应用最本地类别的权限：
 - en: As the owner of the file, Alice can read and write to it, but she cannot execute
     it.
+  id: totrans-49
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 作为文件的所有者，Alice可以读取和写入文件，但不能执行它。
 - en: As a member of `observers`, Bob can read the file but cannot write to or execute
     it.
+  id: totrans-50
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 作为`observers`的成员，Bob可以读取文件，但不能对其进行写入或执行。
 - en: Mallory can’t access the file at all because she isn’t the owner or in `observers`.
+  id: totrans-51
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Mallory根本无法访问文件，因为她既不是所有者也不在`observers`中。
 - en: 'Python’s `os` module features several functions designed to modify filesystem
     metadata. These functions allow a Python program to talk directly to the operating
     system, eliminating the need to invoke an external executable:'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: Python的`os`模块具有几个设计用于修改文件系统元数据的函数。这些函数允许Python程序直接与操作系统通信，消除了调用外部可执行文件的需要：
 - en: '`os.chmod`—Modifies access permissions'
+  id: totrans-53
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`os.chmod`—修改访问权限'
 - en: '`os.chown`—Modifies the owner ID and group ID'
+  id: totrans-54
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`os.chown`—修改所有者ID和组ID'
 - en: '`os.stat`—Reads the user ID and group ID'
+  id: totrans-55
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`os.stat`—读取用户ID和组ID'
 - en: The `os.chmod` function modifies filesystem permissions. This function accepts
     a path and at least one mode. Each mode is defined as a constant in the `stat`
     module, listed in table 12.2\. On a Windows system, `os.chmod` can unfortunately
     change only the read-only flag of a file.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '`os.chmod`函数修改文件系统权限。该函数接受一个路径和至少一个模式。每个模式在`stat`模块中被定义为一个常量，在表12.2中列出。在Windows系统上，`os.chmod`不幸地只能改变文件的只读标志。'
 - en: Table 12.2 Permission-mode constants
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 表12.2 权限模式常量
 - en: '| Mode | Owner | Group | Others |'
+  id: totrans-58
   prefs: []
   type: TYPE_TB
+  zh: '| 模式 | 拥有者 | 组 | 其他 |'
 - en: '| Read | S_IRUSR | S_IRGRP | S_IROTH |'
+  id: totrans-59
   prefs: []
   type: TYPE_TB
+  zh: '| 读取 | S_IRUSR | S_IRGRP | S_IROTH |'
 - en: '| Write | S_IWUSR | S_IWGRP | S_IWOTH |'
+  id: totrans-60
   prefs: []
   type: TYPE_TB
+  zh: '| 写入 | S_IWUSR | S_IWGRP | S_IWOTH |'
 - en: '| Execute | S_IXUSR | S_IXGRP | S_IXOTH |'
+  id: totrans-61
   prefs: []
   type: TYPE_TB
+  zh: '| 执行 | S_IXUSR | S_IXGRP | S_IXOTH |'
 - en: 'The following code demonstrates how to work with `os.chmod`. The first call
     grants the owner read access; all other permissions are denied. This state is
     erased, not modified, by subsequent calls to `os.chmod`. This means the second
     call grants the group read access; all other permissions, including the one granted
     previously, are denied:'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码演示了如何使用 `os.chmod`。第一次调用授予所有者读取权限；所有其他权限都被拒绝。此状态通过后续对 `os.chmod` 的调用而被擦除，而不是修改。这意味着第二次调用授予了群组读取权限；所有其他权限，包括先前授予的权限，都被拒绝：
 - en: '[PRE3]'
+  id: totrans-63
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: ❶ Only the owner can read this.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 只有所有者可以阅读此内容。
 - en: ❷ Only the group can read this.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 只有群组可以阅读此内容。
 - en: 'How do you grant more than one permission? Use the OR operator to combine modes.
     For example, the following line of code grants read access to both the owner and
     the group:'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 如何授予多个权限？使用 OR 运算符组合模式。例如，以下代码行同时向所有者和群组授予读取访问权限：
 - en: '[PRE4]'
+  id: totrans-67
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: ❶ The owner and group can read this.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 只有所有者和群组可以阅读此内容。
 - en: 'The `os.chown` function modifies the owner and group assigned to a file or
     directory. This function accepts a path, user ID, and group ID. If -1 is passed
     as a user ID or group ID, the corresponding ID is left as is. The following example
     demonstrates how to change the user ID of your `settings` module while preserving
     the group ID. It is not a good idea to run this exact line of code on your own
     system:'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: '`os.chown` 函数修改文件或目录的所有者和群组。此函数接受路径、用户 ID 和群组 ID。如果将 -1 作为用户 ID 或群组 ID 传递，则相应的
+    ID 将保持不变。下面的示例演示了如何在保留群组 ID 的同时更改您的 `settings` 模块的用户 ID。在您自己的系统上运行此代码是不明智的：'
 - en: '[PRE5]'
+  id: totrans-70
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 'The `os.stat` function returns metadata about a file or directory. This metadata
     includes the user ID and group ID. On a Windows system, these IDs are unfortunately
     always 0\. Type the following code into an interactive Python shell to pull the
     user ID and group ID, shown in bold, of your `settings` module:'
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: '`os.stat` 函数返回文件或目录的元数据。此元数据包括用户 ID 和群组 ID。在 Windows 系统上，这些 ID 不幸地始终为 0。在交互式
+    Python shell 中键入以下代码以获取您的 `settings` 模块的用户 ID 和群组 ID，如加粗所示：'
 - en: '[PRE6]'
+  id: totrans-72
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: ❶ Accesses the user ID
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 访问用户 ID
 - en: ❷ Accesses the group ID
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 访问群组 ID
 - en: In this section, you learned how to create programs that interact with the filesystem.
     In the next section, you’ll learn how to create programs that run other programs.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，您学习了如何创建与文件系统交互的程序。在下一节中，您将学习如何创建运行其他程序的程序。
 - en: 12.2 Invoking external executables
+  id: totrans-76
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 12.2 调用外部可执行文件
 - en: Sometimes you want to execute another program from within Python. For example,
     you may want to exercise the functionality of a program written in a language
     other than Python. Python provides many ways to invoke external executables; some
     ways can be risky. In this section, I’ll give you a few tools to identify, avoid,
     and minimize these risks.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 有时，您想要在 Python 中执行另一个程序。例如，您可能希望练习使用非 Python 语言编写的程序的功能。Python 提供了许多调用外部可执行文件的方法；其中一些方法可能存在风险。在本节中，我将为您提供一些工具来识别、避免和最小化这些风险。
 - en: WARNING Many of the commands and code in this section are potentially destructive.
     At one point while testing code for this chapter, I accidentally deleted a local
     Git repository from my laptop. Do yourself a favor and be mindful of this if you
     choose to run any of the following examples.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：本节中许多命令和代码具有潜在破坏性。在为本章测试代码时，我曾意外地从笔记本电脑上删除了一个本地 Git 仓库。如果您选择运行以下任何示例，请自己小心。
 - en: When you type and execute a command on your computer, you are not communicating
     directly to your operating system. Instead, the command you type is being relayed
     to your operating system by another program known as a *shell*. For example, if
@@ -356,29 +521,43 @@
     a Windows system, your shell is probably cmd.exe. Figure 12.1 depicts the role
     of a shell. (Although the diagram shows a Linux OS, the process is similar on
     Windows systems.)
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 当您在计算机上键入并执行命令时，您并没有直接与操作系统通信。相反，您键入的命令被另一个称为 *shell* 的程序传递到您的操作系统。例如，如果您在类
+    UNIX 系统上，您的 shell 可能是 /bin/bash。如果您在 Windows 系统上，您的 shell 可能是 cmd.exe。图 12.1 描述了
+    shell 的作用。（虽然图表显示的是 Linux 操作系统，但在 Windows 系统上的过程类似。）
 - en: '![CH12_F01_Byrne](Images/CH12_F01_Byrne.png)'
+  id: totrans-80
   prefs: []
   type: TYPE_IMG
+  zh: '![CH12_F01_Byrne](Images/CH12_F01_Byrne.png)'
 - en: Figure 12.1 A bash shell relays a command from Alice’s terminal to the operating
     system.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 12.1 一个 bash shell 将 Alice 的终端上的命令传递给操作系统。
 - en: As the name implies, a shell provides only a thin layer of functionality. Some
     of this functionality is supported by the notion of *special characters*. A special
     character has meaning beyond its literal use. For example, UNIX-like system shells
     interpret the asterisk (`*`) character as a wildcard. This means a command such
     as `rm` `*` removes all files in the current directory rather than removing a
     single file (oddly) named `*`. This is known as *wildcard expansion*.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 如其名称所示，shell仅提供了一层薄薄的功能。其中一些功能是由*特殊字符*支持的。特殊字符具有超出其字面用途的含义。例如，类Unix系统的shell将星号（`*`）字符解释为通配符。这意味着诸如`rm`
+    `*`这样的命令会删除当前目录中的所有文件，而不是删除一个（奇怪地）命名为`*`的单个文件。这称为*通配符展开*。
 - en: If you want a special character to be interpreted literally by your shell, you
     must use an *escape character*. For example, UNIX-like system shells treat a backslash
     as an escape character. This means you must type `rm \*` if you want to delete
     only a file (oddly) named `*`.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果要求shell按字面意义解释特殊字符，则必须使用*转义字符*。例如，类Unix系统的shell将反斜杠视为转义字符。这意味着如果你只想删除一个（奇怪地）命名为`*`的文件，你必须输入`rm
+    \*`。
 - en: 'Building a command string from an external source without escaping special
     characters can be fatal. For example, the following code demonstrates a terrible
     way to invoke an external executable. This code prompts the user for a filename
@@ -387,60 +566,87 @@
     that the command finishes successfully. This code behaves as intended when a user
     types `alice.txt`, but it will delete every file in the current directory if a
     malicious user types `*`. This is known as a *shell injection attack*:'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 从外部来源构建命令字符串而不转义特殊字符可能是致命的。例如，以下代码演示了一种糟糕的调用外部可执行文件的方式。此代码提示用户输入文件名并构建命令字符串。然后，`os.system`函数执行该命令，删除文件，并返回0。按照惯例，返回代码0表示命令成功完成。当用户键入`alice.txt`时，此代码表现正常，但是如果恶意用户键入`*`，则会删除当前目录中的所有文件。这称为*shell注入攻击*：
 - en: '[PRE7]'
+  id: totrans-85
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: ❶ Accepts input from an untrusted source
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 从不受信任的来源接受输入
 - en: ❷ Executes the command successfully
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 成功执行命令
 - en: In addition to shell injection, this code is also vulnerable to *command injection*.
     For example, this code will run two commands instead of one if a malicious user
     submits `-rf` `/` `;` `dd` `if=/dev/random` `of=/dev/sda`. The first command deletes
     everything in the root directory; the second command adds insult to injury by
     overwriting the hard drive with random data.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了shell注入之外，此代码还容易受到*命令注入*的攻击。例如，如果恶意用户提交`-rf` `/` `;` `dd` `if=/dev/random`
+    `of=/dev/sda`，则此代码将运行两个命令而不是一个。第一个命令删除根目录中的所有内容；第二个命令则通过向硬盘写入随机数据进一步恶化了情况。
 - en: Shell injection and command injection are both special types of a broader category
     of attack, generally referred to as *injection attacks*. An attacker starts an
     injection attack by injecting malicious input into a vulnerable system. The system
     then inadvertently executes the input in an attempt to process it, benefitting
     the attacker in some way.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: Shell注入和命令注入都是更广泛的攻击类别的特殊类型，通常称为*注入攻击*。攻击者通过向易受攻击的系统注入恶意输入来发起注入攻击。系统然后无意中执行输入，试图处理它，从而在某种程度上使攻击者受益。
 - en: Note At the time of this writing, injection attacks are number 1 on the OWASP
     Top Ten ([https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)).
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意：在撰写本文时，注入攻击位列OWASP十大安全威胁的第一位（[https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)）。
 - en: In the next two sections, I demonstrate how to avoid shell injection and command
     injection.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 在接下来的两节中，我将演示如何避免shell注入和命令注入。
 - en: 12.2.1 Bypassing the shell with internal APIs
+  id: totrans-92
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.2.1 使用内部API绕过shell
 - en: 'If you *want* to execute an external program, you should first ask yourself
     if you *need* to. In Python, the answer is usually no. Python has already developed
     internal solutions for the most common problems; there is no need to invoke an
     external executable in these situations. For example, the following code deletes
     a file with `os.remove` instead of `os.system`. Solutions like this are easier
     to write, easier to read, less error-prone, and more secure:'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你*想*执行外部程序，你应该首先问自己是否*需要*。在Python中，答案通常是否定的。Python已经为最常见的问题开发了内部解决方案；在这些情况下，没有必要调用外部可执行文件。例如，以下代码使用`os.remove`而不是`os.system`删除文件。这样的解决方案更容易编写，更容易阅读，更少出错，更安全：
 - en: '[PRE8]'
+  id: totrans-94
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: ❶ Accepts input from an untrusted source
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 从不受信任的来源接受输入
 - en: ❷ Deletes file
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 删除文件
 - en: 'How is this alternative more secure? Unlike `os.system`, `os.remove` is immune
     to command injection because it does only one thing, by design; this function
     does not accept a command string, so there is no way to inject additional commands.
@@ -448,125 +654,191 @@
     entirely; this function talks directly to the operating system without the help,
     and risk, of a shell. As shown here in bold, special characters such as `*` are
     interpreted literally:'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种替代方案更安全在哪里？与 `os.system` 不同，`os.remove` 免疫于命令注入，因为它只做一件事，这是设计原则；这个函数不接受命令字符串，因此没有办法注入其他命令。此外，`os.remove`
+    避免了 shell 注入，因为它完全绕过了 shell；这个函数直接与操作系统交流，而不需要 shell 的帮助，也没有 shell 的风险。如粗体所示，特殊字符如
+    `*` 被直接解释：
 - en: '[PRE9]'
+  id: totrans-98
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: ❶ This looks bad . . .
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 这看起来不好 . . .
 - en: ❷ . . . but nothing gets deleted.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ . . . 但是没有东西被删除。
 - en: There are many other functions like `os.remove`; table 12.3 lists some. The
     first column represents an unnecessary command, and the second column represents
     a pure Python alternative. Some of the solutions in this table should look familiar;
     you saw them earlier when I covered filesystem-level authorization.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 还有许多其他类似 `os.remove` 的函数；表格 12.3 列出了其中一些。第一列表示一个不必要的命令，第二列表示纯 Python 的替代方案。这个表格中的一些解决方案应该看起来很熟悉；在讨论文件系统级授权时，你已经见过它们。
 - en: Table 12.3 Python alternatives to simple command-line tools
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 表格 12.3 Python 替代简单命令行工具
 - en: '| Command-line example | Python equivalent | Description |'
+  id: totrans-103
   prefs: []
   type: TYPE_TB
+  zh: '| 命令行示例 | Python 等价物 | 描述 |'
 - en: '| $ chmod 400 bob.txt | os.chmod(''bob.txt'', S_IRUSR) | Modifies file permissions
     |'
+  id: totrans-104
   prefs: []
   type: TYPE_TB
+  zh: '| $ chmod 400 bob.txt | os.chmod(''bob.txt'', S_IRUSR) | 修改文件权限 |'
 - en: '| $ chown bob bob.txt | os.chown(''bob.txt'', uid, -1) | Changes file ownership
     |'
+  id: totrans-105
   prefs: []
   type: TYPE_TB
+  zh: '| $ chown bob bob.txt | os.chown(''bob.txt'', uid, -1) | 更改文件所有者 |'
 - en: '| $ rm bob.txt | os.remove(''bob.txt'') | Deletes a file |'
+  id: totrans-106
   prefs: []
   type: TYPE_TB
+  zh: '| $ rm bob.txt | os.remove(''bob.txt'') | 删除文件 |'
 - en: '| > mkdir new_dir | os.mkdir(''new_dir'') | Creates a new directory |'
+  id: totrans-107
   prefs: []
   type: TYPE_TB
+  zh: '| > mkdir new_dir | os.mkdir(''new_dir'') | 创建新目录 |'
 - en: '| > dir | os.listdir() | Lists directory contents |'
+  id: totrans-108
   prefs: []
   type: TYPE_TB
+  zh: '| > dir | os.listdir() | 列出目录内容 |'
 - en: '| > pwd | os.getcwd() | Current working directory |'
+  id: totrans-109
   prefs: []
   type: TYPE_TB
+  zh: '| > pwd | os.getcwd() | 当前工作目录 |'
 - en: '| $ hostname | import socket;socket.gethostname() | Reads system hostname |'
+  id: totrans-110
   prefs: []
   type: TYPE_TB
+  zh: '| $ hostname | import socket;socket.gethostname() | 读取系统主机名 |'
 - en: If Python doesn’t provide you with a safe alternative for a command, chances
     are, an open source Python library does. Table 12.4 lists a group of commands
     and their PyPI package alternatives. You learned about two of them, `requests`
     and `cryptography`, in earlier chapters.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果 Python 没有为某个命令提供安全的替代方案，那么很可能会有一个开源的 Python 库提供。表格 12.4 列出了一组命令及其 PyPI 包的替代方案。你在前几章学到了其中的两个，`requests`
+    和 `cryptography`。
 - en: Table 12.4 Python alternatives to complex command-line tools
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 表格 12.4 Python 替代复杂命令行工具
 - en: '| Command-line example | PyPI equivalent | Description |'
+  id: totrans-113
   prefs: []
   type: TYPE_TB
+  zh: '| 命令行示例 | PyPI 等价物 | 描述 |'
 - en: '| $ curl http:/./bob.com -o bob.txt | requests | General-purpose HTTP client
     |'
+  id: totrans-114
   prefs: []
   type: TYPE_TB
+  zh: '| $ curl http:/./bob.com -o bob.txt | requests | 通用 HTTP 客户端 |'
 - en: '| $ openssl genpkey -algorithm RSA | cryptography | General-purpose cryptography
     |'
+  id: totrans-115
   prefs: []
   type: TYPE_TB
+  zh: '| $ openssl genpkey -algorithm RSA | cryptography | 通用加密 |'
 - en: '| $ ping python.org | ping3 | Tests whether a host is reachable |'
+  id: totrans-116
   prefs: []
   type: TYPE_TB
+  zh: '| $ ping python.org | ping3 | 测试主机是否可达 |'
 - en: '| $ nslookup python.org | nslookup | Performs DNS lookups |'
+  id: totrans-117
   prefs: []
   type: TYPE_TB
+  zh: '| $ nslookup python.org | nslookup | 执行 DNS 查询 |'
 - en: '| $ ssh alice@python.org | paramiko | SSH client |'
+  id: totrans-118
   prefs: []
   type: TYPE_TB
+  zh: '| $ ssh alice@python.org | paramiko | SSH 客户端 |'
 - en: '| $ git commit -m ''Chapter 12'' | GitPython | Works with Git repositories
     |'
+  id: totrans-119
   prefs: []
   type: TYPE_TB
+  zh: '| $ git commit -m ''Chapter 12'' | GitPython | 与 Git 仓库一起工作 |'
 - en: Tables 12.3 and 12.4 are by no means exhaustive. The Python ecosystem features
     plenty of other alternatives to external executables. If you are looking for a
     pure Python alternative that is not in these tables, search for it online before
     you start writing code.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 表格 12.3 和 12.4 绝不是详尽无遗的。Python 生态系统中还有许多其他替代方案可用于外部可执行文件。如果你正在寻找一个不在这些表格中的纯
+    Python 替代方案，请在开始编写代码之前在网上搜索一下。
 - en: Every now and then, you might face a unique challenge with no pure Python alternative.
     For example, you might need to run a custom Ruby script that one of your coworkers
     wrote to solve a domain-specific problem. In a situation like this, you need to
     invoke an external executable. In the next section, I’ll show you how to do this
     safely.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 偶尔你可能会面临一个没有纯 Python 替代方案的独特挑战。例如，你可能需要运行一个你的同事编写的自定义 Ruby 脚本来解决领域特定的问题。在这种情况下，你需要调用一个外部可执行文件。在下一节中，我将向你展示如何安全地执行这样的操作。
 - en: 12.2.2 Using the subprocess module
+  id: totrans-122
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.2.2 使用 subprocess 模块
 - en: 'The `subprocess` module is Python’s answer to external executables. This module
     deprecates many of Python’s built-in functions for command execution, listed here.
     You saw one of these in the previous section:'
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: '`subprocess` 模块是 Python 对外部可执行程序的答案。该模块废弃了 Python 的许多内置函数用于命令执行，列在这里。你在前一节中看到了其中之一：'
 - en: '`os.system`'
+  id: totrans-124
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`os.system`'
 - en: '`os.popen`'
+  id: totrans-125
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`os.popen`'
 - en: '`os.spawn*` (eight functions)'
+  id: totrans-126
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`os.spawn*`（八个函数）'
 - en: The `subprocess` module supersedes these functions with a simplified API, as
     well as a feature set designed to improve interprocess communication, error handling,
     interoperability, concurrency, and security. In this section, I highlight only
     the security features of this module.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: '`subprocess` 模块以简化的 API 和设计用于改善进程间通信、错误处理、互操作性、并发性和安全性的特性集取代了这些函数。在本节中，我只强调了该模块的安全特性。'
 - en: 'The following code uses the `subprocess` module to invoke a simple Ruby script
     from within Python. The Ruby script accepts the name of an archetypal character
     such as Alice or Eve; the output of this script is a list of domains owned by
@@ -574,76 +846,113 @@
     instead, it expects the command in list form, shown in bold font. The `run` function
     returns an instance of `CompletedProcess` after execution. This object provides
     access to the output and return code of the external process:'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码使用 `subprocess` 模块从 Python 中调用一个简单的 Ruby 脚本。Ruby 脚本接受原型角色的名称，如 Alice 或 Eve；该脚本的输出是角色拥有的域的列表。请注意，`run`
+    函数不接受命令字符串；相反，它期望命令以列表形式提供，如粗体字所示。`run` 函数在执行后返回一个 `CompletedProcess` 实例。此对象提供对外部进程的输出和返回代码的访问：
 - en: '[PRE10]'
+  id: totrans-129
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: ❶ Builds a command
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 构建一个命令
 - en: ❷ Prints command output
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 打印命令输出
 - en: ❸ Prints commandreturn value
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 打印命令返回值
 - en: The `subprocess` module is secure by design. This API resists command injection
     by forcing you to express the command as a list. For instance, if a malicious
     user were to submit `charlie ; rm -fr /` as a character name, the `run` function
     would still execute only *one* command, and the command it executes would still
     get only *one* (odd) argument.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: '`subprocess` 模块从设计上是安全的。该 API 通过强制你将命令表达为列表来抵御命令注入。例如，如果一个恶意用户提交 `charlie ;
+    rm -fr /` 作为一个角色名，`run` 函数仍然只执行 *一个* 命令，并且它执行的命令仍然只有 *一个* （奇怪的）参数。'
 - en: The `subprocess` module API also resists shell injection. By default, the `run`
     function bypasses the shell and forwards the command directly to the operating
     system. In a ridiculously rare situation, when you actually need a special feature
     such as wildcard expansion, the `run` function supports a keyword argument named
     `shell`. As the name implies, setting this keyword argument to `True` informs
     the `run` function to pass your command off to a shell.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: '`subprocess` 模块 API 也抵御了 shell 注入。默认情况下，`run` 函数绕过 shell 并将命令直接转发给操作系统。在极为罕见的情况下，当你确实需要特殊功能（例如通配符展开）时，`run`
+    函数支持一个名为 `shell` 的关键字参数。顾名思义，将此关键字参数设置为 `True` 会通知 `run` 函数将你的命令传递给 shell。'
 - en: In other words, the `run` function defaults to safe, but you can explicitly
     choose a riskier option. Conversely, the `os.system` function defaults to risky,
     and you get no other choice. Figure 12.2 illustrates both functions and their
     behavior.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 换句话说，`run` 函数默认是安全的，但你可以明确选择一个更危险的选项。相反，`os.system` 函数默认是危险的，你别无选择。图 12.2 说明了两个函数及其行为。
 - en: '![CH12_F02_Byrne](Images/CH12_F02_Byrne.png)'
+  id: totrans-136
   prefs: []
   type: TYPE_IMG
+  zh: '![CH12_F02_Byrne](Images/CH12_F02_Byrne.png)'
 - en: Figure 12.2 Alice runs two Python programs; the first talks to the operating
     system via the shell, and the second talks directly to the operating system.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 12.2 Alice 运行了两个 Python 程序；第一个通过 shell 与操作系统通信，第二个直接与操作系统通信。
 - en: In this chapter, you learned about two types of injection attacks. As you read
     the next chapter, you are going to see why these attacks are ranked number 1 on
     the OWASP Top Ten. They come in so many different shapes and sizes.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，你学到了两种类型的注入攻击。当你阅读下一章时，你会看到为什么这些攻击在 OWASP 十大中排名第一。它们有很多不同的形式和大小。
 - en: Summary
+  id: totrans-139
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 总结
 - en: Prefer high-level authorization utilities over low-level methods.
+  id: totrans-140
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 优先选择高级授权工具而不是低级方法。
 - en: Choose between EAFP and LBYL coding styles on a case-by-case basis.
+  id: totrans-141
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 根据具体情况选择 EAFP 和 LBYL 编码风格。
 - en: Wanting to invoke an external executable is different from needing to.
+  id: totrans-142
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 想要调用外部可执行程序与需要调用外部可执行程序是不同的。
 - en: Between Python and PyPI, there is usually an alternative for the command you
     want.
+  id: totrans-143
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在 Python 和 PyPI 之间，通常有你想要的命令的替代方案。
 - en: If you have to execute a command, it is highly unlikely the command needs a
     shell.
+  id: totrans-144
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果你需要执行一个命令，那么这个命令极有可能不需要一个 shell。

@@ -1,26 +1,38 @@
 - en: 13 Never trust input
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 13 永远不要信任输入
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章包括
 - en: Validating Python dependencies with Pipenv
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用 Pipenv 验证 Python 依赖项
 - en: Parsing YAML safely with PyYAML
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用 PyYAML 安全解析 YAML
 - en: Parsing XML safely with `defusedxml`
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用 `defusedxml` 安全解析 XML
 - en: Preventing DoS attacks, `Host` header attacks, open redirects, and SQL injection
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 防止 DoS 攻击，`Host` 头攻击，开放重定向和 SQL 注入
 - en: 'In this chapter, Mallory wreaks havoc on Alice, Bob, and Charlie with a half
     dozen attacks. These attacks, and their countermeasures, are not as complicated
     as the attacks I cover later. Each attack in this chapter follows a pattern: Mallory
@@ -28,109 +40,159 @@
     forms of input: package dependencies, YAML, XML, HTTP, and SQL. The goals of these
     attacks include data corruption, privilege escalation, and unauthorized data access.
     *Input validation* is the antidote for every one of these attacks.'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一章中，Mallory 对 Alice、Bob 和 Charlie 发动了半打攻击。这些攻击及其对策并不像我后面涵盖的攻击那样复杂。本章中的每个攻击都遵循一种模式：Mallory
+    利用恶意输入滥用系统或用户。这些攻击以许多不同形式的输入形式出现：包依赖项、YAML、XML、HTTP 和 SQL。这些攻击的目标包括数据损坏、特权提升和未经授权的数据访问。*输入验证*是这些攻击的解药。
 - en: Many of the attacks I cover in this chapter are injection attacks. (You learned
     about injection attacks in the previous chapter.) In a typical injection attack,
     malicious input is injected into, and immediately executed by, a running system.
     For this reason, programmers have a tendency to overlook the atypical scenario
     I start with in this chapter. In this scenario, the injection happens upstream,
     at build time; the execution happens downstream, at runtime.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 我在本章中涵盖的许多攻击都是注入攻击。（您在上一章中学习了关于注入攻击的知识。）在典型的注入攻击中，恶意输入被注入并立即由正在运行的系统执行。因此，程序员往往忽略了我在本章中开始讨论的非典型场景。在这种情况下，注入发生在上游，即构建时；执行发生在下游，即运行时。
 - en: 13.1 Package management with Pipenv
+  id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 13.1 使用 Pipenv 进行包管理
 - en: In this section, I’ll show you how to prevent injection attacks with Pipenv.
     Hashing and data integrity, two subjects you learned about previously, will make
     yet another appearance. Like any Python package manager, Pipenv retrieves and
     installs third-party packages from a package repository such as the PyPI. Programmers
     unfortunately fail to recognize that package repositories are a significant portion
     of their attack surface.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，我将向您展示如何使用 Pipenv 防止注入攻击。像之前学过的哈希和数据完整性一样，它们将再次出现。与任何 Python 包管理器一样，Pipenv
+    从诸如 PyPI 之类的包仓库检索并安装第三方包。不幸的是，程序员未能意识到包仓库是他们攻击面的重要部分。
 - en: Suppose Alice wants to regularly deploy new versions of alice.com to production.
     She writes a script to pull the latest version of her code, as well as the latest
     versions of her package dependencies. Alice doesn’t bloat the size of her code
     repository by checking her dependencies into version control. Instead, she pulls
     these artifacts from a package repository with a package manager.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设 Alice 想要定期将新版本的 alice.com 部署到生产环境。她编写了一个脚本来拉取她代码的最新版本，以及她的软件包依赖项的最新版本。Alice
+    没有通过将她的依赖项检入版本控制来增加她代码仓库的大小。相反，她使用包管理器从包仓库拉取这些工件。
 - en: Mallory has compromised the package repository Alice depends on. From this position,
     Mallory modifies one of Alice’s dependencies with malicious code. Finally, the
     malicious code is pulled by Alice’s package manager and pushed to alice.com, where
     it is executed. Figure 13.1 illustrates Mallory’s attack.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: Mallory 已经入侵了 Alice 依赖的包仓库。在这个位置，Mallory 使用恶意代码修改了 Alice 的一个依赖项。最后，恶意代码由 Alice
+    的包管理器拉取并推送到 alice.com，在那里执行。图 13.1 说明了 Mallory 的攻击。
 - en: '![CH13_F01_Byrne](Images/CH13_F01_Byrne.png)'
+  id: totrans-12
   prefs: []
   type: TYPE_IMG
+  zh: '![CH13_F01_Byrne](Images/CH13_F01_Byrne.png)'
 - en: Figure 13.1 Mallory injects malicious code into alice.com through a package
     dependency.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 13.1 Mallory 通过包依赖注入恶意代码到 alice.com。
 - en: Unlike other package managers, Pipenv automatically prevents Mallory from executing
     this attack by verifying the integrity of each package as it is pulled from the
     package repository. As expected, Pipenv verifies package integrity by comparing
     hash values.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 与其他包管理器不同，Pipenv 通过在从包仓库拉取每个包时验证包的完整性来自动阻止 Mallory 执行此攻击。如预期的那样，Pipenv 通过比较哈希值来验证包的完整性。
 - en: 'When Pipenv retrieves a package for the first time, it records a hash value
     of each package artifact in your lock file, Pipfile.lock. Open your lock file
     and take a minute to observe the hash values of some of your dependencies. For
     example, the following segment of my lock file indicates that Pipenv pulled version
     2.24 of the `requests` package. SHA-256 hash values for two artifacts are shown
     in bold font:'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 当 Pipenv 第一次获取一个包时，它会记录每个包构件的哈希值在你的锁定文件 Pipfile.lock 中。打开你的锁定文件，花一分钟观察一下你的一些依赖项的哈希值。例如，我的锁定文件的以下部分表明
+    Pipenv 拉取了`requests`包的2.24版本。两个构件的 SHA-256 哈希值以粗体显示：
 - en: '[PRE0]'
+  id: totrans-16
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: ❶ Hash values of package artifacts
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 包构件的哈希值
 - en: ❷ Package version
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 包版本
 - en: When Pipenv retrieves a familiar package, it hashes each inbound package artifact
     and compares the hash values against the hash values in your lock file. If the
     hash values match, Pipenv can assume that the package is unmodified and therefore
     safe to install. If the hash values do not match, as shown in figure 13.2, Pipenv
     rejects the package.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 当 Pipenv 获取一个熟悉的包时，它会对每个入站包构件进行哈希，并将哈希值与您的锁定文件中的哈希值进行比较。如果哈希值匹配，Pipenv 可以假定该包未经修改，因此安全安装。如果哈希值不匹配，如图13.2所示，Pipenv
+    将拒绝该包。
 - en: '![CH13_F02_Byrne](Images/CH13_F02_Byrne.png)'
+  id: totrans-20
   prefs: []
   type: TYPE_IMG
+  zh: '![CH13_F02_Byrne](Images/CH13_F02_Byrne.png)'
 - en: Figure 13.2 A package manager resists an injection attack by comparing the hash
     value of a maliciously modified Python package with a hash value from a lock file.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 图13.2 包管理器通过将恶意修改的 Python 包的哈希值与锁定文件中的哈希值进行比较来抵御注入攻击。
 - en: 'The following command output demonstrates how Pipenv behaves when a package
     fails verification. The local hash values and a warning are shown in bold:'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的命令输出展示了当一个包验证失败时 Pipenv 的行为。本地哈希值和警告以粗体显示：
 - en: '[PRE1]'
+  id: totrans-23
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: ❶ Local hash values of package artifacts
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 包构件的本地哈希值
 - en: ❷ A data integrity warning
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 数据完整性警告
 - en: In addition to guarding you against malicious package modification, this check
     detects accidental package corruption. This ensures deterministic builds for local
     development, testing, and production deployment—an excellent example of real-world
     data integrity verification with hashing. In the next two sections, I continue
     with injection attacks.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了保护您免受恶意包修改之外，此检查还检测意外包损坏。这确保了本地开发、测试和生产部署的确定性构建——这是使用哈希进行现实世界数据完整性验证的一个很好的例子。在接下来的两节中，我将继续介绍注入攻击。
 - en: 13.2 YAML remote code execution
+  id: totrans-27
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 13.2 YAML 远程代码执行
 - en: In chapter 7, you watched Mallory carry out a remote code-execution attack.
     First, she embedded malicious code into a *pickled*, or serialized, Python object.
     Next, she disguised this code as cookie-based HTTP session state and sent it to
@@ -138,68 +200,104 @@
     code with `PickleSerializer`, a wrapper for Python’s `pickle` module. In this
     section, I show how a similar attack is carried out with YAML instead of `pickle`—same
     attack, different data format.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第7章，你看到 Mallory 进行远程代码执行攻击。首先，她将恶意代码嵌入到一个 *pickled*，或者序列化的 Python 对象中。接下来，她将这段代码伪装成基于
+    cookie 的 HTTP 会话状态并发送给服务器。服务器在不知不觉中使用 `PickleSerializer`，Python 的 `pickle` 模块的包装器，执行了恶意代码。在本节中，我将展示如何使用
+    YAML 而不是 `pickle` 进行类似的攻击——相同的攻击，不同的数据格式。
 - en: Note At the time of this writing, *insecure deserialization* is number 8 on
     the OWASP Top Ten ([https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)).
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 在撰写本文时，*不安全的反序列化*在 OWASP 十大漏洞中排名第8位 ([https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/))。
 - en: 'Like JSON, CSV, and XML, YAML is a common way to represent data in a human-readable
     format. Every major programming language has tools to parse, serialize, and deserialize
     data in these formats. Python programmers often use *PyYAML* to parse YAML. From
     within your virtual environment, run the following command to install PyYAML:'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 像 JSON、CSV 和 XML 一样，YAML 是一种用人类可读的格式表示数据的常见方式。每种主要的编程语言都有工具来解析、序列化和反序列化这些格式的数据。Python
+    程序员通常使用 *PyYAML* 来解析 YAML。在您的虚拟环境中，运行以下命令安装 PyYAML：
 - en: '[PRE2]'
+  id: totrans-31
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 'Open an interactive Python shell and run the following code. This example feeds
     a small inline YAML document to PyYAML. As shown in bold font, PyYAML loads the
     document with `BaseLoader` and converts it to a Python dict:'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 打开一个交互式 Python shell 并运行以下代码。这个例子将一个小的内联 YAML 文档传递给 PyYAML。如粗体显示，PyYAML 使用`BaseLoader`加载文档并将其转换为
+    Python 字典：
 - en: '[PRE3]'
+  id: totrans-33
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: ❶ From YAML . . .
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 从 YAML . . .
 - en: ❷ . . . to Python
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ . . . 到 Python
 - en: In chapter 1, you learned about the principle of least privilege. The PLP states
     that a user or system should be given only the minimal permissions needed to perform
     their responsibilities. I showed you how to apply this principle to user authorization;
     here I’ll show you how to apply it to parsing YAML.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第一章中，你学到了最小权限原则。PLP 表明用户或系统应该只被赋予执行其职责所需的最小权限。我向你展示了如何将这个原则应用到用户授权上；这里我将向你展示如何将其应用到解析
+    YAML 上。
 - en: WARNING When you load YAML into memory, it is very important to limit the amount
     of power you give to PyYAML.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 当你将 YAML 加载到内存中时，限制你给予 PyYAML 的权限非常重要。
 - en: 'You apply PLP to PyYAML via the `Loader` keyword argument. For example, the
     previous example loaded YAML with the least powerful loader, `BaseLoader`. PyYAML
     supports three other `Loaders`. All four are listed here from least to most powerful.
     Each `Loader` supports more features, and carries more risk, than the previous
     one:'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以通过 `Loader` 关键字参数将 PLP 应用到 PyYAML。例如，前面的例子使用了最不强大的加载器 `BaseLoader` 加载了 YAML。PyYAML
+    支持其他三种 `Loader`。以下从最不强大到最强大列出了这四种 `Loader`。每个 `Loader` 支持的功能更多，风险也更大。
 - en: '`BaseLoader`—Supports primitive Python objects like strings and lists'
+  id: totrans-39
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`BaseLoader`—支持原始的 Python 对象，如字符串和列表'
 - en: '`SafeLoader`—Supports primitive Python objects and standard YAML tags'
+  id: totrans-40
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`SafeLoader`—支持原始的 Python 对象和标准 YAML 标签'
 - en: '`FullLoader`—Full YAML language support (the default)'
+  id: totrans-41
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`FullLoader`—完整的 YAML 语言支持（默认）'
 - en: '`UnsafeLoader`—Full YAML language support and arbitrary function calls'
+  id: totrans-42
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`UnsafeLoader`—完整的 YAML 语言支持和任意函数调用'
 - en: 'Failing to apply the PLP can be fatal if your system accepts YAML as input.
     The following code demonstrates how dangerous this can be when loading YAML from
     an untrusted source with `UnsafeLoader`. This example creates inline YAML with
@@ -207,104 +305,157 @@
     fed to PyYAML. The process then kills itself as PyYAML invokes `sys.exit` with
     an exit code of 42\. Finally, the `echo` command combined with the `$?` variable
     confirms that the Python process does indeed exit with a value of 42:'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你的系统接受 YAML 作为输入，不遵循 PLP 可能是致命的。以下代码演示了当使用 `UnsafeLoader` 从不受信任的源加载 YAML 时会有多么危险。此示例创建了一个内联
+    YAML，其中嵌入了对 `sys.exit` 的函数调用。如粗体字所示，然后将 YAML 输入给 PyYAML。然后，该过程使用退出码 42 调用 `sys.exit`
+    杀死自身。最后，`echo` 命令结合 `$?` 变量确认 Python 进程确实以值 42 退出：
 - en: '[PRE4]'
+  id: totrans-44
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: ❶ Creates process
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 创建进程
 - en: ❷ Inline YAML
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 内联 YAML
 - en: ❸ Kills process
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 杀死进程
 - en: ❹ Confirms death
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 确认死亡
 - en: It is highly unlikely you are ever going to need to invoke a function this way
     for commercial purposes. You don’t need this functionality, so why take on the
     risk? `BaseLoader` and `SafeLoader` are the recommended ways to load YAML from
     an untrusted source. Alternatively, calling `yaml.safe_load` is the equivalent
     of calling `yaml.load` with `SafeLoader`.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 你很可能永远不会需要以这种方式调用函数来进行商业用途。你不需要这个功能，那么为什么要冒险呢？`BaseLoader` 和 `SafeLoader` 是从不受信任的源加载
+    YAML 的推荐方式。或者，调用 `yaml.safe_load` 相当于使用 `SafeLoader` 调用 `yaml.load`。
 - en: WARNING Different versions of PyYAML default to different `Loaders`, so you
     should always explicitly specify the `Loader` you need. Calling `yaml.load` without
     the `Loader` keyword argument has been deprecated.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 PyYAML 的不同版本默认使用不同的 `Loader`，所以你应该始终明确指定你需要的 `Loader`。调用 `yaml.load` 而不带
+    `Loader` 关键字参数已经被弃用。
 - en: Always specify the `Loader` when calling the `load` method. Failing to do this
     can render your system vulnerable if it is running with an older version of PyYAML.
     Until version 5.1, the default `Loader` was (the equivalent of) `UnsafeLoader`;
     the current default `Loader` is `FullLoader`. I recommend avoiding both.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 在调用 `load` 方法时，始终指定 `Loader`。如果不这样做，可能会使您的系统在运行较旧版本的 PyYAML 时变得脆弱。直到版本 5.1，默认的
+    `Loader` 是（相当于）`UnsafeLoader`；当前的默认 `Loader` 是 `FullLoader`。我建议避免使用这两种。
 - en: Keep it simple
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 保持简单
 - en: 'As of this writing, even the PyYAML website ([https://github.com/yaml/pyyaml/wiki/PyYAML-yaml.load(input)-Deprecation](https://github.com/yaml/pyyaml/wiki/PyYAML-yaml.load(input)-Deprecation))
     doesn’t recommend using `FullLoader`:'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们在撰写本文时，即使是 PyYAML 的网站（[https://github.com/yaml/pyyaml/wiki/PyYAML-yaml.load(input)-Deprecation](https://github.com/yaml/pyyaml/wiki/PyYAML-yaml.load(input)-Deprecation)）也不推荐使用
+    `FullLoader`：
 - en: The `FullLoader` loader class . . . should be avoided for now. New exploits
     in 5.3.1 were found in July 2020\. These exploits will be addressed in the next
     release, but if further exploits are found, then `FullLoader` may go away.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 目前应该避免使用 `FullLoader` 加载器类。2020 年 7 月在 5.3.1 版本中发现了新的漏洞。这些漏洞将在下一个版本中解决，但如果发现更多的漏洞，那么
+    `FullLoader` 可能会消失。
 - en: In the next section, I continue with injection attacks using a different data
     format, XML. XML isn’t just ugly; I think you are going to be surprised by how
     dangerous it can be.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一节中，我将继续使用不同的数据格式XML进行注入攻击。XML不仅令人讨厌；我认为您会对它有多危险感到惊讶。
 - en: 13.3 XML entity expansion
+  id: totrans-56
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 13.3 XML实体扩展
 - en: In this section, I discuss a couple of attacks designed to starve a system of
     memory. These attacks exploit a little-known XML feature known as *entity expansion*.
     What is an XML entity? An *entity* *declaration* allows you to define and name
     arbitrary data within an XML document. An *entity reference* is a placeholder,
     allowing you to embed an entity within an XML document. It is the job of an XML
     parser to expand an entity reference into an entity.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一节中，我讨论了一些旨在耗尽系统内存的攻击。这些攻击利用了一个鲜为人知的XML功能，称为*实体扩展*。什么是XML实体？*实体声明*允许您在XML文档中定义和命名任意数据。*实体引用*是一个占位符，允许您在XML文档中嵌入一个实体。XML解析器的工作是将实体引用扩展为实体。
 - en: 'Type the following code into an interactive Python shell as a concrete exercise.
     This code begins with a small inline XML document, shown in bold font. Within
     this document is a single entity declaration, representing the text `Alice`. The
     root element references this entity twice. Each reference is expanded as the document
     is parsed, embedding the entity two times:'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 将以下代码键入交互式Python shell中作为一个具体的练习。这段代码以粗体字显示一个小的内联XML文档开头。在这个文档中只有一个实体声明，代表文本`Alice`。根元素两次引用这个实体。在解析文档时，每个引用都会被扩展，将实体嵌入两次：
 - en: '[PRE5]'
+  id: totrans-59
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: ❶ Defines an inline XML document
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 定义一个内联XML文档
 - en: ❷ Defines an XML entity
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 定义一个XML实体
 - en: ❸ Root element contains three entity references.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 根元素包含三个实体引用。
 - en: ❹ Entity expansion demonstrated
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 实体扩展演示
 - en: In this example, a pair of three-character entity references act as placeholders
     for a five-character XML entity. This does not reduce the overall size of the
     document in a meaningful way, but imagine if the entity were 5000 characters long.
     Thus, memory conservation is one application of XML entity expansion; in the next
     two sections, you’ll learn how this feature is abused to achieve the opposite
     effect.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个例子中，一对三个字符的实体引用充当了一个五个字符的XML实体的占位符。这并没有以有意义的方式减少文档的总大小，但想象一下如果实体长度为5000个字符会怎样。因此，内存保护是XML实体扩展的一个应用；在接下来的两节中，您将了解到这个功能是如何被滥用以达到相反的效果。
 - en: 13.3.1 Quadratic blowup attack
+  id: totrans-65
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 13.3.1 二次膨胀攻击
 - en: 'An attacker carries out a *quadratic blowup attack* by weaponizing XML entity
     expansion. Consider the following code. This document contains an entity that
     is only 42 characters long; the entity is referred to only 10 times. A quadratic
@@ -312,128 +463,196 @@
     count that are orders of magnitude larger. The math is not difficult; for instance,
     if the entity is 1 MB, and the entity is referenced 1024 times, the document will
     weigh in at around 1 GB:'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 攻击者通过武器化XML实体扩展来执行*二次膨胀攻击*。考虑以下代码。这个文档包含一个只有42个字符长的实体；这个实体只被引用了10次。二次膨胀攻击利用了一个像这样的文档，其中实体和引用计数的数量级更大。数学并不困难；例如，如果实体是1
+    MB，实体被引用了1024次，那么文档的大小将约为1 GB：
 - en: '[PRE6]'
+  id: totrans-67
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: ❶ A single entity declaration
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 单个实体声明
 - en: ❷ 10 entity references
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 10个实体引用
 - en: Systems with insufficient input validation are easy targets for quadratic blowup
     attacks. The attacker injects a small amount of data; the system then exceeds
     its memory capacity, attempting to expand the data. For this reason, the malicious
     input is called a *memory bomb**.* In the next section, I’ll show you a much bigger
     memory bomb, and you’ll learn how to defuse it.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 输入验证不足的系统很容易成为二次膨胀攻击的目标。攻击者注入少量数据；系统随后超出其内存容量，试图扩展数据。因此，恶意输入被称为*内存炸弹*。在下一节中，我将向您展示一个更大的内存炸弹，并教您如何化解它。
 - en: 13.3.2 Billion laughs attack
+  id: totrans-71
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 13.3.2 十亿笑攻击
 - en: This attack is hilarious. *A billion laughs attack*, also known as an *exponential
     blowup expansion attack*, is similar to a quadratic blowup attack, but far more
     effective. This attack exploits the fact that an XML entity may contain references
     to other entities. It is hard to imagine a commercial use case for this feature
     in the real world.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种攻击很有趣。*十亿笑攻击*，也被称为*指数级膨胀扩展攻击*，类似于二次膨胀攻击，但效果更加显著。这种攻击利用了XML实体可能包含对其他实体的引用的事实。很难想象在现实世界中有商业用途的情况下会使用这个功能。
 - en: 'The following code illustrates how a billion laughs attack is carried out.
     The root element of this document contains only one entity reference, shown in
     bold. This reference is a placeholder for a nested hierarchy of entities:'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码示例说明了如何执行十亿笑话攻击。此文档的根元素仅包含一个实体引用，以粗体显示。此引用是实体嵌套层次结构的占位符：
 - en: '[PRE7]'
+  id: totrans-74
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: ❶ Four nested levels of entities
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 四个嵌套层次的实体
 - en: Processing this document will force the XML parser to expand this reference
     into only 1000 repetitions of the text `lol`. A billion laughs attack makes use
     of an XML document like this with many more levels of nested entities. Each level
     increases the memory consumption by an additional order of magnitude. This technique
     will exceed the memory capacity of any computer by using an XML document no bigger
     than a page in this book.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 处理此文档将强制 XML 解析器将此引用展开为文本 `lol` 的仅 1000 个重复。一个十亿笑话攻击利用了这样一个具有更多层次嵌套实体的 XML 文档。每个级别将内存消耗增加一个数量级。这种技术将使用不超过本书一页的
+    XML 文档超出任何计算机的内存容量。
 - en: Like most programming languages, Python has many APIs to parse XML. The `minidom`,
     `pulldom`, `sax`, and `etree` packages are all vulnerable to quadratic blowups
     and billion laughs. In defense of Python, these APIs are simply following the
     XML specification.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 像大多数编程语言一样，Python 有许多解析 XML 的 API。`minidom`、`pulldom`、`sax` 和 `etree` 包都容易受到二次增长和十亿笑话攻击的影响。为了保护
+    Python，这些 API 只是遵循 XML 规范。
 - en: 'Adding memory to a system obviously isn’t a solution to this problem; adding
     input validation is. Python programmers resist memory bombs with a library known
     as `defusedxml`. From within your virtual environment, run the following command
     to install `defusedxml`:'
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 显然，向系统添加内存并不是解决此问题的方法；添加输入验证是。Python 程序员通过名为 `defusedxml` 的库来抵御内存炸弹。在您的虚拟环境中，运行以下命令来安装
+    `defusedxml`：
 - en: '[PRE8]'
+  id: totrans-79
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 'The `defusedxml` library is designed to be a drop-in replacement for Python’s
     native XML APIs. For example, let’s compare two blocks of code. The following
     lines of code will bring down a system as it tries to parse malicious XML:'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: '`defusedxml` 库旨在成为 Python 原生 XML API 的一个即插即用替代品。例如，让我们比较两个代码块。以下代码将使系统崩溃，因为它试图解析恶意
+    XML：'
 - en: '[PRE9]'
+  id: totrans-81
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: ❶ Opens a memory bomb
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 打开了一个内存炸弹
 - en: 'Conversely, the following lines of code raise an `EntitiesForbidden` exception
     while trying to parse the same file. The `import` statement is the only difference:'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 相反，以下代码在尝试解析相同文件时会引发 `EntitiesForbidden` 异常。唯一的区别是 `import` 语句：
 - en: '[PRE10]'
+  id: totrans-84
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: ❶ Raises an EntitiesForbidden exception
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 引发一个 EntitiesForbidden 异常
 - en: Beneath the hood, `defusedxml` wraps the `parse` function for each of Python’s
     native XML APIs. The `parse` functions defined by `defusedxml` do not support
     entity expansion by default. You are free to override this behavior with the `forbid_
     entities` keyword argument if you need this functionality when parsing XML from
     a trusted source. Table 13.1 lists each of Python’s native XML APIs and their
     respective `defusedxml` substitutes.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 在底层，`defusedxml` 封装了每个 Python 原生 XML API 的 `parse` 函数。`defusedxml` 定义的 `parse`
+    函数默认不支持实体展开。如果您需要在从受信任的来源解析 XML 时使用此功能，可以自由使用 `forbid_entities` 关键字参数覆盖此行为。表 13.1
+    列出了 Python 的每个原生 XML API 及其相应的 `defusedxml` 替代品。
 - en: Table 13.1 Python XML APIs and defusedxml alternatives
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 13.1 Python XML API 和 defusedxml 替代方案
 - en: '| Native Python API | defusedxml API |'
+  id: totrans-88
   prefs: []
   type: TYPE_TB
+  zh: '| 原生 Python API | defusedxml API |'
 - en: '| from xml.dom.minidom import parse | from defusedxml.minidom import parse
     |'
+  id: totrans-89
   prefs: []
   type: TYPE_TB
+  zh: '| from xml.dom.minidom import parse | from defusedxml.minidom import parse
+    |'
 - en: '| from xml.dom.pulldom import parse | from defusedxml.pulldom import parse
     |'
+  id: totrans-90
   prefs: []
   type: TYPE_TB
+  zh: '| from xml.dom.pulldom import parse | from defusedxml.pulldom import parse
+    |'
 - en: '| from xml.sax import parse | from defusedxml.sax import parse |'
+  id: totrans-91
   prefs: []
   type: TYPE_TB
+  zh: '| from xml.sax import parse | from defusedxml.sax import parse |'
 - en: '| from xml.etree.ElementTree import parse | from defusedxml.ElementTree import
     parse |'
+  id: totrans-92
   prefs: []
   type: TYPE_TB
+  zh: '| from xml.etree.ElementTree import parse | from defusedxml.ElementTree import
+    parse |'
 - en: The memory bombs I present in this chapter are both injection attacks and *denial-of-service*
     (*DoS*) *attacks*. In the next section, you’ll learn how to identify and resist
     a handful of other DoS attacks.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章提出的内存炸弹既是注入攻击又是 *拒绝服务* (*DoS*) *攻击*。在下一节中，您将学习如何识别和抵御其他几种 DoS 攻击。
 - en: 13.4 Denial of service
+  id: totrans-94
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 13.4 拒绝服务
 - en: You are probably already familiar with *DoS* attacks. These attacks are designed
     to overwhelm a system with excessive resource consumption. Resources targeted
     by DoS attacks include memory, storage space, network bandwidth, and CPU. The
@@ -441,8 +660,11 @@
     availability of the system. DoS attacks are carried out in countless ways. The
     most common forms of DoS attacks are carried out by targeting a system with large
     amounts of malicious network traffic.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能已经熟悉 *DoS* 攻击了。这些攻击旨在通过消耗过多的资源来压倒系统。DoS 攻击的目标资源包括内存、存储空间、网络带宽和 CPU。DoS 攻击的目标是通过损害系统的可用性来阻止用户访问服务。DoS
+    攻击有无数种方式进行。最常见的 DoS 攻击形式是通过向系统发送大量恶意网络流量来实施。
 - en: A DoS attack plan is usually more sophisticated than just sending lots of network
     traffic to a system. The most effective attacks manipulate a particular property
     of the traffic in order to stress the target more. Many of these attacks make
@@ -452,84 +674,129 @@
     kinds of attacks. On the other hand, an application server such as Django, or
     a web server gateway interface such as Gunicorn, are the wrong tools for the job.
     In other words, these problems cannot be solved in Python.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: DoS 攻击计划通常比仅仅向系统发送大量网络流量更加复杂。最有效的攻击会操纵流量的特定属性，以增加对目标的压力。许多这些攻击利用了格式错误的网络流量，以利用低级网络协议实现。像
+    NGINX 这样的 Web 服务器，或者像 AWS 弹性负载均衡这样的负载均衡解决方案，是抵御这些攻击的合适场所。另一方面，像 Django 这样的应用服务器，或者像
+    Gunicorn 这样的 Web 服务器网关接口，则不适合这项工作。换句话说，这些问题不能用 Python 解决。
 - en: In this section, I focus on higher-level HTTP-based DoS attacks. Conversely,
     your load balancer and your web server are the wrong place to resist these kinds
     of attacks; your application server and your web server gateway interface are
     the right place. Table 13.2 illustrates a few Django settings you can use to configure
     limits for these properties.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，我专注于更高级的基于 HTTP 的 DoS 攻击。相反，负载均衡器和 Web 服务器是抵御这些攻击的错误场所；应用服务器和 Web 服务器网关接口才是正确的场所。表
+    13.2 说明了一些 Django 设置，您可以使用这些设置来配置这些属性的限制。
 - en: Table 13.2 Django settings for DoS attack resistance
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 13.2 Django 抗 DoS 攻击设置
 - en: '| Setting | Description |'
+  id: totrans-99
   prefs: []
   type: TYPE_TB
+  zh: '| 设置 | 描述 |'
 - en: '| DATA_UPLOAD_MAX_NUMBER_FIELDS | Configures the maximum number of request
     parameters allowed. Django raises a SuspiciousOperation exception if this check
     fails. This setting defaults to 1000, but legitimate HTTP requests rarely have
     this many fields. |'
+  id: totrans-100
   prefs: []
   type: TYPE_TB
+  zh: '| DATA_UPLOAD_MAX_NUMBER_FIELDS | 配置允许的请求参数最大数量。如果此检查失败，Django 将引发 SuspiciousOperation
+    异常。此设置默认为 1000，但合法的 HTTP 请求很少有这么多字段。 |'
 - en: '| DATA_UPLOAD_MAX_MEMORY_SIZE | Limits the maximum request body size in bytes.
     This check ignores file-upload data. Django raises a Suspicious-Operation exception
     if a request body exceeds this limit. |'
+  id: totrans-101
   prefs: []
   type: TYPE_TB
+  zh: '| DATA_UPLOAD_MAX_MEMORY_SIZE | 限制请求体的最大大小（以字节为单位）。此检查忽略文件上传数据。如果请求体超过此限制，Django
+    将引发 Suspicious-Operation 异常。 |'
 - en: '| FILE_UPLOAD_MAX_MEMORY_SIZE | Represents the maximum size of an uploaded
     file in bytes before it is written from memory to disk. This setting aims to limit
     memory consumption; it does not limit the size of the uploaded file. |'
+  id: totrans-102
   prefs: []
   type: TYPE_TB
+  zh: '| FILE_UPLOAD_MAX_MEMORY_SIZE | 表示上传到内存中的文件在写入磁盘之前的最大大小（以字节为单位）。此设置旨在限制内存消耗；它不限制上传文件的大小。
+    |'
 - en: WARNING When was the last time you even saw a form with 1000 fields? Reducing
     `DATA_UPLOAD_MAX_NUMBER_FIELDS` from 1000 to 50 is probably worth your time.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 上一次你见到有 1000 个字段的表单是什么时候？将 `DATA_UPLOAD_MAX_NUMBER_FIELDS` 从 1000 减少到 50
+    或许值得您的时间。
 - en: '`DATA_UPLOAD_MAX_MEMORY_SIZE` and `FILE_UPLOAD_MAX_MEMORY_SIZE` reasonably
     default to 2,621,440 bytes (2.5 MB). Assigning these settings to `None` disables
     the check.'
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: '`DATA_UPLOAD_MAX_MEMORY_SIZE` 和 `FILE_UPLOAD_MAX_MEMORY_SIZE` 合理地默认为 2,621,440
+    字节（2.5 MB）。将这些设置分配给 `None` 将禁用该检查。'
 - en: Table 13.3 illustrates a few Gunicorn arguments to resist several other HTTP-based
     DoS attacks.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 13.3 说明了一些 Gunicorn 参数，用于抵御其他几种基于 HTTP 的 DoS 攻击。
 - en: Table 13.3 Gunicorn arguments for DoS attack resistance
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 13.3 Gunicorn 抗 DoS 攻击参数
 - en: '| Argument | Description |'
+  id: totrans-107
   prefs: []
   type: TYPE_TB
+  zh: '| 参数 | 描述 |'
 - en: '| limit-request-line | Represents the size limit, in bytes, of a request line.
     A request line includes the HTTP method, protocol version, and URL. The URL is
     the obvious limiting factor. This setting defaults to 4094; the maximum value
     is 8190\. Setting this to 0 disables the check. |'
+  id: totrans-108
   prefs: []
   type: TYPE_TB
+  zh: '| limit-request-line | 表示请求行的大小限制，以字节为单位。请求行包括HTTP方法，协议版本和URL。URL是明显的限制因素。此设置默认为4094；最大值为8190。将其设置为0将禁用检查。
+    |'
 - en: '| limit-request-fields | Limits the number of HTTP headers a request is allowed
     to have. The “fields” limited by this setting are not form fields. The default
     value is reasonably set to 100\. The maximum value of limit-request-fields is
     32768. |'
+  id: totrans-109
   prefs: []
   type: TYPE_TB
+  zh: '| limit-request-fields | 限制请求允许具有的HTTP头数。此设置限制的“字段”不是表单字段。默认值合理设置为100。limit-request-fields的最大值为32768。
+    |'
 - en: '| limit-request-field_size | Represents the maximum allowed size of an HTTP
     header. The underscore is not a typo. The default value is 8190\. Setting this
     to 0 permits headers of unlimited size. This check is commonly performed by web
     servers as well. |'
+  id: totrans-110
   prefs: []
   type: TYPE_TB
+  zh: '| limit-request-field_size | 表示HTTP头的最大允许大小。下划线不是打字错误。默认值为8190。将其设置为0允许无限大小的头。Web服务器通常也执行此检查。
+    |'
 - en: The main point of this section is that any property of an HTTP request can be
     weaponized; this includes the size, URL length, field count, field size, file
     upload size, header count, and header size. In the next section, you’ll learn
     about an attack driven by a single request header.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节的主要观点是，HTTP请求的任何属性都可以被武器化；这包括大小、URL长度、字段计数、字段大小、文件上传大小、头计数和头大小。在下一节中，您将了解到由单个请求头驱动的攻击。
 - en: 13.5 Host header attacks
+  id: totrans-112
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 13.5 主机头攻击
 - en: Before we dive into `Host` header attacks, I’m going to explain why browsers
     and web servers use the `Host` header. A web server relays HTTP traffic between
     a website and its users. Web servers often do this for multiple websites. In this
@@ -537,33 +804,45 @@
     sets the `Host` header to. This prevents traffic for alice.com from being sent
     to bob.com, and vice versa. Figure 13.3 illustrates a web server routing HTTP
     requests between two users and two websites.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们深入讨论`Host`头攻击之前，我将解释为什么浏览器和Web服务器使用`Host`头。Web服务器在网站和其用户之间中继HTTP流量。Web服务器经常为多个网站执行此操作。在这种情况下，Web服务器将每个请求转发到浏览器设置`Host`头的任何网站。这样可以防止将alice.com的流量发送到bob.com，反之亦然。图13.3说明了一个Web服务器在两个用户和两个网站之间路由HTTP请求的情况。
 - en: '![CH13_F03_Byrne](Images/CH13_F03_Byrne.png)'
+  id: totrans-114
   prefs: []
   type: TYPE_IMG
+  zh: '![CH13_F03_Byrne](Images/CH13_F03_Byrne.png)'
 - en: Figure 13.3 A web server uses Host headers to route web traffic between Alice
     and Bob.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 图13.3 一个Web服务器使用主机头来在Alice和Bob之间路由Web流量。
 - en: Web servers are often configured to forward a request with a missing or invalid
     `Host` header to a default website. If this website blindly trusts the `Host`
     header value, it becomes vulnerable to a `Host` header attack.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: Web服务器通常配置为将缺少或无效的`Host`头的请求转发到默认网站。如果此网站盲目信任`Host`头值，它将变得容易受到`Host`头攻击的影响。
 - en: Suppose Mallory sends a password-reset request to alice.com. She forges the
     `Host` header value by setting it to `mallory.com` instead of `alice.com`. She
     also sets the email address field to `bob@bob.com` instead of `mallory@mallory.com`.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设Mallory向alice.com发送密码重置请求。她伪造了`Host`头值，将其设置为`mallory.com`而不是`alice.com`。她还将电子邮件地址字段设置为`bob@bob.com`而不是`mallory@mallory.com`。
 - en: Alice’s web server receives Mallory’s malicious request. Unfortunately, Alice’s
     web server is configured to forward the request, containing an invalid `Host`
     header, to her application server. The application server receives the password-reset
     request and sends Bob a password-reset email. Like the password-reset email you
     learned how to send in chapter 9, the email sent to Bob contains a password-reset
     link.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: Alice的Web服务器收到Mallory的恶意请求。不幸的是，Alice的Web服务器配置为将包含无效`Host`头的请求转发到她的应用服务器。应用服务器接收到密码重置请求并向Bob发送密码重置电子邮件。就像你在第9章学习发送的密码重置电子邮件一样，发送给Bob的电子邮件包含一个密码重置链接。
 - en: How does Alice’s application server generate Bob’s password-reset link? Unfortunately,
     it uses the inbound `Host` header. This means the URL Bob receives is for mallory.com,
     not alice.com; this link also contains the password-reset token as a query parameter.
@@ -571,65 +850,103 @@
     token to mallory.com. Mallory then uses the password-reset token to reset the
     password for, and take control of, Bob’s account. Figure 13.4 illustrates this
     attack.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: Alice 的应用程序服务器如何生成 Bob 的密码重置链接？不幸的是，它使用了传入的 `Host` 头。这意味着 Bob 收到的 URL 是针对 mallory.com
+    而不是 alice.com 的；此链接还包含密码重置令牌作为查询参数。Bob 打开电子邮件，点击链接，不小心将密码重置令牌发送到 mallory.com。然后，Mallory
+    使用密码重置令牌重置了 Bob 的密码，并接管了 Bob 的帐户。图 13.4 描绘了这种攻击。
 - en: '![CH13_F04_Byrne](Images/CH13_F04_Byrne.png)'
+  id: totrans-120
   prefs: []
   type: TYPE_IMG
+  zh: '![CH13_F04_Byrne](Images/CH13_F04_Byrne.png)'
 - en: Figure 13.4 Mallory takes over Bob’s account with a Host header attack.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 13.4 Mallory 利用 Host 头攻击接管了 Bob 的帐户。
 - en: 'Your application server should never get its identity from the client. It is
     therefore unsafe to access the `Host` header directly, like this:'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 您的应用程序服务器永远不应从客户端获取其标识。因此，直接访问 `Host` 头是不安全的，像这样：
 - en: '[PRE11]'
+  id: totrans-123
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: ❶ Bypasses input validation
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 绕过输入验证
 - en: 'Always use the `get_host` method on the request if you need to access the hostname.
     This method verifies and retrieves the `Host` header:'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果需要访问主机名，请始终在请求上使用 `get_host` 方法。此方法验证并检索 `Host` 头：
 - en: '[PRE12]'
+  id: totrans-126
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: ❶ Validates Host header
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 验证 Host 头
 - en: How does the `get_host` method verify the `Host` header? By validating it against
     the `ALLOWED_HOSTS` setting. This setting is a list of hosts and domains from
     which the application is allowed to serve resources. The default value is an empty
     list. Django facilitates local development by allowing `Host` headers with `localhost`,
     `127.0.0.1`, and `[::1]` if `DEBUG` is set to `True`. Table 13.4 illustrates how
     to configure `ALLOWED_ HOSTS` for production.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: '`get_host` 方法如何验证 `Host` 头？通过根据 `ALLOWED_HOSTS` 设置对其进行验证。该设置是允许应用程序提供资源的主机和域名列表。默认值为空列表。如果
+    `DEBUG` 设置为 `True`，Django 允许使用 `localhost`、`127.0.0.1` 和 `[::1]` 的 `Host` 头来方便地进行本地开发。表
+    13.4 展示了如何为生产环境配置 `ALLOWED_HOSTS`。'
 - en: Table 13.4 ALLOWED_HOSTS configuration by example
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 13.4 ALLOWED_HOSTS 配置示例
 - en: '| Example | Description | Match | Mismatch |'
+  id: totrans-130
   prefs: []
   type: TYPE_TB
+  zh: '| 示例 | 描述 | 匹配 | 不匹配 |'
 - en: '| alice.com | Fully qualified name | alice.com | sub.alice.com |'
+  id: totrans-131
   prefs: []
   type: TYPE_TB
+  zh: '| alice.com | 完全合格的名称 | alice.com | sub.alice.com |'
 - en: '| sub.alice.com | Fully qualified name | sub.alice.com | alice.com |'
+  id: totrans-132
   prefs: []
   type: TYPE_TB
+  zh: '| sub.alice.com | 完全合格的名称 | sub.alice.com | alice.com |'
 - en: '| .alice.com | Subdomain wildcard | alice.com, sub.alice.com |  |'
+  id: totrans-133
   prefs: []
   type: TYPE_TB
+  zh: '| .alice.com | 子域通配符 | alice.com，sub.alice.com |  |'
 - en: '| * | Wildcard | alice.com, sub.alice.com, bob.com |  |'
+  id: totrans-134
   prefs: []
   type: TYPE_TB
+  zh: '| * | 通配符 | alice.com，sub.alice.com，bob.com |  |'
 - en: WARNING Do not add `*` to `ALLOWED_HOSTS`. Many programmers do this for the
     sake of convenience, unaware that they are effectively disabling `Host` header
     validation.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：不要将 `*` 添加到 `ALLOWED_HOSTS` 中。许多程序员出于方便而这样做，他们不知道这实际上是在禁用 `Host` 头验证。
 - en: A convenient way to configure `ALLOWED_HOSTS` is to dynamically extract the
     hostname from the public-key certificate of your application as it starts. This
     is useful for a system that is deployed with different hostnames to different
@@ -637,31 +954,49 @@
     package. This code opens the public-key certificate file, parses it, and stores
     it in memory as an object. The hostname attribute is then copied from the object
     to the `ALLOWED_HOSTS` setting.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 配置 `ALLOWED_HOSTS` 的一种方便方法是在应用程序启动时从公钥证书中动态提取主机名。这对于在不同环境中部署具有不同主机名的系统非常有用。清单
+    13.1 展示了如何使用 `cryptography` 包执行此操作。此代码打开公钥证书文件，解析它，并将其存储在内存中作为对象。然后，从对象中复制主机名属性到
+    `ALLOWED_HOSTS` 设置。
 - en: Listing 13.1 Extracting the host from a public-key certificate
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 清单 13.1 从公钥证书中提取主机
 - en: '[PRE13]'
+  id: totrans-138
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: ❶ Extracts the common name from the certificate at startup
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 在启动时从证书中提取通用名称
 - en: ❷ Adds the common name to ALLOWED_HOSTS
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 将常见名称添加到 ALLOWED_HOSTS 中
 - en: Note `ALLOWED_HOSTS` is unrelated to TLS. Like any other application server,
     Django for the most part is unaware of TLS. Django uses the `ALLOWED_HOSTS` setting
     only to prevent `Host` header attacks.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 `ALLOWED_HOSTS` 与 TLS 无关。像任何其他应用程序服务器一样，Django 在很大程度上不知道 TLS。Django 仅使用 `ALLOWED_HOSTS`
+    设置来防止 `Host` 头攻击。
 - en: Once again, an attacker will weaponize any property of an HTTP request if they
     can. In the next section, I cover yet another technique attackers use to embed
     malicious input in the request URL.
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 再次强调，如果可能，攻击者将武器化 HTTP 请求的任何属性。在下一节中，我将介绍攻击者使用的另一种将恶意输入嵌入请求 URL 中的技术。
 - en: 13.6 Open redirect attacks
+  id: totrans-143
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -673,21 +1008,26 @@
     Mallory sends this email to Bob. Bob clicks the link, navigates to Mallory’s site,
     and enters his login credentials. Mallory’s site then uses Bob’s credentials to
     access his account at bank.alice.com. Bob’s money is then transferred to Mallory.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
 - en: 'By clicking the link, Bob is said to be *phished* because he took the bait.
     Mallory has successfully executed a *phishing* scam. This scam comes in many flavors:'
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
 - en: '*Phishing* attacks arrive via email.'
+  id: totrans-146
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Smishing* attacks arrive via Short Message Service (SMS).'
+  id: totrans-147
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Vishing* attacks arrive via voicemail.'
+  id: totrans-148
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -698,6 +1038,7 @@
     to redirect the user to? The address of the redirect is determined by the value
     of a request parameter. (In chapter 8, you implemented an authentication workflow
     supporting the same feature via the same mechanism.)
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
 - en: Unfortunately, bank.alice.com doesn’t validate each address before redirecting
@@ -706,41 +1047,53 @@
     to launch an even more effective phishing scam. Mallory takes advantage of this
     opportunity by sending Charlie an email with a link to the open redirect. This
     URL, shown in figure 13.5, points to the domain of bank.alice.com.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
 - en: '![CH13_F05_Byrne](Images/CH13_F05_Byrne.png)'
+  id: totrans-151
   prefs: []
   type: TYPE_IMG
 - en: Figure 13.5 URL anatomy of an open redirect attack
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
 - en: Charlie is much more likely to take the bait in this case because he receives
     a URL with the host of his bank. Unfortunately for Charlie, his bank redirects
     him to Mallory’s site, where he enters his credentials and personal information.
     Figure 13.6 depicts this attack.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
 - en: '![CH13_F06_Byrne](Images/CH13_F06_Byrne.png)'
+  id: totrans-154
   prefs: []
   type: TYPE_IMG
 - en: Figure 13.6 Mallory phishes Bob with an open redirect attack.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 13.2 illustrates a simple open redirect vulnerability. `OpenRedirectView`
     performs a task and then reads the value of a query parameter. The user is then
     blindly redirected to whatever the next parameter value is.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 13.2 An open redirect without input validation
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE14]'
+  id: totrans-158
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: ❶ Reads next request parameter
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Sends redirect response
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
 - en: Conversely, `ValidatedRedirectView` in listing 13.3 resists open redirect attacks
@@ -748,66 +1101,84 @@
     one of Django’s built-in utility functions. This function, shown in bold font,
     accepts a URL and host. It returns `True` if and only if the domain of the URL
     matches the host.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 13.3 Resisting open redirect attacks with input validation
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE15]'
+  id: totrans-163
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: ❶ Reads next request parameter
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Safely determines host
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
 - en: ❸ Validates host and protocol of redirect
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
 - en: ❹ Prevents attack
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
 - en: Notice that `ValidatedRedirectView` determines the hostname with the `get_host`
     method instead of accessing the `Host` header directly. In the previous section,
     you learned to avoid `Host` header attacks this way.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
 - en: In rare situations, your system may actually need to dynamically redirect users
     to more than one host. The `url_has_allowed_host_and_scheme` function accommodates
     this use case by accepting a single hostname or a collection of many hostnames.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
 - en: The `url_has_allowed_host_and_scheme` function rejects any URL using HTTP if
     the `require_https` keyword argument is set to `True`. Unfortunately, this keyword
     argument defaults to `False`, creating an opportunity for a different kind of
     open redirect attack.
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
 - en: 'Let’s suppose Mallory and Eve collaborate on an attack. Mallory begins this
     attack by targeting Charlie with yet another phishing scam. Charlie receives an
     email containing another link with the following URL. Notice that the source and
     destination hosts are the same; the protocols, shown in bold font, are different:'
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE16]'
+  id: totrans-172
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: Charlie clicks the link, taking him to Alice’s site over HTTPS. Unfortunately
     Alice’s open redirect then sends him to another part of the site over HTTP. Eve,
     a network eavesdropper, picks up where Mallory leaves off by carrying out a man-in-the-middle
     attack.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
 - en: WARNING The default value for `require_https` is `False`. You should set it
     to `True`.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
 - en: In the next section, I finish this chapter with what is arguably the most well-known
     injection attack. It needs no introduction.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
 - en: 13.7 SQL injection
+  id: totrans-176
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -816,6 +1187,7 @@
     systems, your project implements these workflows by relaying data back and forth
     between a user and a relational database. When workflows like this fail to validate
     user input, they become a vector for *SQL injection*.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
 - en: An attacker carries out SQL injection by submitting malicious SQL code as input
@@ -823,6 +1195,7 @@
     executes it instead. This attack is used to modify existing SQL statements or
     inject arbitrary SQL statements into a system. This allows attackers to destroy,
     modify, or gain unauthorized access to data.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
 - en: Some security books have an entire chapter devoted to SQL injection. Few readers
@@ -831,19 +1204,23 @@
     frameworks don’t just read and write data for you; they are a layer of defense
     against SQL injection. Every major Python ORM framework, such as Django ORM or
     SQLAlchemy, effectively resists SQL injection with automatic query parameterization.
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
 - en: WARNING An ORM framework is preferable to writing raw SQL. Raw SQL is error
     prone, more labor intensive, and ugly.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
 - en: 'Occasionally, object-relational mapping isn’t the right tool for the job. For
     example, your application may need to execute a complicated SQL query for the
     sake of performance. In these rare scenarios when you must write raw SQL, Django
     ORM supports two options: raw SQL queries and database connection queries.'
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
 - en: 13.7.1 Raw SQL queries
+  id: totrans-182
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -852,32 +1229,42 @@
     named `raw`. This method accepts raw SQL and returns a set of model instances.
     The following code illustrates a query that returns a potentially large number
     of rows. To save resources, only two columns of the table are selected:'
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE17]'
+  id: totrans-184
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: ❶ Selects two columns for all rows
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
 - en: 'Suppose the following query is intended to control which users are allowed
     to access sensitive information. As intended, the `raw` method returns a single
     user model when `first_name` equals `Alice`. Unfortunately, Mallory can escalate
     her privileges by manipulating `first_name` to be `"Alice'' OR first_name = ''Mallory"`:'
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE18]'
+  id: totrans-187
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: WARNING Raw SQL and string interpolation are a terrible combination.
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
 - en: Notice that putting quotes around the placeholder, `%s`, provides a false sense
     of security. Quoting the placeholder provides no safety because Mallory can simply
     prepare malicious input containing additional quotes.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
 - en: WARNING Quoting placeholders doesn’t sanitize raw SQL.
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
 - en: 'By calling the `raw` method, you must take responsibility for parameterizing
@@ -887,23 +1274,29 @@
     values and safely inserts them into your raw SQL statement, escaping all special
     characters. SQL statements prepared this way are immune to SQL injection. Notice
     that the placeholder is not surrounded by quotes:'
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE19]'
+  id: totrans-192
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: Alternatively, the `raw` method accepts a dictionary instead of a list. In this
     scenario, the `raw` method safely replaces `%(dict_key)` with whatever `dict_key`
     is mapped to in your dictionary.
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
 - en: 13.7.2 Database connection queries
+  id: totrans-194
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: Django allows you to execute arbitrary raw SQL queries directly through a database
     connection. This is useful if your query doesn’t belong with a single model class,
     or if you want to execute an `UPDATE`, `INSERT`, or `DELETE` statement.
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
 - en: 'Connection queries carry just as much risk as raw method queries do. For example,
@@ -911,30 +1304,40 @@
     This code behaves as intended when `msg_id` equals `42`. Unfortunately Mallory
     will nuke every message in the table if she can manipulate `msg_id` to be `42
     OR 1 = 1`:'
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE20]'
+  id: totrans-197
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: ❶ SQL statement with one placeholder
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Executes SQL statement
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
 - en: 'As with `raw` method queries, the only way to execute connection queries safely
     is with query parameterization. Connection queries are parameterized the same
     way `raw` method queries are. The following example demonstrates how to delete
     an authenticated message safely with the `params` keyword argument, shown in bold:'
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE21]'
+  id: totrans-201
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: ❶ Unquoted placeholder
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Escapes special characters, executes SQL statement
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
 - en: The attacks and countermeasures I cover in this chapter are not as complicated
@@ -942,37 +1345,46 @@
     forgery and clickjacking have dedicated chapters. The next chapter is devoted
     entirely to a category of attacks known as *cross-site scripting*. These attacks
     are more complicated and common than all of the attacks I present in this chapter.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
 - en: Summary
+  id: totrans-205
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: Hashing and data integrity effectively resist package injection attacks.
+  id: totrans-206
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Parsing YAML can be just as dangerous as parsing `pickle`.
+  id: totrans-207
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: XML isn’t just ugly; parsing it from an untrusted source can bring down a system.
+  id: totrans-208
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: You can resist low-level DoS attacks with your web server and load balancer.
+  id: totrans-209
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: You can resist high-level DoS attacks with your WSGI or application server.
+  id: totrans-210
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Open redirect attacks enable phishing scams and man-in-the-middle attacks.
+  id: totrans-211
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Object-relational mapping effectively resists SQL injection.
+  id: totrans-212
   prefs:
   - PREF_UL
   type: TYPE_NORMAL

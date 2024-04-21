@@ -127,11 +127,14 @@
   id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个函数可以用符号表示，例如+或字母。当使用符号时，它被称为*运算符*，因此+和×是运算符，参数被称为*操作数*。当函数有一个参数时，符号可以放在参数前面，如-5或√9，或者在参数后面，如5！（5的阶乘，即1×2×3×4×5
+    = 120）。如果有两个参数，符号就放在它们之间，如3+4或6×7。当符号是一个字母时，参数被括在括号中，如f(x)。函数由f表示，参数由x表示。如果有多个参数，则用逗号分隔，如f(a，b，c)。一些关于计算机语言的书籍区分参数和参数，但这在这里并不重要。
 - en: 3.3 Boolean operators
   id: totrans-17
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 3.3 布尔运算符
 - en: Just as addition, subtraction, multiplication, and similar functions, operate
     on numbers, there are several functions that operate on bits when they represent
     truth values. These functions are called *logical operators*, or *Boolean operators*
@@ -139,27 +142,33 @@
   id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如加法、减法、乘法等函数对数字进行操作一样，当位表示真值时，有几个函数对位进行操作。这些函数被称为*逻辑运算符*，或者为了英国数学家乔治·布尔而称之为*布尔运算符*。
 - en: 'If A and B are truth values, then the logical functions **not**, **and**, **or**
     and **xor** are defined as follows:'
   id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果A和B是真值，则逻辑函数**not**，**and**，**or**和**xor**定义如下：
 - en: '**not** A is true if A is false, and false if A is true.'
   id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '**not** A如果A为假，则为真，如果A为真，则为假。'
 - en: A **and** B is true if A and B are both true, and otherwise it is false.
   id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果A和B都为真，则A **and** B为真，否则为假。
 - en: A **or** B is true if either A or B or both are true, and otherwise it is false.
   id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果A或B或两者都为真，则A **or** B为真，否则为假。
 - en: A **xor** B is true if exactly one of A or B is true, and otherwise it is false.
   id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果A或B中只有一个为真，则A **xor** B为真，否则为假。
 - en: In other words, A **xor** B is true either if A is true and B is false, or if
     B is true and A is false. **xor** is called the *exclusive-OR* operator. It is
     commonly denoted by the symbol ⊕, a circle with a + inside. The **and** and **or**
@@ -169,14 +178,17 @@
   id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 换句话说，如果A为真且B为假，或者如果B为真且A为假，则A **xor** B为真。**xor**被称为*异或*运算符。它通常用符号⊕表示，里面有一个带加号的圆圈。**and**和**or**运算符通常用符号∧和∨表示。很容易记住哪个是哪个，因为**and**的符号∧看起来像一个没有横杠的大写A。
 - en: 'Here are the values of the four Boolean functions in table form:'
   id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里是四个布尔函数的值的表格形式：
 - en: '![3-unnumb-2](../Images/3-unnumb-2.png)'
   id: totrans-26
   prefs: []
   type: TYPE_IMG
+  zh: '![3-unnumb-2](../Images/3-unnumb-2.png)'
 - en: These four operators can be extended from single bits to strings of bits by
     operating on the corresponding pairs of bits. If A is 0011, a string of four bits
     representing the logic values false,false,true,true, and if B is 0101 representing
@@ -185,25 +197,30 @@
   id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 这四个运算符可以通过对应的位对操作来将单个位扩展为位字符串。如果A是0011，表示逻辑值为false,false,true,true，如果B是0101，表示逻辑值为false,true,false,true，则应用四个布尔运算符得到
 - en: '![3-unnumb-3](../Images/3-unnumb-3.png)'
   id: totrans-28
   prefs: []
   type: TYPE_IMG
+  zh: '![3-unnumb-3](../Images/3-unnumb-3.png)'
 - en: 'The exclusive-OR operator is used extensively in cryptography. For example,
     a simple implementation of a one-time pad (see chapter 14) is to exclusive-OR
     the bytes of the message with bytes of a key stream, like this:'
   id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 异或运算符在密码学中被广泛使用。例如，一次性密码本的简单实现（见第14章）是将消息的字节与密钥流的字节进行异或运算，如下所示：
 - en: '![3-unnumb-4](../Images/3-unnumb-4.png)'
   id: totrans-30
   prefs: []
   type: TYPE_IMG
+  zh: '![3-unnumb-4](../Images/3-unnumb-4.png)'
 - en: 3.4 Number bases
   id: totrans-31
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 3.4 数字进位制
 - en: In ordinary arithmetic, numbers are represented in decimal notation. This notation
     was invented by the Hindus and the Arabs some time between the 5th and 7th centuries.
     Thus decimal digits are also called *Arabic numerals*. The system was introduced
@@ -212,6 +229,7 @@
   id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 在普通算术中，数字用十进制表示。这种表示法是印度人和阿拉伯人在5至7世纪之间发明的。因此十进制数字也称为*阿拉伯数字*。这个系统由比萨的列奥纳多（列奥纳多·皮萨诺）引入欧洲，他在他那个时代被称为斐波那契。
 - en: Historical tidbit
   id: totrans-33
   prefs: []

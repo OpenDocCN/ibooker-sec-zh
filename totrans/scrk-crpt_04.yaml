@@ -1,30 +1,44 @@
 - en: 4 Cryptographer’s toolbox
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 4 密码学家的工具箱
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: The rating system used for ciphers
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 用于密码的评级系统
 - en: Substitution ciphers
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 替换密码
 - en: Transposition ciphers
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 置换密码
 - en: Fractionation, breaking letters into smaller units
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 分数化，将字母分解为更小的单元
 - en: Pseudorandom number generators
+  id: totrans-6
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 伪随机数生成器
 - en: Secret Key ciphers are built from a few basic elements. You can think of these
     as the tools of the trade. To build a strong cipher you want all of these tools
     in your toolbox. That does not mean you should use every element in every cipher.
@@ -32,86 +46,124 @@
     cipher would be slower, with no added benefit. This chapter covers substitution,
     transposition, fractionation and random numbers. I introduce other tools such
     as text compression in chapter 10 and block chaining in chapter 11.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 秘钥密码是由几个基本元素构建的。您可以将这些视为行业工具。要构建一个强大的密码，您希望在工具箱中拥有所有这些工具。这并不意味着您应该在每个密码中使用每个元素。这可能会导致过度复杂化而没有安全性的改善。您的密码会变得更慢，但没有任何额外的好处。本章涵盖了替换、置换、分数化和随机数等工具。我在第
+    10 章介绍了其他工具，如文本压缩，第 11 章介绍了块链。
 - en: Before discussing the elements, let’s talk about strength. The strength of a
     cipher is measured in bits. Each bit represents one binary choice. If there were
     a cipher where each ciphertext could represent just one of two possible plaintexts,
     then that cipher would have a strength of 1 bit. For example,
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 在讨论元素之前，让我们谈谈强度。密码的强度以比特为单位衡量。每个比特代表一个二进制选择。如果有一个密码，每个密文只能代表两种可能的明文之一，那么该密码的强度将为
+    1 比特。例如，
 - en: 0 = We lost.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 0 = 我们输了。
 - en: 1 = We won.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 1 = 我们赢了。
 - en: The size of the key is a limiting factor in determining the strength of a cipher.
     If a cipher uses 64-bit keys, then its strength can be no more than 64 bits, but
     the strength can be less if the cipher is weak.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 密钥的大小是确定密码强度的限制因素。如果一个密码使用 64 位密钥，那么它的强度最多可以达到 64 位，但如果密码弱，则强度可能会更低。
 - en: '![4-unnumb-1](../Images/4-unnumb-1.png)'
+  id: totrans-12
   prefs: []
   type: TYPE_IMG
+  zh: '![4-unnumb-1](../Images/4-unnumb-1.png)'
 - en: 4.1 Rating system
+  id: totrans-13
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 4.1 评级系统
 - en: 'In order to give you a general feel for the strengths of the ciphers described
     in this book, I rate ciphers on a One to Ten scale. These are my personal ratings,
     based on my experience and my analysis of how much effort is required to break
     the cipher using the best techniques I know, and how the ciphers compare to one
     another and to historical ciphers that were or were not broken in practice. I
     give much of the analysis in the section preceding each rating:'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了让您对本书中描述的密码的强度有一个大致了解，我使用了一个从一到十的评级标准。这些是我个人的评级，基于我的经验和我对使用我所知道的最佳技术来破解密码所需的努力以及密码之间以及与历史密码的比较，无论是实际上被破解还是未被破解。我在每个评级前面的部分中给出了大部分分析：
 - en: One indicates a cipher that can be broken by a beginner with no training using
     only paper and pencil and moderate effort.
+  id: totrans-15
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: One 表示一个初学者可以仅使用纸和铅笔以及适度的努力来破解的密码。
 - en: Two indicates a cipher that can be broken by an experienced amateur or hobbyist
     using only paper and pencil.
+  id: totrans-16
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Two 表示一个经验丰富的业余爱好者可以仅使用纸和铅笔破解的密码。
 - en: Three is a cipher that a skilled amateur cryptographer can breach with hand
     methods.
+  id: totrans-17
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Three 是一个熟练的业余密码学家可以用手工方法破解的密码。
 - en: Four or Five means that a computer, a trained cryptographer, or both are needed.
+  id: totrans-18
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Four 或 Five 意味着需要计算机、训练有素的密码学家或两者兼而有之。
 - en: From Six to Nine indicates how much computing power an expert opponent would
     need.
+  id: totrans-19
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 从六到九表示专家对手需要多少计算能力。
 - en: Ten denotes a cipher that will stand up against a national cryptographic agency
     with legions of trained cryptographers using today’s largest supercomputers.
+  id: totrans-20
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Ten 表示一个密码可以抵抗拥有大量训练有素的密码学家和当今最大超级计算机的国家加密机构。
 - en: Sometimes I go outside the scale. Zero means that the cipher can be understood
     without needing paper or pencil, such as Pig Latin or **GNITIRW** **EHT** **SDROW**
     **SDRAWKCAB**. An Eleven rating means that the cipher will stand up to potential
     future ultracomputers far stronger than quantum computers or supercomputers as
     we currently conceive them.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 有时我会超出这个范围。零表示该密码可以在不需要纸和铅笔的情况下理解，例如 Pig Latin 或 **GNITIRW** **EHT** **SDROW**
+    **SDRAWKCAB**。十一的评级意味着该密码将能够抵御未来潜在的比我们目前构想的量子计算机或超级计算机更强大得多的超级计算机。
 - en: By seeing how I rate different ciphers, you can get the gist of how to rate
     ciphers that you see elsewhere, or that you may invent yourself. Each rating is
     only an estimate, not a guarantee of strength. The guarantee comes from performing
     the analyses described in chapter 12.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过查看我对不同密码的评价，您可以了解如何评价您在其他地方看到的或您自己可能发明的密码的要点。每个评分只是一个估计，而不是强度的保证。保证来自于执行第
+    12 章中描述的分析。
 - en: 4.2 Substitution
+  id: totrans-23
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 4.2 替代
 - en: The first tool in the cryptographer’s toolbox is substitution. One unit is substituted
     for another unit in a text. The plaintext units can be single letters, pairs of
     letters or longer blocks. The ciphertext units can be letters, blocks of letters,
@@ -119,14 +171,20 @@
     the cipher is called *simple substitution* or *monoalphabetic*. In computer cryptography
     the units can be bits, bytes, or blocks of bits or bytes of any length. This section
     gives a quick glimpse. There is a full discussion in chapters 5 and 6.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 密码学家工具箱中的第一个工具是替代。在文本中，一个单位被另一个单位替换。明文单位可以是单个字母、字母对或更长的块。密文单位可以是字母、字母块、数字块或字母数字组合。当所有单位都是单个字母时，该密码称为*简单替换*或*单字母替代*。在计算机密码学中，单位可以是位、字节或任意长度的位或字节块。本节给出了一个快速的预览。在第
+    5 和第 6 章中有一个全面的讨论。
 - en: One of the oldest known substitution ciphers is the *Caesar* *Cipher*, used
     and possibly invented by Julius Caesar, where each letter of the alphabet is replaced
     by the letter 3 positions later. In modern use, this may be any fixed number of
     positions earlier or later. The Caesar cipher is rated One.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 已知的最古老的替代密码之一是*凯撒密码*，由尤利乌斯·凯撒使用并可能发明，其中字母表中的每个字母都被替换为后面第 3 个位置的字母。在现代使用中，这个数字可能是之前或之后的任何固定数字。凯撒密码被评为
+    One。
 - en: There is no requirement that all plaintext units have the same length. Suppose
     that the cipher takes letters of the alphabet and substitutes 2-digit pairs. There
     are only 26 letters of the alphabet, but 100 possible digit pairs. This means
@@ -137,8 +195,12 @@
     then be 1, 2 or 3 letters long. This makes the frequencies of the digit pairs
     more uniform. Since differences in letter frequencies can be used for solving
     ciphers, making the frequencies more uniform makes the cipher stronger.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 并非所有明文单位都要求具有相同的长度。假设密码采用字母表的字母并替换为 2 位数字对。字母表只有 26 个字母，但是 100 个可能的数字对。这意味着密码学家可以使用其他
+    74 对数字来进行其他用途。一个已经使用了数百年的方法是提供常见字母对的替代，例如 TH、ER、ON、AS 和 NT，以及可能的短词，如 THE 和 AND，除了单个字母。然后，明文单位将是
+    1、2 或 3 个字母长。这使得数字对的频率更加均匀。由于字母频率的差异可以用于解密密码，使频率更加均匀可以使密码更加强大。
 - en: Another approach is to use the extra pairs to provide additional substitutes
     for some common letters. This is called *homophonic* substitution. For example,
     you might provide 10 substitutes for E, 8 substitutes for T, and so forth. The
@@ -148,12 +210,17 @@
     both approaches, letter pairs and homophonic substitution, can be combined to
     get even more uniform frequencies for the digit pairs. In other words, these methods
     prevent an opponent from using frequency analysis.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一种方法是使用额外的对提供某些常见字母的附加替代。这称为*同音*替代。例如，您可以为 E 提供 10 个替代品，为 T 提供 8 个替代品，依此类推。给定字母的多个替代称为*同音字*。这类似于同音字
+    F 和 PH 在英语中代表相同的音素的方式。提供多个替代品使得 100 个数字对的频率更加均匀。当然，字母对和同音替代两种方法可以结合起来，以获得更加均匀的数字对频率。换句话说，这些方法防止对手使用频率分析。
 - en: 4.2.1 Huffman codes
+  id: totrans-28
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.2.1 霍夫曼编码
 - en: In a computer context the ciphertext units can be strings of bits. A good example
     is *Huffman Coding*, developed by David A. Huffman in 1952 when he was a student
     at MIT. I won’t cover the method for optimizing the set of codes, I will just
@@ -162,8 +229,11 @@
     codes, based on an underlying letter frequency table. Consequently, fewer bits
     are required to express the message. This is called *text compression*. There
     are even stronger methods for text compression in section 10.7.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 在计算机环境中，密文单元可以是比特串。 一个很好的例子是*哈夫曼编码*，由David A. Huffman在1952年在麻省理工学院时开发。 我不会涵盖优化代码集的方法，我只会给出一般概念，作为可变长度二进制代码的示例。
+    在哈夫曼编码中，最常见的字母获得短代码，而较少见的字母获得长代码，基于底层字母频率表。 因此，需要更少的位来表达消息。 这被称为*文本压缩*。 在第10.7节中甚至有更强大的文本压缩方法。
 - en: The most frequent letters in English are E and T, which each occur about 1/8
     of the time. Since 8 = 2³ we use 3 bits to represent E and T. We can arbitrarily
     choose any 3-bit values, say E = 100 and T = 111\. I call this method *Mixed Huffman*.
@@ -172,23 +242,35 @@
     codes starting with 100 or 111, which have already been used. The next group of
     letters are D, L, U, C, M, F, Y, which each occur about 1/32 of the time, so 5-bit
     codes are needed. And so forth.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 英语中最常见的字母是E和T，每个字母大约出现1/8的时间。 由于8 = 2³，我们使用3位来表示E和T。 我们可以任意选择任何3位值，比如E = 100和T
+    = 111。 我称这种方法为*混合哈夫曼*。 接下来最常见的是A，O，I，N，S，R，H。 每个字母大约每16次出现一次，因此我们为每个字母使用4位。 我们可以使用任何4位代码，除了以100或111开头的代码，因为这些代码已经被使用。
+    下一组字母是D，L，U，C，M，F，Y，每个字母大约每32次出现一次，因此需要5位代码。 依此类推。
 - en: Here is a set of mixed Huffman codes I created based on counts of 150,000 letters
     of English text. Other languages vary. Huffman codes have the *prefix property*,
     namely no code is a prefix of any longer code. For instance, if ABCD is a code,
     then ABCDE could not also be a code for any choice of binary digits A,B,C,D,E.
     The prefix property was first described by mathematician Emil Leon Post in 1920.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是我根据15万个英文文本字母计数创建的一组混合哈夫曼代码。 其他语言有所不同。 哈夫曼代码具有*前缀属性*，即没有代码是任何更长代码的前缀。 例如，如果ABCD是一个代码，那么对于任何二进制数字A，B，C，D，E，ABCD都不能是代码。
+    前缀属性最早由数学家埃米尔·莱昂·波斯特在1920年描述。
 - en: '![4-unnumb-2](../Images/4-unnumb-2.png)'
+  id: totrans-32
   prefs: []
   type: TYPE_IMG
+  zh: '![4-unnumb-2](../Images/4-unnumb-2.png)'
 - en: Using these code groups, the word STYLE would be encoded as **0110** **111**
     **11011** **01000** **100**. Rewriting this in groups of 4 bits gives **0110**
     **1111** **1011** **0100** **0100**, which is hexadecimal **6FB44**.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用这些代码组，单词STYLE将被编码为**0110** **111** **11011** **01000** **100**。 将这些重新编写为4位组得到**0110**
+    **1111** **1011** **0100** **0100**，这是十六进制**6FB44**。
 - en: Although it is nearly impossible for Emily, Sandra’s enemy, to identify the
     code groups for individual letters in a ciphertext, Emily can search for longer
     repeated strings of bits. These will represent common letter pairs, called *bigrams*,
@@ -198,144 +280,201 @@
     word THE, which is by far the most common word in English. If you have identified
     the word THE in a text, then you can look for extensions like THERE or THESE,
     which are easy to spot because of the repeated E. Mixed Huffman is rated Three.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管对于艾米莉，桑德拉的敌人，来说，要识别密文中每个字母的代码组几乎是不可能的，但艾米莉可以搜索更长的重复比特串。 这些将代表常见的字母对，称为*双字母组*，字母三元组，称为*三字母组*，或单词。
+    例如，任何给定的10位比特串应该大约每2^(10)，或1024次出现一次。 如果一个10位比特串在1024个字符串中出现20次或更多次，那么它几乎肯定代表单词THE，这是英语中最常见的单词。
+    如果你在文本中识别出单词THE，那么你可以寻找类似THERE或THESE的扩展，因为E的重复很容易发现。 混合哈夫曼评为三级。
 - en: 4.3 Transposition
+  id: totrans-35
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 4.3 转位
 - en: The second major cryptographic tool is transposition, changing the order of
     the characters in a message. The simplest method is *route transposition*. The
     letters of the message are written into a grid in one order, and read out in a
     different order. This section gives a quick look. The full discussion is in chapter
     7.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二个主要的加密工具是转位，改变消息中字符的顺序。 最简单的方法是*路由转位*。 消息的字母按一定顺序写入���格中，然后按不同的顺序读取。 本节只是一个快速的概述。
+    全面讨论在第7章中。
 - en: For example, the message THERE IS NO LOVE AMONG THIEVES, which has 25 letters,
     is written into this 5×5 grid from left to right across the rows, and read out
     from top to bottom down the columns. The leftmost column in this grid is **TIOOI**
     when read from top to bottom.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，消息THERE IS NO LOVE AMONG THIEVES，有25个字母，从左到右跨行写入到这个5×5网格中，并且从上到下跨列读出。在这个网格中，从上到下读取时，最左边的一列是**TIOOI**。
 - en: '![4-unnumb-3](../Images/4-unnumb-3.png)'
+  id: totrans-38
   prefs: []
   type: TYPE_IMG
+  zh: '![4-unnumb-3](../Images/4-unnumb-3.png)'
 - en: Common routes for writing the letters into the grid, and for reading the letters
     out of the grid, include going straight across the rows, either left or right,
     straight up or down the columns, alternating left and right across the rows, alternating
     up and down the columns, diagonally starting at any corner, diagonally in alternating
     directions, or spiral clockwise or counterclockwise, either inward or outward.
     Route transposition ciphers are rated One.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 将字母写入网格和从网格中读出字母的常见路径包括直接穿过行，要么向左要么向右，直接向上或向下列，交替向左和向右穿过行，交替向上和向下列，对角线从任何角开始，交替方向对角线，或者顺时针或逆时针螺旋，要么向内要么向外。路由置换密码评定为One。
 - en: 4.4 Fractionation
+  id: totrans-40
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 4.4 分数化
 - en: Fractionation is the division of characters into smaller units. We have already
     seen one way, representing a character as a binary number. Each bit of that binary
     number can be manipulated as a separate unit, substituted or transposed. This
     section introduces fractionation. There is a detailed discussion in chapters 9
     and 10.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 分数化是将字符分割成较小单位。我们已经看到一种方式，将字符表示为二进制数。该二进制数的每一位可以作为一个单独的单位进行操作，替换或转置。本节介绍了分数化。第9章和第10章有详细讨论。
 - en: A classical way of representing a letter as two digits is the *Polybius Square*,
     invented in the second century BCE by the Greek historian Polybius. Here is a
     5×5 square using a mixed alphabet with the keyword SAMPLE. Notice that the letters
     I and J share one cell in order to make the 26-letter alphabet fit into the 25-cell
     grid.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 表示字母为两位数字的古典方式是*Polybius Square*，由希腊历史学家波利比乌斯在公元前二世纪发明。这是一个使用关键字SAMPLE的5×5方格。请注意，字母I和J共享一个单元格，以便将26个字母的字母表适合到25个单元格的网格中。
 - en: '![4-unnumb-4](../Images/4-unnumb-4.png)'
+  id: totrans-43
   prefs: []
   type: TYPE_IMG
+  zh: '![4-unnumb-4](../Images/4-unnumb-4.png)'
 - en: Since A is on row 2 in cell 3, it is represented by 23\. B is 33, C is 34, and
     so on, through Z represented by 21\. I and J are both represented by 44\. These
     digits can then be substituted, transposed and regrouped in various ways. Pairs
     of digits can be turned back into letters using this grid, or another Polybius
     square arranged in a different mixed order.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于A在第2行第3列，它由23表示。B是33，C是34，依此类推，通过Z由21表示。I和J都由44表示。然后可以以各种方式进行替换、转置和重新分组这些数字。可以使用这个网格或另一个按不同混合顺序排列的Polybius方格将数字对转换为字母。
 - en: A modern version would replace each character with its hexadecimal representation
     in ASCII or UTF-8 code. Thus A = 41, B = 42, C = 43, through Z = 5A. These hexadecimal
     digits can similarly be substituted, transposed, regrouped and turned back into
     bytes.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 现代版本将每个字符替换为其ASCII或UTF-8代码中的十六进制表示。因此A = 41，B = 42，C = 43，一直到Z = 5A。这些十六进制数字可以类似地被替换、转置、重新分组并重新转换为字节。
 - en: A fun example is *Fractionated Morse*, invented by M. E. Ohaver in 1910\. Ohaver
     always went by M. E. because he disliked his first name, which was Merle.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个有趣的例子是*M. E. Ohaver*在1910年发明的*分数化摩尔斯*。Ohaver总是使用M.E.，因为他不喜欢自己的名字，这个名字是Merle。
 - en: Historical note
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 历史注解
 - en: 'A footnote on page 241 of Craig Bauer’s *Secret History: The Story of Cryptology*
     states that M. E. Ohaver was one of the pseudonyms of prolific pulp fiction writer
     Kendell Foster Crossen. This is not true. Crossen sometimes used the pseudonym
     M. E. Chaber from the Hebrew *mechaber*, מחבר, meaning *author*.'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 在克雷格·鲍尔的《秘密历史：密码学故事》第241页的脚注中提到，M.E. Ohaver是多产的低俗小说作家肯德尔·福斯特·克罗森的化名之一。这是不正确的。克罗森有时使用希伯来语的
+    *mechaber*，מחבר，意思是 *作者*，的化名M.E. Chaber。
 - en: In fractionated Morse, the letters are taken in groups of a fixed size, say
     7, and replaced by their Morse code equivalents, using / as a letter separator.
     Then the lengths of the code groups are reversed, and the resized groups are turned
     back into letters.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 在分数化摩尔斯中，字母按固定大小的组，比如7，被替换为它们的摩尔斯代码等效项，使用/作为字母分隔符。然后，代码组的长度被反转，调整大小后的组被转换回字母。
 - en: '![4-unnumb-5](../Images/4-unnumb-5.png)'
+  id: totrans-50
   prefs: []
   type: TYPE_IMG
+  zh: '![4-unnumb-5](../Images/4-unnumb-5.png)'
 - en: Morse code was invented by Alfred Vail in 1840 and named for his employer, Samuel
     F. B. Morse.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 摩尔斯电码是由阿尔弗雷德·维尔于1840年发明的，以他的雇主塞缪尔·F·B·摩尔斯的名字命名。
 - en: This cipher has several obvious weaknesses. Since it uses the standard Morse
     alphabet, the only key is the length of the letter groups, which can be guessed
     in just a few tries. Plaintext letters are often replaced by themselves. There
     are 30 different Morse code groups, but only 26 letters, so 4 extra characters
     are needed. Ohaver used Germanic ä, ë, ö and ü. Fractionated Morse is rated One.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种密码有几个明显的弱点。因为它使用标准的摩尔斯字母表，所以唯一的密钥是字母组的长度，这只需要几次尝试就能猜到。明文字母经常被它们自己替换。有30个不同的摩尔斯代码组，但只有26个字母，所以需要4个额外的字符。奥哈弗使用了日耳曼语的ä、ë、ö和ü。分数化摩尔斯评级为一级。
 - en: 'These problems can be partially fixed with two changes: (1) Use only the Morse
     groups of lengths 1, 3 and 4\. There are 26 such groups, perfectly fitting the
     26-letter alphabet. (2) Scramble the order of the alphabet, or, equivalently,
     scramble the order of the Morse code groups. I call this enhanced version *FR-Actionated
     Morse*. For example, using the keyword MIXEDALPHBT to mix the alphabet, with the
     Morse groups in standard order, you get'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些问题可以通过两个变化来部分修复：(1) 仅使用长度为1、3和4的摩尔斯组。有26个这样的组，完全符合26个字母的字母表。(2) 打乱字母表的顺序，或者等价地打乱摩尔斯代码组的顺序。我称这个增强版为*FR-Actionated
+    Morse*。例如，使用关键词MIXEDALPHBT来混合字母表，摩尔斯组按标准顺序排列，你会得到
 - en: '![4-unnumb-6](../Images/4-unnumb-6.png)'
+  id: totrans-54
   prefs: []
   type: TYPE_IMG
+  zh: '![4-unnumb-6](../Images/4-unnumb-6.png)'
 - en: Even with these improvements, FR-Actionated Morse is rated only Two.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 即使有了这些改进，FR-Actionated Morse的评级仍然只有二级。
 - en: 4.5 Random number generators
+  id: totrans-56
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 4.5 随机数生成器
 - en: A random number generator can be anything that produces a sequence of numbers
     in some given range. The numbers might be single bits, 8-bit bytes, decimal digits,
     or numbers in any other desired range. For example, numbers in the range 0 to
     25, corresponding to the 26 letters of the alphabet, are useful for some cryptographic
     purposes. This section introduces the topic. The complete discussion is in chapter
     13.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 随机数生成器可以是任何在给定范围内产生数字序列的东西。数字可以是单个位、8位字节、十进制数字，或者是任何其他所需范围内的数字。例如，范围在0到25之间的数字，对应于26个字母表中的字母，对某些加密目的是有用的。本节介绍了该主题。完整的讨论在第13章中。
 - en: It is important to recognize that there is no such thing as “a random number.”
     You cannot say that 51 is a random number, while 52 is not, or vice versa. You
     can, however, say that the sequence 51, 52, 53, 54, ... is not random. That sequence
     is completely predictable. Randomness is a property of the sequence, or of the
     generator, not of the individual numbers in the sequence. It is more accurate
     to say “a random sequence of numbers” than “a sequence of random numbers.”
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 重要的是要认识到“随机数”这种东西是不存在的。你不能说51是一个随机数，而52不是，反之亦然。但是，你可以说序列51，52，53，54，...不是随机的。那个序列是完全可预测的。随机性是序列或生成器的属性，而不是序列中的个别数字的属性。说“一系列随机数”比说“随机数序列”更准确。
 - en: The generator might be a physical process, such as cosmic rays, the pinging
     of a Geiger counter, precise timing of computer keystrokes, a flag fluttering
     in a stiff breeze, spray from crashing waves or people rushing to catch trains.
     Most physical sources are not fast enough for cryptographic purposes, but the
     sequence of numbers might be stored in a computer file for later use.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成器可能是一种物理过程，比如宇宙射线、盖革计数器的嗒嗒声、计算机按键的精确时间、风中飘扬的旗帜、海浪拍打的水花或者人们赶着赶火车的景象。大多数物理来源都不够快以用于加密目的，但数字序列可能会被存储在计算机文件中以供日后使用。
 - en: The generator could also be a mathematical function or computer program that
     produces a number each time it is called. Random numbers produced by mathematical
     algorithms are called *pseudorandom* numbers to distinguish them from *true random*
@@ -345,15 +484,19 @@
     be produced by a mathematical function. In section 13.8 I show methods for generating
     cryptographically secure pseudorandom number sequences designed to prevent an
     opponent from extending a segment of the sequence.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成器也可以是一个数学函数或计算机程序，在每次调用时产生一个数字。由数学算法产生的随机数被称为*伪随机*数，以区别于*真随机*数。它们被认为比真随机数弱，因为确定随机序列的一部分的对手可能能够计算出前后的数字，从而读取消息。真随机数永远不能由数学函数产生。在第13.8节中，我展示了生成密码安全的伪随机数序列的方法，设计用于防止对手扩展序列的部分。
 - en: One key difference between pseudorandom sequences and true random sequences
     is that pseudorandom sequences eventually repeat, while true random sequences
     never repeat. The number of terms before the sequence repeats is called its *period*.
     The sequence 3,1,9,2,4, 3,1,9,2,4, 3,1,9,2,4, 3, ... for example, has a period
     of 5, shown underlined. In general, the longer the period, the stronger the cipher.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 伪随机序列和真随机序列之间的一个关键区别是，伪随机序列最终会重复，而真随机序列永远不会重复。序列在重复之前的项数称为其*周期*。例如，序列3,1,9,2,4,3,1,9,2,4,3,1,9,2,4,...的周期为5，以下划线标出。一般来说，周期越长，密码越强。
 - en: Simply because a sequence of numbers is random does not mean that the numbers
     are equally probable. For example, suppose you are observing the colors of cars
     crossing a busy bridge. The colors are random, but certain colors are much more
@@ -361,8 +504,10 @@
     fuchsia or chartreuse. Similarly, in the game of craps, if the dice are fair,
     then each throw is random, yet throwing a 7 is six times as likely as throwing
     a 12.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 仅仅因为一串数字是随机的，并不意味着这些数字是等概率的。例如，假设你观察到穿过繁忙桥梁的汽车的颜色。颜色是随机的，但某些颜色比其他颜色更常见。白色、黑色、银色和红色比橙色、紫红色或嫩黄色要常见得多。同样，在crap游戏中，如果骰子是公平的，那么每次掷骰子都是随机的，然而掷出7的可能性是掷出12的六倍。
 - en: In sections 13.14.1 and 13.14.2 I discuss how to “harvest” the randomness in
     such sequences to obtain sequences where the numbers have essentially equal probabilities.
     I will henceforth assume that any random number generator produces numbers with
@@ -370,12 +515,16 @@
     distribution*. With a good random number generator, pairs and triples, and so
     on, of generated numbers will also have uniform probabilities, perhaps going as
     far as octuples or beyond.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第13.14.1节和第13.14.2节中，我讨论了如何“收获”这种序列中的随机性，以获得数字具有基本相等概率的序列。从现在开始，我将假定任何随机数生成器都产生具有相等概率的数字。这被称为*均匀分布*或*等概率分布*。通过一个良好的随机数生成器，生成的数字对、三元组等也将具有均匀的概率，甚至可能达到八元组或更多。
 - en: 4.5.1 Chained digit generator
+  id: totrans-64
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.5.1 链数字生成器
 - en: Let me end this section with a sample pseudorandom number generator that can
     easily be done using paper and pencil. No computer required. Let’s call it the
     *Chained Digit Generator*. Begin by writing any 7-digit decimal number. These
@@ -384,29 +533,43 @@
     this generator. To get the first pseudorandom digit you simply add the first and
     last digits. You append this new digit to the sequence, and black out the first
     digit. So, starting with 3920516 we add 3+6 to get 9.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我用纸和铅笔轻松完成的样本伪随机数生成器来结束这一节。不需要电脑。我们将其称为*链数字生成器*。首先写下任意7位的十进制数。这7位数字称为*种子*，或*初始值*，或*初始化向量*。它们可以被视为任何使用此生成器的密码的密钥，或密钥的一部分。要获得第一个伪随机数字，只需将第一个数字和最后一个数字相加。将这个新数字添加到序列中，并将第一个数字涂黑。所以，从3920516开始，我们将3+6加起来得到9。
 - en: '![4-unnumb-7](../Images/4-unnumb-7.png)'
+  id: totrans-66
   prefs: []
   type: TYPE_IMG
+  zh: '![4-unnumb-7](../Images/4-unnumb-7.png)'
 - en: Any time the sum exceeds 9 we drop the tens digit. That is, the addition is
     done modulo 10\. This is sometimes called *non-carrying addition*. To get the
     second pseudorandom digit we repeat the process. Here 9+9 gives 18\. We drop the
     tens digit to get 8.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 任何时候，如果总和超过9，我们就去掉十位数。也就是说，加法是模10的。这有时被称为*不进位加法*。要获得第二个伪随机数字，我们重复这个过程。这里9+9得到18。我们去掉十位数得到8。
 - en: '![4-unnumb-8](../Images/4-unnumb-8.png)'
+  id: totrans-68
   prefs: []
   type: TYPE_IMG
+  zh: '![4-unnumb-8](../Images/4-unnumb-8.png)'
 - en: This process can be repeated to get as many pseudorandom decimal digits as desired.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: '这个过程可以重复，以获得所需的伪随机十进制数字。 '
 - en: '![4-unnumb-9](../Images/4-unnumb-9.png)'
+  id: totrans-70
   prefs: []
   type: TYPE_IMG
+  zh: '![4-unnumb-9](../Images/4-unnumb-9.png)'
 - en: The resulting pseudorandom sequence is **9800562199940232...**.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果得到的伪随机序列是**9800562199940232...**。
 - en: Notice that if all of the digits in the seed are even, then all of the generated
     digits will be even. Likewise, if all of the digits are divisible by 5, namely
     0 or 5, then all of the generated digits will be divisible by 5\. In that case
@@ -416,8 +579,11 @@
     a *qualified* seed must contain at least one odd digit and one digit that is not
     a multiple of 5\. For example, 2222225 is a qualified seed, but 2222222 and 5555555
     are not qualified. With a qualified 7-digit seed the period will always be 2,480,437.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，如果种子中的所有数字都是偶数，则生成的所有数字都将是偶数。同样，如果所有数字都可被5整除，即为0或5，则生成的所有数字都将是5的倍数。在这种情况下，周期最多只能为128，因为种子中有7个数字，而且只有2⁷
+    = 128种0和5的组合。由于这种种子无法产生长周期，因此它们被称为*不合格的*。对于链式数字生成器，*合格的*种子必须至少包含一个奇数数字和一个不是5的倍数的数字。例如，2222225是合格的种子，但2222222和5555555不合格。使用合格的7位数字种子，周期将始终为2,480,437。
 - en: This generator has behavior typical of homemade pseudorandom number generators.
     There are 10⁷ possible 7-digit seeds. If you start with any seed, the generator
     will cycle through some sequence of numbers until it produces that seed again,
@@ -425,66 +591,100 @@
     with its own period. If you choose a qualified seed, then the cycle will always
     have the maximum possible period of 2,480,437 numbers. There are 4 separate cycles
     of this length, plus several much shorter cycles produced by the unqualified seeds.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个生成器具有自制伪随机数生成器的典型行为。有10⁷个可能的7位数字种子。如果你从任意种子开始，生成器将循环一些数字序列，直到再次产生该种子，因此7位数字的集合被分割成几个离散的周期，每个周期都有自己的周期。如果选择一个合格的种子，那么周期将始终具有最大可能的2,480,437个数字的周期。这种长度有4个单独的周期，再加上一些由不合格种子产生的远比这个短的周期。
 - en: 'The behavior is similar for seeds of other sizes. Even when the maximal cycle
     is very short there is often a high probability of getting a maximal cycle because
     there can be many maximal cycles. This table shows the probability of getting
     a cycle of a given length using a qualified seed:'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: '对于其他大小的种子，行为类似。即使最大周期非常短，也经常有很高的概率获得最大周期，因为可能有许多最大周期。此表显示使用合格种子获得给定长度周期的概率： '
 - en: '| **Digits** | **Period** | **Probability** |'
+  id: totrans-75
   prefs: []
   type: TYPE_TB
+  zh: '| **数字** | **周期** | **概率** |'
 - en: '| 4 | 1,560 | 100% |'
+  id: totrans-76
   prefs: []
   type: TYPE_TB
+  zh: '| 4 | 1,560 | 100% |'
 - en: '| 5 | 168 | 86.7% |'
+  id: totrans-77
   prefs: []
   type: TYPE_TB
+  zh: '| 5 | 168 | 86.7% |'
 - en: '| 6 | 196,812 | 99.974% |'
+  id: totrans-78
   prefs: []
   type: TYPE_TB
+  zh: '| 6 | 196,812 | 99.974% |'
 - en: '| 7 | 2,480,437 | 100% |'
+  id: totrans-79
   prefs: []
   type: TYPE_TB
+  zh: '| 7 | 2,480,437 | 100% |'
 - en: '| 8 | 15,624 | 98.817% |'
+  id: totrans-80
   prefs: []
   type: TYPE_TB
+  zh: '| 8 | 15,624 | 98.817% |'
 - en: '| 9 | 28,515,260 | 79.999% |'
+  id: totrans-81
   prefs: []
   type: TYPE_TB
+  zh: '| 9 | 28,515,260 | 79.999% |'
 - en: '| at least 2,851,526 | 99.9988% |'
+  id: totrans-82
   prefs: []
   type: TYPE_TB
+  zh: '| 至少 2,851,526 | 99.9988% |'
 - en: '| 10 | 1,736,327,236 | 86.9% |'
+  id: totrans-83
   prefs: []
   type: TYPE_TB
+  zh: '| 10 | 1,736,327,236 | 86.9% |'
 - en: '| at least 248,046,748 | 99.31% |'
+  id: totrans-84
   prefs: []
   type: TYPE_TB
+  zh: '| 至少 248,046,748 | 99.31% |'
 - en: '| at least 13,671,868 | 100% |'
+  id: totrans-85
   prefs: []
   type: TYPE_TB
+  zh: '| 至少 13,671,868 | 100% |'
 - en: The table shows that seed lengths of 5 and 8 digits are not safe. They produce
     a large percentage of very short cycles. Seed lengths of 7 and 10 digits are best
     because you are always guaranteed a long period.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 表格显示，5位和8位数字种子长度不安全。它们产生了大量非常短的周期。7位和10位数字种子长度最好，因为你总是保证有一个长周期。
 - en: This random number generator is strictly a demo model, just to show what can
     be achieved using simple hand methods. It is not suitable for high-security work.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个随机数生成器严格来说只是一个演示模型，只是展示了使用简单手工方法可以实现什么。它不适用于高安全性工作。
 - en: 4.6 Useful combinations, wasteful combinations
+  id: totrans-88
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 4.6 有用的组合，浪费的组合
 - en: The 4 basic techniques of this chapter can be used in myriad combinations, which
     I explore throughout the remainder of this book. However, it is important to recognize
     right at the outset that not every combination is beneficial. Some combinations
     add work without adding strength.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章的4种基本技术可以以无数种方式组合，我将在本书的剩余部分中进行探讨。然而，首先要认识到并非每种组合都是有益的。一些组合会增加工作量而不增加强度。
 - en: Consider an idea that some beginners try. They perform a simple substitution
     on a message, then a second simple substitution on the resulting text, then a
     third, and so forth, for 5, 10, even 100 rounds. This is a waste of effort. Performing
@@ -492,85 +692,119 @@
     alphabet, so performing many simple substitutions does not add any strength. Here
     is an illustration. The two substitutions are mixed with the keys FIRST and SECOND.
     The third substitution is equivalent to performing the first followed by the second.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 考虑一种一些初学者尝试的想法。他们对一条消息进行简单替换，然后对结果文本进行第二次简单替换，然后第三次，依此类推，进行5、10，甚至100轮。这是一种浪费精力的做法。进行两次简单替换与进行一次相同，但使用不同的混合字母表，因此进行多次简单替换不会增加任何强度。这里有一个例证。两次替换使用了关键字FIRST和SECOND。第三次替换等同于先进行第一次替换，然后进行第二次替换。
 - en: '![4-unnumb-10](../Images/4-unnumb-10.png)'
+  id: totrans-91
   prefs: []
   type: TYPE_IMG
+  zh: '![4-unnumb-10](../Images/4-unnumb-10.png)'
 - en: Let’s try an example. If we encipher the word **EXAMPLE** using the first substitution,
     the result is **IUXEJDI**. If **IUXEJDI** is enciphered with the second substitution,
     the result is **CLQYOXC**. You can verify for yourself that enciphering **EXAMPLE**
     with the equivalent substitution yields **CLQYOXC**.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看一个例子。如果我们使用第一个替换对**EXAMPLE**进行加密，结果是**IUXEJDI**。如果**IUXEJDI**使用第二个替换进行加密，结果是**CLQYOXC**。你可以自行验证，使用等效替换对**EXAMPLE**进行加密会得到**CLQYOXC**。
 - en: 'Performing one encipherment and then a second encipherment is called *composing*
     the two encipherments. The previous example shows that composing two simple substitutions
     just produces another simple substitution. If the first encryption uses a code,
     then following the code with a cipher is called *superencipherment*. The most
     common form of superencipherment is non-carrying addition, or addition modulo
     10, which works like this:'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 进行一次加密，然后再进行第二次加密被称为*组合*这两次加密。前面的例子表明，组合两个简单的替换只会产生另一个简单的替换。如果第一个加密使用了代码，那么在代码后面跟着一个密码被称为*超加密*。最常见的超加密形式是非进位加法，或者模10加法，其工作原理如下：
 - en: '![4-unnumb-11](../Images/4-unnumb-11.png)'
+  id: totrans-94
   prefs: []
   type: TYPE_IMG
+  zh: '![4-unnumb-11](../Images/4-unnumb-11.png)'
 - en: 4.6.1 Bazeries type 4 cipher
+  id: totrans-95
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.6.1 巴泽里4型密码
 - en: Let’s look at the opposite case. Let’s look at a cipher where using a substitution
     step followed by a very simple transposition produces a cipher that is much stronger.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看相反的情况。让我们看一个使用替换步骤后跟着一个非常简单的置换产生了更强大密码的密码。
 - en: The cipher was proposed by the brilliant, irascible and vituperative French
     cryptographer Étienne Bazeries in 1898\. I do not know what Bazeries named this
     cipher. I call it *Bazeries Type 4* because it was the last of 4 ciphers that
     he proposed to the diplomatic Bureau de Chiffre during the 1890s. It can easily
     be done by hand.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种密码是由才华横溢、易怒且辱骂性的法国密码学家埃蒂安·巴泽里于1898年提出的。我不知道巴泽里给这种密码起了什么名字。我称之为*Bazeries Type
+    4*，因为这是他在1890年代向外交密码局提出的4种密码中的最后一种。这种密码可以很容易地手工完成。
 - en: The Bazeries type 4 consists of a simple substitution followed by a simple transposition,
     which I call a *piecewise reversal*. The transposition reverses short pieces of
     the text according to a key that is a sequence of small integers. Here is an example
     using the keyword BAZERIS to mix the substitution alphabet, and the key 4,2,3
     for the transposition.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 巴泽里4型密码由一个简单的替换后跟着一个简单的置换组成，我称之为*逐段反转*。置换根据一个由小整数序列组成的密钥，对文本的短片段进行反转。这里有一个使用关键字BAZERIS混合替换字母表，以及关键字4,2,3进行置换的示例。
 - en: '![4-unnumb-12](../Images/4-unnumb-12.png)'
+  id: totrans-99
   prefs: []
   type: TYPE_IMG
+  zh: '![4-unnumb-12](../Images/4-unnumb-12.png)'
 - en: This type of transposition can be used to strengthen many different types of
     ciphers, so it deserves a name of its own. Let’s call it *Piecewise Reversal*.
     You can strengthen this transposition by mixing in a few segments of text in normal
     order, perhaps by using negative numbers in the numeric key. Here is an example
     using the numeric key 3, 4, -3, 2\. Note that this key is equivalent to 3, 4,
     1, 1, 1, 2.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种置换可以用来加强许多不同类型的密码，因此它值得拥有自己的名称。让我们称之为*逐段反转*。你可以通过混合一些正常顺序的文本段来加强这种置换，也许可以使用数值密钥中的负数。这里有一个使用数值密钥3,
+    4, -3, 2的示例。请注意，这个密钥等同于3, 4, 1, 1, 1, 2。
 - en: '![4-unnumb-13](../Images/4-unnumb-13.png)'
+  id: totrans-101
   prefs: []
   type: TYPE_IMG
+  zh: '![4-unnumb-13](../Images/4-unnumb-13.png)'
 - en: 'The cryptographers at the Bureau de Chiffre were unable to solve any of the
     sample messages that Bazeries provided. Despite considerable effort, the messages
     remained unsolved for 40 years until renowned architect, and amateur cryptographer,
     Rosario Candela solved them and wrote a book about how he did it (*The Military
     Cipher of Commandant Bazeries*, Cardanus Press: New York, 1938).'
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 密码学家们在密码局无法解决巴泽里斯提供的任何样本消息。尽管付出了相当大的努力，这些消息仍然在40年内未解决，直到著名建筑师和业余密码学家罗萨里奥·卡德拉解决了它们，并写了一本关于他是如何做到的书（*巴泽里斯指挥官的军事密码*，卡尔丹纳斯出版社：纽约，1938年）。
 - en: Candela, however, was unable to decrypt the messages directly. Instead, he identified
     and exploited a weakness in the way Bazeries generated the substitution alphabet
     from a key. If Bazeries had used a stronger method for mixing the cipher alphabet,
     Candela could not have deciphered the messages. Consequently, Bazeries type 4
     with a well-mixed alphabet is rated Five. Pretty good for combining two methods
     that are each rated One.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，卡德拉无法直接解密这些消息。相反，他确定并利用了巴泽里斯从密钥生成替换字母表的方式中存在的弱点。如果巴泽里斯使用了更强大的方法来混合密码字母表，卡德拉就无法解密这些消息。因此，使用混合良好的字母表的巴泽里斯4型被评为五级。将两种分别评为一级的方法结合起来是相当不错的。
 - en: Historical tidbit
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 历史小贴士
 - en: Candela was a graduate of Columbia School of Architecture, so he planned to
     publish his book at Columbia University Press. William F. Friedman, then the dean
     of American cryptologists, got wind of this, and secretly blocked the publication.
     This again attests to the strength of the Bazeries Type 4 cipher.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 卡德拉是哥伦比亚建筑学院的毕业生，所以他计划在哥伦比亚大学出版他的书。威廉·F·弗里德曼，当时是美国密码学家的院长，得知此事后，秘密阻止了出版。这再次证明了巴泽里斯4型密码的强大。

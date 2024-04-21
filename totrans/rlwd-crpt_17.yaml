@@ -1,29 +1,41 @@
 - en: 15 Is this it? Next-generation cryptography
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 15 这就是全部吗？下一代密码学
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: Getting rid of trusted third parties via secure multi-party computation (MPC)
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通过安全多方计算（MPC）摆脱信任的第三方
 - en: Allowing others to act on encrypted data via fully homomorphic encryption (FHE)
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 允许他人对加密数据进行操作通过全同态加密（FHE）
 - en: Hiding parts of a program execution via zero-knowledge proofs (ZKPs)
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通过零知识证明（ZKPs）隐藏程序执行的部分
 - en: I started this book with the idea that readers who would get through most of
     the chapters would also be interested in the future of real-world cryptography.
     While you’re reading an applied and practical book with a focus on what is in
     use today, the field of cryptography is rapidly changing (as we saw in recent
     years with cryptocurrencies, for example).
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 我开始写这本书的时候，认为大部分章节读完的读者也会对现实世界密码学的未来感兴趣。虽然您正在阅读一个侧重于当今使用的应用和实用书籍，但密码学领域正在迅速变化（例如，最近几年我们看到的加密货币）。
 - en: 'As you’re reading this book, a number of theoretical cryptographic primitives
     and protocols are making their ways into the applied cryptography world—maybe
     because these theoretical primitives are finally finding a use case or because
@@ -32,35 +44,47 @@
     getting more exciting. In this chapter, I give you a taste of what the future
     of real-world cryptography might look like (perhaps in the next 10 to 20 years)
     by briefly introducing three primitives:'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 当您阅读本书时，许多理论密码原语和协议正在进入应用密码学领域——也许是因为这些理论原语终于找到了用例，或者是因为它们终于变得足够高效，可以用于实际应用。无论原因是什么，密码学的现实世界肯定在增长并变得更加令人兴奋。在本章中，我通过简要介绍三种原语，为您展示了未来实际密码学可能会是什么样子（也许在未来10到20年内）：
 - en: '*Secure multi-party computation* (MPC)—A subfield of cryptography that allows
     different participants to execute a program together without necessarily revealing
     their own input to the program.'
+  id: totrans-7
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*安全多方计算*（MPC）—密码学的一个子领域，允许不同参与者一起执行程序，而不必向程序透露自己的输入。'
 - en: '*Fully homomorphic encryption* (FHE)—The holy grail of cryptography, a primitive
     used to allow arbitrary computations on encrypted data.'
+  id: totrans-8
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*全同态加密*（FHE）—密码学的圣杯，一种用于允许对加密数据进行任意计算的原语。'
 - en: '*General-purpose zero-knowledge proofs* (ZKPs)—The primitive you learned about
     in chapter 7 that allows you to prove that you know something without revealing
     that something, but this time, applied more generally to more complex programs.'
+  id: totrans-9
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*通用零知识证明*（ZKPs）—您在第7章学到的原语，允许您证明自己知道某事而不泄露该事情，但这次更普遍地应用于更复杂的程序。'
 - en: This chapter contains the most advanced and complicated concepts in the book.
     For this reason, I recommend that you glance at it and then move on to chapter
     16 to read the conclusion. When you are motivated to learn more about the inners
     of these more advanced concepts, come back to this chapter. Let’s get started!
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章包含了本书中最先进和复杂的概念。因此，我建议您先浏览一下，然后转到第16章阅读结论。当您有动力想要了解这些更高级概念的内部机制时，请回到这一章。让我们开始吧！
 - en: '15.1 The more the merrier: Secure multi-party computation (MPC)'
+  id: totrans-11
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.1 人越多越热闹：安全多方计算（MPC）
 - en: Secure multi-party computation (MPC) is a field of cryptography that came into
     existence in 1982 with the famous Millionaires’ problem. In his 1982 paper “Protocols
     for Secure Computations,” Andrew C. Yao wrote, “Two millionaires wish to know
@@ -68,77 +92,103 @@
     information about each other’s wealth. How can they carry out such a conversation?”
     Simply put, MPC is a way for multiple participants to compute a program together.
     But before learning more about this new primitive, let’s see why it’s useful.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 安全多方计算（MPC）是密码学领域的一个子领域，始于1982年的著名百万富翁问题。在他1982年的论文“用于安全计算的协议”中，Andrew C. Yao写道：“两位百万富翁想知道谁更富有；然而，他们不想无意中获得有关对方财富的任何额外信息。他们如何进行这样的对话？”简而言之，MPC是多个参与者一起计算程序的一种方式。但在了解更多关于这种新原语之前，让我们看看它为什么有用。
 - en: We know that with the help of a trusted third party, any distributed computation
     can easily be worked out. This trusted third party can perhaps maintain the privacy
     of each participant’s input, as well as possibly restricting the amount of information
     revealed by the computation to specific participants. In the real world, though,
     we don’t like trusted third parties too much; we know that they are pretty hard
     to come by, and they don’t always respect their commitments.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们知道，在可信第三方的帮助下，任何分布式计算都可以轻松解决。这个可信第三方可以可能维护每个参与者输入的隐私，同时可能限制计算所透露给特定参与者的信息量。然而，在现实世界中，我们不太喜欢可信第三方；我们知道它们很难找到，并且它们并不总是遵守自己的承诺。
 - en: MPC allows us to completely remove trusted third parties from a distributed
     computation and enables participants to compute the computation by themselves
     without revealing their respective inputs to one another. This is done through
     a cryptographic protocol. With that in mind, using MPC in a system is pretty much
     the equivalent to using a trusted third party (see figure 15.1).
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: MPC允许我们完全将可信第三方从分布式计算中移除，并使参与者能够自行计算计算，而不会向彼此透露各自的输入。这是通过一个加密协议完成的。考虑到这一点，在系统中使用MPC基本上等同于使用一个可信第三方（见图15.1）。
 - en: '![](../Images/15_01.jpg)'
+  id: totrans-15
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/15_01.jpg)'
 - en: Figure 15.1 A secure multi-party computation (MPC) protocol turns a distributed
     computation that can be calculated via a trusted third party (image on the left)
     into a computation that doesn’t need the help of a trusted third party (image
     on the right).
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 15.1 安全多方计算（MPC）协议将一个可以通过可信第三方进行计算的分布式计算（左侧图像）转变为一个不需要可信第三方帮助的计算（右侧图像）。
 - en: Note that you already saw some MPC protocols. Threshold signatures and distributed
     key generations, covered in chapter 8, are examples of MPC. More specifically,
     these examples are part of a subfield of MPC called *threshold cryptography*,
     which has been receiving a lot of love in more recent years with, for example,
     NIST in mid-2019 kicking off a standardization process for threshold cryptography.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，您已经看到了一些MPC协议。阈值签名和分布式密钥生成，涵盖在第8章中，是MPC的示例。更具体地说，这些示例是MPC的一个子领域，称为*阈值密码学*，在近年来受到了很多关注，例如，2019年中期NIST启动了阈值密码学的标准化过程。
 - en: 15.1.1 Private set intersection (PSI)
+  id: totrans-18
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.1.1 私有集合交集（PSI）
 - en: 'Another well-known subfield of MPC is the field of *private set intersection*
     (PSI), which poses the following problem: Alice and Bob have a list of words,
     and they want to know which words (or perhaps just how many) they have in common
     without revealing their respective list of words. One way to solve this problem
     is to use the oblivious pseudorandom function (OPFR) construction you learned
     about in chapter 11\. (I illustrate this protocol in figure 15.2.) If you recall'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个众所周知的MPC子领域是*私有集合交集*（PSI）的领域，它提出了以下问题：Alice和Bob有一组单词，他们想知道他们有哪些单词（或者可能只是有多少）是共同的，而不暴露各自的单词列表。解决这个问题的一种方法是使用你在第11章学到的遗忘伪随机函数（OPFR）构造。（我在图15.2中说明了这个协议。）如果您回忆起来
 - en: Bob generates a key for the OPRF.
+  id: totrans-20
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: Bob为OPRF生成一个密钥。
 - en: Alice obtains the random values, *PRF*(*key*, *word*), for every word in her
     list using the OPRF protocol (so she doesn’t learn the PRF key and Bob doesn’t
     learn the words).
+  id: totrans-21
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: Alice使用OPRF协议为她列表中的每个单词获取随机值*PRF*（*key*，*word*）（因此她不会得知PRF密钥，Bob也不会得知这些单词）。
 - en: Bob then can compute the list of *PRF* (*key*, *word*) values for his own words
     and send it to Alice, who is then able to compare it with her own PRF outputs
     to see if any of Bob’s PRF outputs matches.
+  id: totrans-22
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 然后Bob可以计算他自己单词的*PRF*（*key*，*word*）值列表，并将其发送给Alice，然后Alice可以将其与她自己的PRF输出进行比较，以查看Bob的任何PRF输出是否匹配。
 - en: '![](../Images/15_02.jpg)'
+  id: totrans-23
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/15_02.jpg)'
 - en: Figure 15.2 Private set intersection (PSI) allows Alice to learn what words
     she has in common with Bob. First, she blinds every word she has in her list and
     uses the OPRF protocol with Bob to apply a PRF using Bob’s key on each of her
     words. Finally, Bob sends her the PRF of his key with his words. Alice can then
     see if anything matches to learn what words they have in common.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 15.2 私有集合交集（PSI）允许Alice了解她与Bob有哪些共同的单词。首先，她会对她列表中的每个单词进行盲化，并使用OPRF协议与Bob一起对每个单词应用PRF，使用Bob的密钥。最后，Bob发送给她他的单词与其密钥的PRF。然后，Alice可以查看是否有任何匹配项，以了解他们共有哪些单词。
 - en: PSI is a promising field that is starting to see more and more adoption in recent
     years, as it has shown to be much more practical than it used to be. For example,
     Google’s Password Checkup feature integrated into the Chrome browser uses PSI
@@ -150,12 +200,16 @@
     in chapter 10) decided that PSI was too slow to perform contact discovery in order
     to figure out who you can talk to based on your phone’s contact list, and instead,
     used SGX (covered in chapter 13) as a trusted third party.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: PSI 是一个前景广阔的领域，近年来开始越来越多地得到应用，因为它显示出比过去更实用的特点。例如，Google的Chrome浏览器集成的密码检查功能使用PSI来在密码泄露后的密码转储中检测到您的某些密码时向您发出警告，而不实际看到您的密码。有趣的是，微软也为其Edge浏览器做了同样的事情，但使用全同态加密（我将在下一节介绍）执行私有集交。另一方面，Signal消息应用的开发人员（在第10章讨论）认为PSI速度太慢，无法执行联系发现，以便根据您手机的联系人列表确定可以与您交谈的人，并且改用了SGX（在第13章介绍）作为可信第三方。
 - en: 15.1.2 General-purpose MPC
+  id: totrans-26
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.1.2 通用型多方计算
 - en: More generally, MPC has many different solutions aiming at the computation of
     arbitrary programs. General-purpose MPC solutions all provide different levels
     of efficiency (from hours to milliseconds) and types of properties. For example,
@@ -164,50 +218,68 @@
     MPC protocols that is willing to execute the protocol correctly but might attempt
     to learn the other participants’ inputs)? Is it fair to all participants if some
     of them terminate the protocol early?
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 总的来说，MPC有许多不同的解决方案，旨在计算任意程序。通用型MPC解决方案提供不同级别的效率（从几小时到几毫秒）和不同类型的属性。例如，协议可以容忍多少不诚实的参与者？参与者是恶意的还是只是诚实但好奇（也称为*半诚实*，是MPC协议中的一种参与者类型，他们愿意正确执行协议，但可能试图了解其他参与者的输入）？如果其中一些参与者提前终止协议，那么所有参与者是否都公平？
 - en: Before a program can be securely computed with MPC, it needs to be translated
     into an *arithmetic circuit*. Arithmetic circuits are successions of additions
     and multiplications, and because they are Turing complete, they can represent
     *any* program! For an illustration of an arithmetic circuit, see figure 15.3.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 在使用MPC可以安全计算程序之前，需要将其转换为*算术电路*。算术电路是一系列的加法和乘法，因为它们是图灵完备的，所以它们可以表示*任何*程序！有关算术电路的说明，请参见图15.3。
 - en: '![](../Images/15_03.jpg)'
+  id: totrans-29
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/15_03.jpg)'
 - en: Figure 15.3 An arithmetic circuit is a number of addition or multiplication
     gates linking inputs to outputs. In the figure, values travel from left to right.
     For example, *d* = *a* + *b*. Here, the circuit only outputs one value *f* = *a*
     + *b* + *bc*, but it can in theory have multiple output values. Notice that different
     inputs to the circuit are provided by different participants, but they could also
     be public inputs (known to everyone).
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 15.3 一个算术电路是一些将输入与输出连接起来的加法或乘法门。在图中，数值从左到右传播。例如，*d* = *a* + *b*。在这里，电路只输出一个值
+    *f* = *a* + *b* + *bc*，但理论上它可以有多个输出值。请注意，电路的不同输入由不同的参与者提供，但它们也可以是公共输入（为所有人所知）。
 - en: 'Before taking a look at the next primitive, let me give you a simplified example
     of an (honest-majority) general-purpose MPC built via Shamir’s secret sharing.
     Many more schemes exist, but this one is simple enough to fit here in a three-step
     explanation: share enough information on each input in the circuit, evaluate every
     gate in the circuit, and reconstruct the output. Let’s look at each step in more
     detail.'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 在看下一个原语之前，让我给你一个通过Shamir的秘密共享构建的（诚实多数）通用型多方计算的简化示例。存在许多更多的方案，但这个方案足够简单，可以在这里进行三步解释：在电路中共享每个输入的足够信息，评估电路中的每个门，以及重构输出。让我们更详细地看看每一步。
 - en: The first step is for every participant to have enough information about each
     input of the circuit. Public inputs are shared publicly, while private inputs
     are shared via Shamir’s secret sharing (covered in chapter 8). I illustrate this
     in figure 15.4.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一步是每个参与者对电路的每个输入都有足够的信息。公共输入是公开分享的，而私有输入是通过Shamir的秘密共享（在第8章中介绍）分享的。我在图15.4中说明了这一点。
 - en: '![](../Images/15_04.jpg)'
+  id: totrans-33
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/15_04.jpg)'
 - en: Figure 15.4 The first step of a general-purpose MPC with secret sharing is to
     have participants split their respective secret inputs (using Shamir’s secret
     sharing scheme) and distribute the parts to all participants. For example, here
     Alice splits her input *a* into *a*[1] and *a*[2]. Because there are only two
     participants in this example, she gives the first share to herself and gives Bob
     the second one.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 15.4 通用 MPC 的第一步是使用 Shamir 的秘密共享方案，让参与者分割各自的秘密输入并将部分分发给所有参与者。例如，在这里，Alice
+    将她的输入 *a* 分割成 *a*[1] 和 *a*[2]。因为在这个例子中只有两个参与者，她将第一个份额给了自己，将第二个份额给了 Bob。
 - en: The second step is to evaluate every gate of the circuit. For technical reasons
     I’ll omit here, addition gates can be computed locally, while multiplication gates
     must be computed interactively (participants must exchange some messages). For
@@ -216,45 +288,65 @@
     illustrates. At this point, the shares can be exchanged (in order to reconstruct
     the output) or kept separate to continue the computation (if they represent an
     intermediate value).
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二步是评估电路的每个门。由于技术原因，我将在这里省略，加法门可以在本地计算，而乘法门必须通过交互方式计算（参与者必须交换一些消息）。对于加法门，只需将您拥有的输入份额相加；对于乘法门，将输入份额相乘。您得到的是一个结果份额，如图
+    15.5 所示。此时，份额可以交换（以重建输出）或保持分开以继续计算（如果它们代表中间值）。
 - en: '![](../Images/15_05.jpg)'
+  id: totrans-36
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/15_05.jpg)'
 - en: Figure 15.5 The second step of a general-purpose MPC with secret sharing is
     to have participants compute each gate in the circuit. For example, a participant
     can compute an addition gate by adding the two input Shamir shares that they have,
     which produces a Shamir share of the output.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 15.5 通用 MPC 的第二步是让参与者计算电路中的每个门。例如，参与者可以通过添加他们拥有的两个输入 Shamir 份额来计算一个加法门，这将产生一个输出的
+    Shamir 份额。
 - en: The final step is to reconstruct the output. At this point, the participants
     should all own a share of the output, which they can use to reconstruct the final
     output using the final step of Shamir’s secret sharing scheme.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后一步是重建输出。此时，参与者应该都拥有输出的一个份额，他们可以使用这个份额来使用 Shamir 的秘密共享方案的最后一步来重建最终输出。
 - en: 15.1.3 The state of MPC
+  id: totrans-39
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.1.3 MPC 的现状
 - en: There’s been huge progress in the last decade to make MPC practical. It is a
     field of many different use cases, and one should be on the lookout for the potential
     applications that can benefit from this newish primitive. Note that, unfortunately,
     no real standardization effort exists, and while several MPC implementations can
     be considered practical for many use cases today, they are not easy to use.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 在过去的十年中，MPC 的实用性取得了巨大进展。这是一个涵盖许多不同用例的领域，人们应该密切关注可以从这种新型原语中受益的潜在应用。需要注意的是，不幸的是，目前并没有真正的标准化努力，虽然今天有几种
+    MPC 实现可以被认为对许多用例来说是实用的，但它们并不容易使用。
 - en: Incidentally, the general-purpose MPC construction I explained earlier in this
     section is based on secret sharing, but there are more ways to construct MPC protocols.
     A well-known alternative is called *garbled circuits*, which is a type of construction
     first proposed by Yao in his 1982 paper introducing MPC. Another alternative is
     based on fully homomorphic encryption, a primitive you’ll learn about in the next
     section.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 顺便提一下，在本节前面我解释的通用 MPC 构造是基于秘密共享的，但构造 MPC 协议的方法还有很多。一个著名的替代方案叫做*加密电路*，这是姚期智在他
+    1982 年的论文中首次提出 MPC 时提出的一种构造类型。另一个选择是基于全同态加密，这是你将在下一节中了解的一种基本原语。
 - en: 15.2 Fully homomorphic encryption (FHE) and the promises of an encrypted cloud
+  id: totrans-42
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.2 完全同态加密（FHE）和加密云的承诺
 - en: 'For a long time in cryptography, a question has troubled many cryptographers:
     is it possible to compute arbitrary programs on encrypted data? Imagine that you
     could encrypt the values *a*, *b*, and *c* separately, send the ciphertexts to
@@ -263,74 +355,108 @@
     never learns about your values and always deals with ciphertexts. This calculation
     might not be too useful, but with additions and multiplications, one can compute
     actual programs on the encrypted data.'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 在密码学领域长期以来，一个问题困扰着许多密码学家：是否可能在加密数据上计算任意程序？想象一下，您可以分别加密值 *a*、*b* 和 *c*，将密文发送到一个服务，然后要求该服务返回
+    *a* × 3*b* + 2*c* + 3 的加密结果，然后您可以解密它。这里的重要思想是服务永远不会了解您的值，并始终处理密文。这个计算可能不太有用，但是通过加法和乘法，可以在加密数据上计算实际程序。
 - en: This interesting concept, originally proposed in 1978 by Rivest, Adleman, and
     Dertouzos, is what we call *fully homomorphic encryption* (FHE) (or as it used
     to be called, the *holy grail of cryptography*). I illustrate this cryptographic
     primitive in figure 15.6.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个有趣的概念最初是由 Rivest、Adleman 和 Dertouzos 在 1978 年提出的，我们称之为 *完全同态加密*（FHE）（或者以前被称为
+    *密码学圣杯*）。我在图 15.6 中说明了这个密码学原语。
 - en: '![](../Images/15_06.jpg)'
+  id: totrans-45
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/15_06.jpg)'
 - en: Figure 15.6 Fully homomorphic encryption (FHE) is an encryption scheme that
     allows for arbitrary computations over encrypted content. Only the owner of the
     key can decrypt the result of the computation.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 15.6 完全同态加密（FHE）是一种加密方案，允许对加密内容进行任意计算。只有密钥的所有者可以解密计算结果。
 - en: 15.2.1 An example of homomorphic encryption with RSA encryption
+  id: totrans-47
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.2.1 使用 RSA 加密的同态加密示例
 - en: 'By the way, you already saw some cryptographic schemes that should make you
     feel like you know what I’m talking about. Think of RSA (covered in chapter 6):
     given a *ciphertext* = *message*^e mod *N*, someone can easily compute some restricted
     function of the ciphertext'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 顺便说一句，您已经看到了一些加密方案，应该让您感觉自己知道我在说什么。想想 RSA（在第 6 章中讨论过）：给定一个 *ciphertext* = *message*^e
+    mod *N*，某人可以轻松计算密文的某些受限函数
 - en: '*n*^e × *ciphertext* = (*n* × *message*)^e mod *N*'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '*n*^e × *ciphertext* = (*n* × *message*)^e mod *N*'
 - en: for any number *n* they want (although it can’t be too big). The result is a
     ciphertext that decrypts to
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 他们想要的任何数字（虽然不能太大）。结果是一个解密为
 - en: '*n* × *message*'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '*n* × *message*'
 - en: Of course, this is not a desired behavior for RSA, and it has led to some attacks
     (for example, Bleichenbacher’s attack mentioned in chapter 6). In practice, RSA
     breaks the homomorphism property by using a padding scheme. Note that RSA is homomorphic
     only for the multiplication, which is not enough to compute arbitrary functions,
     as both multiplication and addition are needed for those. Due to this limitation,
     we say that RSA is *partially homomorphic*.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，这并不是 RSA 想要的行为，这导致了一些攻击（例如第 6 章提到的 Bleichenbacher 的攻击）。在实践中，RSA通过使用填充方案来打破同态性质。请注意，RSA
+    仅对乘法同态，这对于计算任意函数是不够的，因为这需要乘法和加法。由于这个限制，我们说 RSA 是 *部分同态*。
 - en: 15.2.2 The different types of homomorphic encryption
+  id: totrans-53
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.2.2 不同类型的同态加密
 - en: Other types of homomorphic encryptions include
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 其他类型的同态加密包括
 - en: '*Somewhat homomorphic*—Which means partially homomorphic for one operation
     (addition or multiplication) and homomorphic for the other operation in limited
     ways. For example, additions are unlimited up to a certain number but only a few
     multiplications can be done.'
+  id: totrans-55
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*部分同态*—意味着对于一种操作（加法或乘法）部分同态，另一种操作在有限的方式上是同态的。例如，加法在一定数量上是无限制的，但只能进行少量乘法。'
 - en: '*Leveled homomorphic*—Both addition and multiplication are possible up to a
     certain number of times.'
+  id: totrans-56
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*分层同态*—可以进行一定次数的加法和乘法。'
 - en: '*Fully homomorphic*—Addition and multiplication are unlimited (it’s the real
     deal).'
+  id: totrans-57
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*完全同态*—加法和乘法无限制（这才是真正的东西）。'
 - en: Before the invention of FHE, several types of homomorphic encryption schemes
     were proposed, but none could achieve what fully homomorphic encryption promised.
     The reason is that by evaluating circuits on encrypted data, some *noise* grows;
@@ -338,21 +464,29 @@
     And, for many years, some researchers tried to prove that perhaps there was some
     information theory that could show that fully homomorphic encryption was impossible;
     that is, until it was shown to be possible.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 在FHE的发明之前，提出了几种类型的同态加密方案，但没有一种能够实现完全同态加密所承诺的功能。原因是通过在加密数据上评估电路，一些*噪声*会增加；在某个点之后，噪声已经达到了使解密变得不可能的阈值。多年来，一些研究人员试图证明也许有一些信息理论可以表明完全同态加密是不可能的；直到被证明是可能的。
 - en: 15.2.3 Bootstrapping, the key to fully homomorphic encryption
+  id: totrans-59
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.2.3 启动引导，完全同态加密的关键
 - en: '*One night, Alice dreams of immense riches, caverns piled high with silver,
     gold and diamonds. Then, a giant dragon devours the riches and begins to eat its
     own tail! She awakes with a feeling of peace. As she tries to make sense of her
     dream, she realizes that she has the solution to her problem*.'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: '*一天晚上，爱丽丝梦见了巨大的财富，洞穴里堆满了银、金和钻石。然后，一只巨龙吞噬了财富，并开始吃自己的尾巴！她醒来时感到平静。当她试图理解她的梦时，她意识到她已经找到了解决问题的方法*。'
 - en: —Craig Gentry (“Computing Arbitrary Functions of Encrypted Data,” 2009)
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: —克雷格·根特里（“计算加密数据的任意函数”，2009）
 - en: In 2009, Craig Gentry, a PhD student of Dan Boneh, proposed the first-ever fully
     homomorphic encryption construction. Gentry’s solution was called *bootstrapping*,
     which in effect was to evaluate a decryption circuit on the ciphertext every so
@@ -362,8 +496,10 @@
     an FHE scheme. Gentry’s construction was slow and quite impractical, reporting
     about 30 minutes per basic bit operation, but as with any breakthrough, it only
     got better with time. It also showed that fully homomorphic encryption was possible.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 2009年，丹·博内的博士生克雷格·根特里提出了有史以来第一个完全同态加密构造。根特里的解决方案被称为*启动引导*，实际上是每隔一段时间在密文上评估解密电路，以将噪声降低到可管理的阈值。有趣的是，解密电路本身不会泄露私钥，并且可以由不受信任的一方计算。启动引导允许将分层的FHE方案转变为FHE方案。根特里的构造速度很慢且相当不切实际，每个基本位操作大约需要30分钟，但与任何突破一样，随着时间的推移变得更好。它还表明完全同态加密是可能的。
 - en: How does bootstrapping work? Let’s see if we can gain some insight. First, I
     need to mention that we’ll need not a symmetric encryption system, but a public
     key encryption system, where a public key can be used to encrypt and a private
@@ -372,61 +508,83 @@
     noise is low enough to still allow you to decrypt the ciphertext correctly, but
     too high that it won’t let you perform more homomorphic operations without destroying
     the encrypted content. I illustrate this in figure 15.7.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 启动引导是如何工作的？让我们看看是否能获得一些见解。首先，我需要提到我们不需要对称加密系统，而是需要一个公钥加密系统，其中公钥可用于加密，私钥可用于解密。现在，想象一下，你在一个密文上执行了一定数量的加法和乘法运算，并达到了一定的噪声水平。噪声足够低，仍然可以正确解密密文，但太高了，不会让你执行更多同态操作而不破坏加密内容。我在图15.7中说明了这一点。
 - en: '![](../Images/15_07.jpg)'
+  id: totrans-64
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/15_07.jpg)'
 - en: Figure 15.7 After encrypting a message with a fully homomorphic encryption algorithm,
     operating on it increases its noise to dangerous thresholds, where decryption
     becomes impossible.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 图15.7 在使用完全同态加密算法加密消息后，对其进行操作会将其噪声增加到危险的阈值，解密变得不可能。
 - en: You could think that you’re stuck, but bootstrapping unsticks you by removing
     the noise out of that ciphertext. To do that, you re-encrypt the noisy ciphertext
     under another public key (usually called the *bootstrapping key*) to obtain an
     encryption of that noisy ciphertext. Notice that the new ciphertext has no noise.
     I illustrate this in figure 15.8.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能认为自己陷入了困境，但启动引导通过从那个密文中去除噪声来解决问题。为此，你需要使用另一个公钥（通常称为*启动引导密钥*）重新加密有噪声的密文，以获得该有噪声的密文的加密。请注意，新的密文没有噪声。我在图15.8中说明了这一点。
 - en: '![](../Images/15_08.jpg)'
+  id: totrans-67
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/15_08.jpg)'
 - en: Figure 15.8 Building on figure 15.7, to eliminate the noise of the ciphertext,
     you can decrypt it. But because you don’t have the secret key, instead you re-encrypt
     the noisy ciphertext under another public key (called the bootstrapping key) to
     obtain a new ciphertext of a noisy ciphertext without error.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 图15.8 在图15.7的基础上，为了消除密文的噪声，你可以对其进行解密。但是因为你没有秘密密钥，所以你将嘈杂的密文重新加密在另一个公钥下（称为引导密钥）以获得一个新的密文，该密文是没有错误的嘈杂密文。
 - en: 'Now comes the magic: you are provided with the initial private key, not in
     cleartext, but encrypted under that bootstrapping key. This means that you can
     use it with a decryption circuit to homomorphically decrypt the inner noisy ciphertext.
     If the decryption circuit produces an acceptable amount of noise, then it works,
     and you will end up with the result of the first homomorphic operation encrypted
     under the bootstrapping key. I illustrate this in figure 15.9.'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在来到了魔法的部分：你被提供了初始的私钥，但不是以明文形式，而是在那个引导密钥下加密的。这意味着你可以使用解密电路与同态地解密内部带有噪声的密文。如果解密电路产生的噪声量是可接受的，那么它就起作用了，你将得到第一个同态操作的结果，其密文是在引导密钥下加密的。我在图15.9中进行了说明。
 - en: '![](../Images/15_09.jpg)'
+  id: totrans-70
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/15_09.jpg)'
 - en: Figure 15.9 Building on figure 15.9, you use the initial secret key encrypted
     to the bootstrapping key to apply the decryption circuit to that new ciphertext.
     This effectively decrypts the noisy ciphertext in place, removing the errors.
     There will be some amount of errors due to the decryption circuit.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 图15.9 在图15.9的基础上，你使用了初始的加密到引导密钥的秘密密钥来对新的密文应用解密电路。这有效地在原地解密了带有噪声的密文，消除了错误。由于解密电路，会产生一定数量的错误。
 - en: 'If the remaining amount of errors allows you to do at least one more homomorphic
     operation (+ or ×), then you are gold: you have a fully homomorphic encryption
     algorithm because you can always, in practice, run the bootstrapping after or
     before every operation. Note that you can set the bootstrapping key pair to be
     the same as the initial key pair. It’s a bit weird as you get some circular security
     oddity, but it seems to work and no security issues are known.'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果剩余的错误量允许你至少进行一次同态操作（+或×），那么你就成功了：你拥有一个完全同态加密算法，因为你可以始终在实践中在每个操作之后或之前运行引导。请注意，你可以将引导密钥对设置为与初始密钥对相同。这有点奇怪，因为你会得到一些循环安全问题，但似乎它可以运行，且没有已知的安全问题。
 - en: 15.2.4 An FHE scheme based on the learning with errors problem
+  id: totrans-73
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.2.4 基于学习中的错误问题的FHE方案
 - en: 'Before moving on, let’s see one example of an FHE scheme based on the learning
     with errors problem we saw in chapter 14\. I’ll explain a simplified version of
     the GSW scheme, named after the authors Craig Gentry, Amit Sahai, and Brent Waters.
@@ -435,16 +593,23 @@
     into a public key variant, which we need for bootstrapping. Take a look at the
     following equation where **C** is a square matrix, **s** is a vector, and *m*
     is a scalar (a number):'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 在继续之前，让我们看一个基于我们在第14章中看到的学习中的错误问题的FHE方案的示例。我将解释一个简化版本的GSW方案，以作者Craig Gentry、Amit
+    Sahai和Brent Waters的名字命名。为了保持简单，我将介绍算法的秘密密钥版本，但请记住，将这样的方案转换为我们需要的公钥变体是相对简单的，这是我们用于引导的。看看下面的方程式，其中**C**是一个方阵，**s**是一个向量，而*m*是一个标量（一个数字）：
 - en: '**Cs** = *m***s**'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: '**Cs** = *m***s**'
 - en: In this equation, **s** is called an *eigenvector* and *m* is an *eigenvalue*.
     If these words are foreign to you, don’t worry about it; they don’t matter much
     here.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个方程中，**s**被称为*eigenvector*而*m*被称为*eigenvalue*。如果这些词对你来说很陌生，不用担心；它们在这里并不重要。
 - en: The first intuition in our FHE scheme is obtained by looking at the eigenvectors
     and eigenvalues. The observation is that if we set *m* to a single bit we want
     to encrypt, **C** to be the ciphertext, and **s** to be the secret key, then we
@@ -452,108 +617,160 @@
     we assume there is a way to obtain a random ciphertext **C** from a fixed bit
     *m* and a fixed secret key **s**.) I illustrate this in figure 15.10 in a Lego
     kind of way.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们FHE方案中的第一个直觉是通过观察特征向量和特征值得到的。观察到的是，如果我们将*m*设置为要加密的单个位，**C**设置为密文，**s**设置为秘密密钥，则我们有一个（不安全的）同态加密方案来加密一个位。
+    （当然，我们假设存在一种方法从固定位*m*和固定秘密密钥**s**获取随机密文**C**。）我在图15.10中以一种乐高方式进行了说明。
 - en: '![](../Images/15_10.jpg)'
+  id: totrans-78
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/15_10.jpg)'
 - en: Figure 15.10 We can produce an insecure homomorphic encryption scheme to encrypt
     a single bit *m* with a secret vector **s** by interpreting *m* as an eigenvalue
     and **s** as an eigenvector and then finding the associated matrix **C**, which
     will be the ciphertext.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 15.10 我们可以通过将 *m* 解释为一个特征值，**s** 解释为一个特征向量，然后找到关联矩阵 **C** 来生成一个不安全的同态加密方案，该方案将密文。
 - en: 'To decrypt a ciphertext, you multiply the matrix with the secret vector **s**
     and see if you obtain the secret vector back or 0\. You can verify that the scheme
     is fully homomorphic by checking that the decryption of two ciphertexts added
     together (**C**[1] + **C**[2]) results in the associated bits added together:'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 要解密密文，您需要用秘密向量 **s** 乘以矩阵，然后查看是否获得了秘密向量或 0。您可以验证该方案是完全同态的，方法是检查两个密文加在一起的解密结果是否是相应位相加的结果：
 - en: (**C**[1] + **C**[2])**s** = **C**[1]**s** + **C**[2]**s** = *b*[1]**s** + *b*[2]**s**
     = (*b*[1] + *b*[2])**s**
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: (**C**[1] + **C**[2])**s** = **C**[1]**s** + **C**[2]**s** = *b*[1]**s** + *b*[2]**s**
+    = (*b*[1] + *b*[2])**s**
 - en: 'Also, the decryption of two ciphertexts multiplied together (**C**[1] × **C**[2])
     results in the associated bits multiplied together:'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，两个密文相乘的解密结果 (**C**[1] × **C**[2]) 是相应位相乘的结果：
 - en: (**C**[1] × **C**[2])**s** = **C**[1] (**C**[2]**s**) = **C**[1] (*b*[2]**s**)
     = *b*[2]**C**[1]**s** = (*b*[2] × *b*[1]) **s**
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: (**C**[1] × **C**[2])**s** = **C**[1] (**C**[2]**s**) = **C**[1] (*b*[2]**s**)
+    = *b*[2]**C**[1]**s** = (*b*[2] × *b*[1]) **s**
 - en: 'Unfortunately, that scheme is insecure as it is trivial to retrieve the eigenvector
     (the secret vector **s**) from **C**. What about adding a bit of noise? We can
     change this equation a bit to make it look like our learning with errors problem:'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 不幸的是，该方案不安全，因为很容易从 **C** 中检索出特征向量（秘密向量 **s**）。增加一点噪声呢？我们可以稍微改变这个方程，使它看起来像我们的误差学习问题：
 - en: '**Cs** = *m***s** + **e**'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: '**Cs** = *m***s** + **e**'
 - en: 'This should look more familiar. Again, we can verify that the addition is still
     homomorphic:'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 这应该更加熟悉了。同样，我们可以验证加法仍然是同态的：
 - en: (**C**[1] + **C**[2])**s** = **C**[1]**s** + **C**[2]**s** = *b*[1]**s** + **e**[1]
     + *b*[2]**s** + **e**[2] = (*b*[1] + *b*[2])**s** + (**e**[1]+**e**[2])
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: (**C**[1] + **C**[2])**s** = **C**[1]**s** + **C**[2]**s** = *b*[1]**s** + **e**[1]
+    + *b*[2]**s** + **e**[2] = (*b*[1] + *b*[2])**s** + (**e**[1]+**e**[2])
 - en: 'Here, notice that the error is growing (**e**[1] + **e**[2]), which is what
     we expected. We can also verify that the multiplication is still working as well:'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，注意到误差正在增加（**e**[1] + **e**[2]），这正是我们预期的。我们还可以验证乘法仍然有效：
 - en: (**C**[1] × **C**[2])**s** = **C**[1] (**C**[2]**s**) = **C**[1] (*b*[2]**s**
     + **e**[2]) = *b*[2]**C**[1]**s** + **C**[1]**e**[2] = *b*[2] (*b*[1]**s** + **e**[1])
     + **C**[1]**e**[2]
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: (**C**[1] × **C**[2])**s** = **C**[1] (**C**[2]**s**) = **C**[1] (*b*[2]**s**
+    + **e**[2]) = *b*[2]**C**[1]**s** + **C**[1]**e**[2] = *b*[2] (*b*[1]**s** + **e**[1])
+    + **C**[1]**e**[2]
 - en: = (*b*[2] × *b*[1]) **s** + *b*[2]**e**[1] + **C**[1]**e**[2]
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: = (*b*[2] × *b*[1]) **s** + *b*[2]**e**[1] + **C**[1]**e**[2]
 - en: Here, *b*[2]**e**[1] is small (as it is either **e**[1] or 0), but **C**[1]**e**[2]
     is potentially large. This is obviously a problem, which I’m going to ignore to
     avoid digging too much into the details. If you’re interested in learning more,
     make sure to read Shai Halevi’s “Homomorphic Encryption” report (2017), which
     does an excellent job at explaining all of these things and more.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，*b*[2]**e**[1] 很小（因为它要么是 **e**[1] 要么是 0），但 **C**[1]**e**[2] 可能很大。这显然是一个问题，我会忽略它以避免深入研究细节。如果你有兴趣了解更多，请务必阅读沙伊·哈莱维（Shai
+    Halevi）于 2017 年发表的《同态加密》报告，该报告在解释所有这些内容及更多内容方面做得非常出色。
 - en: 15.2.5 Where is it used?
+  id: totrans-92
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.2.5 它在哪里使用？
 - en: The most touted use case of FHE has always been the cloud. What if I could continue
     to store my data in the cloud without having it seen? And, additionally, what
     if the cloud could provide useful computations on that encrypted data? Indeed,
     one can think of many applications where FHE could be useful. A few examples include
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: FHE 最被吹捧的用例一直是云。如果我可以继续将我的数据存储在云中而不被看到怎么办？而且，此外，如果云可以在加密数据上提供有用的计算呢？事实上，人们可以想到许多应用场景可以使用
+    FHE。一些例子包括
 - en: A spam detector could scan your emails without looking at those.
+  id: totrans-94
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 垃圾邮件检测器可以扫描您的电子邮件而不看这些内容。
 - en: Genetic research could be performed on your DNA without actually having to store
     and protect your privacy-sensitive human code.
+  id: totrans-95
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 可以对您的DNA进行遗传研究，而无需实际存储和保护您的隐私敏感人类编码。
 - en: A database could be stored encrypted and queried on the server side without
     revealing any data.
+  id: totrans-96
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 数据库可以加密存储，并且在服务器端进行查询而不泄露任何数据。
 - en: Yet Phillip Rogaway, in his seminal 2015 paper on “The Moral Character of Cryptographic
     Work,” notes that “FHE [. . .] have engendered a new wave of exuberance. In grant
     proposals, media interviews, and talks, leading theorists speak of FHE [. . .]
     as game-changing indications of where we have come. Nobody seems to emphasize
     just how speculative it is that any of this will ever have any impact on practice.”
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，菲利普·罗加韦在他2015年关于“密码工作的道德性质”的开创性论文中指出，“全同态加密[...]引发了一波新的狂热。在资助提案、媒体采访和演讲中，领先的理论家们谈论全同态加密[...]作为我们取得进展的标志性迹象。没有人似乎强调这种假设性的东西是否会对实践产生任何影响。”
 - en: While Rogaway is not wrong, FHE is still quite slow, advances in the field have
     been exciting. At the time of this writing (2021), operations are about one billion
     times slower than normal operations, yet since 2009, there has been a 10⁹ speed-up.
     We are undoubtedly moving towards a future where FHE will be possible for at least
     some limited applications.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管罗加韦并没有错，全同态加密仍然非常缓慢，但该领域的进展令人兴奋。截至撰写本文时（2021年），操作速度比正常操作慢约十亿倍，但自2009年以来，已经有了10⁹倍的加速。毫无疑问，我们正在朝着未来的方向前进，至少对于某些有限的应用来说，全同态加密将成为可能。
 - en: Furthermore, not every application needs the full-blown primitive; somewhat
     homomorphic encryption can also be used in a wide range of applications and is
     much more efficient than FHE. A good indicator that a theoretical cryptography
@@ -562,12 +779,16 @@
     standardization effort includes many large companies and universities. It is still
     unclear exactly when, where, and in what form homomorphic encryption will make
     its entry into the real world. What’s clear is that it will happen, so stay tuned!
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，并非每个应用都需要全面的原语；有些同态加密可以在广泛的应用中使用，比全同态加密更有效。一个理论密码原语进入现实世界的一个良好指标是标准化，而事实上，全同态加密并不陌生于此。[https://homomorphicencryption.org](https://homomorphicencryption.org)的标准化工作包括许多大公司和大学。目前尚不清楚全同态加密何时、何地以及以何种形式进入现实世界。但可以肯定的是，它将会发生，敬请关注！
 - en: 15.3 General-purpose zero-knowledge proofs (ZKPs)
+  id: totrans-100
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.3 通用零知识证明（ZKPs）
 - en: I talked about zero-knowledge proofs (ZKPs) in chapter 7 on signatures. There,
     I pointed out that signatures are similar to non-interactive ZKPs of knowledge
     for discrete logarithms. These kinds of ZKPs were invented in the mid-1980s by
@@ -577,26 +798,34 @@
     execution of any program even if we removed some of the inputs or outputs (see
     figure 15.11 for an example). This section focuses on this general-purpose type
     of ZKP.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 第7章中我谈到了零知识证明（ZKPs）与签名有关。在那里，我指出签名类似于离散对数的非交互式ZKPs。这种ZKPs是由沙菲·戈德瓦塞、席尔维奥·米卡利和查尔斯·拉科夫教授于上世纪80年代中期发明的。不久之后，戈德雷希、米卡利和威格德森发现我们不仅可以证明离散对数或其他类型的难题，还可以证明任何程序的正确执行，即使我们删除了一些输入或输出（参见图15.11的示例）。本节重点讨论这种通用类型的ZKP。
 - en: '![](../Images/15_11.jpg)'
+  id: totrans-102
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/15_11.jpg)'
 - en: Figure 15.11 General-purpose ZKPs allow a prover to convince a verifier about
     the integrity of an execution trace (the inputs of a program and the outputs obtained
     after its execution) while hiding some of the inputs or outputs involved in the
     computation. An example of this is a prover trying to prove that a sudoku can
     be solved.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 图15.11 通用ZKPs允许证明者说服验证者关于执行轨迹的完整性（程序的输入以及执行后获得的输出），同时隐藏了计算中涉及的一些输入或输出。一个例子是证明者试图证明数独可以被解决。
 - en: ZKP as a field has grown tremendously since its early years. One major reason
     for this growth is the cryptocurrency boom and the need to provide more confidentiality
     to on-chain transactions as well as optimize on space. The field of ZKP is still
     growing extremely fast as of the time of this writing, and it is quite hard to
     follow what are all the modern schemes that exist and what types of general-purpose
     ZKPs there are.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 自其早期以来，ZKP作为一个领域已经有了巨大的增长。这种增长的一个主要原因是加密货币的繁荣以及对链上交易提供更多保密性以及优化空间的需求。截至撰写本文时，ZKP领域仍然以极快的速度增长，很难跟上现代方案的发展以及通用ZKPs的类型。
 - en: Fortunately for us, this problem was getting large enough that it tripped the
     *standardization threshold*, an imaginary line that, when reached, almost always
     ends up motivating some people to work together towards a clarification of the
@@ -604,6 +833,7 @@
     the ZKProof Standardization effort with the goal to “standardize the use of cryptographic
     zero-knowledge proofs.” To this day, it is still an ongoing effort. You can read
     more about it at [https://zkproof.org](https://zkproof.org).
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
 - en: 'You can use general-purpose ZKPs in quite a lot of different situations, but
@@ -615,20 +845,24 @@
     of a computation), confidentiality (being able to hide parts of a protocol), and
     so on. The biggest blockers for more applications to adopt general-purpose ZKPs
     seem to be the following:'
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
 - en: The large number of ZKP schemes and the fact that every year more schemes are
     being proposed.
+  id: totrans-107
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The difficulty of grasping how these systems work and how to use them for specific
     use cases.
+  id: totrans-108
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Distinctions between the different proposed schemes are quite important. Because
     it is a great source of confusion, here is how some of these schemes are divided:'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
 - en: '*Zero-knowledge or not*—If some of the information needs to remain secret from
@@ -636,6 +870,7 @@
     secrets can be useful as well. For example, you might want to delegate some intensive
     computation to a service that, in turn, has to prove to you that the result they
     provide is correct.'
+  id: totrans-110
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -645,6 +880,7 @@
     is because back-and-forth’s can be time consuming in protocols, but also because
     interactivity is sometimes not possible. So-called non-interactive proofs are
     often referred to as *NIZKs* for *non-interactive ZKPs*.'
+  id: totrans-111
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -656,6 +892,7 @@
     are, thus, short and easy to use to verify ZKPs. Note that a scheme not being
     a zk-SNARK does not disqualify it for the real world as often different properties
     might be useful in different use cases.'
+  id: totrans-112
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -663,6 +900,7 @@
     setup to agree on a set of parameters and common values. This is called a *common
     reference string* (CRS). But setups for ZKPs can be much more limiting or dangerous
     than initially thought. There are three types of setup:'
+  id: totrans-113
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -673,6 +911,7 @@
     have the shortest proof size. To decrease the risk, MPC can be use to have many
     participants help create these dangerous parameters. If a single participant is
     honest and deletes their keys after the ceremony, the toxic waste gets flushed.'
+  id: totrans-114
   prefs:
   - PREF_IND
   - PREF_UL
@@ -680,6 +919,7 @@
 - en: '*Universal*—A trusted setup is said to be universal if you can use it to prove
     the execution of any circuit (bounded by some size). Otherwise it is specific
     to a single circuit.'
+  id: totrans-115
   prefs:
   - PREF_IND
   - PREF_UL
@@ -687,6 +927,7 @@
 - en: '*Transparent*—Fortunately for us, many schemes also offer transparent setups,
     meaning that no trusted third party needs to be present to create the parameters
     of the system. Transparent schemes are by design universal.'
+  id: totrans-116
   prefs:
   - PREF_IND
   - PREF_UL
@@ -695,33 +936,40 @@
     advanced primitives like bilinear pairings (which I’ll explain later), while others
     only rely on symmetric cryptography (like hash functions), which makes them naturally
     resistant to quantum computers (usually at the expense of much larger proofs).'
+  id: totrans-117
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Because zk-SNARKs are what’s up at the time of this writing, let me give you
     my perception as to how they work.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
 - en: 15.3.1 How zk-SNARKs work
+  id: totrans-119
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: 'First and foremost, there are many, many zk-SNARK schemes—too many of them,
     really. Most build on this type of construction:'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
 - en: A proving system, allowing a prover to prove something to a verifier.
+  id: totrans-121
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: A translation or compilation of a program to something the proving system can
     prove.
+  id: totrans-122
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The first part is not too hard to understand, while the second part sort of
     requires a graduate course in the subject. To begin, let’s take a look at the
     first part.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
 - en: The main idea of zk-SNARKs is that they are all about proving that you know
@@ -735,6 +983,7 @@
     *h*(*x*) such that *f*(*x*) = *t*(*x*)*h*(*x*) for some target polynomial *t*(*x*)
     = (*x* – 1)(*x* – 2). In this example, 1 and 2 are the roots that the verifier
     wants to check.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
 - en: 'But that’s it! That’s what zk-SNARKs proving systems usually provide: something
@@ -743,6 +992,7 @@
     secret input to a program if all you can prove is that you know a polynomial?
     Well, that’s why the second part of a zk-SNARK is so difficult. It’s about translating
     a program into a polynomial. But more on that later.'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
 - en: 'Back to our proving system, how does one prove that they know such a function
@@ -750,27 +1000,33 @@
     *f*(*x*) as *f*(*x*) = *t*(*x*)*h*(*x*). Ugh, ... not so fast here. We’re talking
     about *zero-knowledge* proofs right? How can we prove this without giving out
     *f*(*x*)? The answer is in the following three tricks:'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
 - en: '*Homomorphic commitments*—A commitment scheme similar to the ones we used in
     other ZKPs (covered in chapter 7)'
+  id: totrans-127
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Bilinear pairings*—A mathematical construction that has some interesting properties;
     more on that later'
+  id: totrans-128
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The fact that *different polynomials evaluate to different values most of the
     time*
+  id: totrans-129
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: So let’s go through each of these, shall we?
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
 - en: 15.3.2 Homomorphic commitments to hide parts of the proof
+  id: totrans-131
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -779,9 +1035,11 @@
     to perform some operations on them so that they can verify the proof. Specifically,
     they need to verify that if the prover commits on their polynomial *f*(*x*) as
     well as *h*(*x*), then we have
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
 - en: '*com*(*f*(*x*)) = *com*(*t*(*x*)) *com*(*h*(*x*)) = *com*(*t*(*x*)*h*(*x*))'
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
 - en: 'where the commitment *com*(*t*(*x*)) is computed by the verifier as the agreed
@@ -790,18 +1048,22 @@
     mechanisms (as mentioned in chapter 2). Thanks to these homomorphic commitments,
     we can “hide values in the exponent” (for example, for a value *v*, send the commitment
     *g*^v mod *p*) and perform useful identity checks:'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
 - en: The equality of commitments—The equality *g*^a = *g*^b means that *a* = *b*
+  id: totrans-135
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The addition of commitments—The equality *g*^a = *g*^b*g*^c means that *a* =
     *b* + *c*
+  id: totrans-136
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The scaling of commitments—The equality *g*^a = (*g*^b)^c means that *a* = *bc*
+  id: totrans-137
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -809,9 +1071,11 @@
     (*gc*). With homomorphic commitments alone we can’t check the multiplication of
     commitments, which is what we needed. Fortunately, cryptography has another tool
     to get such equations hidden in the exponent—*bilinear pairings*.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
 - en: 15.3.3 Bilinear pairings to improve our homomorphic commitments
+  id: totrans-139
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -821,6 +1085,7 @@
     pairings are, but just know that it is another tool in our toolkit that allows
     us to multiply elements that couldn’t be multiplied previously by moving them
     from one group to another.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
 - en: 'Using *e* as the typical way of writing a bilinear pairing, we have *e*(*g*[1],
@@ -828,9 +1093,11 @@
     groups. Here, we’ll use the same generator on the left (*g*[1] = *g*[2]) which
     makes the pairing symmetric. We can use a bilinear pairing to perform multiplications
     hidden in the exponent via this equation:'
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
 - en: '*e*(*g*^b, *g*^c) = *e*(*g*)^(bc)'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
 - en: Again, we use bilinear pairings to make our commitments not only homomorphic
@@ -839,9 +1106,11 @@
     are also used in other places in cryptography and are slowly becoming a more common
     building block. They can be seen in homomorphic encryption schemes and also signatures
     schemes like BLS (which I mentioned in chapter 8).
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
 - en: 15.3.4 Where does the succinctness come from?
+  id: totrans-144
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -853,14 +1122,17 @@
     *r* won’t return the same result *most of the time*. For almost all *r*, *f*(*r*)≠
     *t*(*r*)*h*(*r*). This is known as the *Schwartz-Zippel lemma*, which I illustrate
     in figure 15.12.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/15_12.jpg)'
+  id: totrans-146
   prefs: []
   type: TYPE_IMG
 - en: Figure 15.12 The Schwartz-Zippel lemma says that two different polynomials of
     degree *n* can intersect in at most *n* points. In other words, two different
     polynomials will differ in most points.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
 - en: 'Knowing this, it is enough to prove that *com*(*f*(*r*)) = *com*(*t*(*r*)*h*(*r*))
@@ -870,19 +1142,23 @@
     a prover knows the random point *r* that will be used to check the equality, then
     they can forge an invalid polynomial that will still verify the equality. So a
     trusted setup is about'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
 - en: Creating a random value *r*
+  id: totrans-149
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Committing different exponentiations of *r* (for example, g, g^r, g^(*r*²),
     g^(*r*³), . . .) so that these values can be used by the prover to compute their
     polynomial without knowing the point *r*
+  id: totrans-150
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Destroying the value *r*
+  id: totrans-151
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
@@ -890,9 +1166,11 @@
     = 3*x*² + *x* + 2, then all I have to do is compute (g^(*r*²))³ g^r g² to obtain
     a commitment of my polynomial evaluated at that random point *r* (without knowing
     *r*).
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
 - en: 15.3.5 From programs to polynomials
+  id: totrans-153
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -901,21 +1179,26 @@
     But how do we translate a more general statement into a polynomial knowledge proof?
     Typical statements in cryptocurrencies, which are the applications currently making
     the most use of zk-SNARKs these days, are of the form:'
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
 - en: Prove that a value is in the range [0, 2^(64)] (this is called a range proof)
+  id: totrans-155
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Prove that a (secret) value is included in some given (public) Merkle tree
+  id: totrans-156
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Prove that the sum of some values is equal to the sum of some other values
+  id: totrans-157
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: And so on
+  id: totrans-158
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -925,23 +1208,28 @@
     to give you a sense of how things work. From there, you should be able to understand
     what are the parts that are missing from my explanation and fill in the gaps as
     you wish. What is going to happen next is the following:'
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
 - en: Our program will first get converted into an arithmetic circuit, like the ones
     we saw in the section on MPC.
+  id: totrans-160
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: That arithmetic circuit will be converted into a system of equations that are
     of a certain form (called a rank-1 constraint system or R1CS).
+  id: totrans-161
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: We then use a trick to convert our system of equations into a polynomial.
+  id: totrans-162
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: 15.3.6 Programs are for computers; we need arithmetic circuits instead
+  id: totrans-163
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -949,21 +1237,27 @@
     in math. The reason why we would want to do that should be obvious: we can’t prove
     code, but we can prove math. For example, the following listing provides a function
     where every input is public except for `a`, which is our secret input.'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 15.1 A simple function
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE0]'
+  id: totrans-166
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'In this simple example, if every input and output is public except for `a`,
     one can still deduce what `a` is. This listing also serves as an example of what
     you shouldn’t try to prove in zero-knowledge. Anyway, the program can be rewritten
     in math with this equation:'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
 - en: '*w* × (*a* × (*b* + 3)) + (1 – *w*) × (*a* + *b*) = *v*'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
 - en: Where *v* is the output and *w* is either 0 (`false`) or 1 (`true`). Notice
@@ -972,15 +1266,18 @@
     outputs obtained in the equation, the equality should be correct. If the equality
     is not correct, then your inputs and outputs don’t correspond to a valid execution
     of the program.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
 - en: This is how you have to think about these general-purpose ZKPs. Instead of executing
     a function in zero-knowledge (which doesn’t mean much really), we use zk-SNARKs
     to prove that some given inputs and outputs correctly match the execution of a
     program, even when some of the inputs or outputs are omitted.
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
 - en: 15.3.7 An arithmetic circuit to a rank-1 constraint system (R1CS)
+  id: totrans-171
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -994,29 +1291,36 @@
     need to transform our arithmetic circuit into such a system of equations except
     that it helps when doing the conversion to the final stuff we can prove. Try to
     do this with the equation we have and we obtain something like
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
 - en: '*a* × (*b* + 3) = *m*'
+  id: totrans-173
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*w* × (*m* – *a* – *b*) = *v* – *a* – *b*'
+  id: totrans-174
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'We actually forgot the constraint that *w* is either 0 or 1, which we can add
     to our system via a clever trick:'
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
 - en: '*a* × (*b* + 3) = *m*'
+  id: totrans-176
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*w* × (*m* – *a* – *b*) = *v* – *a* – *b*'
+  id: totrans-177
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*w* × *w* = *w*'
+  id: totrans-178
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1027,9 +1331,11 @@
     it must mean that the program does not output the value you gave me for the inputs
     you gave me. Another way to think about it is that zk-SNARKs allow you to verifiably
     remove inputs or outputs of the transcript of the correct execution of a program.'
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
 - en: 15.3.8 From R1CS to a polynomial
+  id: totrans-180
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1042,17 +1348,21 @@
     system simultaneously by representing the first equation when evaluated at 1,
     and representing the second equation when evaluated at 2, and so on. The prover’s
     job is now to create a polynomial *f*(*x*) such that:'
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
 - en: '*f*(1) = *a* × (*b* + 3) – *m*'
+  id: totrans-182
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*f*(2) = *w* × (*m* – *a* – *b*) – (*v* – *a* – *b*)'
+  id: totrans-183
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*f*(3) = *w* × *w* – *w*'
+  id: totrans-184
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1061,6 +1371,7 @@
     has roots 1, 2, 3 only if we create it correctly. Remember, this is what zk-SNARKs
     are all about: we have the protocol to prove that, indeed, our polynomial *f*(*x*)
     has these roots (known by both the prover and the verifier).'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
 - en: It would be too simple if this was the end of my explanation because now the
@@ -1069,9 +1380,11 @@
     the values *a*, *b*, *m*, *v*, and *w*. They can do pretty much whatever they
     want! What we want instead, is a system that locks every part of the polynomial
     except for the secret values that the verifier must *not* learn about.
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
 - en: 15.3.9 It takes two to evaluate a polynomial hiding in the exponent
+  id: totrans-187
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1081,69 +1394,84 @@
     the parts that the verifier must not learn about: the values *a* and *m*. Thus,
     in a real zk-SNARK protocol you want the prover to have the least amount of freedom
     possible when they create their polynomials and then evaluate it to a random point.'
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
 - en: To do this, the polynomial is created somewhat dynamically by having the prover
     only fill in their part, then having the verifier fill in the other parts. For
     example, let’s take the first equation, *f*(1) = *a* × (*b* + 3) – *m*, and represent
     it as
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
 - en: '*f*[1](*x*) = *aL*[1](*x*) × (*b* + 3)*R*[1](*x*) – *mO*[1](*x*)'
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
 - en: 'where *L*[1](*x*), *R*[1](*x*), *O*[1](*x*) are polynomials that evaluate to
     1 for *x* = 1 and to 0 for *x* = 2 and *x* = 3\. This is necessary so that they
     only influence our first equation. (Note that it is easy to find such polynomials
     via algorithms like Lagrange interpolation.) Now, notice two more things:'
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
 - en: We have the inputs, intermediate values, and outputs as coefficients of our
     polynomials.
+  id: totrans-192
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The polynomial *f*(*x*) is the sum *f*[1](*x*) + *f*[2](*x*) + *f*[3](*x*),
     where we can define *f*[2](*x*) and *f*[3](*x*) to represent equations 2 and 3,
     similarly to *f*[1](*x*).
+  id: totrans-193
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'As you can see, our first equation is still represented at the point *x* =
     1:'
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
 - en: '*f*(1) = *f*[1](1) + *f*[2](1) + *f*[3](1)'
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
 - en: = *f*[1](1)
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
 - en: = *aL*[1](1) × (*b* + 3)*R*[1](1) – *mO*[1](1)
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
 - en: = *a* × (*b* + 3) – *m*
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
 - en: 'With this new way of representing our equations (which remember, represent
     the execution of our program), the prover can now evaluate parts of the polynomial
     that are relevant to them by:'
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
 - en: Taking the exponentiation of the random point *r* hidden in the exponent to
     reconstruct the polynomials *L*[1](*r*) and *O*[1](*r*)
+  id: totrans-200
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Exponentiating g^(L[1](r)) with the secret value *a* to obtain (g^(L[1](r)))^a
     = g^(aL[1](r)), which represents *a* × *L*[1](*x*) that is evaluated at an unknown
     and random point *x* = *r* and hidden in the exponent
+  id: totrans-201
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Exponentiating g^(O[1](r)) with the secret intermediate value *m* to obtain
     (g^(O[1](r)))^m = g^(mO[1](r)), which represents the evaluation of *mO*[1](*x*)
     at the random point *r* and hidden in the exponent
+  id: totrans-202
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
@@ -1153,15 +1481,18 @@
     which represents the (hidden) evaluation of (*b* + 3) × *R*[1](*x*) at an unknown
     and random point *x* = *r*. Finally, the verifier can reconstruct *f*[1](*r*),
     which is hidden in the exponent, by using a bilinear pairing:'
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
 - en: e(g^(aL[1](r)), g^((b+3)R[1](r))) – e(g, g^(mO[1](r))) = e(g, g)^(aL[1](r))
     × (b + 3)R[1](r) – mO[1](r)
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
 - en: If you extrapolate these techniques to the whole polynomial *f*(*x*), you can
     figure out the final protocol. Of course, this is still a gross simplification
     of a real zk-SNARK protocol; this still leaves way too much power to the prover.
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
 - en: 'All the other tricks used in zk-SNARKs are meant to further restrict what the
@@ -1170,6 +1501,7 @@
     I’ve read is the paper, “Why and How zk-SNARK Works: Definitive Explanation” by
     Maksym Petkus, which goes much more in depth and explains all of the parts that
     I’ve overlooked.'
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
 - en: And that’s it for zk-SNARKs. This is really just an introduction; in practice,
@@ -1181,6 +1513,7 @@
     schemes. Furthermore, as I said earlier, there are many different zk-SNARKs constructions,
     and there are also many different non-zk-SNARKs constructions, which might be
     more relevant as general-purpose ZKP constructions depending on your use case.
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
 - en: But, unfortunately, no one-size-fits-all ZKP scheme seems to exist (for example,
@@ -1189,15 +1522,18 @@
     and every year new and better schemes are being published. It might be that a
     few years down the line better standards and easy-to-use libraries will surface,
     so if you’re interested in this space, keep watching!
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
 - en: Summary
+  id: totrans-209
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: In the last decade, many theoretical cryptographic primitives have made huge
     progress in terms of efficiency and practicality; some are making their way into
     the real world.
+  id: totrans-210
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1206,6 +1542,7 @@
     Threshold signatures are starting to be adopted in cryptocurrencies, while private
     set intersection (PSI) protocols are being used in modern and large-scale protocols
     like Google’s Password Checkup.
+  id: totrans-211
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1214,6 +1551,7 @@
     cloud, where it could prevent access to the data to anyone but the user while
     still allowing the cloud platform to perform useful computation on the data for
     the user.
+  id: totrans-212
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1223,6 +1561,7 @@
     of the blockchain. Their use cases seem broader, though, and as better standards
     and easier-to-use libraries make their way into the real world, we might see them
     being used more and more.
+  id: totrans-213
   prefs:
   - PREF_UL
   type: TYPE_NORMAL

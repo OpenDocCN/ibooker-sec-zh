@@ -566,10 +566,12 @@
   id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 要将一个比特设为0，揭示你的私钥的*x*部分；要将一个比特设为1，揭示*y*部分。要验证一个签名，只需对其进行哈希，以检查其是否与公钥的正确部分匹配。我在图14.1中说明了这一点。
 - en: '![](../Images/14_01.jpg)'
   id: totrans-61
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/14_01.jpg)'
 - en: Figure 14.1 A Lamport signature is a one-time signature (OTS) based only on
     hash functions. To generate a key pair that can sign a bit, generate two random
     numbers, which will be your private key, and hash each of those individually to
@@ -578,6 +580,7 @@
   id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 图14.1 Lamport签名是一种仅基于哈希函数的一次性签名（OTS）。为了生成一个可以签署一个比特的密钥对，生成两个随机数，这将是你的私钥，并分别对这两个数进行哈希，以产生你的公钥的两个摘要。要将一个比特设为0，揭示第一个随机数；要将一个比特设为1，揭示第二个随机数。
 - en: Signing a bit is not that useful, you say. No problem; a Lamport signature works
     for larger inputs simply by creating more pairs of secrets, one per bit, to sign
     (see figure 14.2). Obviously, if your input is larger than 256 bits, you would
@@ -585,10 +588,12 @@
   id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 签署一个比特并不那么有用，你说。没问题；Lamport签名通过为每个比特创建更多的秘密对，一个比特一个秘密对，来对更大的输入进行签名（参见图14.2）。显然，如果你的输入大于256位，你首先会对其进行哈希，然后再对其进行签名。
 - en: '![](../Images/14_02.jpg)'
   id: totrans-64
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/14_02.jpg)'
 - en: Figure 14.2 To generate a Lamport signature key pair that can sign an *n*-bit
     message, generate 2*n* random numbers, which will be your private key, and hash
     each of those individually to produce the 2*n* digests of your public key. To
@@ -597,6 +602,7 @@
   id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 图14.2 为了生成一个Lamport签名密钥对，可以签署一个*n*位消息，生成2*n*个随机数，这将是你的私钥，并分别对这些数进行哈希，以产生你的公钥的2*n*个摘要。要签名，遍历秘密和*n*位的对，揭示第一个元素以将一个比特设为0，或揭示第二个元素以将一个比特设为1。
 - en: A major limitation of this scheme is that you can only use it to sign once;
     if you use it to sign twice, you end up authorizing someone else to mix the two
     signatures to forge other valid signatures. We can improve the situation naively
@@ -612,6 +618,8 @@
   id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种方案的一个主要限制是你只能使用它签名一次；如果你用它签名两次，你最终会授权别人混合这两个签名来伪造其他有效的签名。我们可以通过天真地生成大量一次性密钥对而不是单个密钥对来改善这种情况，然后确保在使用后丢弃一个密钥对。这不仅使你的公钥变得像你认为你可能会使用的签名数量一样大，而且还意味着你必须跟踪你使用过的密钥对（或者更好的是，丢弃你使用过的私钥）。例如，如果你知道你将要使用具有256位输出大小的哈希函数签署最大为256位的1,000个消息，那么你的私钥和公钥都必须是1000
+    × (256 × 2 × 256)位，约为16兆字节。对于只有1,000个签名来说，这是相当多的。
 - en: Most of the hash-based signature schemes proposed today build on the foundations
     created by Lamport to allow for many more signatures (sometimes a practically
     unlimited amount of signatures), stateless private keys (although some proposed
@@ -619,11 +627,13 @@
   id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 今天提出的大多数基于哈希的签名方案都建立在Lamport创造的基础上，以允许更多的签名（有时是几乎无限量的签名），无状态的私钥（尽管一些提出的方案仍然是有状态的），以及更实用的参数大小。
 - en: 14.2.2 Smaller keys with Winternitz one-time signatures (WOTS)
   id: totrans-68
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.2.2 Winternitz一次签名（WOTS）的较小密钥
 - en: A few months after Lamport’s publication, Robert Winternitz of the Stanford
     Mathematics Department proposed to publish hashes of hashes of a secret *h*(*h*(...*h*(*x*)))
     = *h^w*(*x*) instead of publishing multiple digests of multiple secrets in order
@@ -632,6 +642,8 @@
   id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 在Lamport发表几个月后，斯坦福大学数学系的Robert Winternitz提出了发布一个秘密的哈希的哈希的哈希* h *（* h *（...*
+    h *（* x *）））= * h ^ w *（* x *）而不是发布多个秘密的多个摘要，以优化私钥的大小（参见图14.3）。这个方案被称为作者之后的 *Winternitz一次签名*（WOTS）。
 - en: For example, choosing *w* = 16 allows you to sign 16 different values or, in
     other words, inputs of 4 bits. You start by generating a random value *x* that
     serves as your private key and hash that 16 times to obtain your public key, *h*^(16)(*x*).
@@ -911,23 +923,27 @@
   id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 说到这里，什么是格？嗯，它就像一个*向量空间*，但带有整数。如果你不记得向量空间是什么，那就是所有可以使用以下内容创建的向量的集合：
 - en: '*A basis*—A set of vectors; for example, (0,1) and (1,0).'
   id: totrans-99
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*基*—一组向量；例如，(0,1) 和 (1,0)。'
 - en: '*An operation between vectors*—The vectors can be added together; for example,
     (0,1) + (1,0) = (1,1).'
   id: totrans-100
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*向量之间的运算*—向量可以相加；例如，(0,1) + (1,0) = (1,1)。'
 - en: '*A scalar operation*—A vector can be multiplied by what we call scalars; for
     example, 3 × (1,2) = (3,6).'
   id: totrans-101
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*标量运算*—向量可以乘以我们称为标量的东西；例如，3 × (1,2) = (3,6)。'
 - en: In our example, the vector space contains all the vectors that can be expressed
     as a linear combination of the basis, which translates to any vector that can
     be written as *a* × (0,1) + *b* × (1,0) for any scalars *a* and *b*. For example,
@@ -936,15 +952,19 @@
   id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们的例子中，向量空间包含所有可以表示为基的线性组合的向量，这意味着任何可以写为*a* × (0,1) + *b* × (1,0)的向量。例如，0.5
+    × (0,1) + 3.87 × (1,0) = (3.87,0.5)在我们的向量空间中，99 × (0,1) + 0 × (1,0) = (0,99)也是如此，等等。
 - en: A lattice is a vector space where all of the numbers involved are integers.
     Yup, in cryptography, we like integers. I illustrate this in figure 14.7.
   id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 格是一个向量空间，其中涉及的所有数字都是整数。是的，在密码学中，我们喜欢整数。我在图14.7中说明了这一点。
 - en: '![](../Images/14_07.jpg)'
   id: totrans-104
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/14_07.jpg)'
 - en: Figure 14.7 On the left, a basis of two vectors is drawn on a graph. A lattice
     can be formed by taking all of the possible integer linear combinations of these
     two vectors (middle figure). The resulting lattice can be interpreted as a pattern
@@ -952,6 +972,7 @@
   id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 图14.7 左侧绘制了两个向量的基。通过取这两个向量的所有可能的整数线性组合可以形成一个格点（中间图）。所得的格点可以被解释为空间中永远重复的点的模式（右图）。
 - en: There are several well-known hard problems in the lattice space, and for each
     of these problems, we have algorithms to solve them. These algorithms are often
     the best we could think of, but it doesn’t necessarily mean that they are efficient
@@ -961,27 +982,32 @@
   id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 在格空间中存在几个众所周知的难题，针对这些问题，我们有解决方案。这些算法通常是我们能想到的最好的，但这并不一定意味着它们是高效的，甚至是实用的。因此，这些问题至少被认为是困难的，直到找到更高效的解决方案。最知名的两个困难问题如下。（我在图14.8中说明了这两个问题。）
 - en: '*The shortest vector problem* (SVP)—Answers the question, what is the shortest
     nonzero vector in your lattice?'
   id: totrans-107
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*最短向量问题*（SVP）—回答这个问题：你的格点中最短的非零向量是什么？'
 - en: '*The closest vector problem* (CVP)—Given a coordinate that is not on the lattice,
     finds the closest point to that coordinate on the lattice.'
   id: totrans-108
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*最近向量问题*（CVP）—给定一个不在格点上的坐标，找到该坐标在格点上最近的点。'
 - en: '![](../Images/14_08.jpg)'
   id: totrans-109
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/14_08.jpg)'
 - en: 'Figure 14.8 An illustration of the two major lattice problems used in cryptography:
     the shortest vector problem (SVP) and the closest vector problem (CVP)'
   id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 图14.8 展示了密码学中使用的两个主要格问题：最短向量问题（SVP）和最近向量问题（CVP）
 - en: Generally, we use algorithms like LLL (the Lenstra–Lenstra–Lovász algorithm)
     or BKZ (the Block-Korkine-Zolotarev algorithm) to solve both of these problems
     (CVP can be reduced to SVP). These are algorithms that reduce the basis of a lattice,
@@ -990,11 +1016,13 @@
   id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常，我们使用像LLL（Lenstra–Lenstra–Lovász算法）或BKZ（Block-Korkine-Zolotarev算法）这样的算法来解决这两个问题（CVP可以归约为SVP）。这些算法会缩减格点的基，意味着它们试图找到一组比给定的更短的向量，并且能够产生完全相同的格点。
 - en: 14.3.2 Learning with errors (LWE), a basis for cryptography?
   id: totrans-112
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.3.2 含有错误的学习（LWE），密码学的基础？
 - en: 'In 2005, Oded Regev introduced the *learning with errors* (LWE) problem, which
     became the basis for many cryptographic schemes including some of the algorithms
     in this chapter. Before going further, let’s see what the LWE problem is about.
@@ -1003,16 +1031,19 @@
   id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 在2005年，Oded Regev提出了*含有错误的学习*（LWE）问题，它成为了许多密码方案的基础，包括本章中的一些算法。在继续之前，让我们看看LWE问题是什么。让我们从以下方程式开始，它们是相同整数*s*[0]和*s*[1]的线性组合：
 - en: 5 *s*[0] + 2 *s*[1] = 27
   id: totrans-114
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 5 *s*[0] + 2 *s*[1] = 27
 - en: 2 *s*[0] + 0 *s*[1] = 6
   id: totrans-115
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 2 *s*[0] + 0 *s*[1] = 6
 - en: 'We know that by using the *Gaussian elimination* algorithm, we can quickly
     and efficiently learn what *s*[0] and *s*[1] are, as long as we have enough of
     these equations. Now what’s interesting is that if we add some noise to these
@@ -1020,22 +1051,26 @@
   id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们知道，通过使用*高斯消元*算法，只要我们有足够多的这些方程，我们就可以快速有效地学到*s*[0]和*s*[1]是什么。现在有趣的是，如果我们给这些方程添加一些噪音，问题就变得更加困难：
 - en: 5 *s*[0] + 2 *s*[1] = 28
   id: totrans-117
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 5 *s*[0] + 2 *s*[1] = 28
 - en: 2 *s*[0] + 0 *s*[1] = 5
   id: totrans-118
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 2 *s*[0] + 0 *s*[1] = 5
 - en: While it probably isn’t too hard to figure out the answer given more noisy equations,
     it becomes a hard problem once you increase the size of the numbers involved and
     the number of *s*[i] .
   id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你增加所涉及的数字的大小和*s*[i]的数量时，通过更多嘈杂的方程可能并不太难找到答案，但一旦增加了这些因素，问题就变得更加困难。
 - en: This is essentially what the LWE problem is, albeit often stated with vectors
     instead. Imagine that you have a secret vector **s** with coordinates modulo some
     large number. Given an arbitrary number of random vectors **a**[i] of the same
@@ -1044,6 +1079,8 @@
   id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 这本质上就是LWE问题，尽管通常用向量来表述。想象一下，你有一个带有模一些大数的秘密向量**s**。给定相同大小的任意数量的随机向量**a**[i]和计算**a**[i]*s*
+    + *e*[i]的结果，其中*e*[i]是一个随机小误差，你能找到值**s**吗？
 - en: 'Note For two vectors **v** and **w**, the product **vw** can be calculated
     using a *dot product*, which is the sum of the product of each pair of coordinates.
     Let’s look at an example: if **v** = (*v*[0], *v*[1]) and **w** = (*w*[0], *w*[1]),
@@ -1051,6 +1088,8 @@
   id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 对于两个向量**v**和**w**，可以使用*点积*计算乘积**vw**，即每对坐标的乘积之和。让我们看一个例子：如果**v** = (*v*[0],
+    *v*[1])，而**w** = (*w*[0], *w*[1])，那么**vw** = *v*[0] × *w*[0] + *v*[1] × *w*[1]。
 - en: For example, if I use the secret **s** = (3,6) and I give you the random vectors
     **a**[0] = (5,2) and **a**[1] = (2,0), I get back the equations I started the
     example with. As I said earlier, lattice-based schemes actually don’t make any
@@ -1060,10 +1099,12 @@
   id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，如果我使用秘密**s** = (3,6)并给你随机向量**a**[0] = (5,2)和**a**[1] = (2,0)，我得到了我在例子中开始的方程。正如我之前所说，基于格的方案实际上并不使用格；相反，它们被证明是安全的，如果SVP保持困难（对于某些定义的困难）。只有在我们将以前的方程以矩阵形式写出时，才能看到归约，如图14.9所示。
 - en: '![](../Images/14_09.jpg)'
   id: totrans-123
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/14_09.jpg)'
 - en: 'Figure 14.9 The learning with errors problem (LWE) is said to be a lattice-based
     construction due to the existence of a reduction to a lattice problem: the CVP.
     In other words, if we can find a solution to the CVP, then we can find a solution
@@ -1071,6 +1112,7 @@
   id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 图14.9 学习中的错误问题（LWE）被认为是基于格的构造，因为存在到格问题的归约：CVP。换句话说，如果我们可以找到CVP的解，那么我们就可以找到LWE问题的解。
 - en: 'This matrix form is important as most LWE-based schemes are expressed and easier
     to explain in this form. Take a few minutes to brush up on matrix multiplication.
     Also, in case you haven’t noticed, I used some common notational tricks that are
@@ -1080,6 +1122,7 @@
   id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种矩阵形式很重要，因为大多数基于LWE的方案都是以这种形式表达和解释的。花几分钟时间复习矩阵乘法。另外，如果你还没有注意到，我使用了一些常见的符号技巧，这些技巧对于阅读涉及矩阵和向量的方程非常有帮助：两者都以粗体字体书写，矩阵始终是大写字母。例如，**A**是矩阵，**a**是向量，*b*只是一个数字。
 - en: Note There exist several variants of the LWE problem (for example, the ring-LWE
     or module-LWE problems), which are basically the same problem but with coordinates
     in different types of groups. These variants are often preferred due to the compactness
@@ -1088,6 +1131,7 @@
   id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 LWE问题存在几个变体（例如，环-LWE或模-LWE问题），它们基本上是相同的问题，但坐标位于不同类型的群中。由于它们的紧凑性和解锁的优化，通常更喜欢这些变体。LWE变体之间的差异不影响接下来的解释。
 - en: 'Now that you know what the LWE problem is, let’s learn about some post-quantum
     cryptography based on it: the *Cryptographic Suite for Algebraic Lattices* (CRYSTALS).
     Conveniently, CRYSTALS encompasses two cryptographic primitives: a key exchange
@@ -1377,6 +1421,7 @@
   id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 在推荐的安全级别下，Dilithium提供约3 KB的签名和不到2 KB的公钥。这显然远远超过了前量子方案的32字节公钥和64字节签名，但也比无状态基于哈希的签名要好得多。值得注意的是，这些方案仍然相当新颖，可能会找到更好的算法来解决LWE问题，潜在地增加公钥和签名的大小。同时，我们也可能找到更好的技术来减小这些参数的大小。总的来说，量子抗性很可能总是伴随着尺寸成本。
 - en: This is not all there is to post-quantum cryptography; the NIST post-quantum
     cryptography competition has a number of other constructions based on different
     paradigms. NIST has announced that an initial standard will be published in 2022,
@@ -1388,17 +1433,20 @@
   id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 后量子密码学并不仅仅是这些；NIST后量子密码学竞赛还有许多基于不同范式的构造。NIST已宣布将于2022年发布初步标准，但我预计这个领域将继续快速发展，至少在后量子计算机被视为合法威胁的情况下。虽然仍有许多未知因素，但这也意味着有很多令人兴奋的研究空间。如果你对此感兴趣，我建议查看NIST报告（[https://nist.gov/pqcrypto](https://nist.gov/pqcrypto)）。
 - en: 14.4 Do I need to panic?
   id: totrans-163
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 14.4 我需要恐慌吗？
 - en: To summarize, quantum computers are a huge deal for cryptography if they are
     realized. What’s the take away here? Do you need to throw everything you’re doing
     and transition to post-quantum algorithms? Well, it’s not that simple.
   id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 总结一下，如果量子计算机得以实现，对于密码学来说将是一个巨大的挑战。这里的要点是什么？你需要放弃手头的一切，转向后量子算法吗？嗯，事情并不那么简单。
 - en: Ask any expert and you’ll receive different kinds of answers. For some, it’s
     5 to 50 years away; for others, it’ll never happen. Michele Mosca, the director
     of the Institute for Quantum Computing, estimated “a 1/7 chance of breaking RSA-2048
@@ -1413,6 +1461,7 @@
   id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 询问任何专家，你会得到不同类型的答案。对于一些人来说，这可能是5到50年的事情；对于其他人来说，这永远不会发生。量子计算研究所所长米歇尔·莫斯卡估计“到2026年有1/7的机会破解RSA-2048，到2031年有1/2的机会”，而法国国家科学研究中心研究员米哈伊尔·迪亚科诺夫公开表示“我们能否学会控制定义这种系统量子状态的超过10^(300)个连续可变参数？我的答案很简单。不，永远不会。”虽然物理学家而非密码学家更了解情况，但他们仍可能被激励夸大自己的研究以获取资金。作为一个非物理学家，我只能说我们应该对不寻常的声明保持怀疑，同时做最坏的准备。问题不是“它会起作用吗？”；而是“它会扩展吗？”
 - en: There exist many challenges for scalable quantum computers (which can destroy
     cryptography) to become a reality; the biggest ones seem to be about the amount
     of noise and errors that is difficult to reduce or correct. Scott Aaronson, a
@@ -1422,6 +1471,7 @@
   id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 要使可扩展的量子计算机（可能破坏密码学）成为现实存在许多挑战；最大的挑战似乎在于难以减少或纠正的噪声和错误量。德克萨斯大学计算机科学家斯科特·亚伦森将其描述为“你试图建造一艘保持不变的船，即使其中的每块木板都腐烂并需要更换。”
 - en: But what about what the NSA said? One needs to remember that the government’s
     need for confidentiality most often exceeds the needs of individuals and private
     companies. It is not crazy to think that the government might want to keep some
@@ -1432,6 +1482,8 @@
   id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 那么NSA说了什么呢？人们需要记住政府对保密性的需求往往超过个人和私营公司的需求。认为政府可能希望将一些绝密数据保密超过50年并不是疯狂的想法。然而，这让许多密码学家感到困惑（例如，参见Neal
+    Koblitz和Alfred J. Menezes的“A Riddle Wrapped In An Enigma”），他们一直在思考为什么我们要保护自己免受尚不存在或可能永远不会存在的东西的威胁。
 - en: In any case, if you’re really worried and the confidentiality of your assets
     needs to remain for long periods of time, it is not crazy and relatively easy
     to increase the parameters of every symmetric cryptographic algorithm you’re using.
@@ -1441,12 +1493,14 @@
   id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 无论如何，如果你真的担心并且你的资产的保密性需要长时间保持，增加你正在使用的每个对称加密算法的参数并不是疯狂的，而且相对容易。话虽如此，如果你正在进行密钥交换以获得AES-256-GCM密钥，那么非对称加密部分仍然容易受到量子计算机的攻击，仅保护对称加密是不够的。
 - en: For asymmetric cryptography, it is too early to really know what is safe to
     use. Best wait for the end of the NIST competition in order to obtain more cryptanalysis,
     and in turn, more confidence in these novel algorithms.
   id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于非对称加密，现在还为时过早真正知道什么是安全的。最好等待NIST竞赛结束，以获得更多的密码分析，进而对这些新算法更有信心。
 - en: '*At present, there are several post-quantum cryptosystems that have been proposed,
     including lattice-based cryptosystems, code-based cryptosystems, multivariate
     cryptosystems, hash-based signatures, and others. However, for most of these proposals,
@@ -1456,10 +1510,12 @@
   id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: '*目前，已经提出了几种后量子密码系统，包括基于格的密码系统、基于码的密码系统、多元密码系统、基于哈希的签名等。然而，对于大多数这些提议，需要进一步研究以获得对其安全性（特别是针对拥有量子计算机的对手）更多的信心，并改进其性能*。'
 - en: —NIST Post-Quantum Cryptography Call for Proposals (2017)
   id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: —NIST后量子密码学提案征集（2017）
 - en: If you’re too impatient and can’t wait for the result of the NIST competition,
     one thing you can do is to use both a current scheme *and* a post-quantum scheme
     in your protocol. For example, you could cross-sign messages using Ed25519 and
@@ -1470,6 +1526,7 @@
   id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你太不耐烦，无法等待NIST竞赛结果，你可以做的一件事是在你的协议中同时使用当前方案*和*后量子方案。例如，你可以使用Ed25519和Dilithium交叉签署消息，换句话说，附加一条消息，带有来自两种不同签名方案的两个签名。如果Dilithium被破解，攻击者仍然需要破解Ed25519，如果量子计算机真的存在，那么攻击者仍然拥有无法伪造的Dilithium签名。
 - en: Note This is what Google did in 2018, and then again in 2019, with Cloudflare,
     experimenting with a hybrid key exchange scheme in TLS connections between a small
     percentage of Google Chrome users and servers from both Google and Cloudflare.
@@ -1480,6 +1537,8 @@
   id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意：这就是Google在2018年以及2019年与Cloudflare一起所做的，尝试在Google Chrome用户和Google以及Cloudflare的服务器之间的TLS连接中使用混合密钥交换方案。混合方案是X25519和一个后量子密钥交换（2018年的New
+    Hope，2019年的HRSS和SIKE）的混合，其中当前密钥交换和后量子密钥交换的输出被混合在一起进入HKDF以产生一个共享密钥。
 - en: Finally, I will re-emphasize that hash-based signatures are well studied and
     well understood. Even though they present some overhead, schemes like XMSS and
     SPHINCS+ can be used now, and XMSS has ready-to-use standards (RFC 8391 and NIST
@@ -1487,17 +1546,21 @@
   id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，我将再次强调基于哈希的签名已经得到充分研究和理解。尽管它们存在一些开销，像XMSS和SPHINCS+这样的方案现在就可以使用，而且XMSS具有即用的标准（RFC
+    8391和NIST SP 800-208）。
 - en: Summary
   id: totrans-175
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 概要
 - en: Quantum computers are based on quantum physics and can provide a non-negligible
     speed up for specific computations.
   id: totrans-176
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 量子计算机基于量子物理学，可以为特定的计算提供非常大的加速。
 - en: Not all algorithms can run on a quantum computer, and not all algorithms can
     compete with a classical computer. Two notable algorithms that worry cryptographers
     are
@@ -1505,6 +1568,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 并非所有算法都可以在量子计算机上运行，也不是所有算法都能与经典计算机竞争。令密码学家担心的两个显著算法是
 - en: Shor’s algorithm, which can efficiently solve the discrete logarithm problem
     and the factorization problem. It breaks most of today’s asymmetric cryptography.
   id: totrans-178
@@ -1512,6 +1576,7 @@
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Shor算法可以高效地解决离散对数问题和因子分解问题。它破坏了大多数当今的非对称密码学。
 - en: Grover’s algorithm, which can efficiently search for a key or value in a space
     of 2^(128) values, impacts most symmetric algorithms with 128-bit security. Boosting
     a symmetric algorithm’s parameters to provide 256-bit security is enough to thwart
@@ -1521,6 +1586,7 @@
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Grover算法可以有效地搜索2^(128)个值的空间中的密钥或值，影响大多数具有128位安全性的对称算法。将对称算法的参数提升到提供256位安全性足以抵御量子攻击。
 - en: The field of post-quantum cryptography aims at finding novel cryptographic algorithms
     to replace today’s asymmetric cryptographic primitives (for example, asymmetric
     encryption, key exchanges, and digital signatures).
@@ -1528,6 +1594,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 后量子密码学领域旨在寻找新的加密算法来替代今天的非对称加密原语（例如，非对称加密、密钥交换和数字签名）。
 - en: NIST started a post-quantum cryptography standardization effort in 2016\. There
     are currently seven finalists and the effort is now entering its final round of
     selection.
@@ -1535,6 +1602,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: NIST于2016年启动了后量子密码学标准化工作。目前有七个决赛选手，该工作现已进入最后一轮选拔阶段。
 - en: Hash-based signatures are signature schemes that are only based on hash functions.
     The two main standards are XMSS (a stateful signature scheme) and SPHINCS+ (a
     stateless signature scheme).
@@ -1542,6 +1610,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 基于哈希的签名是仅基于哈希函数的签名方案。两个主要标准是XMSS（一种有状态的签名方案）和SPHINCS+（一种无状态的签名方案）。
 - en: 'Lattice-based cryptography is promising as it provides shorter keys and signatures.
     Two of the most promising candidates are based on the LWE problem: Kyber is an
     asymmetric encryption and key exchange primitive, and Dilithium is a signature
@@ -1550,6 +1619,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 基于格的密码学是有希望的，因为它提供了较短的密钥和签名。最有前途的两个候选方案基于LWE问题：Kyber是一种非对称加密和密钥交换原语，而Dilithium是一种签名方案。
 - en: Other post-quantum schemes exist and are being proposed as part of the NIST
     post-quantum cryptography competition. These include schemes based on code theory,
     isogenies, symmetric-key cryptography, and multivariate polynomials. NIST’s competition
@@ -1559,18 +1629,21 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 还存在其他后量子方案，并作为NIST后量子密码学竞赛的一部分提出。这些包括基于代码理论、同源性、对称密钥密码学和多项式的方案。NIST的竞赛计划于2022年结束，这仍然为发现新攻击或优化留下了很大的空间。
 - en: It is not clear when quantum computers will be efficient enough to destroy cryptography,
     or if it is possible for them to get there.
   id: totrans-185
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 尚不清楚量子计算机何时能够足够高效地破坏密码学，或者它们是否能够达到那个水平。
 - en: 'If you have requirements to protect data for a long period of time, you should
     consider transitioning to post-quantum cryptography:'
   id: totrans-186
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果您有长期保护数据的需求，应考虑过渡到后量子密码学：
 - en: Upgrade all usage of symmetric cryptographic algorithms to use parameters that
     provide 256-bit security (for example, move from AES-128-GCM to AES-256-GCM, and
     from SHA-3-256 to SHA-3-512).
@@ -1579,6 +1652,7 @@
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将所有对称加密算法的使用升级为提供256位安全性的参数（例如，从AES-128-GCM迁移到AES-256-GCM，从SHA-3-256迁移到SHA-3-512）。
 - en: Use hybrid schemes that mix post-quantum algorithms with pre-quantum algorithms.
     For example, always sign messages with both Ed25519 and Dilithium, or always perform
     a key exchange with both X25519 and Kyber (deriving a shared secret from the two
@@ -1588,6 +1662,7 @@
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用混合方案将后量子算法与前量子算法混合。例如，始终使用Ed25519和Dilithium对消息进行签名，或始终使用X25519和Kyber进行密钥交换（从获得的两个密钥交换输出中派生出共享密钥）。
 - en: Use hash-based signatures like XMSS and SPHINCS+, which are well-studied and
     well-understood. XMSS has the advantage of having already been standardized and
     approved by the NIST.
@@ -1596,3 +1671,4 @@
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用像XMSS和SPHINCS+这样基于哈希的签名算法，这些算法经过了深入研究和广泛理解。XMSS的优势在于已经被NIST标准化和批准。

@@ -836,6 +836,7 @@
   id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 幸运的是，这个问题变得足够严重，已经触发了*标准化阈值*，一条虚拟线，一旦达到，几乎总是会激励一些人共同努力，以澄清该领域。2018年，来自行业和学术界的人士联合起来，成立了ZKProof标准化工作组，旨在“标准化使用加密零知识证明”。直至今日，这仍然是一个正在进行的工作。您可以在[https://zkproof.org](https://zkproof.org)上阅读更多信息。
 - en: 'You can use general-purpose ZKPs in quite a lot of different situations, but
     to my knowledge, they have mostly been used in the cryptocurrency space so far,
     probably due to the high number of people interested in cryptography and willing
@@ -848,23 +849,27 @@
   id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可以在许多不同的情况下使用通用型ZKPs，但据我所知，迄今为止它们主要已被用于加密货币领域，可能是因为对密码学感兴趣并愿意尝试最前沿技术的人数众多。尽管如此，通用型ZKPs在许多领域都有潜在应用：身份管理（能够证明您的年龄而不暴露它）、压缩（能够隐藏大部分计算）、机密性（能够隐藏协议的某些部分）等等。更多应用采用通用型ZKPs的最大障碍似乎是以下几点：
 - en: The large number of ZKP schemes and the fact that every year more schemes are
     being proposed.
   id: totrans-107
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 大量的ZKP方案以及每年都有更多方案被提出。
 - en: The difficulty of grasping how these systems work and how to use them for specific
     use cases.
   id: totrans-108
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 理解这些系统如何工作以及如何将它们用于特定用例的困难。
 - en: 'Distinctions between the different proposed schemes are quite important. Because
     it is a great source of confusion, here is how some of these schemes are divided:'
   id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 不同提议方案之间的区别非常重要。由于这是一个极易引起混淆的来源，这是一些方案被分割的方式：
 - en: '*Zero-knowledge or not*—If some of the information needs to remain secret from
     some of the participants, then we need zero-knowledgeness. Note that proofs without
     secrets can be useful as well. For example, you might want to delegate some intensive
@@ -874,6 +879,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*零知识或非零知识*—如果某些信息需要对某些参与者保密，那么我们需要零知识性。注意，无秘密的证明也可能有用。例如，您可能想将一些密集计算委托给一个服务，而该服务又必须向您证明他们提供的结果是正确的。'
 - en: '*Interactive or not*—Most ZKP schemes can be made non-interactive (sometimes
     using the Fiat-Shamir transformation I talked about in chapter 7), and protocol
     designers seem most interested in the non-interactive version of the scheme. This
@@ -884,6 +890,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*交互式或非交互式*—大多数ZKP方案可以变成非交互式的（有时使用我在第7章中讨论的Fiat-Shamir变换），而协议设计者似乎最感兴趣的是该方案的非交互式版本。这是因为在协议中来回传输的信息可能会耗费时间，但也因为有时交互性可能不可行。所谓的非交互式证明通常被称为*NIZKs*，代表*非交互式ZKPs*。'
 - en: '*Succinct proofs or not*—Most of the ZKP schemes in the spotlight are often
     referred to as *zk-SNARKs* for *Zero-Knowledge Succinct Non-Interactive Argument
     of Knowledge*. While the definition can vary, it focuses on the size of the proofs
@@ -896,6 +903,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*简洁证明或非简洁证明*—聚光灯下的大多数ZKP方案通常被称为*zk-SNARKs*，代表*零知识简洁非交互知识证明*。尽管定义可能有所不同，但它着重于这些系统生成的证明的大小（通常在数百字节的数量级），以及验证这些证明所需的时间（在毫秒级范围内）。zk-SNARKs因此简短且易于用于验证ZKPs。请注意，一个方案不是zk-SNARK并不意味着它在现实世界中无法使用，因为通常在不同的用例中可能有用的不同属性。'
 - en: '*Transparent setup or not*—Like every cryptographic primitive, ZKPs need a
     setup to agree on a set of parameters and common values. This is called a *common
     reference string* (CRS). But setups for ZKPs can be much more limiting or dangerous
@@ -904,6 +912,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*透明的设置或不是*—像每个密码原语一样，ZKP需要一种设置来同意一组参数和公共值。这称为*共同参考字符串*（CRS）。但是，ZKP的设置可能比最初想象的限制或危险得多。有三种类型的设置：'
 - en: '*Trusted*—Means that whoever created the CRS also has access to secrets that
     allow them to forge proofs (hence, it’s why these secrets are sometimes called
     “toxic waste”). This is quite an issue as we are back to having a trusted third
@@ -916,6 +925,7 @@
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*可信任的*—意味着创建CRS的人也可以访问允许他们伪造证明的秘密（因此，这就是为什么这些秘密有时被称为“有毒废物”的原因）。这是一个相当严重的问题，因为我们又回到了需要信任的第三方，然而具有这种属性的方案通常是效率最高且证明大小最短的。为了降低风险，MPC可以用于让许多参与者帮助创建这些危险的参数。如果单个参与者是诚实的，并在典礼结束后删除他们的密钥，那么有毒废物就会被清除。'
 - en: '*Universal*—A trusted setup is said to be universal if you can use it to prove
     the execution of any circuit (bounded by some size). Otherwise it is specific
     to a single circuit.'
@@ -924,6 +934,7 @@
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*通用的*—如果信任的设置被称为通用，则您可以使用它来证明任何电路的执行（受某些大小限制）。否则它是特定于单个电路的。'
 - en: '*Transparent*—Fortunately for us, many schemes also offer transparent setups,
     meaning that no trusted third party needs to be present to create the parameters
     of the system. Transparent schemes are by design universal.'
@@ -932,6 +943,7 @@
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*透明的*—对于我们来说，幸运的是，许多方案也提供透明的设置，这意味着不需要存在信任的第三方来创建系统的参数。透明的方案按设计是通用的。'
 - en: '*Quantum-resistant or not*—Some ZKPs make use of public key cryptography and
     advanced primitives like bilinear pairings (which I’ll explain later), while others
     only rely on symmetric cryptography (like hash functions), which makes them naturally
@@ -940,38 +952,45 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*是否抗量子*—一些ZKP利用公钥加密和高级原语，如双线性配对（稍后我会解释），而另一些则仅依赖对称加密（如哈希函数），这使它们在本质上抗量子计算（通常以更大的证明为代价）。'
 - en: Because zk-SNARKs are what’s up at the time of this writing, let me give you
     my perception as to how they work.
   id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于在撰写本文时，zk-SNARKs备受关注，让我向您解释一下它们的工作原理。
 - en: 15.3.1 How zk-SNARKs work
   id: totrans-119
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.3.1 zk-SNARKs的工作原理
 - en: 'First and foremost, there are many, many zk-SNARK schemes—too many of them,
     really. Most build on this type of construction:'
   id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，有许多许多zk-SNARK方案—实际上有太多了。大多数都建立在这种类型的构造之上：
 - en: A proving system, allowing a prover to prove something to a verifier.
   id: totrans-121
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个证明系统，允许证明者向验证者证明某些事情。
 - en: A translation or compilation of a program to something the proving system can
     prove.
   id: totrans-122
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 程序的翻译或编译为证明系统可以证明的东西。
 - en: The first part is not too hard to understand, while the second part sort of
     requires a graduate course in the subject. To begin, let’s take a look at the
     first part.
   id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一部分并不太难理解，而第二部分在某种程度上需要一个研究生课程的知识。首先，让我们来看看第一部分。
 - en: The main idea of zk-SNARKs is that they are all about proving that you know
     some polynomial *f*(*x*) that has some roots. By roots I mean that the verifier
     has some values in mind (for example, 1 and 2) and the prover must prove that
@@ -986,6 +1005,10 @@
   id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: zk-SNARKs的主要思想是证明您知道一些多项式*f*(*x*)具有一些根。根的意思是验证者心中有一些值（例如，1和2），证明者必须证明他们心中的秘密多项式对这些值（例如，*f*(1)
+    = *f*(2) = 0）进行评估为0。顺便说一句，一个具有1和2作为根的多项式（如我们的例子）可以写为*f*(*x*) = (*x* – 1)(*x* –
+    2)*h*(*x*)，其中*h*(*x*)是某个多项式。 （如果你不相信，请尝试在*x* = 1和*x* = 2处评估它。）我们说证明者必须证明他们知道一个*f*(*x*)和*h*(*x*)，使得*f*(*x*)
+    = *t*(*x*)*h*(*x*)，其中*t*(*x*) = (*x* – 1)(*x* – 2)是目标多项式。在这个例子中，1和2是验证者想要检查的根。
 - en: 'But that’s it! That’s what zk-SNARKs proving systems usually provide: something
     to prove that you know some polynomial. I’m repeating this because the first time
     I learned about that it made no sense to me. How can you prove that you know some
@@ -995,6 +1018,7 @@
   id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 但就是这样！这就是zk-SNARKs证明系统通常提供的东西：证明你知道某些多项式。我再次强调这一点，因为我第一次了解这个概念时觉得很难理解。如果你只能证明你知道一个多项式，你怎么能证明你知道程序的某个秘密输入呢？好吧，这就是zk-SNARK的第二部分如此困难的原因。它涉及将程序转化为多项式。但稍后再详述。
 - en: 'Back to our proving system, how does one prove that they know such a function
     *f*(*x*)? They have to prove that they know an *h*(*x*) such that you can write
     *f*(*x*) as *f*(*x*) = *t*(*x*)*h*(*x*). Ugh, ... not so fast here. We’re talking
@@ -1003,33 +1027,40 @@
   id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 回到我们的证明系统，如何证明他们知道这样一个函数*f*(*x*)？他们必须证明他们知道一个*h*(*x*)，使得你可以将*f*(*x*)写成*f*(*x*)
+    = *t*(*x*)*h*(*x*)。啊，... 别那么快。我们说的是*零知识*证明，对吧？我们怎么能在不泄露*f*(*x*)的情况下证明这一点？答案就在以下三个技巧中：
 - en: '*Homomorphic commitments*—A commitment scheme similar to the ones we used in
     other ZKPs (covered in chapter 7)'
   id: totrans-127
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*同态承诺*——类似于我们在其他零知识证明中使用的承诺方案（在第7章中讨论）'
 - en: '*Bilinear pairings*—A mathematical construction that has some interesting properties;
     more on that later'
   id: totrans-128
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*双线性配对*——一种具有一些有趣特性的数学构造；稍后详述'
 - en: The fact that *different polynomials evaluate to different values most of the
     time*
   id: totrans-129
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*大多数情况下，不同的多项式求值不同*'
 - en: So let’s go through each of these, shall we?
   id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 所以让我们逐个看看这些，好吗？
 - en: 15.3.2 Homomorphic commitments to hide parts of the proof
   id: totrans-131
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.3.2 同态承诺以隐藏证明的部分
 - en: The first trick is to use *commitments* to hide the values that we’re sending
     to the prover. But not only do we hide them, we also want to allow the verifier
     to perform some operations on them so that they can verify the proof. Specifically,
@@ -1038,10 +1069,12 @@
   id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一个技巧是使用*承诺*来隐藏我们发送给证明者的值。但我们不仅要隐藏它们，还要允许验证者对它们执行一些操作，以便他们可以验证证明。具体来说，他们需要验证，如果证明者对他们的多项式*f*(*x*)以及*h*(*x*)进行承诺，那么我们就有
 - en: '*com*(*f*(*x*)) = *com*(*t*(*x*)) *com*(*h*(*x*)) = *com*(*t*(*x*)*h*(*x*))'
   id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: '*com*(*f*(*x*)) = *com*(*t*(*x*)) *com*(*h*(*x*)) = *com*(*t*(*x*)*h*(*x*))'
 - en: 'where the commitment *com*(*t*(*x*)) is computed by the verifier as the agreed
     constraint on the polynomial. These operations are called *homomorphic operations*,
     and we couldn’t have performed them if we had used hash functions as commitment
@@ -1051,22 +1084,27 @@
   id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中承诺*com*(*t*(*x*))由验证者计算为多项式上的约束。这些操作称为*同态操作*，如果我们使用哈希函数作为承诺机制（如第2章所述），我们无法执行这些操作。由于这些同态承诺，我们可以“隐藏指数中的值”（例如，对于值*v*，发送承诺*g*^v
+    mod *p*）并执行有用的身份验证：
 - en: The equality of commitments—The equality *g*^a = *g*^b means that *a* = *b*
   id: totrans-135
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 承诺的等式——等式*g*^a = *g*^b 意味着 *a* = *b*
 - en: The addition of commitments—The equality *g*^a = *g*^b*g*^c means that *a* =
     *b* + *c*
   id: totrans-136
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 承诺的添加——等式*g*^a = *g*^b*g*^c 意味着 *a* = *b* + *c*
 - en: The scaling of commitments—The equality *g*^a = (*g*^b)^c means that *a* = *bc*
   id: totrans-137
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 承诺的缩放——等式*g*^a = (*g*^b)^c 意味着 *a* = *bc*
 - en: Notice that the last check only works if *c* is a public value and not a commitment
     (*gc*). With homomorphic commitments alone we can’t check the multiplication of
     commitments, which is what we needed. Fortunately, cryptography has another tool
@@ -1074,11 +1112,13 @@
   id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，最后一个检查只有在*c*是公共值而不是一个承诺（*gc*）时才有效。仅通过同态承诺，我们无法检查承诺的乘法，这正是我们所需的。幸运的是，密码学有另一个工具可以将这样的方程式隐藏在指数中——*双线性配对*。
 - en: 15.3.3 Bilinear pairings to improve our homomorphic commitments
   id: totrans-139
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.3.3 双线性配对以改进我们的同态承诺
 - en: Bilinear pairings can be used to unblock us, and this is the *sole reason* why
     we use bilinear pairings in a zk-SNARK (really, just to be able to multiply the
     values inside the commitments). I don’t want to go too deep into what bilinear
@@ -1088,6 +1128,7 @@
   id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 双线性配对可用于解除我们的阻碍，这是我们在 zk-SNARK 中使用双线性配对的**唯一原因**（真的，只是为了能够在承诺内部相乘的值）。我不想深入讨论什么是双线性配对，但只需知道它是我们工具箱中的另一个工具，允许我们将以前无法相乘的元素从一个群移到另一个群。
 - en: 'Using *e* as the typical way of writing a bilinear pairing, we have *e*(*g*[1],
     *g*[2]) = *h*[3], where *g*[1], *g*[2], and *h*[3] are generators for different
     groups. Here, we’ll use the same generator on the left (*g*[1] = *g*[2]) which
@@ -1096,10 +1137,13 @@
   id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 *e* 作为写双线性配对的典型方式，我们有 *e*(*g*[1], *g*[2]) = *h*[3]，其中 *g*[1]、*g*[2] 和 *h*[3]
+    是不同群的生成器。在这里，我们将在左侧使用相同的生成器（*g*[1] = *g*[2]），这使得配对对称。我们可以使用双线性配对通过这个方程来执行指数中隐藏的乘法：
 - en: '*e*(*g*^b, *g*^c) = *e*(*g*)^(bc)'
   id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: '*e*(*g*^b, *g*^c) = *e*(*g*)^(bc)'
 - en: Again, we use bilinear pairings to make our commitments not only homomorphic
     for the addition, but also for the multiplication. (Note that this is not a fully
     homomorphic scheme as multiplication is limited to a single one.) Bilinear pairings
@@ -1109,11 +1153,14 @@
   id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 再次，我们使用双线性配对使得我们的承诺不仅对加法是同态的，而且对乘法也是同态的。（请注意，这不是一个完全同态的方案，因为乘法仅限于单个乘法。）双线性配对也用于密码学的其他地方，并且正在逐渐成为更常见的构建块。它们可以在同态加密方案中看到，也可以在像
+    BLS（我在第 8 章提到的）这样的签名方案中看到。
 - en: 15.3.4 Where does the succinctness come from?
   id: totrans-144
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.3.4 紧凑性来自何处？
 - en: Finally, the *succinctness* of zk-SNARKs comes from the fact that two functions
     that differ evaluate to different points most of the time. What does this mean
     for us? Let’s say that I don’t have a polynomial *f*(*x*) that really has the
@@ -1125,16 +1172,22 @@
   id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，zk-SNARK 的**紧凑性**来自于两个不同函数的评估大多数情况下会得到不同的点。这对我们意味着什么？假设我没有一个多项式 *f*(*x*)
+    真正具有我们与验证者选择的根，这意味着 *f*(*x*) 不等于 *t*(*x*)*h*(*x*)。然后，在随机点 *r* 上评估 *f*(*x*) 和 *t*(*x*)*h*(*x*)
+    不会大部分时间返回相同的结果。对于几乎所有的 *r*，*f*(*r*)≠ *t*(*r*)*h*(*r*)。这就是**Schwartz-Zippel 引理**，我在图
+    15.12 中有所说明。
 - en: '![](../Images/15_12.jpg)'
   id: totrans-146
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/15_12.jpg)'
 - en: Figure 15.12 The Schwartz-Zippel lemma says that two different polynomials of
     degree *n* can intersect in at most *n* points. In other words, two different
     polynomials will differ in most points.
   id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 15.12 Schwartz-Zippel 引理指出，两个不同的 *n* 次多项式最多可以在 *n* 个点相交。换句话说，两个不同的多项式在大多数点上会有所不同。
 - en: 'Knowing this, it is enough to prove that *com*(*f*(*r*)) = *com*(*t*(*r*)*h*(*r*))
     for some random point *r*. This is why zk-SNARK proofs are so small: by comparing
     points in a group, you end up comparing much larger polynomials. But this is also
@@ -1145,11 +1198,15 @@
   id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 了解这一点，证明 *com*(*f*(*r*)) = *com*(*t*(*r*)*h*(*r*)) 对于某个随机点 *r* 就足够了。这就是为什么 zk-SNARK
+    证明如此小的原因：通过比较群中的点，最终你会比较更大的多项式。但这也是大多数 zk-SNARK 构造中需要可信设置的原因。如果证明者知道将用于检查等式的随机点
+    *r*，那么他们可以伪造一个无效的多项式，仍然会验证相等。因此，可信设置就是
 - en: Creating a random value *r*
   id: totrans-149
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 创建一个随机值 *r*
 - en: Committing different exponentiations of *r* (for example, g, g^r, g^(*r*²),
     g^(*r*³), . . .) so that these values can be used by the prover to compute their
     polynomial without knowing the point *r*
@@ -1157,11 +1214,13 @@
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 承诺不同幂次的 *r*（例如，g, g^r, g^(*r*²), g^(*r*³)，等等），以便证明者可以计算他们的多项式而不知道点 *r*
 - en: Destroying the value *r*
   id: totrans-151
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 销毁值 *r*
 - en: Does the second point make sense? If my polynomial as the prover is *f*(*x*)
     = 3*x*² + *x* + 2, then all I have to do is compute (g^(*r*²))³ g^r g² to obtain
     a commitment of my polynomial evaluated at that random point *r* (without knowing
@@ -1169,11 +1228,13 @@
   id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二点有意义吗？如果我作为证明者的多项式是*f*(*x*) = 3*x*² + *x* + 2，那么我所要做的就是计算(g^(*r*²))³ g^r g²，以获得我在那个随机点*r*处评估的多项式的承诺（不知道*r*）。
 - en: 15.3.5 From programs to polynomials
   id: totrans-153
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.3.5 从程序到多项式
 - en: 'So far, the constraints on the polynomial that the prover must find is that
     it needs to have some roots: some values that evaluate to 0 with our polynomial.
     But how do we translate a more general statement into a polynomial knowledge proof?
@@ -1182,26 +1243,31 @@
   id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，证明者必须找到的多项式的约束是它需要有一些根：一些用我们的多项式计算为0的值。但是我们如何将一个更一般的语句转换成多项式知识证明？目前最多使用zk-SNARKs的应用是加密货币，其中典型的语句的形式为：
 - en: Prove that a value is in the range [0, 2^(64)] (this is called a range proof)
   id: totrans-155
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 证明一个值在范围[0, 2^(64)]内（这被称为范围证明）
 - en: Prove that a (secret) value is included in some given (public) Merkle tree
   id: totrans-156
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 证明一个（秘密）值包含在给定的（公开）Merkle树中
 - en: Prove that the sum of some values is equal to the sum of some other values
   id: totrans-157
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 证明某些值的和等于另一些值的和
 - en: And so on
   id: totrans-158
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 依此类推
 - en: 'And herein lies the difficult part. As I said earlier, converting a program
     execution into the knowledge of a polynomial is really hard. The good news is
     that I’m not going to tell you all about the details, but I’ll tell you enough
@@ -1211,28 +1277,33 @@
   id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是困难的部分所在。正如我之前所说，将程序执行转换为多项式的知识是非常困难的。好消息是我不会告诉你所有的细节，但我会告诉你足够让你了解事情的工作原理。从那里开始，你应该能够理解我解释中缺少的部分，并根据自己的需要填补缺漏。接下来将会发生以下事情：
 - en: Our program will first get converted into an arithmetic circuit, like the ones
     we saw in the section on MPC.
   id: totrans-160
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 我们的程序将首先被转换成算术电路，就像我们在MPC部分看到的那样。
 - en: That arithmetic circuit will be converted into a system of equations that are
     of a certain form (called a rank-1 constraint system or R1CS).
   id: totrans-161
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 那个算术电路将被转换成一种特定形式的方程组（称为秩-1约束系统或R1CS）。
 - en: We then use a trick to convert our system of equations into a polynomial.
   id: totrans-162
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 然后我们使用一个技巧将我们的方程组转换为一个多项式。
 - en: 15.3.6 Programs are for computers; we need arithmetic circuits instead
   id: totrans-163
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.3.6 程序适用于计算机；我们需要算术电路而不是
 - en: 'First, let’s assume that almost any program can be rewritten more or less easily
     in math. The reason why we would want to do that should be obvious: we can’t prove
     code, but we can prove math. For example, the following listing provides a function
@@ -1240,10 +1311,12 @@
   id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，让我们假设几乎任何程序都可以更多或更少地轻松地用数学重写。为什么我们想这样做的原因应该是显而易见的：我们不能证明代码，但我们可以证明数学。例如，以下列表提供了一个函数，其中除了`a`是我们的秘密输入之外，每个输入都是公开的。
 - en: Listing 15.1 A simple function
   id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 15.1 一个简单的函数
 - en: '[PRE0]'
   id: totrans-166
   prefs: []
@@ -1256,10 +1329,12 @@
   id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个简单的例子中，如果除了`a`之外的每个输入和输出都是公开的，人们仍然可以推断出`a`是什么。这个列表也是一个例子，说明你不应该试图在零知识中证明什么。无论如何，该程序可以用以下方程重写成数学形式：
 - en: '*w* × (*a* × (*b* + 3)) + (1 – *w*) × (*a* + *b*) = *v*'
   id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: '*w* × (*a* × (*b* + 3)) + (1 – *w*) × (*a* + *b*) = *v*'
 - en: Where *v* is the output and *w* is either 0 (`false`) or 1 (`true`). Notice
     that this equation is not really a program or a circuit, it just looks like a
     constraint. If you execute the program correctly and then fill in the inputs and
@@ -1269,6 +1344,7 @@
   id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中*v*是输出，*w*要么是0（`false`）要么是1（`true`）。请注意，这个方程实际上不是一个程序或电路，它只是一个约束条件。如果你正确执行程序，然后填写方程中得到的输入和输出，等式应该是正确的。如果等式不正确，那么你的输入和输出就不对应于程序的有效执行。
 - en: This is how you have to think about these general-purpose ZKPs. Instead of executing
     a function in zero-knowledge (which doesn’t mean much really), we use zk-SNARKs
     to prove that some given inputs and outputs correctly match the execution of a
@@ -1276,11 +1352,13 @@
   id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是你必须思考这些通用零知识证明的方式。我们不是在零知识中执行一个函数（实际上这并没有什么意义），而是使用zk-SNARKs来证明一些给定的输入和输出正确地匹配了程序的执行，即使其中一些输入或输出被省略了。
 - en: 15.3.7 An arithmetic circuit to a rank-1 constraint system (R1CS)
   id: totrans-171
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.3.7 从算术电路到rank-1约束系统（R1CS）
 - en: In any case, we’re only one step into the process of converting our execution
     to something we can prove with zk-SNARKs. The next step is to convert that into
     a series of constraints, which then can be converted into proving the knowledge
@@ -1294,36 +1372,44 @@
   id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 无论如何，我们只是将我们的执行转换为可以用zk-SNARKs证明的东西的过程中的一步。下一步是将其转换为一系列约束条件，然后可以将其转换为证明某个多项式的知识。zk-SNARKs想要的是*rank-1约束系统*（R1CS）。一个R1CS实际上只是一系列形式为*L*
+    × *R* = *O*的方程，其中*L*、*R*和*O*只能是一些变量的加法，因此唯一的乘法是在*L*和*R*之间。我们为什么需要将我们的算术电路转换为这样的方程系统其实并不重要，除了在将其转换为最终可以证明的东西时会有所帮助。尝试用我们的方程做这个，我们得到的东西就像是
 - en: '*a* × (*b* + 3) = *m*'
   id: totrans-173
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*a* × (*b* + 3) = *m*'
 - en: '*w* × (*m* – *a* – *b*) = *v* – *a* – *b*'
   id: totrans-174
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*w* × (*m* – *a* – *b*) = *v* – *a* – *b*'
 - en: 'We actually forgot the constraint that *w* is either 0 or 1, which we can add
     to our system via a clever trick:'
   id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们实际上忘记了*w*只能是0或1的约束条件，我们可以通过一个巧妙的技巧来将其添加到我们的系统中：
 - en: '*a* × (*b* + 3) = *m*'
   id: totrans-176
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*a* × (*b* + 3) = *m*'
 - en: '*w* × (*m* – *a* – *b*) = *v* – *a* – *b*'
   id: totrans-177
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*w* × (*m* – *a* – *b*) = *v* – *a* – *b*'
 - en: '*w* × *w* = *w*'
   id: totrans-178
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*w* × *w* = *w*'
 - en: 'Does that make sense? You should really see this system as a set of constraints:
     if you give me a set of values that you claim match the inputs and outputs of
     the execution of my program, then I should be able to validate that the values
@@ -1334,11 +1420,13 @@
   id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 有意义吗？你真的应该将这个系统看作一组约束条件：如果你给我一组值，声称这些值与我程序的输入和输出匹配，那么我应该能够验证这些值也正确地验证了等式。如果其中一个等式是错误的，那么这必须意味着该程序没有输出你给我的这些输入的值。另一种思考方式是，zk-SNARKs允许你可验证地删除程序正确执行的传输的输入或输出。
 - en: 15.3.8 From R1CS to a polynomial
   id: totrans-180
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.3.8 从R1CS到多项式
 - en: 'The question is still: how do we transform this system into a polynomial? We’re
     almost there, and as always the answer is with a series of tricks! Because we
     have three different equations in our system, the first step is to agree on three
@@ -1351,21 +1439,26 @@
   id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 问题仍然是：我们如何将这个系统转化为一个多项式？我们已经快要完成了，而且一如既往的答案是通过一系列的技巧！因为我们的系统中有三个不同的方程，第一步是为我们的多项式确定三个根。我们可以简单地选择1、2、3作为根，这意味着我们的多项式对*x*
+    = 1、*x* = 2和*x* = 3都解出了*f*(*x*) = 0。为什么这样做？通过这样做，我们可以使我们的多项式同时代表我们系统中的所有方程，通过在1处求值时代表第一个方程，在2处求值时代表第二个方程，依此类推。现在验证者的工作是创建一个多项式*f*(*x*)，使得：
 - en: '*f*(1) = *a* × (*b* + 3) – *m*'
   id: totrans-182
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*f*(1) = *a* × (*b* + 3) – *m*'
 - en: '*f*(2) = *w* × (*m* – *a* – *b*) – (*v* – *a* – *b*)'
   id: totrans-183
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*f*(2) = *w* × (*m* – *a* – *b*) – (*v* – *a* – *b*)'
 - en: '*f*(3) = *w* × *w* – *w*'
   id: totrans-184
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*f*(3) = *w* × *w* – *w*'
 - en: 'Notice that all these equations should evaluate to 0 if the values correctly
     match the execution of our original program. In other words, our polynomial *f*(*x*)
     has roots 1, 2, 3 only if we create it correctly. Remember, this is what zk-SNARKs
@@ -1374,6 +1467,7 @@
   id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，如果这些方程的值正确匹配我们原始程序的执行，所有这些方程应该评估为0。换句话说，我们的多项式*f*(*x*)只有在我们正确创建它时才有根1、2、3。记住，这就是zk-SNARK的全部意义：我们有协议来证明，确实，我们的多项式*f*(*x*)有这些根（由证明者和验证者都知道）。
 - en: It would be too simple if this was the end of my explanation because now the
     problem is that the prover has too much freedom in choosing their polynomial *f*(*x*).
     They can simply find a polynomial that has roots 1, 2, 3 without caring about
@@ -1383,11 +1477,13 @@
   id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果我的解释到此为止就太简单了，因为现在的问题是证明者在选择他们的多项式*f*(*x*)时有太多的自由。他们可以简单地找到一个具有根1、2、3的多项式，而不关心值*a*、*b*、*m*、*v*和*w*。他们可以做任何他们想做的事情！相反，我们想要的是一个系统，锁定多项式的每个部分，除了验证者必须*不*了解的秘密值。
 - en: 15.3.9 It takes two to evaluate a polynomial hiding in the exponent
   id: totrans-187
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.3.9 两个人评估隐藏在指数中的多项式
 - en: 'Let’s recap, we want a prover that has to correctly execute the program with
     their secret value *a* and the public values *b* and *w* and obtain the output
     *v* that they can publish. The prover then must create a polynomial by only filling
@@ -1397,6 +1493,7 @@
   id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们回顾一下，我们希望一个证明者必须使用他们的秘密值*a*和公共值*b*和*w*正确执行程序，并获得他们可以发布的输出*v*。然后，证明者必须创建一个多项式，只填写验证者不应该了解的部分：值*a*和*m*。因此，在一个真正的zk-SNARK协议中，当证明者创建他们的多项式并将其评估到一个随机点时，你希望证明者在创建他们的多项式时拥有尽可能少的自由。
 - en: To do this, the polynomial is created somewhat dynamically by having the prover
     only fill in their part, then having the verifier fill in the other parts. For
     example, let’s take the first equation, *f*(1) = *a* × (*b* + 3) – *m*, and represent
@@ -1404,10 +1501,13 @@
   id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了做到这一点，多项式是通过让证明者只填写他们的部分而在一定程度上动态地创建的，然后让验证者填写其他部分。例如，让我们以第一个方程为例，*f*(1) =
+    *a* × (*b* + 3) – *m*，表示为
 - en: '*f*[1](*x*) = *aL*[1](*x*) × (*b* + 3)*R*[1](*x*) – *mO*[1](*x*)'
   id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: '*f*[1](*x*) = *aL*[1](*x*) × (*b* + 3)*R*[1](*x*) – *mO*[1](*x*)'
 - en: 'where *L*[1](*x*), *R*[1](*x*), *O*[1](*x*) are polynomials that evaluate to
     1 for *x* = 1 and to 0 for *x* = 2 and *x* = 3\. This is necessary so that they
     only influence our first equation. (Note that it is easy to find such polynomials
@@ -1415,12 +1515,14 @@
   id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中*L*[1](*x*)、*R*[1](*x*)、*O*[1](*x*)是多项式，当*x* = 1时评估为1，当*x* = 2和*x* = 3时评估为0。这是必要的，以便它们只影响我们的第一个方程。（请注意，通过拉格朗日插值等算法很容易找到这样的多项式。）现在，请注意另外两点：
 - en: We have the inputs, intermediate values, and outputs as coefficients of our
     polynomials.
   id: totrans-192
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 我们的多项式的系数是输入、中间值和输出。
 - en: The polynomial *f*(*x*) is the sum *f*[1](*x*) + *f*[2](*x*) + *f*[3](*x*),
     where we can define *f*[2](*x*) and *f*[3](*x*) to represent equations 2 and 3,
     similarly to *f*[1](*x*).
@@ -1428,39 +1530,47 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 多项式*f*(*x*)是和 *f*[1](*x*) + *f*[2](*x*) + *f*[3](*x*)的总和，其中我们可以定义*f*[2](*x*)和*f*[3](*x*)来表示方程2和3，类似于*f*[1](*x*)。
 - en: 'As you can see, our first equation is still represented at the point *x* =
     1:'
   id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如你所看到的，我们的第一个方程仍然在点*x* = 1处表示：
 - en: '*f*(1) = *f*[1](1) + *f*[2](1) + *f*[3](1)'
   id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: '*f*(1) = *f*[1](1) + *f*[2](1) + *f*[3](1)'
 - en: = *f*[1](1)
   id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: = *f*[1](1)
 - en: = *aL*[1](1) × (*b* + 3)*R*[1](1) – *mO*[1](1)
   id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: = *aL*[1](1) × (*b* + 3)*R*[1](1) – *mO*[1](1)
 - en: = *a* × (*b* + 3) – *m*
   id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: = *a* × (*b* + 3) – *m*
 - en: 'With this new way of representing our equations (which remember, represent
     the execution of our program), the prover can now evaluate parts of the polynomial
     that are relevant to them by:'
   id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 采用这种新的表示方程的方式（记住，表示我们程序执行的方程），证明者现在可以通过以下方式评估与他们相关的多项式的部分：
 - en: Taking the exponentiation of the random point *r* hidden in the exponent to
     reconstruct the polynomials *L*[1](*r*) and *O*[1](*r*)
   id: totrans-200
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 对隐藏在指数中的随机点*r*进行指数运算，以重构多项式*L*[1](*r*)和*O*[1](*r*)
 - en: Exponentiating g^(L[1](r)) with the secret value *a* to obtain (g^(L[1](r)))^a
     = g^(aL[1](r)), which represents *a* × *L*[1](*x*) that is evaluated at an unknown
     and random point *x* = *r* and hidden in the exponent
@@ -1468,6 +1578,8 @@
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 对秘密值*a*进行指数运算g^(L[1](r))以获得(g^(L[1](r)))^a = g^(aL[1](r))，表示*a* × *L*[1](*x*)在未知且随机点*x*
+    = *r*处的评估，并隐藏在指数中。
 - en: Exponentiating g^(O[1](r)) with the secret intermediate value *m* to obtain
     (g^(O[1](r)))^m = g^(mO[1](r)), which represents the evaluation of *mO*[1](*x*)
     at the random point *r* and hidden in the exponent
@@ -1475,6 +1587,7 @@
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 对秘密中间值*m*进行指数运算g^(O[1](r))以获得(g^(O[1](r)))^m = g^(mO[1](r))，表示在随机点*r*处评估*mO*[1](*x*)，并隐藏在指数中。
 - en: 'The verifier can then fill in the missing parts by reconstructing (g^(R[1](r)))^b
     and (g^(R[0](r)))³ for some agreed on value *b* with the same techniques the prover
     used. Adding the two together the verifier obtains g^(bR[1](r)) + g^(3R[1](r)),
@@ -1484,17 +1597,22 @@
   id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 验证者可以通过使用与证明者相同的技术，重建(g^(R[1](r)))^b和(g^(R[0](r)))³来填补缺失的部分，其中*b*是一个已同意的值。将两者相加，验证者得到g^(bR[1](r))
+    + g^(3R[1](r))，表示在未知且随机点*x* = *r*处(*b* + 3) × *R*[1](*x*)的（隐藏）评估。最后，验证者可以通过使用双线性配对重建隐藏在指数中的*f*[1](*r*)：
 - en: e(g^(aL[1](r)), g^((b+3)R[1](r))) – e(g, g^(mO[1](r))) = e(g, g)^(aL[1](r))
     × (b + 3)R[1](r) – mO[1](r)
   id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: e(g^(aL[1](r)), g^((b+3)R[1](r))) – e(g, g^(mO[1](r))) = e(g, g)^(aL[1](r))
+    × (b + 3)R[1](r) – mO[1](r)
 - en: If you extrapolate these techniques to the whole polynomial *f*(*x*), you can
     figure out the final protocol. Of course, this is still a gross simplification
     of a real zk-SNARK protocol; this still leaves way too much power to the prover.
   id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果将这些技术推广到整个多项式*f*(*x*)，你可以了解最终的协议。当然，这仍然是对真实zk-SNARK协议的严重简化；这仍然给证明者留下了太多的权力。
 - en: 'All the other tricks used in zk-SNARKs are meant to further restrict what the
     prover can do, ensuring that they correctly and consistently fill in the missing
     parts as well as optimizing what can be optimized. By the way, the best explanation
@@ -1504,6 +1622,8 @@
   id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: zk-SNARKs中使用的所有其他技巧都旨在进一步限制证明者的行为，确保他们正确且一致地填补缺失的部分，并优化可以优化的部分。顺便说一句，我读过的最好的解释是Maksym
+    Petkus的论文《zk-SNARK为什么以及如何工作：权威解释》，该论文深入探讨了我忽视的所有部分。
 - en: And that’s it for zk-SNARKs. This is really just an introduction; in practice,
     zk-SNARKs are much more complicated to understand and use! Not only is the amount
     of work to convert a program into something that can be proven nontrivial, it
@@ -1516,6 +1636,7 @@
   id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是zk-SNARKs的全部内容。这实际上只是一个介绍；在实践中，了解和使用zk-SNARKs要复杂得多！将程序转换为可被证明的东西的工作量不仅仅是非平凡的，有时还会对密码协议添加新的约束。例如，主流的哈希函数和签名方案通常对于通用ZKP系统来说过于重型，这导致许多协议设计者研究了不同的ZKP友好方案。此外，正如我之前所说的，有许多不同的zk-SNARKs构造，还有许多不同的非zk-SNARKs构造，根据您的用例，后者可能更相关作为通用ZKP构造。
 - en: But, unfortunately, no one-size-fits-all ZKP scheme seems to exist (for example,
     a ZKP scheme with a transparent setup, succinct, universal, and quantum-resistant),
     and it is not clear which one to use in which cases. The field is still young,
@@ -1525,11 +1646,13 @@
   id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 不幸的是，并不存在一种大小适合所有的ZKP方案（例如，具有透明设置、简洁、通用和抗量子的ZKP方案），目前尚不清楚在哪些情况下使用哪种方案。该领域仍然很年轻，每年都会发布新的更好的方案。也许几年后会出现更好的标准和易于使用的库，所以如果你对这个领域感兴趣，继续关注吧！
 - en: Summary
   id: totrans-209
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 总结
 - en: In the last decade, many theoretical cryptographic primitives have made huge
     progress in terms of efficiency and practicality; some are making their way into
     the real world.
@@ -1537,6 +1660,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在过去的十年中，许多理论密码学原语在效率和实用性方面取得了巨大进步；其中一些正在逐渐走向现实世界。
 - en: Secure multi-party computation (MPC) is a primitive that allows multiple participants
     to correctly execute a program together, without revealing their respective inputs.
     Threshold signatures are starting to be adopted in cryptocurrencies, while private
@@ -1546,6 +1670,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 安全多方计算（MPC）是一种原语，允许多个参与者共同正确执行程序，而不暴露各自的输入。阈值签名正在开始在加密货币中被采用，而私密集合交集（PSI）协议正在被用于现代和大规模协议，如谷歌的密码检查。
 - en: Fully homomorphic encryption (FHE) allows one to compute arbitrary functions
     on encrypted data without decrypting it. It has potential applications in the
     cloud, where it could prevent access to the data to anyone but the user while
@@ -1555,6 +1680,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 完全同态加密（FHE）允许在不解密的情况下对加密数据进行任意函数计算。它在云中具有潜在应用，可以防止除用户之外的任何人访问数据，同时允许云平台对数据进行用户有用的计算。
 - en: General-purpose zero-knowledge proofs (ZKPs) have found many use cases, and
     have had recent breakthroughs with small proofs that are fast to verify. They
     are mostly used in cryptocurrencies to add privacy to or to compress the size
@@ -1565,3 +1691,4 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通用零知识证明（ZKPs）已经找到了许多用例，并且在快速验证小证明方面取得了最近的突破。它们主要用于加密货币，以增加隐私或压缩区块链的大小。然而，它们的用例似乎更广泛，随着更好的标准和更易于使用的库进入现实世界，我们可能会看到它们被越来越广泛地使用。

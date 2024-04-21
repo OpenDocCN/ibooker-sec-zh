@@ -1,70 +1,99 @@
 - en: 16 When and where cryptography fails
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 加密何时何地失败
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: General issues you can run into when using cryptography
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用加密时可能遇到的一般问题
 - en: The mantras to follow to bake good cryptography
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 遵循烘烤良好的加密的要点
 - en: The dangers and responsibilities of a cryptography practitioner
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 加密从业者的危险和责任
 - en: Greetings, traveler; you’ve come a long way. While this is the last chapter,
     it’s all about the journey, not the end. You’re now equipped with the gear and
     skills required to step into the real world of cryptography. What’s left is for
     you to apply what you’ve learned.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 问候，旅行者；你走了很长的路。虽然这是最后一章，但重要的是旅程，而不是终点。你现在已经装备好了进入真正的加密世界所需的装备和技能。剩下的就是应用你所学到的知识。
 - en: 'Before parting ways, I’d like to give you a few hints and tools that’ll be
     useful for what follows. The quests you’ll face often follow the same pattern:
     it starts with a challenge, launching you on a pursuit for an existing cryptographic
     primitive or protocol. From there, you’ll look for a standard and a good implementation,
     and then you’ll make use of it in the best way you can. That’s if everything goes
     according to plan. . . .'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们分道扬镳之前，我想给你一些提示和工具，这些对接下来的事情会有用。你将面临的任务经常遵循相同的模式：它始于一个挑战，将你引向一个现有的加密原语或协议的追求。从那里，你会寻找一个标准和一个良好的实现，然后你会尽可能地利用它。这是如果一切按计划进行的话。
+    . . .
 - en: Before we part
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们分别之前
 - en: Someone who seeks to bridge the gap between theory and practice will have to
     slay many dragons. Here’s your sword—take it.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 试图弥合理论与实践之间差距的人将不得不打倒许多龙。这是你的剑 —— 拿去吧。
 - en: '![](../Images/16_001_UN01.jpg)'
+  id: totrans-9
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/16_001_UN01.jpg)'
 - en: 16.1 Finding the right cryptographic primitive or protocol is a boring job
+  id: totrans-10
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 找到正确的加密原语或协议是一项无聊的工作
 - en: You’re facing unencrypted traffic, or a number of servers that need to authenticate
     one another, or some secrets that need to be stored without becoming single points
     of failure. What do you do?
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 你面对的是未加密的流量，或者需要相互认证的多个服务器，或者需要存储而不会成为单点故障的一些秘密。你会怎么做？
 - en: You could use TLS or Noise (mentioned in chapter 9) to encrypt your traffic.
     You could set up a public key infrastructure (mentioned in chapter 9) to authenticate
     servers via the signature of some certificate authority, and you could distribute
     a secret using a threshold scheme (covered in chapter 8) to avoid the compromise
     of one secret to lead to the compromise of the whole system. These would be fine
     answers.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以使用TLS或噪声（在第9章提到）来加密你的流量。你可以建立一个公钥基础设施（在第9章提到）来通过某个证书颁发机构的签名来验证服务器，你还可以使用阈值方案（在第8章中涵盖）来分发一个秘密，以避免一个秘密的泄露导致整个系统的崩溃。这些将是很好的答案。
 - en: If the problem you’re facing is a common one to have, chances are that you can
     simply find an existing cryptographic primitive or protocol that directly solves
     your use case. This book gives you a good idea of what the standard primitives
     and common protocols are, so at this point, you should have a good idea of what’s
     at your disposal when faced with a cryptographic problem.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你面临的问题是常见的，那么你很有可能会发现一个已经存在的加密原语或协议直接解决你的使用情况。本书给出了标准原语和常见协议的良好概念，所以在这一点上，当你面临加密问题时，你应该很清楚你可以使用什么。
 - en: Cryptography is quite an interesting field, going all over the place as new
     discoveries and primitives are invented and proposed. While you might be tempted
     to explore exotic cryptography to solve your problem, your responsibility is to
@@ -73,21 +102,29 @@
     many vulnerabilities have been introduced by trying to be extravagant. This concept
     has been dubbed *boring cryptography* by Bernstein in 2015, and has been the inspiration
     behind the naming of Google’s TLS library, BoringSSL.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 加密是一个非常有趣的领域，随着新的发现和原语的提出，它遍布各个地方。虽然你可能会被诱惑去探索奇特的加密来解决你的问题，但你的责任是保持保守。原因是*复杂性是安全的敌人*。无论何时做某事，尽可能简单是更容易的。尝试过于炫耀已经引入了太多的漏洞。这个概念被Bernstein在2015年称为*无聊的加密*，并且是Google的TLS库BoringSSL命名背后的灵感来源。
 - en: '*Cryptographic proposals need to withstand many years of careful scrutiny before
     they become plausible candidates for field use. This is especially when the proposal
     is based on novel mathematical problems*.'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: '*加密提议需要经受多年的仔细审查，才能成为可信任的字段使用候选人，尤其是当提议基于新颖的数学问题时*。'
 - en: —Rivest et al. (“Responses to NIST's proposal,” 1992)
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: —Rivest 等人（“对 NIST 提案的回应”，1992）
 - en: What if you can’t find a cryptographic primitive or protocol that solves your
     problem? This is where you must step into the world of *theoretical* cryptography,
     which is obviously not the subject of this book. I can merely give you recommendations.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果找不到解决您问题的加密原语或协议怎么办？ 这就是您必须踏入 *理论* 密码学世界的地方，显然这不是本书的主题。 我只能给出建议。
 - en: 'The first recommendation I will give you is the free book *A Graduate Course
     in Applied Cryptography*, written by Dan Boneh and Victor Shoup, and available
     at [https://cryptobook.us](https://cryptobook.us). This book provides excellent
@@ -98,22 +135,35 @@
     to read something halfway between this book and the world of theoretical cryptography,
     I can’t recommend enough the book, *Serious Cryptography: A Practical Introduction
     to Modern Encryption* (No Starch Press, 2017) by Jean-Philippe Aumasson.'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: '我将给你的第一个建议是免费书籍 *A Graduate Course in Applied Cryptography*，由 Dan Boneh 和 Victor
+    Shoup 撰写，可在 [https://cryptobook.us](https://cryptobook.us) 获取。 这本书提供了出色的支持，涵盖了我在这本书中涵盖的所有内容，但更加深入。
+    Dan Boneh 还有一个令人惊叹的在线课程，“Cryptography I”，也可在 [https://www.coursera.org/learn/crypto](https://www.coursera.org/learn/crypto)
+    免费获得。 这是一个更温和的理论密码学入门。 如果你想阅读介于这本书和理论密码学世界之间的东西，我强烈推荐 *Serious Cryptography: A
+    Practical Introduction to Modern Encryption*（No Starch Press，2017），作者 Jean-Philippe
+    Aumasson。'
 - en: Now, let’s imagine that you *do* have an existing cryptographic primitive or
     protocol that solves your solution. A cryptographic primitive or protocol is still
     very much of a theoretical thing. Wouldn’t it be great if it had a practical standard
     that you could use right away?
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，让我们想象一下，您确实有一个现有的解决方案解决了您的问题。 加密原语或协议仍然是一个非常理论的东西。 如果它有一个您可以立即使用的实用标准，那不是很棒吗？
 - en: '![](../Images/16_001_UN02.jpg)'
+  id: totrans-20
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/16_001_UN02.jpg)'
 - en: 16.2 How do I use a cryptographic primitive or protocol? Polite standards and
     formal verification
+  id: totrans-21
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 16.2 我如何使用加密原语或协议？ 有礼貌的标准和形式验证
 - en: You realize that a solution exists that meets your needs, now does it have a
     standard? Without a standard, a primitive is often proposed without consideration
     for its real-world use. Cryptographers often don’t think about the different pitfalls
@@ -121,22 +171,31 @@
     cryptography* is what Riad S. Wahby once called standards that care about their
     implementation and leave little room for implementers to shoot themselves in the
     foot.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 您意识到存在符合您需求的解决方案，那么它是否有标准呢？ 没有标准，原语往往是在不考虑其真实世界使用的情况下提出的。 密码学家通常不考虑使用其原语或协议的不同陷阱以及实施它们的细节。
+    *有礼貌的密码学* 是 Riad S. Wahby 曾称之为关心其实现并且不留给实施者多少错误空间的标准。
 - en: '*The poor user is given enough rope with which to hang himself—something a
     standard should not do*.'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '*可怜的用户被给予足够的绳子来上吊自己——这是标准不应该做的事情*。'
 - en: —Rivest et al. (“Responses to NIST's proposal,” 1992)
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: —Rivest 等人（“对 NIST 提案的回应”，1992）
 - en: 'A polite standard is a specification that aims to address all edge cases and
     potential security issues by providing safe and easy-to-use interfaces to implement,
     as well as good guidance on how to use the primitive or protocol. In addition,
     good standards have accompanying test vectors: lists of matching inputs and outputs
     that you can feed to your implementation to test its correctness.'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个有礼貌的标准是一项旨在通过提供安全且易于使用的接口来解决所有边缘情况和潜在安全问题的规范，并提供了关于如何实现以及如何使用原语或协议的良好指导。 此外，良好的标准还具有相应的测试向量：匹配输入和输出的列表，您可以将其馈送到您的实现中以测试其正确性。
 - en: Unfortunately, not all standards are “polite,” and the cryptographic pitfalls
     they create are what make most of the vulnerabilities I talk about in this book.
     Sometimes standards are too vague, lack test vectors, or try to do too much at
@@ -148,15 +207,19 @@
     moving on. On the other hand, too much agility can also strongly affect the complexity
     of a standard, sometimes even leading to vulnerabilities, as the many downgrade
     attacks on TLS can attest.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 不幸的是，并非所有标准都是“友好的”，它们所造成的密码学陷阱是我在本书中谈论的大多数漏洞的原因。有时标准过于模糊，缺乏测试向量，或者试图一次做太多事情。例如，*密码学灵活性*是指协议在支持的密码算法方面的灵活性。支持不同的密码算法可以使一个标准具有优势，因为有时一个算法被破解和废弃，而其他算法没有。在这种情况下，一个不灵活的协议会阻止客户端和服务方轻松迁移。另一方面，过多的灵活性也会严重影响标准的复杂性，有时甚至会导致漏洞，正如TLS上的许多降级攻击所证明的那样。
 - en: Unfortunately, more often than cryptographers are willing to admit, you will
     run into trouble when your problem either meets an edge case that the mainstream
     primitives or protocols don’t address, or when your problem doesn’t match a standardized
     solution. For this reason, it is extremely common to see developers creating their
     own mini-protocols or mini-standards. This is when trouble starts.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 不幸的是，更多的时候，密码学家不愿承认，当你的问题遇到主流原语或协议没有解决的边缘情况，或者当你的问题与标准化解决方案不匹配时，你会遇到麻烦。因此，看到开发人员创建自己的迷你协议或迷你标准是极其常见的。这就是麻烦开始的时候。
 - en: 'When wrong assumptions are made about the primitive’s threat model (what it
     protects against) or about its composability (how it can be used within a protocol),
     breakage happens. These context-specific issues are amplified by the fact that
@@ -167,16 +230,20 @@
     signatures assumed to be unique (chapter 7), and ambiguity in who is communicating
     to whom (chapter 10). It’s not necessarily your fault! The developers have outsmarted
     the cryptographers, revealing pitfalls that no one knew existed. That’s what happened.'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 当对原语的威胁模型（它所保护的内容）或其可组合性（如何在协议中使用）做出错误假设时，就会出现问题。这些特定于上下文的问题被放大，因为加密原语通常是在一个独立的环境中构建的，设计者并没有必然考虑一旦原语在多种方式或在另一个原语或协议中使用时可能出现的所有问题。我举了很多例子：X25519在边缘情况协议中破解（第11章），签名被假定为唯一（第7章），以及在谁与谁通信方面的模糊性（第10章）。这并不一定是你的错！开发人员已经比密码学家聪明，揭示了没有人知道存在的陷阱。这就是发生的事情。
 - en: If you ever find yourself in this type of situation, the go-to tool of a cryptographer
     is pen-and-paper proof. This is not quite helpful for us, the practitioners, as
     we either don’t have the time to do that work (it really takes a lot of time)
     or even the expertise. We’re not helpless, though. We can use computers to facilitate
     the task of analyzing a mini-protocol. This is called *formal verification*, and
     it can be a wonderful use of your time.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你发现自己处于这种情况下，密码学家的首选工具是纸笔证明。对于我们这些从业者来说，这并不是很有帮助，因为我们要么没有时间去做这项工作（确实需要很多时间），要么没有专业知识。不过，我们并不无助。我们可以利用计算机来简化分析迷你协议的任务。这被称为*形式验证*，可以很好地利用你的时间。
 - en: 'Formal verification allows you to write your protocol in some intermediate
     language and test some properties on it. For example, the *Tamarin protocol prover*
     (see figure 16.1) is a formal verification tool that has been (and is) used in
@@ -184,39 +251,58 @@
     this, see the papers “Prime, Order Please! Revisiting Small Subgroup and Invalid
     Curve Attacks on Protocols using Diffie-Hellman” (2019) and “Seems Legit: Automated
     Analysis of Subtle Attacks on Protocols that Use Signatures” (2019).'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: '形式化验证允许您在某种中间语言中编写协议并对其进行一些属性测试。例如，*Tamarin 协议证明器*（见图16.1）是一款形式验证工具，已经（并且正在）被用来发现许多不同协议中的微妙攻击。要了解更多信息，请参阅论文“Prime,
+    Order Please! Revisiting Small Subgroup and Invalid Curve Attacks on Protocols
+    using Diffie-Hellman”（2019）和“Seems Legit: Automated Analysis of Subtle Attacks
+    on Protocols that Use Signatures”（2019）。'
 - en: '![](../Images/16_01.jpg)'
+  id: totrans-31
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/16_01.jpg)'
 - en: Figure 16.1 The Tamarin protocol prover is a free formal verification tool that
     you can use to model a cryptographic protocol and find attacks on it.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 图16.1 Tamarin 协议证明器是一款免费的形式验证工具，您可以使用它来对加密协议进行建模并找到其中的攻击。
 - en: The other side of the coin is that it is often hard to use formal verification
     tools. The first step is to understand how to translate a protocol into the language
     and the concepts used by the tool, which is often not straightforward. After having
     described a protocol in a formal language, you still need to figure out what you
     want to prove and how to express it in the formal language.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一面硬币是，使用形式化验证工具通常很困难。第一步是理解如何将协议转换为工具使用的语言和概念，这通常并不直观。在用形式语言描述了一个协议之后，您仍然需要弄清楚您想要证明什么以及如何在形式语言中表达它。
 - en: It is not uncommon to see a proof that actually proved the wrong things, so
     one can even ask who verifies the formal verification? Some promising research
     in this area is aimed at making it easier for developers to formally verify their
     protocols. For example, the tool Verifpal ([https://verifpal.com](https://verifpal.com))
     trades off soundness (being able to find all attacks) for ease of use.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 实际上，见到一个证明实际上证明了错误的事情并不少见，所以人们甚至可以问，谁来验证形式化验证？在这个领域的一些有希望的研究致力于让开发者更容易地形式化验证他们的协议。例如，工具
+    Verifpal ([https://verifpal.com](https://verifpal.com)) 通过简化使用来换取声音（能够找到所有攻击）。
 - en: The KRACK attack
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: KRACK 攻击
 - en: It does happen that critical differences are made when writing a formal description
     of a protocol as compared to the actual protocol being implemented, which then
     leads to gaps and real-world attacks. This is what happened in 2017, when the
     KRACK attack ([https://krackattacks.com](https://krackattacks.com)) broke the
     Wi-Fi protocol WPA2, even though it had been previously formally verified.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 在编写协议的形式描述与实际实现的协议之间，可能会产生关键性差异，从而导致现实世界的攻击和漏洞。这就是 2017 年发生的情况，当时 KRACK 攻击 ([https://krackattacks.com](https://krackattacks.com))
+    破解了 Wi-Fi 协议 WPA2，尽管它先前已经经过形式验证。
 - en: You can also use formal verification to verify a cryptographic primitive’s security
     proofs using formal verification tools like Coq, CryptoVerif, and ProVerif, and
     even to generate “formally verified” implementations in different languages (see
@@ -226,8 +312,11 @@
     the paper protocol and its formal description or between the formal description
     and the implementation will always exist and appear innocuous until found to be
     fatal.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 你也可以使用形式化验证来验证密码学原语的安全性证明，使用像 Coq、CryptoVerif 和 ProVerif 这样的形式化验证工具，甚至可以在不同的语言中生成“经过形式验证”的实现（参见像
+    HACL*、Vale 和 fiat-crypto 这样的项目，这些项目实现了具有验证属性（如正确性、内存安全等）的主流密码学原语）。话虽如此，形式化验证并非万无一失的技术；论文协议与其形式描述之间或形式描述与实现之间的差距总是存在的，并且看起来无害，直到被发现是致命的。
 - en: Studying how other protocols fail is an excellent way of avoiding the same mistakes.
     The [cryptopals.com](http://cryptopals.com) or [cryptohack.org](http://cryptohack.org)
     challenges are a great way to learn about what can go wrong in using and composing
@@ -236,28 +325,38 @@
     and either formally verify that protocol or ask experts for help. OK, we have
     a standard, or something that looks like it, now who’s in charge of implementing
     that?
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 研究其他协议失败的方式是避免犯同样的错误的绝佳方法。[cryptopals.com](http://cryptopals.com)或[cryptohack.org](http://cryptohack.org)挑战是了解在使用和组合加密原语和协议中可能出错的内容的好方法。底线——你需要彻底了解你正在使用的东西！如果你正在构建一个迷你协议，那么你需要小心，要么正式验证该协议，要么向专家寻求帮助。好了，我们有了一个标准，或者看起来像是标准，现在谁负责实现它呢？
 - en: '![](../Images/16_UN03.jpg)'
+  id: totrans-39
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/16_UN03.jpg)'
 - en: 16.3 Where are the good libraries?
+  id: totrans-40
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 16.3 哪里有好的库？
 - en: You’re one step closer to solving your problem. You know the primitive or protocol
     you want to use, and you have a standard for it. At the same time, you’re also
     one step further away from the specification, which means you might create bugs.
     But first, where’s the code?
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 你离解决问题更近了一步。你知道你想使用的原语或协议，你也有了一个标准。同时，你也离规范更远了一步，这意味着你可能会产生错误。但首先，代码在哪里？
 - en: 'You look around, and you see that there are many libraries or frameworks available
     for you to use. That’s a good problem to have. But still, which library do you
     pick? Which is most secure? This is a hard question to answer. Some libraries
     are well-respected, and I’ve listed some in this book: Google’s Tink, libsodium,
     cryptography.io, etc.'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 你四处看看，发现有许多可供您使用的库或框架。这是一个好问题。但是，你应该选择哪个库？哪一个最安全？这是一个难以回答的问题。一些库备受尊敬，我在本书中列出了一些：谷歌的Tink、libsodium、cryptography.io等等。
 - en: Sometimes, though, it is hard to find a good library to use. Perhaps the programming
     language you’re using doesn’t have that much support for cryptography, or perhaps
     the primitive or protocol you want to use doesn’t have that many implementations.
@@ -266,16 +365,20 @@
     for a code review. For example, the r/crypto community on Reddit is pretty helpful
     and welcoming; emailing authors directly sometimes works; asking the audience
     during open-mic sessions at conferences can also have its effect.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 有时，找到一个好的库使用是困难的。也许你使用的编程语言对加密支持不多，或者你想使用的原语或协议没有那么多的实现。在这些情况下，谨慎一些并向加密社区寻求建议是很好的，看看库背后的作者，也许甚至向专家请求代码审查。例如，Reddit上的r/crypto社区非常乐意帮助；直接给作者发邮件有时会奏效；在会议的开放麦克风环节询问观众也可能有所作用。
 - en: If you’re in a desperate situation, you might even have to implement the cryptographic
     primitive or protocol yourself. There are many issues that can arise at this point,
     and it is a good idea to check for common issues that arise in cryptographic implementations.
     Fortunately, if you are following a good standard, then mistakes are less easy
     to make. But still, implementing cryptography is an art, and it is not something
     you should get yourself into if you can avoid it.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你处于绝望的境地，甚至可能不得不自己实现加密原语或协议。此时可能会出现许多问题，检查加密实现中常见问题是个好主意。幸运的是，如果你遵循一个好的标准，那么犯错就不那么容易了。但是，实现加密是一种艺术，如果可以避免的话，你不应该涉足其中。
 - en: One interesting way to test a cryptographic implementation is to use *tooling*.
     While no single tooling can cater to all cryptographic algorithms, Google’s Wycheproof
     deserves a mention. Wycheproof is a suite of test vectors that you can use to
@@ -283,15 +386,21 @@
     so on. The framework has been used to find an impressive number of bugs in different
     cryptographic implementations. Next, let’s pretend that you did not implement
     cryptography yourself and found a cryptography library.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 一种有趣的测试加密实现的方法是使用*工具*。虽然没有单一的工具适用于所有加密算法，但谷歌的Wycheproof值得一提。Wycheproof是一套测试向量，您可以使用它来查找常见加密算法（如ECDSA、AES-GCM等）中的棘手错误。该框架已被用于发现不同加密实现中令人印象深刻的大量错误。接下来，假设您没有自己实现加密，并找到了一个加密库。
 - en: '![](../Images/16_UN04.jpg)'
+  id: totrans-46
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/16_UN04.jpg)'
 - en: '16.4 Misusing cryptography: Developers are the enemy'
+  id: totrans-47
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 16.4 加密的错误使用：开发者是敌人
 - en: 'You found some code you can use, you’re one step further, yet you find there
     are more opportunities to create bugs. This is where most bugs in applied cryptography
     happen. We’ve seen examples of misusing cryptography in this book again and again:
@@ -299,17 +408,23 @@
     4), collisions can arise when the misuse of hash functions happen (chapter 2),
     parties can be impersonated due to lack of origin authentication (chapter 9),
     and so on.'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 你找到了一些可以使用的代码，你又前进了一步，然而你发现还有更多的机会引入错误。这就是应用密码学中大多数错误发生的地方。我们在本书中一再看到了错误使用密码学的例子：在ECDSA（第7章）和AES-GCM（第4章）等算法中重用nonce是不好的，当滥用哈希函数（第2章）时会出现碰撞，由于缺乏源身份验证（第9章），参与方可能会被冒充，等等。
 - en: '*The results show that just 17% of the bugs are in cryptographic libraries
     (which often have devastating consequences), and the remaining 83% are misuses
     of cryptographic libraries by individual applications*.'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: '*结果显示，仅有17%的错误出现在加密库中（这往往会产生严重后果），而其余83%是由个别应用程序错误使用加密库造成的*。'
 - en: —David Lazar, Haogang Chen, Xi Wang, and Nickolai Zeldovich (“Why does cryptographic
     software fail? A case study and open problems,” 2014)
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: —David Lazar, Haogang Chen, Xi Wang, and Nickolai Zeldovich（“加密软件为什么会失败？案例研究和未解决的问题”，2014年）
 - en: In general, the more a primitive or protocol is abstracted, the safer it is
     to use. For example, AWS offers a Key Management Service (KMS) to host your keys
     in HSMs and to perform cryptographic computations on-demand. This way, cryptography
@@ -317,8 +432,10 @@
     that provide cryptography within their standard libraries, which are often more
     trusted than third-party libraries. For example, Golang’s standard library is
     excellent.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 一般来说，原语或协议越抽象，使用起来就越安全。例如，AWS提供了一个密钥管理服务（KMS），可以将您的密钥托管在HSM中，并按需执行加密计算。这样，加密就在应用程序级别上抽象化了。另一个例子是编程语言在其标准库中提供加密功能，这些功能通常比第三方库更可信。例如，Golang的标准库非常出色。
 - en: The care given to the usability of a cryptographic library can often be summarized
     as “treating the developer as the enemy.” This is the approach taken by many cryptographic
     libraries. For example, Google’s Tink doesn’t let you choose the nonce/IV value
@@ -328,28 +445,38 @@
     forcing you to verify the signature before releasing the message, and the list
     goes on. In this sense, cryptographic protocols and libraries have a responsibility
     to make their interfaces as misuse resistant as possible.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 加密库对可用性的关注通常可以概括为“将开发者视为敌人”。这是许多加密库采取的方法。例如，Google的Tink不允许您在AES-GCM（见第4章）中选择nonce/IV值，以避免意外的nonce重用。为了避免复杂性，libsodium库只提供了一组固定的原语，而没有给您任何自由。一些签名库在签名中包装消息，强制您在发布消息之前验证签名，等等。在这个意义上，加密协议和库有责任尽可能地使其接口对误用具有抵抗力。
 - en: I’ve said it before, I’ll say it again—make sure you understand the fine print
     (all of it) for what you’re using. As you’ve seen in this book, misusing cryptographic
     primitives or protocols can fail in catastrophic ways. Read the standards, read
     the security considerations, and read the manual and the documentation for your
     cryptographic library. Is this it? Well, not really. . . . You’re not the only
     user here.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: '我以前说过，我会再次说一遍——确保您理解您正在使用的所有细节。正如您在本书中所看到的，错误使用加密原语或协议可能以灾难性的方式失败。阅读标准，阅读安全注意事项，阅读您加密库的手册和文档。这就是全部吗？嗯，并不完全是这样……您不是唯一的用户。 '
 - en: '![](../Images/16_UN05.jpg)'
+  id: totrans-54
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/16_UN05.jpg)'
 - en: '16.5 You’re doing it wrong: Usable security'
+  id: totrans-55
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 16.5 你在做错事：可用安全
 - en: Using cryptography solves problems that applications have in often transparent
     ways but not always! Sometimes, the use of cryptography leaks to the users of
     the applications.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用加密可以在很多时候以透明的方式解决应用程序的问题，但并非总是如此！有时，加密的使用会泄露给应用程序的用户。
 - en: Usually, education can only help so much. It is, hence, never a good idea to
     blame the user when something bad happens. The relevant field of research is called
     *usable security*, in which solutions are sought to make security and cryptography-related
@@ -357,19 +484,27 @@
     misuse as possible. One good example is how browsers gradually shifted from simple
     warnings when SSL/TLS certificates were invalid to making it harder for users
     to accept the risk.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常，教育只能起到有限的帮助作用。因此，当发生不良事件时，指责用户绝非明智之举。相关的研究领域被称为*可用安全性*，在这个领域里，人们致力于使安全和与密码学相关的功能对用户尽可能透明化，尽量消除用户滥用的机会。一个很好的例子是浏览器逐渐改变了在
+    SSL/TLS 证书无效时发出简单警告的方式，而是使用户更难接受风险。
 - en: '*We observed behavior that is consistent with the theory of warning fatigue.
     In Google Chrome, users click through the most common SSL error faster and more
     frequently than other errors. [. . .] We also find clickthrough rates as high
     as 70.2% for Google Chrome SSL warnings, indicating that the user experience of
     a warning can have a tremendous impact on user behavior*.'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: '*我们观察到的行为与警告疲劳理论相一致。在 Google Chrome 中，用户对最常见的 SSL 错误的点击速度更快、频率更高。 [. . .] 我们还发现，对于
+    Google Chrome 的 SSL 警告，点击通过率高达 70.2%，这表明警告的用户体验对用户行为有巨大影响*。'
 - en: '—Devdatta Akhawe and Adrienne Porter Felt (“Alice in Warningland: A Large-Scale
     Field Study of Browser Security Warning Effectiveness,” 2013)'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: ——Devdatta Akhawe 和 Adrienne Porter Felt（《警告国的爱丽丝：浏览器安全警告有效性的大规模现场研究》，2013）
 - en: Another good example is how security-sensitive services have moved on from passwords
     to supporting second-factor authentication (covered in chapter 11). Because it
     was too hard to force users to use strong per-service passwords, another solution
@@ -379,11 +514,16 @@
     security comes from them actively verifying fingerprints (covered in chapter 10).
     Whenever cryptography is pushed to users, great effort must be taken to reduce
     the risk of user mistakes.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个很好的例子是，安全敏感的服务已经从密码转向支持第二因素认证（在第 11 章介绍）。因为强制用户使用强大的每服务密码太困难了，所以找到了另一个解决方案来消除密码泄露的风险。端到端加密也是一个很好的例子，因为用户始终很难理解他们的对话是端到端加密的意义，以及安全性有多大程度来自于他们主动验证指纹（在第
+    10 章介绍）。每当将密码学推给用户时，都必须付出巨大的努力来减少用户错误的风险。
 - en: Story time
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 故事时间
 - en: Years ago I was asked to review the end-to-end encryption proposal of a widely-used
     messaging application. The proposal included the usual state-of-the-art protocol,
     the Signal protocol (covered in chapter 10), yet it didn’t offer a functionality
@@ -392,15 +532,21 @@
     of a passive adversary, a rogue employee could have easily updated a user’s public
     key (or some users' session keys), and you would have not been able to detect
     the man-in-the-middle attack.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 几年前，有人请我审查一个广泛使用的消息应用的端到端加密方案。该方案包括了常见的最先进协议，即 Signal 协议（在第 10 章介绍），但却没有提供用户验证其他用户的公钥（或会话密钥）的功能。这意味着，虽然在被动攻击者存在时，您的通信是端到端加密的，但恶意员工却可以轻易更新用户的公钥（或某些用户的会话密钥），而您却无法检测到中间人攻击。
 - en: '![](../Images/16_UN06.jpg)'
+  id: totrans-63
   prefs: []
   type: TYPE_IMG
+  zh: '![图](../Images/16_UN06.jpg)'
 - en: 16.6 Cryptography is not an island
+  id: totrans-64
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 16.6 密码学不是孤立存在的
 - en: Cryptography is often used as part of a more complex system that can also have
     bugs. Actually, most of the bugs live in those parts that have nothing to do with
     the cryptography itself. An attacker often looks for the weakest link in the chain,
@@ -408,37 +554,49 @@
     job at raising the bar. Encompassing systems can be much larger and complex and
     often end up creating more accessible attack vectors. Adi Shamir famously said,
     “Cryptography is typically bypassed, not penetrated.”
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 密码学通常被用作更复杂系统的一部分，而这些系统也可能存在漏洞。实际上，大多数漏洞存在于与密码学本身无关的部分。攻击者通常寻找链条中最脆弱的环节，最容易攻击的目标，而密码学往往在提高门槛方面表现良好。涵盖系统可能更大更复杂，往往会产生更多可访问的攻击向量。阿迪·沙密尔曾经说过：“密码学通常是被绕过，而不是被突破。”
 - en: While it is good to put some effort into making sure that the cryptography in
     your system is conservative, well-implemented, and well-tested, it is also beneficial
     to ensure that the same level of scrutiny is applied to the rest of the system.
     Otherwise, you might have done all of that for nothing.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然努力确保系统中的密码学是保守的、实现良好且经过充分测试是好事，但也有益于确保对系统的其余部分也应用了同样程度的审查。否则，你可能白费了所有努力。
 - en: '![](../Images/16_UN07.jpg)'
+  id: totrans-67
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/16_UN07.jpg)'
 - en: 16.7 Your responsibilities as a cryptography practitioner, don’t roll your own
     crypto
+  id: totrans-68
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 16.7 作为密码学从业者，不要自己设计加密算法
 - en: That’s it, this is the end of the book, you are now free to gallop in the wilderness.
     But I have to warn you, having read this book gives you no superpowers; it should
     only give you a sense of fragility. A sense that cryptography can easily be misused
     and that the simplest mistake can lead to devastating consequences. Proceed with
     caution!
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 就是这样，这本书到此结束，你现在可以在荒野中自由驰骋。但我必须警告你，阅读这本书并不赋予你超能力；它只应该让你感到脆弱。让你意识到密码学很容易被误用，最简单的错误可能导致灾难性后果。请谨慎前行！
 - en: You now have a big crypto toolset at your belt. You should be able to recognize
     what type of cryptography is being used around you, perhaps even identify what
     seems fishy. You should be able to make some design decisions, know how to use
     cryptography in your application, and understand when you or someone is starting
     to do something dangerous that might require more attention. Never hesitate to
     ask for an expert’s point of view.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在你已经掌握了丰富的密码学工具。你应该能够识别周围使用的密码学类型，甚至可能识别出可疑之处。你应该能够做出一些设计决策，知道如何在应用程序中使用密码学，并了解何时你或他人开始做一些可能需要更多关注的危险行为。永远不要犹豫寻求专家的意见。
 - en: '“Don’t roll your own crypto” must be the most overused cryptography line in
     software engineering. Yet, these folks are somewhat right. While you should feel
     empowered to implement or even create your own cryptographic primitives and protocols,
@@ -450,15 +608,20 @@
     the best cryptographer, can create an algorithm that he himself can’t break.”
     At this point, it is up to you to continue studying cryptography. These final
     pages are not the end of the journey.'
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: “不要自己设计加密算法”可能是软件工程中最被滥用的密码学说法。然而，这些人在某种程度上是正确的。虽然你应该有能力实现甚至创建自己的加密原语和协议，但不应在生产环境中使用它。制作密码学需要多年才能做到正确：多年来学习该领域的方方面面，不仅从设计的角度，还从密码分析的角度。即使是终身研究密码学的专家也会构建破损的密码系统。Bruce
+    Schneier曾经著名地说过：“任何人，从最无知的业余爱好者到最优秀的密码学家，都可以创建一个他自己无法破解的算法。”此时，继续学习密码学就取决于你。这些最后的页面并不是旅程的终点。
 - en: 'I want you to realize that you are in a privileged position. Cryptography started
     as a field behind closed doors, restricted only to members of the government or
     academics kept under secrecy, and it slowly became what it is today: a science
     openly studied throughout the world. But for some people, we are still very much
     in a time of (cold) war.'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 我希望你意识到你处于一个特权地位。密码学起初是一个在闭门之后进行的领域，只限于政府成员或学术界保密，慢慢地演变成了今天的样子：一门在全世界公开研究的科学。但对于一些人来说，我们仍然处于（冷）战争时期。
 - en: In 2015, Rogaway drew an interesting comparison between the research fields
     of cryptography and physics. He pointed out that physics had turned into a highly
     political field shortly after the nuclear bombing of Japan at the end of World
@@ -466,8 +629,10 @@
     to be clearly and directly correlated to the deaths of many and the deaths of
     potentially many more. Not much later, the Chernobyl disaster would amplify this
     feeling.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 2015年，Rogaway对密码学和物理学两个研究领域进行了有趣的比较。他指出，物理学在二战结束后不久就变成了一个高度政治化的领域。研究人员开始感到深刻的责任，因为物理学开始明显且直接地与许多人的死亡以及可能更多人的死亡相关联。不久之后，切尔诺贝利核事故将加剧这种感觉。
 - en: On the other hand, cryptography is a field where privacy is often talked about
     as though it were a different subject, making cryptography research apolitical.
     Yet, decisions that you and I take can have a long-lasting impact on our societies.
@@ -477,9 +642,11 @@
     affect their security? How do you empower users through cryptography? What do
     you encrypt? “We kill people based on metadata,” said former NSA chief Michael
     Hayden ([http://mng .bz/PX19](http://mng.bz/PX19)).
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/16_UN08.jpg)'
+  id: totrans-75
   prefs: []
   type: TYPE_IMG
 - en: 'In 2012, near the coast of Santa Barbara, hundreds of cryptographers gathered
@@ -489,6 +656,7 @@
     played a clip from the television series *Game of Thrones* to the room. In the
     video, Varys, a eunuch, poses a riddle to the hand of the king, Tyrion. This is
     the riddle:'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
 - en: '*Three great men sit in a room: a king, a priest, and a rich man. Between them
@@ -496,19 +664,23 @@
     Who lives, who dies? Tyrion promptly answers, “Depends on the sellsword,” to which
     the eunuch responds, “If it’s the swordsman who rules, why do we pretend kings
     hold all the power?”*.'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
 - en: Jonathan then stopped the clip and pointed to the audience, yelling at them,
     “You get that you guys are the sellswords, right?”
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
 - en: Summary
+  id: totrans-79
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: Real-world cryptography tends to fail mostly in how it is applied. We already
     know good primitives and good protocols to use in most use cases, which leaves
     their misuse as the source of most bugs.
+  id: totrans-80
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -516,6 +688,7 @@
     and protocols. Most of the time, all you’ll have to do is find a respected implementation
     that addresses your problem. Make sure to read the manual and to understand in
     what cases you can use a primitive or a protocol.
+  id: totrans-81
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -525,12 +698,14 @@
     primitives sometimes break when used in specific situations or when combined with
     other primitives or protocols. In these cases, formal verification is an excellent
     tool to find issues, although it can be hard to use.
+  id: totrans-82
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Implementing cryptography is not just difficult; you also have to think about
     hard-to-misuse interfaces (in the sense that good cryptographic code leaves little
     room for the user to shoot themselves in the foot).
+  id: totrans-83
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -539,30 +714,40 @@
     too many cryptographic algorithms) is a big topic in the community, and steering
     away from over-engineered systems has been dubbed “boring cryptography.” Be as
     boring as you can.
+  id: totrans-84
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 保持保守，并使用经过验证的加密技术是避免后续问题的好方法。源自复杂性的问题（例如，支持过多的加密算法）是社区中的一个重要话题，远离过度设计的系统被称为“无聊的加密”。尽可能无聊。
 - en: Both cryptographic primitives and standards can be responsible for bugs in implementations
     due to being to complicated to implement or to vague about what implementers should
     be wary of. Polite cryptography is the idea of a cryptographic primitive or standard
     that is hard to badly implement. Be polite.
+  id: totrans-85
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 加密原语和标准都可能由于过于复杂难以实现或者对实现者应该注意的事项描述不清而导致实现中的漏洞。有礼貌的加密是指一种难以糟糕实现的加密原语或标准的概念。要有礼貌。
 - en: The use of cryptography in an application sometimes leaks to the users. Usable
     security is about making sure that users understand how to handle cryptography
     and cannot misuse it.
+  id: totrans-86
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 应用中使用的加密有时会泄漏给用户。可用安全性是确保用户了解如何处理加密并且不会误用它的一种方式。
 - en: Cryptography is not an island. If you follow all of the advice this book gives
     you, chances are that most of your bugs will happen in the noncryptographic parts
     of your system. Don’t overlook these!
+  id: totrans-87
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 加密并不是孤立存在的。如果你遵循本书给出的所有建议，那么你的大多数错误可能会发生在系统的非加密部分。不要忽视这些！
 - en: With what you have learned in this book, make sure to be responsible, and think
     hard about the consequences of your work.
+  id: totrans-88
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通过这本书所学到的知识，确保对自己的工作负责，并且认真思考工作带来的后果。

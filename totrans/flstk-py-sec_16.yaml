@@ -1000,6 +1000,7 @@
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 13.6 开放式重定向攻击
 - en: As an introduction to the topic of open redirect attacks, let’s suppose Mallory
     wants to steal Bob’s money. First, she impersonates bank.alice.com with bank.mallory.com.
     Mallory’s site looks and feels just like Alice’s online banking site. Next, Mallory
@@ -1011,26 +1012,34 @@
   id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为开放式重定向攻击主题的介绍，让我们假设 Mallory 想要偷走 Bob 的钱。首先，她冒充 bank.alice.com，使用 bank.mallory.com。Mallory
+    的网站看起来和感觉就像 Alice 的在线银行网站。接下来，Mallory 准备了一封设计成看起来像来自 bank.alice.com 的电子邮件。这封电子邮件的正文包含一个指向
+    bank.mallory.com 登录页面的链接。Mallory 把这封电子邮件发送给 Bob。Bob 点击链接，转到 Mallory 的网站，并输入他的登录凭据。然后
+    Mallory 的网站使用 Bob 的凭据访问他在 bank.alice.com 的账户。Bob 的钱随后被转移到 Mallory 那里。
 - en: 'By clicking the link, Bob is said to be *phished* because he took the bait.
     Mallory has successfully executed a *phishing* scam. This scam comes in many flavors:'
   id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过点击链接，Bob 被认为是*钓鱼*，因为他上了钩。Mallory 已成功执行了一次*钓鱼*诈骗。这种诈骗有多种形式：
 - en: '*Phishing* attacks arrive via email.'
   id: totrans-146
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*钓鱼* 攻击通过电子邮件到达。'
 - en: '*Smishing* attacks arrive via Short Message Service (SMS).'
   id: totrans-147
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*Smishing* 攻击通过短信服务（SMS）到达。'
 - en: '*Vishing* attacks arrive via voicemail.'
   id: totrans-148
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*Vishing* 攻击通过语音邮件到达。'
 - en: Mallory’s scam targets Bob directly, and there is little Alice can do to prevent
     it. If she’s not careful, though, Alice can actually make things easier for Mallory.
     Let’s suppose Alice adds a feature to bank.alice.com. This feature dynamically
@@ -1041,6 +1050,9 @@
   id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: Mallory 的诈骗直接针对 Bob，Alice 几乎无能为力阻止它。然而，如果她不小心，Alice 实际上会让 Mallory 的事情变得更加轻松。假设
+    Alice 为 bank.alice.com 添加了一个功能。这个功能动态地将用户重定向到站点的另一部分。bank.alice.com 如何知道将用户重定向到哪里？重定向的地址由请求参数的值确定。（在第
+    8 章，您通过相同的机制实现了支持相同功能的身份验证工作流程。）
 - en: Unfortunately, bank.alice.com doesn’t validate each address before redirecting
     the user to it. This is known as an *open redirect*, and it leaves bank.alice.com
     wide open to an open redirect attack. The open redirect makes it easy for Mallory
@@ -1050,14 +1062,19 @@
   id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 不幸的是，bank.alice.com 在将用户重定向到地址之前并未验证每个地址。这被称为*开放式重定向*，使得 bank.alice.com 容易受到开放式重定向攻击的影响。开放式重定向使得
+    Mallory 更容易发动更有效的钓鱼诈骗。Mallory 利用这个机会给 Charlie 发送一封带有指向开放式重定向的链接的电子邮件。这个 URL 在图
+    13.5 中显示，指向 bank.alice.com 的域名。
 - en: '![CH13_F05_Byrne](Images/CH13_F05_Byrne.png)'
   id: totrans-151
   prefs: []
   type: TYPE_IMG
+  zh: '![CH13_F05_Byrne](Images/CH13_F05_Byrne.png)'
 - en: Figure 13.5 URL anatomy of an open redirect attack
   id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 13.5 开放式重定向攻击的 URL 结构
 - en: Charlie is much more likely to take the bait in this case because he receives
     a URL with the host of his bank. Unfortunately for Charlie, his bank redirects
     him to Mallory’s site, where he enters his credentials and personal information.
@@ -1065,24 +1082,30 @@
   id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，Charlie 更有可能上钩，因为他收到了一个带有他银行主机的 URL。不幸的是对于 Charlie，他的银行将他重定向到了 Mallory
+    的网站，在那里他输入了他的凭据和个人信息。图 13.6 描述了这种攻击。
 - en: '![CH13_F06_Byrne](Images/CH13_F06_Byrne.png)'
   id: totrans-154
   prefs: []
   type: TYPE_IMG
+  zh: '![CH13_F06_Byrne](Images/CH13_F06_Byrne.png)'
 - en: Figure 13.6 Mallory phishes Bob with an open redirect attack.
   id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 13.6 Mallory 用开放式重定向攻击钓鱼 Bob。
 - en: Listing 13.2 illustrates a simple open redirect vulnerability. `OpenRedirectView`
     performs a task and then reads the value of a query parameter. The user is then
     blindly redirected to whatever the next parameter value is.
   id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 13.2 描述了一个简单的开放式重定向漏洞。`OpenRedirectView` 执行一个任务，然后读取查询参数的值。然后用户被盲目地重定向到下一个参数值。
 - en: Listing 13.2 An open redirect without input validation
   id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 13.2 没有输入验证的开放式重定向
 - en: '[PRE14]'
   id: totrans-158
   prefs: []
@@ -1092,10 +1115,12 @@
   id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 读取下一个请求参数
 - en: ❷ Sends redirect response
   id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 发送重定向响应
 - en: Conversely, `ValidatedRedirectView` in listing 13.3 resists open redirect attacks
     with input validation. This view delegates the work to `url_has_allowed_host _and_scheme`,
     one of Django’s built-in utility functions. This function, shown in bold font,
@@ -1104,10 +1129,12 @@
   id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 相反，在第13.3节的`ValidatedRedirectView`通过输入验证抵抗开放式重定向攻击。这个视图将工作委托给Django内置的实用函数`url_has_allowed_host_and_scheme`。这个函数，以粗体字显示，接受一个URL和主机。只有当URL的域与主机匹配时，它才返回`True`。
 - en: Listing 13.3 Resisting open redirect attacks with input validation
   id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 第13.3节的抵抗开放式重定向攻击的输入验证
 - en: '[PRE15]'
   id: totrans-163
   prefs: []
@@ -1117,30 +1144,36 @@
   id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 读取下一个请求参数
 - en: ❷ Safely determines host
   id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 安全确定主机
 - en: ❸ Validates host and protocol of redirect
   id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 验证重定向的主机和协议
 - en: ❹ Prevents attack
   id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 防止攻击
 - en: Notice that `ValidatedRedirectView` determines the hostname with the `get_host`
     method instead of accessing the `Host` header directly. In the previous section,
     you learned to avoid `Host` header attacks this way.
   id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: '`ValidatedRedirectView`注意到使用`get_host`方法确定主机名，而不是直接访问`Host`头。在前一节中，您学会了通过这种方式避免`Host`头攻击。'
 - en: In rare situations, your system may actually need to dynamically redirect users
     to more than one host. The `url_has_allowed_host_and_scheme` function accommodates
     this use case by accepting a single hostname or a collection of many hostnames.
   id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 在罕见的情况下，您的系统可能实际上需要动态地将用户重定向到多个主机。`url_has_allowed_host_and_scheme`函数通过接受单个主机名或多个主机名的集合来适应这种用例。
 - en: The `url_has_allowed_host_and_scheme` function rejects any URL using HTTP if
     the `require_https` keyword argument is set to `True`. Unfortunately, this keyword
     argument defaults to `False`, creating an opportunity for a different kind of
@@ -1148,6 +1181,7 @@
   id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果`require_https`关键字参数设置为`True`，`url_has_allowed_host_and_scheme`函数将拒绝使用HTTP的任何URL。不幸的是，这个关键字参数默认为`False`，为另一种开放式重定向攻击创造了机会。
 - en: 'Let’s suppose Mallory and Eve collaborate on an attack. Mallory begins this
     attack by targeting Charlie with yet another phishing scam. Charlie receives an
     email containing another link with the following URL. Notice that the source and
@@ -1155,6 +1189,7 @@
   id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设Mallory和Eve合作进行攻击。Mallory通过针对Charlie的另一次网络钓鱼诈骗开始这次攻击。Charlie收到一封包含以下URL的电子邮件。请注意，源和目标主机相同；协议以粗体字显示，不同：
 - en: '[PRE16]'
   id: totrans-172
   prefs: []
@@ -1167,21 +1202,25 @@
   id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: Charlie点击链接，将他带到Alice的站点，通过HTTPS。不幸的是，Alice的开放式重定向随后将他发送到站点的另一个部分，通过HTTP。网络窃听者Eve接替Mallory继续进行中间人攻击。
 - en: WARNING The default value for `require_https` is `False`. You should set it
     to `True`.
   id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：`require_https`的默认值为`False`。您应该将其设置为`True`。
 - en: In the next section, I finish this chapter with what is arguably the most well-known
     injection attack. It needs no introduction.
   id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一节中，我将本章结束于可能是最为人熟知的注入攻击。无需介绍。
 - en: 13.7 SQL injection
   id: totrans-176
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 13.7 SQL注入
 - en: While reading this book, you have implemented workflows supporting features
     such as user registration, authentication, and password management. Like most
     systems, your project implements these workflows by relaying data back and forth
@@ -1190,6 +1229,7 @@
   id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 在阅读本书的过程中，您已经实现了支持用户注册、身份验证和密码管理等功能的工作流程。与大多数系统一样，您的项目通过在用户和关系数据库之间来回传递数据来实现这些工作流程。当这样的工作流程未能验证用户输入时，它们就成为*SQL注入*的一个向量。
 - en: An attacker carries out SQL injection by submitting malicious SQL code as input
     to a vulnerable system. In an attempt to process the input, the system inadvertently
     executes it instead. This attack is used to modify existing SQL statements or
@@ -1198,6 +1238,7 @@
   id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 攻击者通过向易受攻击的系统提交恶意SQL代码作为输入来进行SQL注入。系统试图处理输入，但不慎执行它。这种攻击用于修改现有的SQL语句或将任意SQL语句注入系统。这使攻击者能够破坏、修改或未经授权地访问数据。
 - en: Some security books have an entire chapter devoted to SQL injection. Few readers
     of this book would finish an entire chapter on this subject because many of you,
     like the rest of the Python community, have already embraced ORM frameworks. ORM
@@ -1207,11 +1248,15 @@
   id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 一些安全书籍专门有一整章内容介绍 SQL 注入。本书的少数读者会完整地读完关于这个主题的整个章节，因为像 Python 社区的其他成员一样，你们已经采用了
+    ORM 框架。ORM 框架不仅为您读写数据；它们还是防止 SQL 注入的一层防线。每个主要的 Python ORM 框架，如 Django ORM 或 SQLAlchemy，都通过自动查询参数化有效地抵抗
+    SQL 注入。
 - en: WARNING An ORM framework is preferable to writing raw SQL. Raw SQL is error
     prone, more labor intensive, and ugly.
   id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：ORM 框架优于编写原始 SQL。原始 SQL 容易出错，工作量更大，而且难看。
 - en: 'Occasionally, object-relational mapping isn’t the right tool for the job. For
     example, your application may need to execute a complicated SQL query for the
     sake of performance. In these rare scenarios when you must write raw SQL, Django
@@ -1219,11 +1264,14 @@
   id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 有时，对象关系映射并不是解决问题的正确工具。例如，您的应用程序可能需要执行复杂的 SQL 查询以提高性能。在这些罕见的场景中，当您必须编写原始 SQL
+    时，Django ORM 支持两个选项：原始 SQL 查询和数据库连接查询。
 - en: 13.7.1 Raw SQL queries
   id: totrans-182
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 13.7.1 原始 SQL 查询
 - en: 'Every Django model class refers to a query interface by a property named `objects`.
     Among other things, this interface accommodates raw SQL queries with a method
     named `raw`. This method accepts raw SQL and returns a set of model instances.
@@ -1232,6 +1280,8 @@
   id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个 Django 模型类都通过名为 `objects` 的属性引用查询接口。在其他功能中，此接口通过名为 `raw` 的方法容纳原始 SQL 查询。此方法接受原始
+    SQL 并返回一组模型实例。以下代码说明了一个可能返回大量行的查询。为了节省资源，仅选择表的两列：
 - en: '[PRE17]'
   id: totrans-184
   prefs: []
@@ -1241,6 +1291,7 @@
   id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 为所有行选择两列
 - en: 'Suppose the following query is intended to control which users are allowed
     to access sensitive information. As intended, the `raw` method returns a single
     user model when `first_name` equals `Alice`. Unfortunately, Mallory can escalate
@@ -1248,6 +1299,8 @@
   id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设以下查询旨在控制哪些用户被允许访问敏感信息。按预期，当 `first_name` 等于 `Alice` 时，`raw` 方法返回单个用户模型。不幸的是，Mallory
+    可以通过操纵 `first_name` 为 `"Alice' OR first_name = 'Mallory"` 来提升她的权限：
 - en: '[PRE18]'
   id: totrans-187
   prefs: []
@@ -1257,16 +1310,19 @@
   id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：原始 SQL 和字符串插值是一种可怕的组合。
 - en: Notice that putting quotes around the placeholder, `%s`, provides a false sense
     of security. Quoting the placeholder provides no safety because Mallory can simply
     prepare malicious input containing additional quotes.
   id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，在占位符 `%s` 周围加引号会提供一种虚假的安全感。在占位符周围加引号不会提供任何安全性，因为 Mallory 可以简单地准备包含额外引号的恶意输入。
 - en: WARNING Quoting placeholders doesn’t sanitize raw SQL.
   id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：对占位符加引号不会使原始 SQL 变得安全。
 - en: 'By calling the `raw` method, you must take responsibility for parameterizing
     the query. This inoculates your query by escaping all special characters such
     as quotes. The following code demonstrates how to do this by passing a list of
@@ -1277,6 +1333,9 @@
   id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过调用 `raw` 方法，您必须负责对查询进行参数化。这样可以通过转义所有特殊字符（如引号）来保护您的查询。以下代码演示了如何通过将参数值列表（以粗体显示）传递给
+    `raw` 方法来执行此操作。Django 会遍历这些值，并安全地将它们插入到您的原始 SQL 语句中，转义所有特殊字符。以这种方式准备的 SQL 语句不受
+    SQL 注入的影响。请注意，占位符周围没有引号：
 - en: '[PRE19]'
   id: totrans-192
   prefs: []
@@ -1288,17 +1347,21 @@
   id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者，`raw` 方法接受一个字典而不是一个列表。在这种情况下，`raw` 方法安全地将 `%(dict_key)` 替换为字典中 `dict_key`
+    映射到的内容。
 - en: 13.7.2 Database connection queries
   id: totrans-194
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 13.7.2 数据库连接查询
 - en: Django allows you to execute arbitrary raw SQL queries directly through a database
     connection. This is useful if your query doesn’t belong with a single model class,
     or if you want to execute an `UPDATE`, `INSERT`, or `DELETE` statement.
   id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: Django 允许你通过数据库连接直接执行任意原始 SQL 查询。如果你的查询不属于单个模型类，或者想要执行`UPDATE`、`INSERT`或`DELETE`语句，这将非常有用。
 - en: 'Connection queries carry just as much risk as raw method queries do. For example,
     suppose the following query is intended to delete a single authenticated message.
     This code behaves as intended when `msg_id` equals `42`. Unfortunately Mallory
@@ -1307,6 +1370,8 @@
   id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 连接查询与原始方法查询一样具有很大的风险。例如，假设以下查询旨在删除单个经过身份验证的消息。当`msg_id`等于`42`时，此代码会按预期运行。不幸的是，如果
+    Mallory 能够操纵`msg_id`为`42 OR 1 = 1`，她将摧毁表中的每条消息：
 - en: '[PRE20]'
   id: totrans-197
   prefs: []
@@ -1316,10 +1381,12 @@
   id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 带有一个占位符的 SQL 语句
 - en: ❷ Executes SQL statement
   id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 执行 SQL 语句
 - en: 'As with `raw` method queries, the only way to execute connection queries safely
     is with query parameterization. Connection queries are parameterized the same
     way `raw` method queries are. The following example demonstrates how to delete
@@ -1327,6 +1394,7 @@
   id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 与`raw`方法查询一样，安全地执行连接查询的唯一方法是使用查询参数化。连接查询的参数化方式与`raw`方法查询相同。以下示例演示了如何使用`params`关键字参数安全地删除经过身份验证的消息，关键字参数以粗体显示：
 - en: '[PRE21]'
   id: totrans-201
   prefs: []
@@ -1336,10 +1404,12 @@
   id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 未引用的占位符
 - en: ❷ Escapes special characters, executes SQL statement
   id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 转义特殊字符，执行 SQL 语句
 - en: The attacks and countermeasures I cover in this chapter are not as complicated
     as the ones I cover in the remaining chapters. For example, cross-site request
     forgery and clickjacking have dedicated chapters. The next chapter is devoted
@@ -1348,43 +1418,52 @@
   id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 我在本章中涵盖的攻击和对策并不像我在其余章节中涵盖的那么复杂。例如，跨站请求伪造和点击劫持有专门的章节。下一章完全致力于一类攻击，称为*跨站脚本*。这些攻击比我在本章中介绍的所有攻击更复杂和常见。
 - en: Summary
   id: totrans-205
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 摘要
 - en: Hashing and data integrity effectively resist package injection attacks.
   id: totrans-206
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 哈希和数据完整性有效地抵抗包注入攻击。
 - en: Parsing YAML can be just as dangerous as parsing `pickle`.
   id: totrans-207
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 解析 YAML 和解析`pickle`一样危险。
 - en: XML isn’t just ugly; parsing it from an untrusted source can bring down a system.
   id: totrans-208
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: XML 不仅仅是丑陋的；从不受信任的来源解析它可能会导致系统崩溃。
 - en: You can resist low-level DoS attacks with your web server and load balancer.
   id: totrans-209
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 你可以通过你的 Web 服务器和负载均衡器抵抗低级 DoS 攻击。
 - en: You can resist high-level DoS attacks with your WSGI or application server.
   id: totrans-210
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 你可以通过你的 WSGI 或应用服务器抵抗高级 DoS 攻击。
 - en: Open redirect attacks enable phishing scams and man-in-the-middle attacks.
   id: totrans-211
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 开放重定向攻击会导致网络钓鱼和中间人攻击。
 - en: Object-relational mapping effectively resists SQL injection.
   id: totrans-212
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对象关系映射有效地抵抗 SQL 注入。

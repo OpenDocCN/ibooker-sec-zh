@@ -1,123 +1,179 @@
 - en: 14 Cross-site scripting attacks
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 14 跨站脚本攻击
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章内容包括
 - en: Validating input with forms and models
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用表单和模型验证输入
 - en: Escaping special characters with a template engine
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用模板引擎转义特殊字符
 - en: Restricting browser capabilities with response headers
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用响应头限制浏览器功能
 - en: 'In the preceding chapter, I introduced you to a handful of little injection
     attacks. In this chapter, I continue with a big family of them known as *cross-site
     scripting* (*XSS*). XSS attacks come in three flavors: persistent, reflected,
     and DOM-based. These attacks are both common and powerful.'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 在前一章中，我向你介绍了几种小型注入攻击。在本章中，我继续介绍一种被称为 *跨站脚本*（*XSS*）的大家族。XSS 攻击有三种类型：持久型、反射型和基于
+    DOM 的。这些攻击既常见又强大。
 - en: Note At the time of this writing, XSS is number 7 on the OWASP Top Ten ([https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)).
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意：在撰写本文时，XSS 在 OWASP 十大安全威胁中排名第 7 位（[https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)）。
 - en: XSS resistance is an excellent example of *defense in depth*; one line of protection
     is not enough. You’ll learn how to resist XSS in this chapter by validating input,
     escaping output, and managing response headers.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: XSS 抵御是 *深度防御* 的一个极好例子；一行防护不够。你将在本章中学习如何通过验证输入、转义输出和管理响应头来抵御 XSS。
 - en: 14.1 What is XSS?
+  id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 14.1 什么是 XSS？
 - en: 'XSS attacks come in many shapes and sizes, but they all have one thing in common:
     the attacker injects malicious code into the browser of another user. Malicious
     code can take many forms, including JavaScript, HTML, and Cascading Style Sheets
     (CSS). Malicious code can arrive via many vectors, including the body, URL, or
     header of an HTTP request.'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: XSS 攻击有多种形式和大小，但它们都有一个共同点：攻击者向另一个用户的浏览器注入恶意代码。恶意代码可以采用多种形式，包括 JavaScript、HTML
+    和层叠样式表（CSS）。恶意代码可以通过许多途径传送，包括 HTTP 请求的主体、URL 或头部。
 - en: 'XSS has three subcategories. Each is defined by the mechanism used to inject
     malicious code:'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: XSS 有三个子类别。每个子类别都由用于注入恶意代码的机制定义。
 - en: Persistent XSS
+  id: totrans-11
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 持久型 XSS
 - en: Reflected XSS
+  id: totrans-12
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 反射型 XSS
 - en: DOM-based XSS
+  id: totrans-13
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 基于 DOM 的 XSS
 - en: In this section, Mallory carries out all three forms of attack. Alice, Bob,
     and Charlie each have it coming. In subsequent sections, I discuss how to resist
     these attacks.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，Mallory 进行了所有三种形式的攻击。Alice、Bob 和 Charlie 都将遭受损失。在后续章节中，我将讨论如何抵御这些攻击。
 - en: 14.1.1 Persistent XSS
+  id: totrans-15
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.1.1 持久型 XSS
 - en: 'Suppose Alice and Mallory are users of social.bob.com, a social media site.
     Like every other social media site, Bob’s site allows users to share content.
     Unfortunately, this site lacks sufficient input validation; more importantly,
     it renders shared content without escaping it. Mallory notices this and creates
     the following one-line script, designed to take Alice away from social.bob.com
     to an imposter site, social.mallory.com:'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设 Alice 和 Mallory 是 social.bob.com 的用户，这是一个社交媒体网站。像其他社交媒体网站一样，Bob 的网站允许用户分享内容。不幸的是，这个网站缺乏足够的输入验证；更重要的是，它在不转义的情况下呈现共享内容。Mallory
+    注意到了这一点，并创建了以下一行脚本，旨在将 Alice 从 social.bob.com 带到冒牌站点 social.mallory.com：
 - en: '[PRE0]'
+  id: totrans-17
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: ❶ Client-side equivalent of a redirect
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 客户端重定向的等效
 - en: Next, Mallory navigates to her profile settings page. She changes one of her
     profile settings to the value of her malicious code. Instead of validating Mallory’s
     input, Bob’s site persists it to a database field.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，Mallory 导航到她的个人资料设置页面。她将她的一个个人资料设置更改为她恶意代码的值。Bob 的网站不验证 Mallory 的输入，而是将其持久化到数据库字段中。
 - en: Later Alice stumbles upon Mallory’s profile page, now containing Mallory’s code.
     Alice’s browser executes Mallory’s code, taking Alice to social.mallory.com, where
     she is duped into submitting her authentication credentials and other private
     information to Mallory.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 后来，Alice 偶然发现了 Mallory 的个人资料页面，现在包含了 Mallory 的代码。Alice 的浏览器执行了 Mallory 的代码，将
+    Alice 带到了 social.mallory.com，她被欺骗提交了她的身份验证凭据和其他私人信息给 Mallory。
 - en: This attack is an example of *persistent XSS*. A vulnerable system enables this
     form of XSS by persisting the attacker’s malicious payload. Later, through no
     fault of the victim, the payload is injected into the victim’s browser. Figure
     14.1 depicts this attack.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种攻击是 *持久型 XSS* 的一个例子。一个易受攻击的系统通过持久化攻击者的恶意负载来启用这种形式的 XSS。后来，在受害者的浏览器中，通过受害者的错误，负载被注入。图
+    14.1 描述了这种攻击。
 - en: '![CH14_F01_Byrne](Images/CH14_F01_Byrne.png)'
+  id: totrans-22
   prefs: []
   type: TYPE_IMG
+  zh: '![CH14_F01_Byrne](Images/CH14_F01_Byrne.png)'
 - en: Figure 14.1 Mallory’s persistent XSS attack steers Alice to a malicious imposter
     site.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 14.1 Mallory 的持久型 XSS 攻击将 Alice 引导至一个恶意冒牌站点。
 - en: Systems designed to share user content are particularly prone to this flavor
     of XSS. Systems like this include social media sites, forums, blogs, and collaboration
     products. Attackers like Mallory are usually more aggressive than this. For example,
     this time Mallory waits for Alice to stumble upon the trap. In the real world,
     an attacker will often actively lure victims to injected content via email or
     chat.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
 - en: In this section, Mallory targeted Alice through Bob’s site. In the next section,
     Mallory targets Bob through one of Alice’s sites.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
 - en: 14.1.2 Reflected XSS
+  id: totrans-26
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -125,6 +181,7 @@
     this site accepts Bob’s search terms via URL query parameters. In return, Bob
     receives an HTML page containing search results. As you would expect, Bob’s search
     terms are reflected by the results page.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
 - en: 'Unlike other search sites, the results page for search.alice.com renders the
@@ -132,12 +189,16 @@
     following URL. The query parameter for this URL carries malicious JavaScript,
     obscured by URL encoding. This script is intended to take Bob from search.alice.com
     to search.mallory.com, another imposter site:'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE1]'
+  id: totrans-29
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: ❶ A URL-embedded script
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
 - en: Mallory sends this URL to Bob in a text message. He takes the bait and taps
@@ -146,28 +207,34 @@
     then executes the malicious script as it renders the results page. Finally, he
     is whisked away to search.mallory.com, where Mallory takes further advantage of
     him.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
 - en: This attack is an example of *reflected XSS*. The attacker initiates this form
     of XSS by tricking the victim into sending a malicious payload to a vulnerable
     site. Instead of persisting the payload, the site immediately reflects the payload
     back to the user in executable form. Figure 14.2 depicts this attack.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
 - en: '![CH14_F02_Byrne](Images/CH14_F02_Byrne.png)'
+  id: totrans-33
   prefs: []
   type: TYPE_IMG
 - en: Figure 14.2 Bob reflects Mallory’s malicious JavaScript off Alice’s server,
     unintentionally sending himself to Mallory’s imposter site.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
 - en: Reflected XSS is obviously not limited to chat. Attackers also bait victims
     through email or malicious websites. In the next section, Mallory targets Charlie
     with a third type of XSS. Like reflected XSS, this type begins with a malicious
     URL.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
 - en: 14.1.3 DOM-based XSS
+  id: totrans-36
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -177,289 +244,428 @@
     the browser, not the server, extracts the search terms from the URL. There is
     now no chance of a reflected XSS vulnerability because the search terms are simply
     no longer reflected:'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE2]'
+  id: totrans-38
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: ❶ Extracts search terms from query parameter
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Writes search terms to the body of the page
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
 - en: Mallory visits search.alice.com again and notices another opportunity. She sends
     Charlie an email containing a malicious link. The URL for this link is the exact
     same one she used to carry out a reflected XSS attack against Bob.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: Mallory 再次访问 search.alice.com 并注意到另一个机会。她给查理发送了一封包含恶意链接的电子邮件。这个链接的 URL 与她用来对鲍勃进行反射
+    XSS 攻击的链接完全相同。
 - en: Charlie takes the bait and navigates to search.alice.com by clicking the link.
     Alice’s server responds with an ordinary results page; the response contains no
     malicious content. Unfortunately, Alice’s JavaScript copies Mallory’s malicious
     code from the URL to the body of the page. Charlie’s browser then executes Mallory’s
     script, sending Charlie to search.mallory.com.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 查理上钩并通过点击链接导航到 search.alice.com。爱丽丝的服务器响应了一个普通的结果页面；响应中不包含任何恶意内容。不幸的是，爱丽丝的 JavaScript
+    将 Mallory 的恶意代码从 URL 复制到页面的正文中。查理的浏览器然后执行 Mallory 的脚本，将查理发送到 search.mallory.com。
 - en: Mallory’s third attack is an example of *DOM-based XSS*. Like reflected XSS,
     the attacker initiates DOM-based XSS by tricking the user into sending a malicious
     payload to a vulnerable site. Unlike a reflected XSS attack, the payload is not
     reflected. Instead, the injection occurs in the browser.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: Mallory 的第三次攻击是 *基于 DOM 的 XSS* 的一个例子。与反射 XSS 类似，攻击者通过欺骗用户向易受攻击的站点发送恶意有效载荷来启动
+    DOM-based XSS。与反射 XSS 攻击不同，有效载荷不会被反射。相反，注入发生在浏览器中。
 - en: 'In all three attacks, Mallory successfully lures her victims to an imposter
     site with a simple one-line script. In reality, these attacks may inject sophisticated
     code to carry out a wide range of exploits, including the following:'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这三次攻击中，Mallory 成功地诱使她的受害者前往一个冒牌站点，并带有一个简单的一行脚本。实际上，这些攻击可能注入复杂的代码来执行各种利用，包括以下内容：
 - en: Unauthorized access of sensitive or private information
+  id: totrans-45
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 未经授权访问敏感或私人信息
 - en: Using the victim’s authorization privileges to perform actions
+  id: totrans-46
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 利用受害者的授权权限执行操作
 - en: Unauthorized access of client cookies, including session IDs
+  id: totrans-47
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 未经授权访问客户端 cookie，包括会话 ID
 - en: Sending the victim to a malicious site controlled by the attacker
+  id: totrans-48
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将受害者发送到受攻击者控制的恶意站点
 - en: Misrepresenting site content such as a bank account balance or a health test
     result
+  id: totrans-49
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 曲解网站内容，如银行账户余额或健康测试结果
 - en: There really is no way to summarize the range of impact for these attacks. XSS
     is very dangerous because the attacker gains control over the system and the victim.
     The system is unable to distinguish between intentional requests from the victim
     and malicious requests from the attacker. The victim is unable to distinguish
     between content from the system and content from the attacker.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些攻击的影响范围真的很难总结。XSS非常危险，因为攻击者控制了系统和受害者。系统无法区分受害者的有意请求和攻击者的恶意请求。受害者无法区分系统内容和攻击者内容。
 - en: 'XSS resistance is a perfect example of defense in depth. The remaining sections
     of this chapter teach you how to resist XSS with a layered approach. I present
     this material in the order in which they occur during the life cycle of an HTTP
     request:'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: XSS 抵御是防御深度的完美示例。本章的其余部分将教你如何通过分层方法抵御 XSS。我按照 HTTP 请求生命周期的顺序呈现这些材料：
 - en: Input validation
+  id: totrans-52
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 输入验证
 - en: Output escaping, the most important layer of defense
+  id: totrans-53
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 输出转义，是防御最重要的层级
 - en: Response headers
+  id: totrans-54
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 响应头
 - en: As you finish this chapter, it is important to remember that each layer alone
     is inadequate. You have to take a multilayered approach.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 完成本章时，重要的是要记住每个层级单独都不够。你必须采取多层次的方法。
 - en: 14.2 Input validation
+  id: totrans-56
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 14.2 输入验证
 - en: In this section, you’ll learn how to validate form fields and model properties.
     This is what people typically think of when referring to input validation. You
     probably have experience with it already. Partial resistance to XSS is only one
     of many reasons to validate input. Even if XSS didn’t exist, the material in this
     section would still offer you protection against data corruption, system misuse,
     and other injection attacks.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，您将学习如何验证表单字段和模型属性。这是人们在提到输入验证时通常想到的内容。你可能已经有了这方面的经验。部分抵御 XSS 只是验证输入的许多原因之一。即使
+    XSS 不存在，本节的材料仍将为您提供保护，防止数据损坏、系统误用和其他注入攻击。
 - en: 'In chapter 10, you created a Django model named `AuthenticatedMessage`. I used
     that opportunity to demonstrate Django’s permission scheme. In this section, you’ll
     use the same model class to declare and perform input validation logic. Your model
     will be the center of a small workflow Alice uses to create new messages. This
     workflow consists of the following three components in your Django messaging app:'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第 10 章中，您创建了一个名为 `AuthenticatedMessage` 的 Django 模型。我利用了这个机会来演示 Django 的权限方案。在本节中，您将使用相同的模型类来声明和执行输入验证逻辑。您的模型将是
+    Alice 用于创建新消息的小工作流的中心。此工作流包括以下三个组件在您的 Django 消息应用程序中：
 - en: Your existing model class, `AuthenticatedMessage`
+  id: totrans-59
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 您现有的模型类，`AuthenticatedMessage`
 - en: A new view class, `CreateAuthenticatedMessageView`
+  id: totrans-60
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个新的视图类，`CreateAuthenticatedMessageView`
 - en: A new template, authenticatedmessage_form.html
+  id: totrans-61
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个新的模板，authenticatedmessage_form.html
 - en: Under the templates directory, create a subdirectory named messaging. Beneath
     this subdirectory, create a new file named authenticatedmessage_form.html. Open
     this file and add the HTML in listing 14.1 to it. The `form.as_table` variable
     renders as a handful of labeled form fields. For now, ignore the `csrf_token`
     tag; I cover this in chapter 16.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 templates 目录下，创建一个名为 messaging 的子目录。在该子目录下创建一个名为 authenticatedmessage_form.html
+    的新文件。打开此文件并将第 14.1 列表中的 HTML 添加到其中。`form.as_table` 变量呈现为一些带标签的表单字段。暂时忽略 `csrf_token`
+    标签；我在第 16 章中涵盖了这一点。
 - en: Listing 14.1 A simple template for creating new messages
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 第 14.1 列表 创建新消息的简单模板
 - en: '[PRE3]'
+  id: totrans-64
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: ❶ Necessary, but covered in chapter 16
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 必要的，但在第 16 章中已涵盖
 - en: ❷ Dynamically renders message property form fields
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 动态呈现消息属性表单字段
 - en: Next, open models.py and import the built-in `RegexValidator` as it appears
     in the next listing. As shown in bold font, create an instance of `RegexValidator`
     and apply it to the `hash_value` field. This validator ensures that the `hash_value`
     field must be exactly 64 characters of hexadecimal text.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，打开 models.py 并导入内置的 `RegexValidator`，如下一个列表中所示。如粗体字所示，创建 `RegexValidator`
+    的一个实例，并将其应用于 `hash_value` 字段。此验证器确保 `hash_value` 字段必须完全是 64 个十六进制文本字符。
 - en: Listing 14.2 Model field validation with RegexValidator
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 第 14.2 列表 使用 RegexValidator 进行模型字段验证
 - en: '[PRE4]'
+  id: totrans-69
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: ❶ Ensures a maximum length
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 确保最大长度
 - en: ❷ Ensures a minimum length
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 确保最小长度
 - en: Built-in validator classes like `RegexValidator` are designed to enforce input
     validation on a per field basis. But sometimes you need to exercise input validation
     across more than one field. For example, when your application receives a new
     message, does the message actually hash to the same hash value it arrived with?
     You accommodate a scenario like this by adding a clean method to your model class.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 像 `RegexValidator` 这样的内置验证器类旨在在每个字段上强制执行输入验证。但有时您需要跨多个字段执行输入验证。例如，当您的应用程序接收到新消息时，消息是否确实哈希到与其到达时相同的哈希值？通过将
+    clean 方法添加到您的模型类中，您可以处理这样的情况。
 - en: 'Add the `clean` method in listing 14.3 to `AuthenticatedMessage`. This method
     begins by creating an HMAC function, shown in bold font. In chapter 3, you learned
     that HMAC functions have two inputs: a message and a key. In this example, the
     message is a property on your model, and the key is an inline passphrase. (A production
     key obviously should not be stored in Python.)'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 将第 14.3 列表中的 `clean` 方法添加到 `AuthenticatedMessage` 中。此方法首先创建一个 HMAC 函数，如粗体字所示。在第
+    3 章中，您了解到 HMAC 函数有两个输入：消息和密钥。在这个例子中，消息是您模型的一个属性，而密钥是内联口令。（显然，生产密钥不应存储在 Python
+    中。）
 - en: The HMAC function is used to calculate a hash value. Finally, the `clean` method
     compares this hash value to the `hash_value` model property. A `ValidationError`
     is raised if the hash values do not match. This prevents someone without the passphrase
     from successfully submitting a message.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: HMAC 函数用于计算哈希值。最后，`clean` 方法将此哈希值与 `hash_value` 模型属性进行比较。如果哈希值不匹配，则引发 `ValidationError`。这样可以防止没有口令的人成功提交消息。
 - en: Listing 14.3 Validating input across more than one model field
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 第 14.3 列表 跨越多个模型字段的输入验证
 - en: '[PRE5]'
+  id: totrans-76
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: ❶ Performs input validation across multiple fields
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 执行跨多个字段的输入验证
 - en: ❷ Hashes the message property
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 对消息属性进行哈希处理
 - en: ❸ Compares hash values in constant time
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 在恒定时间内比较哈希值
 - en: Next, add the view in listing 14.4 to your Django app. `CreateAuthenticatedMessageView`
     inherits from a built-in utility class named `CreateView`, shown in bold font.
     `CreateView` relieves you of copying data from inbound HTTP form fields to model
     fields. The model property tells `CreateView` which model to create. The `fields`
     property tells `CreateView` which fields to expect from the request. The `success_url`
     designates where to redirect the user after a successful form submission.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，将列表14.4中的视图添加到您的Django应用程序中。`CreateAuthenticatedMessageView`继承了一个名为`CreateView`的内置实用类，以粗体字显示。
+    `CreateView`使您免于从传入的HTTP表单字段复制数据到模型字段。`model`属性告诉`CreateView`要创建哪个模型。`fields`属性告诉`CreateView`请求中期望哪些字段。`success_url`指定在成功提交表单后将用户重定向到的位置。
 - en: Listing 14.4 Rendering a new message form page
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表14.4 渲染新消息表单页面
 - en: '[PRE6]'
+  id: totrans-82
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: ❶ Inherits input validation and persistence
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 继承输入验证和持久性
 - en: ❷ Designates the model to create
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 指定要创建的模型
 - en: ❸ Designates the HTTP fields to expect
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 指定要期望的HTTP字段
 - en: ❹ Designates where to redirect the user to
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 指定要将用户重定向到的位置
 - en: '`CreateAuthenticatedMessageView`, via inheritance, acts as glue between the
     template and model. This four-line class does the following:'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过继承，`CreateAuthenticatedMessageView`作为模板和模型之间的粘合剂。这个四行类执行以下操作：
 - en: Renders the page
+  id: totrans-88
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 渲染页面
 - en: Handles form submission
+  id: totrans-89
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 处理表单提交
 - en: Copies data from inbound HTTP fields to a new model object
+  id: totrans-90
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将数据从传入的HTTP字段复制到新的模型对象
 - en: Exercises model-validation logic
+  id: totrans-91
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 练习模型验证逻辑
 - en: Saves the model to the database
+  id: totrans-92
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将模型保存到数据库
 - en: If the form is submitted successfully, the user is redirected to the site root.
     If the request is rejected, the form is rerendered with input validation error
     messages.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果表单成功提交，则将用户重定向到站点根目录。如果请求被拒绝，则使用输入验证错误消息重新呈现表单。
 - en: WARNING Django does not validate model fields when you call `save` or `update`
     on a model object. When you call these methods directly, it is your responsibility
     to trigger validation. This is done by calling the `full_clean` method on the
     model object.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：当您在模型对象上调用`save`或`update`时，Django不会验证模型字段。直接调用这些方法时，您有责任触发验证。通过在模型对象上调用`full_clean`方法来执行此操作。
 - en: 'Restart your server, log in as Alice, and point your browser to the URL of
     the new view. Take a minute to submit the form with invalid input a few times.
     Notice that Django automatically rerenders the form with informative input validation
     error messages. Finally, using the following code, generate a valid keyed hash
     value for a message of your choice. Enter this message and hash value into the
     form and submit it:'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 重启你的服务器，以Alice的身份登录，并将浏览器指向新视图的URL。花几分钟多次使用无效输入提交表单。请注意，Django会自动使用信息性输入验证错误消息重新呈现表单。最后，使用以下代码为您选择的消息生成一个有效的密钥哈希值。将此消息和哈希值输入表单并提交：
 - en: '[PRE7]'
+  id: totrans-96
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: ❶ Becomes the message form field value
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 成为消息表单字段的值
 - en: ❷ Becomes the hash_value form field value
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 成为hash_value表单字段的值
 - en: The workflow in this section is fairly simple. As a programmer in the real world,
     you may face problems more complicated than this. For example, a form submission
     may not need to create a new row in the database, or it may need to create multiple
     rows in multiple tables in multiple databases. The next section explains how to
     accommodate scenarios like this with a custom Django form class.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 这一节中的工作流程相当简单。作为现实世界中的程序员，你可能会遇到比这更复杂的问题。例如，表单提交可能不需要在数据库中创建新行，或者可能需要在多个数据库中的多个表中创建多个行。下一节将解释如何使用自定义Django表单类适应这种情况。
 - en: 14.2.1 Django form validation
+  id: totrans-100
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.2.1 Django表单验证
 - en: In this section, I’ll give you an overview of how to define and exercise input
     validation with a form class; this is not another workflow. Adding a form class
     to your application creates layers of input validation opportunities. This material
     is easy for you to absorb because form validation resembles model validation in
     many ways.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，我将为您概述如何使用表单类定义和进行输入验证；这不是另一个工作流程。将表单类添加到您的应用程序中可以创建输入验证机会的层次。由于表单验证在许多方面类似于模型验证，因此这些材料对您来说很容易吸收。
 - en: Listing 14.5 is a typical example of how your view might leverage a custom form.
     `EmailAuthenticatedMessageView` defines two methods. The `get` method creates
     and renders a blank `AuthenticatedMessageForm`. The `post` method handles form
@@ -468,394 +674,591 @@
     bold font. If the form is valid, the inbound message is emailed to Alice; if the
     form is invalid, the form is rendered back to the user, giving them a chance to
     try again.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 14.5 是您的视图如何利用自定义表单的典型示例。`EmailAuthenticatedMessageView`定义了两个方法。`get`方法创建并呈现一个空白的`AuthenticatedMessageForm`。`post`方法通过将请求参数转换为表单对象来处理表单提交。然后通过调用表单的（继承的）`is_valid`方法触发输入验证，以粗体字显示。如果表单有效，则入站消息将通过电子邮件发送给Alice；如果表单无效，则将表单呈现回用户，让他们有机会再试一次。
 - en: Listing 14.5 Validating input with a custom form
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 14.5 使用自定义表单验证输入
 - en: '[PRE8]'
+  id: totrans-104
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: ❶ Solicits user input with a blank form
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 通过空白表单征求用户输入
 - en: ❷ Converts user input to a form
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 将用户输入转换为表单
 - en: ❸ Triggers input validation logic
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 触发输入验证逻辑
 - en: ❹ Rerenders invalid form submissions
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 重新呈现无效的表单提交
 - en: How does a custom form define input validation logic? The next few listings
     illustrate some ways to define a form class with field validation.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 自定义表单如何定义输入验证逻辑？接下来的几个列表示例说明了一些定义具有字段验证的表单类的方法。
 - en: In listing 14.6, `AuthenticatedMessageForm` is composed of two `CharField`s.
     The `message` `Charfield` enforces two length constraints via keyword arguments,
     shown in bold font. The `hash_value Charfield` enforces a regular expression constraint
     via the `validators` keyword argument, also shown in bold.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 在列表 14.6 中，`AuthenticatedMessageForm`由两个`CharField`组成。`message` `Charfield`通过关键字参数强制执行两个长度约束，以粗体字显示。`hash_value
+    Charfield`通过`validators`关键字参数强制执行正则表达式约束，同样以粗体显示。
 - en: Listing 14.6 Field-level input validation
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 14.6 字段级输入验证
 - en: '[PRE9]'
+  id: totrans-112
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: ❶ Message length must be greater than 1 and less than 100.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 消息长度必须大于1且小于100。
 - en: ❷ Hash value must be 64 hexadecimal characters.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ Hash值必须是64个十六进制字符。
 - en: Field-specific `clean` methods provide an alternative built-in layer of input
     validation. For each field on your form, Django automatically looks for and invokes
     a form method named `clean_<field_name>`. For example, listing 14.7 demonstrates
     how to validate the `hash_value` field with a form method named `clean_hash_value`,
     shown in bold font. Like the `clean` method on a model, field-specific `clean`
     methods reject input by raising a `ValidationError`.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 特定字段的`clean`方法提供了另一种内置的输入验证层。对于表单上的每个字段，Django自动查找并调用名为`clean_<field_name>`的表单方法。例如，列表
+    14.7演示了如何使用名为`clean_hash_value`的表单方法验证`hash_value`字段，以粗体显示。与模型上的`clean`方法一样，特定字段的`clean`方法通过引发`ValidationError`来拒绝输入。
 - en: Listing 14.7 Input validation with a field-specific clean method
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 14.7 具有特定字段clean方法的输入验证
 - en: '[PRE10]'
+  id: totrans-117
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: ❶ Invoked automatically by Django
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 被Django自动调用
 - en: ❷ Rejects form submission
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 拒绝表单提交
 - en: Earlier in this section, you learned how to perform input validation across
     multiple model fields by adding a `clean` method to your model class. Analogously,
     adding a `clean` method to your form class allows you to validate multiple form
     fields. The following listing demonstrates how to access multiple form fields
     from within the `clean` method of a form, shown in bold font.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节的前面，您学习了如何通过向模型类添加`clean`方法来跨多个模型字段执行输入验证。类似地，向表单类添加`clean`方法允许您验证多个表单字段。下面的示例演示了如何从表单的`clean`方法中访问多个表单字段，以粗体字显示。
 - en: Listing 14.8 Validating input across more than one form field
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 14.8 跨多个表单字段验证输入
 - en: '[PRE11]'
+  id: totrans-122
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: ❶ Invoked automatically by Django
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 被Django自动调用
 - en: ❷ Performs input validation logic across more than one field
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 在多个字段上执行输入验证逻辑
 - en: ❸ Rejects form submission
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 拒绝表单提交
 - en: Input validation shields only a portion of your attack surface. For example,
     the `hash_value` field is locked down, but the `message` field still accepts malicious
     input. For this reason, you may be tempted to go beyond input validation by trying
     to sanitize input.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 输入验证仅保护攻击面的一部分。例如，`hash_value`字段被锁定，但`message`字段仍然接受恶意输入。因此，您可能会尝试通过尝试对输入进行清理来超越输入验证。
 - en: '*Input sanitization* is an attempt to cleanse, or scrub, data from an untrusted
     source. Typically, a programmer with too much time on their hands tries to implement
     this by scanning input for malicious content. Malicious content, if found, is
     then removed or neutralized by modifying the input in some way.'
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: '*输入消毒* 是试图从不受信任的来源净化或清洗数据的尝试。通常，一名有太多空闲时间的程序员会尝试通过扫描输入来查找恶意内容。如果发现恶意内容，则通过某种方式修改输入以将其移除或中和。'
 - en: 'Input sanitization is always a bad idea because it is too difficult to implement.
     At a bare minimum, the sanitizer has to identify all forms of malicious input
     for three kinds of interpreters: JavaScript, HTML, and CSS. You might as well
     add a fourth interpreter to the list because in all probability the input is going
     to be stored in a SQL database.'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 输入消毒总是一个坏主意，因为它太难实现了。至少，消毒剂必须识别三种类型的解释器的所有恶意输入：JavaScript、HTML 和 CSS。您可能会将第四个解释器添加到列表中，因为很有可能输入将存储在
+    SQL 数据库中。
 - en: What happens next? Well, someone from the reporting and analytics team wants
     to have a talk. Looks like they’re having trouble querying the database for content
     that may have been modified by the sanitizer. The mobile team needs an explanation.
     All that sanitized input is rendering poorly in their UI, which doesn’t even use
     an interpreter. So many headaches.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来会发生什么？嗯，报告和分析团队的某人想要谈一谈。看起来他们在查询数据库时遇到了问题，因为内容可能已被消毒剂修改。移动团队需要解释。所有那些经过消毒的输入在他们的
+    UI 中呈现得很差，而他们甚至没有使用解释器。头疼得很。
 - en: Input sanitization also prevents you from implementing valid use cases. For
     example, have you ever sent code or a command line to a colleague over a messaging
     client or email? Some fields are designed to accept free-form input from the user.
     A system resists XSS with layers of defense because fields like this simply can’t
     be locked down. The most important layer is covered in the next section.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 输入消毒还会阻止您实施有效的用例。例如，您是否曾经通过消息客户端或电子邮件向同事发送过代码或命令行？某些字段旨在接受用户的自由格式输入。系统通过一系列防御层抵御
+    XSS，因为这些字段根本无法被锁定。最重要的层将在下一节中介绍。
 - en: 14.3 Escaping output
+  id: totrans-131
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 14.3 转义输出
 - en: In this section, you’ll learn about the most effective XSS countermeasure, escaping
     output. Why is it so important to escape output? Imagine one of the databases
     you work with at your job. Think about all the tables it has. Think about all
     the user-defined fields in each table. Chances are, most of those fields are rendered
     by a web page in some way. Each one contributes to your attack surface, and many
     of them can be weaponized by special HTML characters.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，您将了解到最有效的 XSS 对策，即转义输出。为什么转义输出如此重要？想象一下您工作中使用的数据库之一。想想它有多少张表。想想每张表中的所有用户定义字段。很可能，这些字段中的大多数都以某种方式由网页呈现。每个字段都会增加您的攻击面，其中许多可以通过特殊的
+    HTML 字符武装起来。
 - en: Secure sites resist XSS by escaping special HTML characters. Table 14.1 lists
     these characters and their escaped values.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 安全的网站通过转义特殊的 HTML 字符来抵御 XSS。表 14.1 列出了这些字符及其转义值。
 - en: Table 14.1 Special HTML characters and their escape values
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 14.1 特殊 HTML 字符及其转义值
 - en: '| Escaped character | Name and description | HTML entity (escaped value) |'
+  id: totrans-135
   prefs: []
   type: TYPE_TB
+  zh: '| 转义字符 | 名称和描述 | HTML 实体（转义值） |'
 - en: '| < | Less than, element begin | &lt; |'
+  id: totrans-136
   prefs: []
   type: TYPE_TB
+  zh: '| < | 小于号，元素开始 | &lt; |'
 - en: '| > | Greater than, element end | &gt; |'
+  id: totrans-137
   prefs: []
   type: TYPE_TB
+  zh: '| > | 大于号，元素结束 | &gt; |'
 - en: '| ‘ | Single quote, attribute value definition | &#x27; |'
+  id: totrans-138
   prefs: []
   type: TYPE_TB
+  zh: '| ‘ | 单引号，属性值定义 | &#x27; |'
 - en: '| “ | Double quote, attribute value definition | &quot; |'
+  id: totrans-139
   prefs: []
   type: TYPE_TB
+  zh: '| “ | 双引号，属性值定义 | &quot; |'
 - en: '| & | Ampersand, entity definition | &amp; |'
+  id: totrans-140
   prefs: []
   type: TYPE_TB
+  zh: '| & | 和号，实体定义 | &amp; |'
 - en: 'Like every other major web framework, Django’s template engine automatically
     escapes output by escaping special HTML characters. For example, you do not have
     to worry about persistent XSS attacks if you pull some data out of a database
     and render it in a template:'
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 与其他主要的 Web 框架一样，Django 的模板引擎会自动转义输出，转义特殊的 HTML 字符。例如，如果您从数据库中提取一些数据并在模板中呈现它，您就不必担心持久性
+    XSS 攻击：
 - en: '[PRE12]'
+  id: totrans-142
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: ❶ By default, this is safe.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 默认情况下，这是安全的。
 - en: 'Furthermore, you do not have to worry about introducing a reflected XSS vulnerability
     if your template renders a request parameter:'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，如果您的模板呈现了一个请求参数，您就不必担心引入反射型 XSS 漏洞：
 - en: '[PRE13]'
+  id: totrans-145
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: ❶ By default, also safe
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 默认情况下，也是安全的
 - en: 'From within your project root directory, open an interactive Django shell to
     see for yourself. Type the following code to programmatically exercise some of
     Django’s XSS resistance functionality. This code creates a template, injects it
     with malicious code, and renders it. Notice that each special character is escaped
     in the final result:'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 从项目根目录中，打开一个交互式 Django shell 来亲自看看。键入以下代码以程序化地演示一些 Django 的 XSS 抵抗功能。这段代码创建一个模板，注入恶意代码，并渲染它。请注意最终结果中的每个特殊字符都被转义：
 - en: '[PRE14]'
+  id: totrans-148
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: ❶ Creates a simple template
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 创建一个简单的模板
 - en: ❷ Malicious input
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 恶意输入
 - en: ❸ Renders template
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 渲染模板
 - en: ❹ Template neutralized
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 模板中和解
 - en: This functionality allows you to worry less, but it doesn’t mean you can forget
     about XSS entirely. In the next section, you’ll learn how and when this functionality
     is suspended.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个功能让你少了些担心，但并不意味着你可以完全忘记 XSS。在下一节中，你将学习何时以及如何暂停此功能。
 - en: 14.3.1 Built-in rendering utilities
+  id: totrans-154
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.3.1 内置渲染实用工具
 - en: 'Django’s template engine features many built-in tags, filters, and utility
     functions for rendering HTML. The built-in `autoescape` tag, shown here in bold
     font, is designed to explicitly suspend automatic special character escaping for
     a portion of your template. When the template engine parses this tag, it renders
     everything inside it without escaping special characters. This means the following
     code is vulnerable to XSS:'
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: Django 的模板引擎提供了许多内置标记、过滤器和实用函数用于渲染 HTML。这里以粗体显示的内置 `autoescape` 标记旨在明确暂停模板中一部分的自动特殊字符转义。当模板引擎解析此标记时，它会渲染其中的所有内容而不转义特殊字符。这意味着以下代码容易受到
+    XSS 攻击：
 - en: '[PRE15]'
+  id: totrans-156
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: ❶ Starts tag, suspends protection
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 开始标记，暂停保护
 - en: ❷ Ends tag, resumes protection
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 结束标记，恢复保护
 - en: 'The valid use cases for the `autoescape` tag are rare and questionable. For
     example, perhaps someone else decided to store HTML in a database, and now you
     are stuck with the responsibility of rendering it. This applies to the built-in
     `safe` filter as well, shown next in bold. This filter suspends automatic special
     character escaping for a single variable within your template. The following code
     (despite the name of this filter) is vulnerable to XSS:'
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: '`autoescape` 标记的有效用例很少且值得怀疑。例如，也许有人决定在数据库中存储 HTML，现在你被困承担渲染责任。这也适用于下一个以粗体显示的内置
+    `safe` 过滤器。该过滤器暂停模板中单个变量的自动特殊字符转义。尽管这个过滤器的名称，以下代码容易受到 XSS 攻击：'
 - en: '[PRE16]'
+  id: totrans-160
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: WARNING It is easy to use the `safe` filter in an unsafe way. I personally think
     *unsafe* would have been a better name for this feature. Use this filter with
     caution.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：使用 `safe` 过滤器的不安全方式很容易。我个人认为*不安全*可能是这个功能的更好名称。谨慎使用此过滤器。
 - en: The `safe` filter delegates most of its work to a built-in utility function
     named `mark_safe`. This function accepts a native Python string and wraps it with
     a `SafeString`. When the template engine encounters a `SafeString`, it intentionally
     renders the data as is, unescaped.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: '`safe` 过滤器将大部分工作委托给一个名为 `mark_safe` 的内置实用函数。此函数接受一个原生 Python 字符串，并用 `SafeString`
+    包装它。当模板引擎遇到 `SafeString` 时，它会有意地按原样渲染数据，不转义。'
 - en: 'Applying `mark_safe` to data from an untrusted source is an invitation to be
     compromised. Type the following code into an interactive Django shell to see why.
     The following code creates a simple template and a malicious script. As shown
     in bold font, the script is marked safe and injected into the template. Through
     no fault of the template engine, all special characters remain unescaped in the
     resulting HTML:'
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 对来自不受信任来源的数据应用 `mark_safe` 是一种被攻击的邀请。在交互式 Django shell 中键入以下代码，看看为什么。以下代码创建一个简单的模板和一个恶意脚本。如粗体显示，脚本被标记为安全并注入到模板中。尽管不是模板引擎的错，但所有特殊字符在生成的
+    HTML 中仍然未转义：
 - en: '[PRE17]'
+  id: totrans-164
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: ❶ Creates a simple template
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 创建一个简单的模板
 - en: ❷ Malicious input
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 恶意输入
 - en: ❸ Renders template
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 渲染模板
 - en: ❹ XSS vulnerability
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ XSS 漏洞
 - en: 'The aptly-named built-in `escape` filter, shown here in bold font, triggers
     special character escaping for a single variable within your template. This filter
     works as expected from within a block where automatic HTML output escaping has
     been turned off. The following code is safe:'
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个名副其实的内置 `escape` 过滤器，以粗体显示，会触发模板中单个变量的特殊字符转义。在自动 HTML 输出转义已关闭的块内，此过滤器按预期工作。以下代码是安全的：
 - en: '[PRE18]'
+  id: totrans-170
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: ❶ Starts tag, suspends protection
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 开始标记，暂停保护
 - en: ❷ No vulnerability
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 无漏洞
 - en: ❸ Ends tag, resumes protection
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 结束标记，恢复保护
 - en: 'Like the `safe` filter, the `escape` filter is a wrapper for one of Django’s
     built-in utility functions. The built-in `escape` function, shown here in bold,
     allows you to programmatically escape special characters. This function will escape
     native Python strings and `SafeStrings` alike:'
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 像`safe`过滤器一样，`escape`过滤器是Django内置实用函数的包装器之一。这里以粗体显示的内置`escape`函数允许您以编程方式转义特殊字符。此函数将转义原生Python字符串和`SafeStrings`：
 - en: '[PRE19]'
+  id: totrans-175
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: ❶ Neutralized HTML
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 中和HTML
 - en: Like every other respectable template engine (for all programming languages),
     Django’s template engine resists XSS by escaping special HTML characters. Unfortunately,
     not all malicious content contains special characters. In the next section, you’ll
     learn about a corner case that this framework does not protect you from.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 像其他所有尊重的模板引擎一样（适用于所有编程语言），Django的模板引擎通过转义特殊的HTML字符来抵抗XSS攻击。不幸的是，并非所有恶意内容都包含特殊字符。在下一节中，您将了解到这个框架无法保护您免受的一个特殊情况。
 - en: 14.3.2 HTML attribute quoting
+  id: totrans-178
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.3.2 HTML属性引用
 - en: 'The following is an example of a simple template. As shown in bold, a `request`
     parameter determines the value of a `class` attribute. This page behaves as intended
     if the `request` parameter equals an ordinary CSS class name. On the other hand,
     if the parameter contains special HTML characters, Django escapes them as usual:'
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下是一个简单模板的示例。如粗体所示，`request`参数确定了`class`属性的值。如果`request`参数等于普通的CSS类名，则此页面将按预期行为。另一方面，如果参数包含特殊的HTML字符，Django将像往常一样对其进行转义：
 - en: '[PRE20]'
+  id: totrans-180
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: Did you notice that the `class` attribute value is unquoted? Unfortunately,
     this means an attacker can abuse this page without using a single special HTML
     character. For example, suppose this page belongs to an important system at SpaceX.
     Mallory targets Charlie, a technician for the Falcon 9 team, with a reflected
     XSS attack. Now imagine what happens when the parameter arrives as `className`
     `onmouseover=javascript:launchRocket()`.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 您是否注意到`class`属性值未加引号？不幸的是，这意味着攻击者可以在不使用任何特殊HTML字符的情况下滥用此页面。例如，假设此页面属于SpaceX的一个重要系统。Mallory以反射型XSS攻击的方式针对Falcon
+    9团队的技术人员Charlie。现在想象一下当参数以`className` `onmouseover=javascript:launchRocket()`形式到达时会发生什么。
 - en: Good HTML hygiene, not a framework, is the only way to resist this form of XSS.
     Simply quoting the class attribute value ensures that the `div` tag renders safely,
     regardless of the template variable value. Do yourself a favor and make a habit
     of always quoting every attribute of every tag. The HTML spec doesn’t require
     single quotes or double quotes, but sometimes a simple convention like this can
     prevent a disaster.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 良好的HTML卫生习惯，而不是框架，是抵抗这种形式的XSS攻击的唯一方法。简单地引用class属性值可以确保`div`标签安全地呈现，无论模板变量值如何。请养成一个习惯，始终引用每个标签的每个属性。HTML规范不要求单引号或双引号，但有时像这样的简单约定可以避免灾难。
 - en: In the preceding two sections, you learned how to resist XSS through the body
     of a response. In the next section, you’ll learn how to do this via the headers
     of a response.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 在前面的两节中，您学会了如何通过响应主体来抵抗XSS攻击。在下一节中，您将学习如何通过响应头来实现这一点。
 - en: 14.4 HTTP response headers
+  id: totrans-184
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 14.4 HTTP响应头
 - en: '*Response* *headers* represent a very important layer of defense against XSS.
     This layer can prevent some attacks as well as limit the damage of others. In
     this section, you’ll learn about this topic from three angles:'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: '*响应* *头*代表对抗XSS攻击非常重要的一层防御。这一层可以防止一些攻击，同时限制其他攻击的破坏程度。在本节中，您将从三个角度了解这个主题：'
 - en: Disabling JavaScript access to cookies
+  id: totrans-186
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 禁用JavaScript访问cookie
 - en: Disabling MIME sniffing
+  id: totrans-187
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 禁用MIME嗅探
 - en: Using the `X-XSS-Protection` header
+  id: totrans-188
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用`X-XSS-Protection`头
 - en: The main idea behind each item here is to protect the user by restricting what
     the browser can do with the response. In other words, this is how a server applies
     the PLP to a browser.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里每个项目的主要思想是通过限制浏览器对响应的操作来保护用户。换句话说，这是服务器如何将PLP应用于浏览器的方式。
 - en: 14.4.1 Disable JavaScript access to cookies
+  id: totrans-190
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.4.1 禁用JavaScript访问cookie
 - en: Gaining access to the victim’s cookies is a common XSS goal. Attackers target
     the victim’s session ID cookie in particular. The following two lines of JavaScript
     demonstrate how easy this is.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 获取受害者的cookie是XSS攻击的一个常见目标。攻击者特别针对受害者的会话ID cookie。下面的两行JavaScript演示了这是多么容易。
 - en: 'The first line of code constructs a URL. The domain of the URL points to a
     server controlled by the attacker; the parameter of the URL is a copy of the victim’s
     local cookie state. The second line of code inserts this URL into the document
     as a source attribute for an image tag. This triggers a request to mallory.com,
     delivering the victim’s cookie state to the attacker:'
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE21]'
+  id: totrans-193
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: ❶ Reads victim’s cookies
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Sends victim’s cookies to attacker
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
 - en: Suppose Mallory uses this script to target Bob with a reflected XSS attack.
@@ -863,6 +1266,7 @@
     identity and access privileges at bank.alice.com. She doesn’t have to write JavaScript
     to transfer money from his bank account; she can just do it through the UI instead.
     Figure 14.3 depicts this attack, known as *session hijacking*.
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
 - en: 'Servers resist this form of attack by setting cookies with the `HttpOnly` directive,
@@ -872,11 +1276,14 @@
     hides the cookie from client-side JavaScript. This mitigates XSS attacks; it cannot
     prevent them. An example response header is shown here with an `HttpOnly` directive
     in bold font:'
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE22]'
+  id: totrans-198
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: A session ID cookie should always use `HttpOnly`. Django does this by default.
     This behavior is configured by the `SESSION_COOKIE_HTTPONLY` setting, which fortunately
     defaults to `True`. If you ever see this setting assigned to `False` in a code
@@ -884,22 +1291,27 @@
     This is understandable, given the unfortunate name of this directive. After all,
     the term `HttpOnly` could easily be misinterpreted to mean *insecure* by a person
     with no context.
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
 - en: '![CH14_F03_Byrne](Images/CH14_F03_Byrne.png)'
+  id: totrans-200
   prefs: []
   type: TYPE_IMG
 - en: Figure 14.3 Mallory hijacks Bob’s session with a reflected XSS attack.
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
 - en: Note At the time of this writing, security misconfiguration is number 6 on the
     OWASP Top Ten ([https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)).
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
 - en: '`HttpOnly` doesn’t just apply to your session ID cookie, of course. In general,
     you should set each cookie with `HttpOnly` unless you have a very strong need
     to programmatically access it with JavaScript. An attacker without access to your
     cookies has less power.'
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 14.9 demonstrates how to set a custom cookie with the `HttpOnly` directive.
@@ -907,26 +1319,34 @@
     on the `response` object. This method accepts a keyword argument named `httponly`.
     Unlike the `SESSION_COOKIE_HTTPONLY` setting, this keyword argument defaults to
     `False`.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 14.9 Setting a cookie with the HttpOnly directive
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE23]'
+  id: totrans-206
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: ❶ Adds the Set-Cookie header to the response
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Appends an HttpOnly directive to the header
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
 - en: In the next section, I cover a response header designed to resist XSS. Like
     the `HttpOnly` directive, this header restricts the browser in order to protect
     the user.
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
 - en: 14.4.2 Disable MIME type sniffing
+  id: totrans-210
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -936,24 +1356,28 @@
     resource, parses it, and sends separate requests for embedded content such as
     images, stylesheets, and JavaScript. To render the page, your browser needs to
     process each response with the appropriate content handler.
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
 - en: How does the browser match each response to the correct handler? The browser
     doesn’t care if the URL ends in .gif or .css. The browser doesn’t care if the
     URL originated from an `<img>` or a `<style>` tag. Instead, the browser receives
     the content type from the server via the `Content-Type` response header.
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
 - en: The value of the `Content-Type` header is known as a *MIME type*, or media type.
     For example, if your browser receives a MIME type of `text/javascript`, it hands
     off the response to the JavaScript interpreter. If the MIME type is `image/gif`,
     the response is handed off to a graphics engine.
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
 - en: Some browsers allow the content of the response itself to override the `Content-Type`
     header. This is known as *MIME type sniffing*. This is useful if the browser needs
     to compensate for an incorrect or missing `Content-Type` header. Unfortunately,
     MIME type sniffing is also an XSS vector.
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
 - en: Suppose Bob adds new functionality to his social networking site, social.bob.com.
@@ -964,30 +1388,38 @@
     by viewing Mallory’s photo album. Alice’s browser sniffs the content, overrides
     Bob’s incorrect `Content-Type` header, and executes Mallory’s code. Figure 14.4
     depicts Mallory’s attack.
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
 - en: '![CH14_F04_Byrne](Images/CH14_F04_Byrne.png)'
+  id: totrans-216
   prefs: []
   type: TYPE_IMG
 - en: Figure 14.4 Alice’s browser sniffs the content of Mallory’s script, overrides
     the MIME type, and executes it.
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
 - en: 'Secure sites resist this form of XSS by sending each response with an `X-Content-Type-Options`
     header. This header, shown here, forbids the browser from performing MIME type
     sniffing:'
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE24]'
+  id: totrans-219
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: In Django, this behavior is configured by the `SECURE_CONTENT_TYPE_NOSNIFF`
     setting. The default value for this setting changed to `True` in version 3.0\.
     If you are running an older version of Django, you should assign this setting
     to `True` explicitly.
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
 - en: 14.4.3 The X-XSS-Protection header
+  id: totrans-221
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -995,60 +1427,89 @@
     resistance. Browsers supporting this feature attempt to automatically detect reflected
     XSS attacks by inspecting the request and response for malicious content. When
     an attack is detected, the browser will sanitize or refuse to render the page.
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: '`X-XSS-Protection` 响应头旨在启用客户端 XSS 抵抗。支持此功能的浏览器尝试通过检查请求和响应中的恶意内容来自动检测反射性 XSS
+    攻击。当检测到攻击时，浏览器将对页面进行清理或拒绝渲染。'
 - en: The `X-XSS-Protection` header has failed to gain traction in many ways. Each
     implementation of this feature is browser specific. Google Chrome and Microsoft
     Edge have both implemented and deprecated it. Mozilla Firefox has not implemented
     this feature and currently has no plans to do so.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: '`X-XSS-Protection` 头部在许多方面都没有获得足够的关注。该功能的每个实现都是特定于浏览器的。Google Chrome 和 Microsoft
+    Edge 都已经实现并弃用了它。Mozilla Firefox 没有实现此功能，并且目前也没有计划这样做。'
 - en: 'The `SECURE_BROWSER_XSS_FILTER` setting ensures that each response has an `X-XSS-Protection`
     header. Django adds this header with a block mode directive, as shown here. Block
     mode instructs the browser to block the page from rendering instead of trying
     to remove suspicious content:'
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: '`SECURE_BROWSER_XSS_FILTER` 设置确保每个响应都有一个 `X-XSS-Protection` 头部。Django 使用块模式指令添加此头部，如下所示。块模式指示浏览器阻止页面渲染而不是尝试删除可疑内容：'
 - en: '[PRE25]'
+  id: totrans-225
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: By default, Django disables this feature. You can enable it by assigning this
     setting to `True`. Enabling `X-XSS-Protection` might be worth writing one line
     of code, but don’t let it become a false sense of security. This header cannot
     be considered an effective layer of defense.
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，Django 禁用了此功能。您可以通过将此设置分配为`True`来启用它。启用`X-XSS-Protection`可能值得写一行代码，但不要让它成为虚假的安全感。这个头部不能被认为是一个有效的防御层。
 - en: This section covered the `Set-Cookie`, `X-Content-Type-Options`, and `X-XSS-Protection`
     response headers. It also serves as a warm-up for the next chapter, which focuses
     entirely on a response header designed to mitigate attacks such as XSS. This header
     is easy to use and very powerful.
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节介绍了`Set-Cookie`、`X-Content-Type-Options` 和 `X-XSS-Protection` 响应头部。它也作为下一章的热身，下一章将完全专注于一种响应头部，旨在减轻
+    XSS 等攻击。这个头部易于使用，非常强大。
 - en: Summary
+  id: totrans-228
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 摘要
 - en: 'XSS comes in three flavors: persistent, reflected, and DOM-based.'
+  id: totrans-229
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: XSS 有三种形式：持久性、反射性和基于 DOM。
 - en: XSS isn’t limited to JavaScript; HTML and CSS are commonly weaponized as well.
+  id: totrans-230
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: XSS 不仅限于 JavaScript；HTML 和 CSS 也经常被武器化。
 - en: One layer of defense will eventually get you compromised.
+  id: totrans-231
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一层防御最终会使您受到威胁。
 - en: Validate user input; don’t sanitize it.
+  id: totrans-232
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 验证用户输入；不要对其进行消毒。
 - en: Escaping output is the most important layer of defense.
+  id: totrans-233
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 转义输出是最重要的防御层。
 - en: Servers use response headers to protect users by limiting browser capabilities.
+  id: totrans-234
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 服务器使用响应头来通过限制浏览器功能来保护用户。

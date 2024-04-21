@@ -286,6 +286,8 @@
   id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，每个字母只能由其所在行上的其他 4 个字母和其下方的字母替换。对于每个字母，在网格中有其他 24 个字母。其中，只有其所在列中的 4 个字母会导致该字母被其下方的字母替换。因此，被下方字母替换的概率为
+    4/24，或 1/6。因此，它被其所在行上的另一个字母替换的概率为 5/6。
 - en: Since there are 5 rows in the square and 9 English letters with frequencies
     over 5% there must be several rows that contain at least 2 high-frequency letters.
     If there are fewer than 4 such rows, then there must be at least one row with
@@ -296,6 +298,8 @@
   id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于方格中有 5 行，而英语字母中频率超过 5% 的有 9 个字母，因此至少有几行包含至少 2 个高频字母。如果这样的行少于 4 行，则必须至少有一行包含
+    3 个高频字母。这些行中的其他字母在密文中将比任何其他字母更频繁地出现。如果您有足够的密文，那么密文中出现频率最高的 3 到 5 个字母很可能在方格的同一行上。
 - en: If we remove all of the bigrams containing these letters, the 3 to 5 most frequent
     letters in the remaining bigrams are likely to be on the same row of the square.
     Knowing the high-frequency letters on 2 out of the 5 rows is enough to get started
@@ -304,60 +308,74 @@
   id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果我们去除包含这些字母的所有双字母组合，那么剩余双字母组合中出现频率最高的 3 到 5 个字母很可能在方格的同一行上。知道了 5 行中的 2 行上的高频字母就足以开始重建方格了。下一步是尝试放置一些可能的单词。
 - en: The Playfair cipher is rated Three. There are several ways to increase the strength
     of the Playfair cipher. Let me mention just a few.
   id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: Playfair 密码的评级为三。有几种方法可以增强 Playfair 密码的强度。我就提几种。
 - en: 9.2.2 Strengthening a Playfair cipher
   id: totrans-41
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 9.2.2 强化 Playfair 密码
 - en: Here are several stronger variants of the Playfair cipher.
   id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里有几种更强的 Playfair 密码变体。
 - en: Nullfair or nofair
   id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: Nullfair 或 nofair
 - en: 'Nulls can be added to the ciphertext at repeating intervals, like this:'
   id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 在密文中可以按照重复的间隔添加空值，就像这样：
 - en: '![9-unnumb-5](../Images/9-unnumb-5.png)'
   id: totrans-45
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-5](../Images/9-unnumb-5.png)'
 - en: Nullfair is rated Five.
   id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: Nullfair 的评级为五。
 - en: Playfair+1
   id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: Playfair+1
 - en: This super-simple enhancement adds a repeating binary key to the Playfair ciphertext.
     Wherever there is a 1 bit, the next letter of the alphabet is used. Playfair+1
     is stronger if the binary key has an odd length.
   id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种超级简单的增强方式在 Playfair 密文中添加了重复的二进制密钥。在有 1 位的地方，使用字母表的下一个字母。如果二进制密钥的长度为奇数，则 Playfair+1
+    更强大。
 - en: '![9-unnumb-6](../Images/9-unnumb-6.png)'
   id: totrans-49
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-6](../Images/9-unnumb-6.png)'
 - en: Playfair+1 is rated Five. Playfair+1 can also be done with ternary numbers.
     The digits in the additive key are kept small so the addition can be done in your
     head, without needing a tableau.
   id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: Playfair+1 的评级为五。 Playfair+1 也可以用三进制数完成。加法密钥中的数字保持较小，因此可以在脑中进行加法，而不需要表格。
 - en: Double Playfair
   id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 双 Playfair
 - en: The Playfair cipher can be strengthened by applying it twice. On the second
     round, the pairs should straddle the bigrams created in the first round. (1) Encipher
     the message with a Playfair cipher. (2) Either move the first letter to the end,
@@ -367,10 +385,14 @@
   id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: Playfair 密码可以通过两次应用来加强。在第二轮中，成对字母应跨越第一轮创建的双字母组合。 (1) 使用 Playfair 密码对消息进行加密。
+    (2) 将第一个字母移到末尾，将最后一个字母移到开头，或在两端都添加一个空值。 (3) 应用另一轮 Playfair。如果第二个 Playfair 密码使用了不同的混合字母表，则这是最强的。双
+    Playfair 的评级为六。
 - en: Playfair ripple
   id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: Playfair 涟漪
 - en: This is a variant of double Playfair that takes only one pass through the message,
     and needs only one Polybius square. Let the plaintext be P[1]P[2]P[3]P[4] ...
     Start at the left end and encipher plaintext bigram P[1]P[2] using Playfair, producing
@@ -573,26 +595,32 @@
   id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 顾名思义，Three Square 使用三个 Polybius 方格。这些方格应该与独立的密钥混合得很好。Three Square 每次加密 3 个字母，也就是加密三字母组合。这比
+    Two Square 更强大。
 - en: '![9-unnumb-10](../Images/9-unnumb-10.png)'
   id: totrans-78
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-10](../Images/9-unnumb-10.png)'
 - en: The basic idea is that each letter is replaced by a letter in the square to
     its right. The replacement letter is in the same row, but in the column containing
     the next letter of the trigram.
   id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 基本思想是，每个字母都被其右侧方格中的一个字母替换。替换字母与原字母在同一行，但在下一个三字母组合中的列中。
 - en: Suppose we wish to encipher the trigram THE. The first letter is T, the second
     letter is H, and the third letter is E. We encipher using the T in the first square,
     the H in the second square and the E in the third square, like this.
   id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设我们希望加密三字母组合THE。第一个字母是T，第二个字母是H，第三个字母是E。我们使用第一个方格中的T，第二个方格中的H和第三个方格中的E进行加密，就像这样。
 - en: '![9-unnumb-11](../Images/9-unnumb-11.png)'
   id: totrans-81
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-11](../Images/9-unnumb-11.png)'
 - en: The substitute for T is on the row containing the T, and in the column in the
     second square containing the H, so T is replaced by **V**. The substitute for
     H is on the same row as the H in the same column as the E in the third square,
@@ -602,24 +630,30 @@
   id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: T 的替代字母位于包含 T 的行，以及第二个方格中包含 H 的列，所以 T 被替换为**V**。H 的替代字母与第三个方格中包含 E 的列上的 H 在同一行，所以
+    H 被替换为**R**。E 的替代字母与第一个方格中包含 T 的列上的 E 在同一行，所以 E 被替换为**Z**。因此，THE 变成了**VRZ**。
 - en: 'This can be seen pictorially as follows:'
   id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 这可以如下图所示：
 - en: '![9-unnumb-12](../Images/9-unnumb-12.png)'
   id: totrans-84
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-12](../Images/9-unnumb-12.png)'
 - en: 'The decipherment goes in the opposite direction. Since the first letter of
     the ciphertext trigram **VRZ** came from the second square, we begin deciphering
     in the second square, like this:'
   id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 解密是相反的过程。由于密文三字母组合**VRZ**的第一个字母来自第二个方格，我们从第二个方格开始解密，像这样：
 - en: '![9-unnumb-13](../Images/9-unnumb-13.png)'
   id: totrans-86
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-13](../Images/9-unnumb-13.png)'
 - en: Three Square has a worse problem than Two Square with letters falling on the
     same row. In a trigram such as XYZ, it is possible that X and Y could fall on
     the same row, Y and Z could fall on the same row, or Z and X could fall on the
@@ -628,6 +662,8 @@
   id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: Three Square 比 Two Square 更容易出现字母位于同一行的问题。在 XYZ 这样的三字母组合中，可能出现 X 和 Y 在同一行，Y
+    和 Z 在同一行，或者 Z 和 X 在同一行。这需要额外的两条规则来防止透明度，其中一个字母表示它自己。
 - en: '*Rule 1:* If two consecutive letters in the trigram fall on the same row, the
     first of these two letters is enciphered as the letter to the right of the second
     of the letters, wrapping to the left column, if needed. For example, in the trigram
@@ -638,6 +674,9 @@
   id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: '*规则 1：* 如果三字母组合中连续的两个字母位于同一行，则这两个字母中的第一个被加密为第二个字母的右侧字母，如果需要则绕到左侧列。例如，在三字母组合
+    SUB 中，S 在第一个方格的顶行，而 U 在第二个方格的顶行。因此 S 被替换为**V**而不是**U**。类似地，在三字母组合 LET 中，T 在第三个方格的第三行，而
+    L 在第一个方格的第三行。所以 T 被替换为**G**而不是**L**。'
 - en: This diagram illustrates Rule 1\. Without Rule 1, in the trigram SUB the S would
     be replaced by **U**. Instead, it is replaced by the letter to the right of U
     in the middle square, namely **V**. Without Rule 1, in the trigram LET the T would
@@ -647,10 +686,13 @@
   id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个图示说明了规则 1。没有规则 1，在三字母组合 SUB 中，S 将被**U**替换。相反，它被中间方格中 U 右侧的字母替换，即**V**。没有规则
+    1，在三字母组合 LET 中，T 将被**L**替换。相反，它被左方格中 L 右侧的字母替换。这从第 5 列绕到第 1 列，其中有字母**G**。
 - en: '![9-unnumb-14](../Images/9-unnumb-14.png)'
   id: totrans-90
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-14](../Images/9-unnumb-14.png)'
 - en: '*Rule 2:* If all three letters in the trigram fall on the same row, each letter
     will be replaced by the letter immediately below it, wrapping to the top row,
     if needed. Thus FUN would be replaced by **AZV**, and WRE would be replaced by
@@ -918,6 +960,7 @@
   id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在看看第一个密文字母**R1R2**。这是一个行/行对，而不是一个行/列对。在这里，只有第一个坐标**R1**处于正确的位置，形成了一个行/列对。另一个坐标**R2**是列位置上的行坐标。这样的单一放置被称为*半自然*。它意味着第一个密文字母来自波利比奥斯方阵的与第一个明文字母相同的行。因此，第一个密文字母与第一个明文字母相同的机会为20%。
 - en: This also happens with the second, fourth and fifth ciphertext letters. Each
     one of them falls in either the same row or the same column as one of the plaintext
     letters. Thus each of them has a 20% chance of being the same as that plaintext
@@ -926,6 +969,7 @@
   id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二、第四和第五个密文字母也是如此。它们中的每一个都落在明文字母的同一行或同一列中的一个。因此，它们每一个有20%的机会与该明文字母相同。在这个例子中发生了这种情况，第二个密文字母**J**与第三个明文字母相同。
 - en: This is a serious weakness in the bifid cipher which makes it easy for Emily
     to guess at and place probable words. On the other hand, if the plaintext and
     ciphertext letters are different, then you know that they are in the same row
@@ -938,30 +982,36 @@
   id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是bifid密码的一个严重弱点，使得Emily能够猜测并放置可能的单词。另一方面，如果明文和密文字母不同，则知道它们位于同一行或列中。在本例中，第一个明文字母**R1C1**是M，第一个密文字母**R1R2**是**S**。这意味着M和S必须在波利比奥斯方阵的同一行中。当Emily推断或猜测一个单词时，这提供了几个这样的等价物。这反过来又使得放置其他单词变得更容易。当积累了足够多的这些字母对时，Emily可以重构方阵。
 - en: Due to these weaknesses, the bifid cipher is rated Three.
   id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于这些弱点，bifid密码评分为三。
 - en: 9.6.1 Conjugated matrix bifid
   id: totrans-127
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 9.6.1 共轭矩阵bifid
 - en: These problems can be eliminated by using a different Polybius square to convert
     the coordinates back to letters. For example, Square 2 yields the ciphertext **VBJEF**.
   id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些问题可以通过使用不同的Polybius方阵将坐标转换回字母来消除。例如，方阵2产生的密文是**VBJEF**。
 - en: '![9-unnumb-21](../Images/9-unnumb-21.png)'
   id: totrans-129
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-21](../Images/9-unnumb-21.png)'
 - en: Bifid with two separate Polybius squares is called by the highfalutin name *Conjugated
     Matrix Bifid*. In this context, a matrix simply means a rectangular array of letters
     or characters. The conjugated matrix bifid cipher is rated Five.
   id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 两个单独的波利比奥斯方阵组成的双重Polybius方阵被称为*共轭矩阵Bifid*。在这个上下文中，矩阵只是指一个字母或字符的矩形数组。共轭矩阵bifid密码评分为五。
 - en: There are several ways to boost the strength of the bifid cipher. One way is
     to vary the block length using a repeating numeric key such as 5, 11, 7\. The
     block lengths would be a cyclic repetition of this key, namely 5, 11, 7, 5, 11,
@@ -971,21 +1021,26 @@
   id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 有几种方法可以增强bifid密码的强度。一种方法是使用重复的数字密钥来改变块长度，例如5、11、7。块长度将是该密钥的循环重复，即5、11、7、5、11、7、5、...
+    如果您愿意，您可以通过使用链式数字生成器生成块长度，并将数字翻译为奇数块长度。一种可能性是
 - en: '![9-unnumb-22](../Images/9-unnumb-22.png)'
   id: totrans-132
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-22](../Images/9-unnumb-22.png)'
 - en: So, if the generator produced digits 3, 6, 2, 7, ... , then the block lengths
     would be 11, 7, 9, 9, ...
   id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，如果生成器生成数字3、6、2、7，...，那么块长度将为11、7、9、9、...
 - en: Using a short repeating key and conjugated matrices the cipher is rated Six.
     With a long repeating key or generating the block lengths using a random number
     generator the cipher is rated Seven.
   id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用短重复密钥和共轭矩阵的密码评分为六。使用长重复密钥或使用随机数生成器生成块长度的密码评分为七。
 - en: 'A similar idea is to read out the coordinates starting from a different point
     in each block. You could use a numeric key to specify the sequence of starting
     points. If the block length is L, each number in the key may be anywhere from
@@ -995,24 +1050,29 @@
   id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个类似的想法是从每个块的不同起点开始读出坐标。你可以使用一个数字密钥来指定起点的顺序。如果块的长度为L，密钥中的每个数字可以是从1到2L的任何位置。从1到L的数字表示坐标顶行的起始位置，而从L+1到2L的数字表示底行的起始位置，就像这样：
 - en: '![9-unnumb-23](../Images/9-unnumb-23.png)'
   id: totrans-136
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-23](../Images/9-unnumb-23.png)'
 - en: The coordinates would be taken out in pairs reading from left to right. Here
     is the order for reading out the coordinates using the numeric key 4, 9\. The
     starting positions 4 and 9 are shaded.
   id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 坐标将成对地从左到右读取。这是使用数字密钥4、9读取坐标的顺序。起始位置4和9已经阴影化。
 - en: '![9-unnumb-24](../Images/9-unnumb-24.png)'
   id: totrans-138
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-24](../Images/9-unnumb-24.png)'
 - en: This method increases the rating to Six.
   id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种方法将评级提高到六。
 - en: Another way to strengthen the bifid cipher is to use a stronger transposition
     to mix the coordinates. The standard bifid using a block of length L takes the
     2L coordinates and writes them into a 2×L block. The coordinates are written into
@@ -1026,6 +1086,7 @@
   id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 加强双重栅栏密码的另一种方法是使用更强的置换来混合坐标。使用长度为L的标准双重栅栏将2L个坐标写入2×L块中。坐标被垂直写入块中，水平读出。我们将其识别为一个非常简单的路径置换，描述在第7.1节。在第7章中涵盖了几种更强的置换，尤其是列置换。这种密码的一个例子是由情报官尼布尔中尉发明并由德国人在第一次世界大战中使用的*ADFGVX*密码。在ADFGVX密码中，由字母A、D、F、G、V、X表示的坐标通过列置换混合，然后作为这些字母的字符串传输。这种密码的评级为五。
 - en: If you used longer blocks, say 20 characters, that would give you 40 coordinates.
     (With this method the block lengths may be either even or odd.) This is enough
     to use columnar transposition effectively to mix the coordinates. Or, you could
@@ -1037,11 +1098,13 @@
   id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你使用更长的块，比如20个字符，那么将会得到40个坐标。（使用这种方法，块的长度可以是偶数也可以是奇数。）这足以有效地使用列置换来混合坐标。或者，你可以回到德拉斯泰尔的原始概念，并将整个消息的坐标作为单个块。无论哪种方式，使用共轭矩阵，此密码的评级为八。使用双列置换，密码的评级为十。假设有四个长的独立密钥和混合良好的字母表，这是一种无法破解的纸笔密码。称之为*双列置换双重栅栏*。
 - en: 9.7 Diagonal bifid
   id: totrans-142
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.7 对角双重栅栏
 - en: A variation on the bifid cipher is to write the Polybius coordinates vertically
     under each letter, as usual, but to read them out diagonally, going from lower
     left to upper right (or southwest to northeast). This is called a *left diagonal*
@@ -1052,21 +1115,26 @@
   id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 对双重栅栏密码的变种是将波利比斯坐标垂直地写在每个字母下面，然后沿对角线从左下到右上（或从西南到东北）读取它们。这被称为*左对角线*或*反对角线*。（在纹章的冠上，它被称为*邪恶的酒吧*，并表示非婚生的出生。）对于最后一个字母，你会回到第一列（阴影部分的数字1）。这样做的好处是没有自然数或半自然数可以帮助艾米莉猜测单词。这是一个例子。
 - en: '![9-unnumb-25](../Images/9-unnumb-25.png)'
   id: totrans-144
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-25](../Images/9-unnumb-25.png)'
 - en: Diagonal bifid is rated Four. With conjugated matrices it is rated Five. With
     conjugated matrices and periodically varying block sizes it is rated Six. Unlike
     classical bifid, both odd and even block sizes can be used with diagonal bifid.
   id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 对角 bifid 被评为 Four。与共轭矩阵一起，它被评为 Five。与共轭矩阵和定期变化的块大小一起，它被评为 Six。与古典 bifid 不同，对角
+    bifid 可以使用奇数和偶数块大小。
 - en: 9.8 6×6 squares
   id: totrans-146
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.8 6×6 方阵
 - en: If your messages contain a lot of numbers, it may be advantageous to use a 6×6
     Polybius square instead of a 5×5 square. A 6×6 square allows you to have the full
     26-letter alphabet plus the numerals from 0 to 9\. There is no need to omit J
@@ -1079,17 +1147,23 @@
   id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你的消息包含很多数字，使用 6×6 的 Polybius 方阵而不是 5×5 方阵可能会更有优势。6×6 方阵允许您使用完整的 26 个字母表以及从
+    0 到 9 的数字。不需要从字母表中省略 J 或 Q。如果你正在手动加密，这就需要额外小心地区分字母 O、I、Z、S 和 G 与数字 0、1、2、5 和 6。一些人采用特殊的惯例，例如在所有数字下划线。我觉得这样很麻烦且容易出错。我通常只是夸大区分这些字符与它们的同伴的特征，例如用额外宽的衬线写字母
+    I。
 - en: All of the methods from the preceding 5 sections, namely Playfair, Two Square,
     Three Square, Four Square and Bifid, can be used with 6×6 squares, along with
     all of their variations.
   id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 前面 5 节中的所有方法，即 Playfair、Two Square、Three Square、Four Square 和 Bifid，都可以与 6×6
+    方阵一起使用，以及它们的所有变体。
 - en: 9.9 Trifid
   id: totrans-149
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.9 三重置
 - en: If you like squares, how about cubes? Another fractionation method, also invented
     by Félix-Marie Delastelle in the 1890s, is the *Trifid* cipher. Instead of representing
     each letter of the alphabet by two digits in base 5 (quinary numbers), each letter
@@ -1099,6 +1173,9 @@
   id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你喜欢方阵，那么立方体呢？另一种分数方法，也是在 1890 年代由 Félix-Marie Delastelle 发明的，是 *Trifid* 密码。与通过在基数
+    5（五进制数）中的两位数字来代表字母不同，每个字母由三位基数为 3 的数字（三进制数）表示。这给出了 3×3×3，或 3³，不同的 3 位数字组合。这足以表示字母表中的所有
+    26 个字母加上一个额外的字符。Delastelle 使用了一个 + 加号表示第 27 个字符。
 - en: The extra character + might be used as a form of punctuation, or it might be
     a signal that the following plaintext letter should be interpreted as a digit.
     The correspondence +A = 1, +B = 2, ... , +J = 0 could be used. The rest of the
@@ -1107,6 +1184,8 @@
   id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 额外的字符 + 可以用作标点符号的形式，或者它可能是一个信号，表示接下来的明文字母应该被解释为一个数字。对应关系 +A = 1, +B = 2, ...
+    , +J = 0 可以被使用。字母表的其余部分也可以被用作特殊字符。例如，+K 可以表示句号，+L 可以表示逗号，等等。
 - en: Just as the 2-digit combinations can be displayed as a 5×5 letter square, the
     3-digit combinations can be displayed as a 3×3×3 letter cube. The 3 digits in
     each triple can be interpreted as the coordinates in the cube where that letter
@@ -1114,6 +1193,7 @@
   id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 就像 2 位数字组合可以显示为 5×5 字母方阵一样，3 位数字组合可以显示为 3×3×3 字母立方体。每个三元组中的 3 位数字可以被解释为该字母位于的立方体中的坐标。这些坐标通常称为层、行和列。
 - en: Here are the 27 ternary combinations, in order, with letter equivalents weakly
     mixed by using the keyword EXAMPLE and alternating columns. For instance, the
     letter N is represented by the triple 102, so it would be located on layer 1,
@@ -1121,10 +1201,13 @@
   id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里是 27 个三元组合，按顺序排列，字母等效通过使用关键词 EXAMPLE 弱混合，并交替列。例如，字母 N 由三元组 102 表示，因此它将位于 3×3×3
+    字母立方体的第 1 层、第 0 行和第 2 列。
 - en: '![9-unnumb-26](../Images/9-unnumb-26.png)'
   id: totrans-154
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-26](../Images/9-unnumb-26.png)'
 - en: The trifid cipher works similarly to the bifid cipher. The plaintext is written
     in blocks of some fixed size. The size may be any number that is not a multiple
     of 3\. The 3 digits are written vertically beneath each letter of the message,
@@ -1134,10 +1217,13 @@
   id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 三方加密器的工作原理与双重加密器类似。明文按固定大小的块写入。大小可以是任何不是 3 的倍数的数字。将这 3 位数字垂直写在每个消息字母下面，然后水平分组读取。然后使用相同的等价关系将它们转换回字母。这里有一个明文为
+    SEND HELP，块大小为 4 的示例。
 - en: '![9-unnumb-27](../Images/9-unnumb-27.png)'
   id: totrans-156
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-27](../Images/9-unnumb-27.png)'
 - en: The same analysis and techniques that were used for bifid can also be applied
     to trifid, and they have the same ratings. You can use two separate substitution
     tables for converting the letters to digits and the digits back to letters. You
@@ -1146,6 +1232,7 @@
   id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于双重加密器的相同分析和技术也可以应用于 trifid，并且具有相同的评级。您可以使用两个单独的替换表将字母转换为数字，然后将数字转换回字母。您可以变化块的大小。您可以从每个块的不同位置开始读取数字。您可以使用强大的置换来混合三进制数字。
 - en: A natural question is whether there is a diagonal version of the trifid cipher
     analogous to diagonal bifid. The advantage of diagonal bifid over the original
     bifid is that the diagonal version does not give rise to the half-naturals that
@@ -1157,11 +1244,15 @@
   id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个自然的问题是是否有与对角双重加密器类似的对角 trifid 加密器。对角双重加密器比原始双重加密器的优势在于，对角版本不会产生削弱原始版本的半自然数。在类似的对角
+    trifid 中，每组的中间数字将是第三自然数，因此失去了优势。然而，如果您使用两个不同的混合字母表，一个用于数字的书写，另一个用于读取它们，则自然问题会消失。带有两个字母表的对角
+    trifid 的评分为五。
 - en: 9.10 Three Cube
   id: totrans-159
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.10 三方加密器
 - en: As I was typing the preceding paragraph about the trifid cipher, I realized
     that the 3×3×3 cubic arrangement lends itself to a 3-dimensional analogue to the
     Two Square cipher described in section 9.3\. It is easy to visualize the Two Square
@@ -1171,6 +1262,8 @@
   id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 当我在打前面关于 trifid 加密器的段落时，我意识到 3×3×3 的立方排列非常适合于描述第 9.3 节中描述的双重加密器的三维类比。在两个维度中很容易想象双重加密器，但在三个维度中很难想象一个立方体，因此我将仅根据坐标描述新的加密器。让我们将此加密器称为
+    *三方加密器*。
 - en: Two Square enciphers two letters at a time using two substitution tables, ergo
     Three Cube will encipher three letters at a time using three substitution tables.
     Here is a set of three tables well-mixed using the keywords COLUMBIA, STANFORD
@@ -1179,15 +1272,19 @@
   id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 两方加密器一次加密两个字母，使用两个替换表，因此三方加密器会一次使用三个替换表加密三个字母。这里是使用关键字 COLUMBIA、STANFORD 和 HOPKINS
+    很好地混合了的三个表。这三个替换表分别标记为 S、T 和 U。这里的 S 表示替换（Substitution），T 表示表（Table），U 表示字母表中的下一个字母。
 - en: The substitution tables correspond the 26 letters of the alphabet and the character
     + with the 27 ternary triplets.
   id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 替换表对应字母表的 26 个字母和字符 + 与 27 个三元组。
 - en: '![9-unnumb-28](../Images/9-unnumb-28.png)'
   id: totrans-163
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-28](../Images/9-unnumb-28.png)'
 - en: Like trifid, Three Cube begins by writing the 3-digit triplet for each letter
     vertically beneath it. The 3 digits for the first letter are taken from substitution
     table S, the 3 digits for the second letter are taken from table T, and the 3
@@ -1196,10 +1293,13 @@
   id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 与 trifid 类似，三方加密器首先将每个字母的 3 位数字三元组垂直写在其下方。第一个字母的 3 位数字来自替换表 S，第二个字母的 3 位数字来自表
+    T，第三个字母的 3 位数字来自 U。该模式在此处显示，并由三元组 FLY 进行说明。
 - en: '![9-unnumb-29](../Images/9-unnumb-29.png)'
   id: totrans-165
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-29](../Images/9-unnumb-29.png)'
 - en: Then the digits are read out left to right, and these horizontal triplets are
     converted back to letters. It would seem natural to use table S for converting
     the top row, table T for the middle row and table U for the bottom row. However,
@@ -1211,16 +1311,19 @@
   id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后从左到右读出数字，并将这些水平三元组转换回字母。使用表S转换顶行，表T转换中行，表U转换底行似乎很自然。然而，这会导致顶行与左列相同的概率为9分之1，因此第一个明文字母将被自身替换。也就是说，S1S2S3与S1T1U1相同的可能性为9分之1。中行和底行也是如此。让我们将这种情况称为*部分自然*。
 - en: For this reason, substitution table S is used for the second row, table T is
     used for the third row, and table U is used for the top row. This eliminates the
     naturals. Here is the pattern.
   id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 为此，第二行使用替换表S，第三行使用表T，顶行使用表U。这样就消除了自然性。以下是模式。
 - en: '![9-unnumb-30](../Images/9-unnumb-30.png)'
   id: totrans-168
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-30](../Images/9-unnumb-30.png)'
 - en: Since this is hard to keep straight when you are enciphering by hand, I suggest
     writing the choice of substitution table over each triplet of digits. This is
     similar to writing the key letter over each plaintext letter when using the Belaso
@@ -1229,14 +1332,18 @@
   id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于手动加密时很难保持清晰，我建议在每个数字三元组上面写上替换表的选择。这类似于使用贝拉索密码（第5.5节）时在每个明文字母上写上密钥字母。以下是使用明文消息FLY
+    TO ROME的三方块加密的示例。
 - en: '![9-unnumb-31](../Images/9-unnumb-31.png)'
   id: totrans-170
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-31](../Images/9-unnumb-31.png)'
 - en: The Three Cube cipher is rated Seven.
   id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 三方块密码的评级为七。
 - en: There is a simple way to strengthen the Three Cube cipher. Instead of converting
     the triplets back to letters using the three substitution tables in strict rotation
     as we just did, use a key to set the order of the read-out tables. The key would
@@ -1246,10 +1353,13 @@
   id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 有一种简单的方法可以加强三方块密码。不再像刚才那样使用三个替换表严格轮换地将三元组转换回字母，而是使用一个密钥来设置读出表的顺序。该密钥将由字母S、T和U以某种打乱的顺序组成，例如SUTUTTUUSTS。这个密钥的长度不应该是3的倍数。我将这个变种称为*三方块加密*。以下是使用这个读出密钥对FLY
+    TO ROME进行加密的方法。
 - en: '![9-unnumb-32](../Images/9-unnumb-32.png)'
   id: totrans-173
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-32](../Images/9-unnumb-32.png)'
 - en: Using Three Cube Plus about 1/3 of the letters will have part naturals. That
     is, one of the 3 write-in digits will be the same as one of the read-out digits.
     However, Emily will not know which letters have this defect, and will not be able
@@ -1257,10 +1367,12 @@
   id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用三方块加密，大约有三分之一的字母会有部分自然性。也就是说，三个填写数字中的一个将与三个读出数字中的一个相同。然而，艾米丽不会知道哪些字母有这种缺陷，也无法利用它。
 - en: Three Cube Plus is rated Nine.
   id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 三方块加密的评级为九。
 - en: So, you might well be saying, is it possible to nudge the rating up to Ten without
     making the cipher too complex for hand use? Thank you for asking. First off, let’s
     increase the number of substitution tables from 3 to 6\. Let’s call them S, T,
@@ -1274,19 +1386,24 @@
   id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，你可能会说，是否可能将评级提高到十，而不使密码对手工使用过于复杂？感谢你的提问。首先，让我们将替换表的数量从3增加到6。让我们称它们为S、T、U、V、W和X。我们将不再使用严格的STU、STU、STU...轮换写入三元组，而是使用另一个字母密钥，该密钥由这6个字母以某种打乱的顺序组成。填写密钥可以是TWXUSTTVWV，读出密钥可以是VWTXXSUSVTU。理想情况下，这些密钥的长度应该是互质的，并且两者的长度都不可被3整除。在这里，长度分别为10和11。我们将这个密码称为*三方块超级密码*。这是一个使用明文FLY
+    TO NEW YORK的三方块超级密码的示例。
 - en: '![9-unnumb-33](../Images/9-unnumb-33.png)'
   id: totrans-177
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-33](../Images/9-unnumb-33.png)'
 - en: Three Cube Super is rated Ten. This is another unbreakable hand cipher.
   id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 三方块超级密码的评级为十。这是另一种不可破解的手工加密。
 - en: 9.11 Rectangular grids
   id: totrans-179
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.11 矩形网格
 - en: Up to now we have discussed only square and cubic arrays of letters. There is
     no restriction in cryptography that requires all of the dimensions of a letter
     grid to be the same. It is basically a historical accident that the English alphabet
@@ -1295,6 +1412,7 @@
   id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，我们只讨论了字母的方形和立方体阵列。在密码学中，没有要求字母网格的所有维度都相同的限制。英文字母表有26个字母基本上是历史的偶然。如果我们使用33个字母的俄语字母表，我们可能会选择4×8或5×7的矩形。
 - en: If we want to have all 26 letters of the alphabet, then a 3×9 or 4×7 rectangle
     might be preferable. These give you the full 26-letter alphabet plus one or two
     extra characters. We have discussed the use of such extra characters earlier,
@@ -1306,6 +1424,8 @@
   id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果我们想要所有26个字母的字母表，那么3×9或4×7的矩形可能更可取。这些给您提供了完整的26个字母的字母表，再加上一个或两个额外字符。我们之前已经讨论过这些额外字符的使用，例如用于在字母和数字之间切换。基于波利比奥斯方格的大多数密码与5×5方格一样适用于3×9或4×7的矩形，假设所有矩形都以相同的方向排列。这些是Playfair、Two
+    Square、Three Square、Four Square和对角线bifid密码。
 - en: In fact, these 5 ciphers may be stronger when used with those rectangles because
     each letter of the alphabet has more possible substitutes. The downside, when
     using Playfair or Two Square, is that there is a higher probability that the two
@@ -1314,19 +1434,23 @@
   id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 实际上，当与那些矩形一起使用时，这5种密码可能更强大，因为字母表中的每个字母都有更多可能的替代字符。使用Playfair或Two Square时的缺点是，两个字母在同一行的概率较高，因此它们将被其下方或右侧的字母替换。
 - en: 'Here is an example of a Playfair cipher done with a 3×9 rectangle:'
   id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面是使用3×9矩形进行Playfair密码的示例：
 - en: '![9-unnumb-34](../Images/9-unnumb-34.png)'
   id: totrans-184
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-34](../Images/9-unnumb-34.png)'
 - en: 9.12 Hexadecimal fractionation
   id: totrans-185
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.12 十六进制分数
 - en: So far this chapter has focused solely on hand methods. This meant small arrays
     using only the uppercase alphabet. For computer use you usually want the full
     alphabet, uppercase and lowercase, numbers, punctuation, special symbols, diacritics,
@@ -1336,6 +1460,7 @@
   id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，本章仅专注于手动方法。这意味着仅使用大写字母的小数组。对于计算机使用，通常希望使用完整的字母表，包括大写和小写字母、数字、标点符号、特殊符号、音标，以及可能是多个字母表。简而言之，您可能希望拥有计算机的完整文本功能。做到这一点的最简单方法是使用标准计算机代码之一，如UTF-8或UTF-16，将每个字符表示为一个8位字节。
 - en: A natural way to fractionate an 8-bit byte is to split it into two 4-bit hexadecimal
     digits, or hex digits. All of the fractionation methods that are based on Polybius
     squares also work for 16×16 squares, namely Playfair, Two Square, Three Square,
@@ -1346,6 +1471,8 @@
   id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 将8位字节分数化的一种自然方式是将其拆分为两个4位十六进制数字，或十六进制数字。所有基于波利比奥斯方格的分数化方法也适用于16×16方格，即Playfair、Two
+    Square、Three Square、Four Square和bifid。如果16×16方格使用大密钥混合得很好，那么这些方法比使用5×5方格的同一方法更强大。这是因为256个字符的排列方式远远多于25个字符的排列方式，即8.58×10^(506)与1.55×10^(25)。
 - en: A simple method for using hexadecimal fractionation is to (1) convert the characters
     of the message to hexadecimal digits by using a well-mixed keyed substitution
     table, (2) scramble those digits using some transposition cipher, and then (3)
@@ -1354,6 +1481,7 @@
   id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用十六进制分数化的简单方法是：(1)通过使用混合得很好的密钥替换表将消息的字符转换为十六进制数字，(2)使用一些置换密码对这些数字进行混淆，然后(3)使用第二个混合得很好的密钥替换表将十六进制数字的对转换回字节。
 - en: The simplest transposition is just moving the first hex digit to the end, so
     that 12 34 56 78 would become 23 45 67 81\. This might be called *Cycle Hex*.
     It is essentially diagonal bifid (section 9.7) done in base 16 instead of base
@@ -1366,6 +1494,10 @@
   id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 最简单的转位法就是将第一个十六进制数字移到末尾，这样 `12 34 56 78` 就会变成 `23 45 67 81`。这可能被称为 *Cycle Hex*。它本质上是对角线的二重置位（第
+    9.7 节），只不过是在基数为 16 而不是基数为 5 下进行的。Cycle hex 评级为 Five。你也可以使用第 4.6.1 节描述的逐段反转置换来打乱字母顺序。这可能被称为
+    *Piecewise Hex*。它也评级为 Five。一种更强大的方法是使用列转位密码来打乱十六进制数字。这可以称为 *Columnar Hex*。它评级为
+    Seven。使用双列转位置换后，评级增至 Ten。
 - en: These methods can be used to encipher any computer file. However, if the files
     are pure text, the methods can be further enhanced. Pure text will normally use
     fewer than 100 of the 256 possible byte values. The remaining character codes
@@ -1375,11 +1507,15 @@
   id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些方法可以用于对任何计算机文件进行加密。但是，如果文件是纯文本，则可以进一步增强这些方法。纯文本通常会使用少于 256 个可能的字节值中的 100 个以下。其余的字符代码可以用于空值、双字母组、三字母组和第
+    6.4 节描述的其他用途。如果做得好，这会将 cycle hex 的评级提升至 Six，piecewise hex 的评级提升至 Six，columnar
+    hex 的评级提升至 Eight。
 - en: 9.13 Bitwise fractionation
   id: totrans-191
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.13 位级分数化
 - en: Fractionation can also be done with the individual bits that represent the characters
     in a message. The block of N characters would be represented by 8N bits. These
     can be formed into a rectangle in several ways, such as 2×4N, 4×2N, 8×N and N×8\.
@@ -1389,6 +1525,8 @@
   id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 分数化也可以用于表示消息中代表字符的各个位。长度为 N 的字符块将由 8N 位表示。这些可以以几种方式形成矩形，例如 2×4N、4×2N、8×N 和 N×8。例如，5
+    个字母的块将由 40 位表示，可以写成 2 行 20 位、4 行 10 位、8 行 5 位或 5 行 8 位。这对手工操作来说很麻烦，但在计算机上很容易实现。
 - en: Here is an example of how 5 characters can be written horizontally into a 5×8
     block and then read out vertically. This example uses the standard UTF-8 character
     codes. For example, uppercase letter A is represented as 01000001\. The plaintext
@@ -1396,10 +1534,13 @@
   id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个示例，展示了如何将 5 个字符水平写入一个 5×8 的块中，然后垂直读出。此示例使用标准的 UTF-8 字符代码。例如，大写字母 A 表示为 01000001。明文是单词
+    DELTA。
 - en: '![9-unnumb-35](../Images/9-unnumb-35.png)'
   id: totrans-194
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-35](../Images/9-unnumb-35.png)'
 - en: The bits are read out going down the columns. Since each column contains only
     5 bits, each byte of the ciphertext must span two or more columns. The 8 bits
     for the first ciphertext byte are found in columns 1 and 2 with medium highlighting.
@@ -1411,6 +1552,9 @@
   id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: 位按列向下读取。由于每列只包含 5 位，因此每个密文字节必须跨越两列或更多列。第一个密文字节的 8 位位于列 1 和列 2 中，并用中等高亮度显示。第一列包含
+    00000，第二列的前 3 位为 111，因此密文的第一个字节为 00000111，或十六进制 07。这是控制字符 BELL，可以追溯到电传打字机时代，当时会发出退格铃声。它现在已经没有图形表示。我会用符号
+    **♪** 来代表铃声字符。
 - en: The second ciphertext byte comes from the darker highlighted section spanning
     columns 2, 3 and 4\. The last 2 bits in column 2 are 11, column 3 contains 00000,
     and the first bit in column 4 is 0\. Combining these, the second ciphertext byte
@@ -1419,6 +1563,8 @@
   id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二个密文字节来自跨越列 2、3 和 4 的较暗突出部分。第二列的最后 2 位是 11，第三列包含 00000，第四列的第一位是 0。结合这些，第二个密文字节为
+    11000000。这代表字符 **À**，是一个带重音符号的大写字母 **A**。
 - en: Bytes 3 and 4 of the ciphertext are **“** and **x**, that is, double quote and
     lowercase x. The fifth byte comes from columns 7 and 8, namely 000 and 01001\.
     The byte 00001001 represents the **HTAB**, or horizontal tab character, which
@@ -1427,6 +1573,7 @@
   id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 密文的第3和第4个字节是**“**和**x**，即双引号和小写字母x。第五个字节来自第7和第8列，即000和01001。字节00001001代表**HTAB**，或水平制表符，是看不见的。我将使用箭头头部**►**来表示它。因此密文是**♪À“x►**。
 - en: This looks pretty cryptic, but the method is weak because it uses the standard
     alphabet for both the conversion of the plaintext into bits and the conversion
     from bits back to characters. It is rated One. If two independent well-mixed keyed
@@ -1437,6 +1584,8 @@
   id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 这看起来很神秘，但这种方法很弱，因为它在将明文转换为比特和将比特转换回字符时使用了标准字母表。它被评为一。如果这些步骤使用了两个独立的混合密钥字母表，则此密码只是共轭矩阵双字母变体（9.6.1节）的二进制版本。这种方法可以称为*Hex
+    Rectangle*。它与共轭矩阵双字母变体密码具有相同的评级，即五。
 - en: It is natural to form eight 8-bit bytes into an 8×8 bit square. Write the 8
     bits for each character vertically into the square using a mixed alphabet, and
     read them out horizontally using a different mixed alphabet. This is just an 8×8
@@ -1444,11 +1593,13 @@
   id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 自然地将八个8位字节形成一个8×8比特方块。使用一个混合字母表将每个字符的8位写入方块中，并使用另一个混合字母表水平地读取它们。这只是十六进制矩形的一个8×8方块版本，评级为六。
 - en: 9.13.1 Cyclic 8×N
   id: totrans-200
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 9.13.1 循环8×N
 - en: It is easy to improve the strength of this cipher. For any block of N characters,
     write their 8-bit representations into an 8×N rectangle vertically. Shift each
     row cyclically to the left by some amount from 0 to N-1 bit positions. For example,
@@ -1458,10 +1609,12 @@
   id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 提高此密码的强度很容易。对于任何N个字符的块，垂直地将它们的8位表示写入8×N的矩形中。将每行循环地向左移动0到N-1位位置。例如，abcdefgh循环左移2个位置将得到cdefghab。然后垂直地读取每个8位列。这里有一个使用8×8比特方块的示例。每行都按其左侧指示的量向左循环。
 - en: '![9-unnumb-36](../Images/9-unnumb-36.png)'
   id: totrans-202
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-36](../Images/9-unnumb-36.png)'
 - en: This cipher is at the limit of what can be done by hand. It requires 3 keys,
     namely 2 keys for mixing the 2 alphabets, and an 8-digit key for specifying the
     shift amounts. It can be called *Cyclic 8×N*. When N is 6 or larger it is rated
@@ -1469,6 +1622,7 @@
   id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种密码已经达到了手工操作的极限。它需要3个密钥，即两个用于混合两个字母表的密钥，以及一个用于指定位移量的8位数字密钥。它可以称为*Cyclic 8×N*。当N为6或更大时，它被评为七。随着块大小N的增加，密码变得更强大。
 - en: When the rectangle is square you can rotate both the rows and columns to get
     a *Bicyclic 8×8* cipher. You should alternate directions for this. Write the bits
     in horizontally, cycle the bits vertically, cycle the bits horizontally, and read
@@ -1476,6 +1630,8 @@
   id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 当矩形是正方形时，你可以同时旋转行和列，得到一个*Bicyclic 8×8*密码。你应该交替方向进行。水平写入位，垂直循环位，水平循环位，然后垂直读取字符。Bicyclic
+    8×8被评为八。
 - en: The cyclic 8×N cipher can be repeated to get a *Double Cyclic 8×N* cipher. This
     requires 5 keys, namely 3 keys to mix the 3 alphabets, and two 8-digit keys to
     control the 2 rounds of shifting. There are 5 steps. (1) Use the first alphabet
@@ -1489,17 +1645,20 @@
   id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 循环8×N密码可以重复以获得*双循环8×N*密码。这需要5个密钥，即3个用于混合3个字母表的密钥，以及两个用于控制2轮移位的8位密钥。共有5个步骤。（1）使用第一个字母表进行简单替换。生成的N个字节被垂直地写入8×N位的矩形中。（2）使用第一个移位密钥循环移动行。（3）使用第二个字母表对N列执行简单替换。（4）使用第二个移位密钥循环移动行。（5）使用第三个字母表对垂直列执行最终的简单替换。注意，所有的移位都是水平的，所有的替换都是垂直的。双重循环8×N密码的评级为九。
 - en: This can be continued to *Triple*, *Quadruple* and beyond, if desired. All of
     these variations can be further enhanced by varying the block sizes, either periodically
     or using a random number generator.
   id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果需要，可以继续进行*三重*、*四重*等等。所有这些变化都可以通过周期性地或使用随机数发生器来变化块大小来进一步增强。
 - en: 9.14 Other fractionation
   id: totrans-207
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.14 其他分数
 - en: In sections 9.12 and 9.13 we looked at dividing a byte into two hexadecimal
     digits or into eight individual bits. There are numerous other ways of partitioning
     8 bits, such as 3,2,3\. If the 3,2,3 bit representation of each character is written
@@ -1511,10 +1670,12 @@
   id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第9.12和9.13节中，我们看过将一个字节分成两个十六进制数字或分成八个单独的位。将8位分成许多其他方式，如3,2,3。如果将每个字符的3,2,3位表示垂直地写下来，然后将3行按某个位置数循环向左移动，那么每一列仍然会有3,2,3位的分布，因此8位可以被转换回字节。这里是一个例子。每一行按左边显示的位置数循环左移，即分别为1个位置，3个位置和2个位置。
 - en: '![9-unnumb-37](../Images/9-unnumb-37.png)'
   id: totrans-209
   prefs: []
   type: TYPE_IMG
+  zh: '![9-unnumb-37](../Images/9-unnumb-37.png)'
 - en: Here the plaintext RETREAT has been transformed into the ciphertext **@w«****θ****K_****╝**.
     Let’s call this a *BitCycle Substitution*. This method is rated Five. Like the
     cyclic 8×N cipher in section 9.13.1, this can be doubled, tripled, or more, and
@@ -1522,10 +1683,12 @@
   id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里明文RETEAT已经被转换成了密文**@w«****θ****K_****╝**。我们称之为*BitCycle Substitution*。这种方法的评级为五。与第9.13.1节中的循环8×N密码一样，这可以加倍、三倍或更多，并且块大小可以变化。
 - en: This basic idea can be enhanced in two powerful ways.
   id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个基本思想可以以两种强大的方式进行增强。
 - en: First, the bytes can be divided in several different ways, such as 1,3,2,2 or
     2,4,2\. For example, you could encipher the block first using the 3,2,3 split,
     then reencipher it using the 1,3,2,2 split, then reencipher that using the 2,4,2
@@ -1539,6 +1702,7 @@
   id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，字节可以被分成几种不同的方式，例如1,3,2,2或2,4,2。例如，你可以首先使用3,2,3的分割方式对块进行加密，然后使用1,3,2,2的分割方式重新加密，然后再使用2,4,2的分割方式重新加密。这将涉及7个密钥和7个步骤。（1）使用第一个替换产生消息的3,2,3位表示。（2）使用第一个移位密钥移动3行。（3）使用第二个替换产生字节的1,3,2,2位表示。（4）根据第二个移位密钥移动4行。（5）使用第三个替换产生字节的2,4,2位表示。（6）根据第三个移位密钥移动3行。（7）使用第四个替换产生最终的密文字节。
 - en: Second, the message blocks can be divided in several different ways. Suppose
     you used long plaintext blocks of, say, 32 characters. For Step 2 in the previous
     technique you could divide the 32 bytes into groups of 6, 14 and 12 bytes. For
@@ -1548,6 +1712,7 @@
   id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次，消息区块可以以几种不同的方式划分。假设你使用长的明文区块，比如32个字符。对于前一种技术的第2步，你可以将32字节分成6、14和12字节的组。对于第4步，你可以将32字节分成11、8和13字节的组。对于第6步，你可以将32字节分成8、17和7字节的组。每个组都将独立移位。这种划分对每条消息可能是不同的。
 - en: Or, you could take a more inclusive approach. For Step 2, divide the entire
     message into blocks of size X. For Step 4, divide the message into blocks of size
     Y. For Step 6, divide the message into blocks of size Z. X, Y and Z may be any
@@ -1555,51 +1720,61 @@
   id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者，你可以采取更包容的方法。对于第2步，将整个消息划分为大小为X的区块。对于第4步，将消息划分为大小为Y的区块。对于第6步，将消息划分为大小为Z的区块。X、Y和Z的长度可以是从6字节到整个消息长度的任意长度。
 - en: I will not rate all of the variations of the BitCycle substitution. Suffice
     to say that the ratings may range anywhere from Five to Ten. In chapter 12 I will
     describe how you can verify that a block cipher truly deserves a rating of Ten.
   id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: 我不会评价所有BitCycle替换的变体。可以说，评级可能从五到十不等。在第12章中，我将描述如何验证一个区块密码是否真正值得得到十分评级。
 - en: 9.15 Stronger blocks
   id: totrans-216
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.15 更强大的区块
 - en: 'Several of the ciphers described in this chapter work on blocks of plaintext.
     There are several things that you can do to the plaintext blocks to make your
     cipher just a bit harder for Emily. Here is a short list of ideas:'
   id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章描述的几种密码技术适用于明文区块。有几种方法可以对明文区块进行处理，使你的密码对艾米莉来说稍微困难一些。以下是一些想法的简短列表：
 - en: Vary the block lengths, periodically or pseudorandomly.
   id: totrans-218
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 周期性或伪随机地改变区块长度。
 - en: Reverse the first few letters of each block, periodically or pseudorandomly.
   id: totrans-219
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 反转每个区块的前几个字母，周期性或伪随机地。
 - en: Reverse the last few letters of each block, periodically or pseudorandomly.
   id: totrans-220
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 反转每个区块的最后几个字母，周期性或伪随机地。
 - en: Cycle each block left or right, periodically or pseudorandomly.
   id: totrans-221
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 周期性或伪随机地将每个区块向左或向右循环。
 - en: Swap the last N letters of the block with the first N letters of the next block.
   id: totrans-222
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将区块的最后N个字母与下一个区块的前N个字母交换。
 - en: 'But a word of warning: if you are enciphering and deciphering by hand, use
     these methods sparingly. If you make your cipher so complex that you cannot encipher
     and decipher accurately, then it becomes worthless.'
   id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 但要警告一句：如果你手动加密和解密，请谨慎使用这些方法。如果你使你的密码变得如此复杂以至于无法准确加密和解密，那么它就变得毫无价值。

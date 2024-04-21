@@ -1,23 +1,29 @@
 - en: 10 Variable-length fractionation
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
 - en: Ciphers based on Morse code
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Mixed letters and bigrams
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Variable-length binary codewords
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Ciphers based on text compression
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -25,6 +31,7 @@
     groups and/or the ciphertext groups have variable lengths. These include monom-binom
     (section 10.2), Huffman substitution (section 10.4) and Post tag systems (section
     10.5).
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
 - en: In section 4.4 I illustrated the concept of fractionation by describing two
@@ -33,9 +40,11 @@
     groups. Let me begin the broader discussion of variable-length fractionation with
     a different form of Morse fractionation that resembles the trifid cipher described
     in section 9.9\. Let’s call it Morse3.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
 - en: 10.1 Morse3
+  id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -47,6 +56,7 @@
     or **··** if needed to complete the last group of 3 symbols. The recipient will
     ignore these extra dots following the last **//**. (4) Substitute a letter for
     each group of 3 symbols using a second mixed alphabet.'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
 - en: To illustrate I will use the mixed Morse alphabet from section 4.4 (shown here
@@ -56,23 +66,29 @@
     to the trifid cipher, except using the Morse symbols **· - /** instead of the
     digits 0 1 2\. Notice that **///** can never occur, so it is not necessary to
     provide a letter substitute for it. Thus only 26 substitutes are needed.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
 - en: '![10-unnumb-1](../Images/10-unnumb-1.png)'
+  id: totrans-11
   prefs: []
   type: TYPE_IMG
 - en: Let’s encipher the sample message SEND AMMO.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
 - en: '![10-unnumb-2](../Images/10-unnumb-2.png)'
+  id: totrans-13
   prefs: []
   type: TYPE_IMG
 - en: If a well-mixed keyed alphabet is used for both substitution steps this cipher
     is rated Five. One disadvantage of Morse3 is that the ciphertext is longer than
     the plaintext. In this example an 8-letter plaintext became an 11-letter ciphertext.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
 - en: 10.2 Monom-Binom
+  id: totrans-15
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -82,6 +98,7 @@
     name comes from the code name VICTOR given by the FBI to KGB spy Reino Häyhänen.
     The VIC cipher was never broken until Häyhänen defected to the US in 1957 and
     divulged its details.'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
 - en: 'The VIC cipher has two parts, the monom-binom substitution, and the modulo-10
@@ -97,26 +114,40 @@
     because the diagram is not square, is not 8×8, and does not have an alternating
     pattern of black and white squares. Oh, and it isn’t used for playing checkers.
     Other than that, it’s a perfect name. Here is an example:'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: VIC 密码有两部分，单-双替换和模 10 加上一串随机数字的部分。让我们从单-双替换开始。字母表中的每个字母都被 1 或 2 个十进制数字替换。为了让接收方
+    Riva 能够读取消息，两个数字被选为所有 2 位数对的第一个数字。假设发送方 Sandra 选择了 2 和 5。所有 2 位数的替代字母将以 2 或 5
+    开始，而其他所有数字都将是 1 位数的替代字母。每当消息中的下一个数字是 2 或 5 时，读者就知道这是 2 位数替代的开始，否则就是单个数字的替代。这些替换可以用一个名为
+    *跨距校验板* 的 3 行图表来表示。这个名字并不合适，因为图表不是方形的，不是 8×8 的，也没有交替的黑白方格模式。噢，而且它不是用来玩跳棋的。除此之外，这个名字完美无缺。下面是一个示例：
 - en: '![10-unnumb-3](../Images/10-unnumb-3.png)'
+  id: totrans-18
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-3](../Images/10-unnumb-3.png)'
 - en: The eight 1-digit substitutes are on the top row, and the twenty 2-digit substitutes
     starting with 2 and 5 are on the second and third rows. The digits 2 and 5 cannot
     be used as 1-digit substitutes, so these spaces are blacked out on the top row.
     For example, the substitute for S is 4, the substitute for U is 24 and the substitute
     for Y is 54.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 八个 1 位数的替代字母在顶行，而从 2 和 5 开始的二十个 2 位数的替代字母在第二和第三行。数字 2 和 5 不能用作 1 位数的替代字母，所以这些空格在顶行被涂黑了。例如，S
+    的替代字母是 4，U 的替代字母是 24，Y 的替代字母是 54。
 - en: 'Since there are 28 boxes and only 26 letters in the English alphabet, there
     are 2 extra characters that I have denoted by * and #. It is common practice to
     use the * as an all-purpose punctuation mark, for example . ? , “ or whatever
     else may make the message easier to read. The # is used for switching from letters
     to digits and back. The message 600 TANKS ARRIVE 1800 TODAY would be sent as #600#TANKSARRIVE#1800#TODAY
     and would be enciphered as **57600 57730 21438 86251 57180 05779 58354**.'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '由于有 28 个方格，而英文字母表只有 26 个字母，所以有 2 个额外的字符，我用 * 和 # 表示。通常使用 * 作为一种通用的标点符号，例如 .
+    ? , “ 或任何其他使消息更易读的符号。# 用于在字母和数字之间切换。消息 600 TANKS ARRIVE 1800 TODAY 将被发送为 #600#TANKSARRIVE#1800#TODAY，并被加密为
+    **57600 57730 21438 86251 57180 05779 58354**。'
 - en: An obvious weakness of this type of substitution is that more than 1/3 of the
     substitutes (actually 10 out of 28, or 35.7%) begin with 2 and the same percentage
     start with 5, so the 2 selected digits are far more frequent than any of the other
@@ -126,82 +157,124 @@
     with the duplicated R removed. Or, you can use my favorite, RAT NOISE. Using 1-digit
     substitutes for the most-frequent letters also helps reduce the length of the
     ciphertext.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种类型的替换的一个明显的弱点是，超过 1/3 的替代字母（实际上是 10 个中的 28 个，或者 35.7%）以 2 开头，同样的百分比以 5 开头，因此所选的
+    2 位数比其他 8 位数要频繁得多。它们将像华尔兹比赛中的大象一样显眼。为了帮助缓解这个问题，将最频繁出现的 8 个字母放在顶行。它们是 ETAONIRS。为了帮助记忆它们，你可以使用
+    SERRATION 的记忆法，即去掉重复的 R 后剩下的 SERATION。或者，你可以使用我的最爱，RAT NOISE。对于最常见的字母使用 1 位数的替代字母也有助于减少密文的长度。
 - en: Used by itself, the straddling checkerboard is rated Three.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 单独使用时，跨距校验板的评级为三级。
 - en: 'However, the VIC cipher adds a second step. (In its most complex form it also
     transposes the digits.) The result of the monom-binom substitution is treated
     as an intermediate ciphertext. For each digit in the intermediate text a key digit
     is added modulo 10, that is, added without the carry. There are two flavors to
     this. You can simply add a repeated numeric key such as 2793\. That would work
     like this:'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，VIC 密码增加了第二步。（在其最复杂的形式中还会对数字进行转置。）单项二项式替换的结果被视为中间密文。对于中间文本中的每个数字，都会添加一个密钥数字，取模
+    10，也就是说，不带进位地相加。这有两种风格。你可以简单地添加一个重复的数字密钥，比如 2793。它将像这样工作：
 - en: '![10-unnumb-4](../Images/10-unnumb-4.png)'
+  id: totrans-24
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-4](../Images/10-unnumb-4.png)'
 - en: This form of the VIC cipher is rated Five.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: VIC 密码的这种形式被评为五级。
 - en: '*****One stronger form of the VIC cipher is to use a non-repeating numeric
     key produced by a random number generator. For this purpose, the Russians used
     what is called a *lagged Fibonacci generator*. You may already be familiar with
     the Fibonacci sequence, which is a sequence of integers where each term is the
     sum of the two preceding terms. The sequence starts with x[0] = 0 and x[1] = 1\.
     Additional terms of the sequence are generated by this mathematical formula:'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: '*****VIC 密码的一种更强形式是使用由随机数生成器产生的非重复数字密钥。为此，俄罗斯人使用了所谓的*滞后斐波那契生成器*。你可能已经熟悉斐波那契数列，它是一个整数序列，其中每一项是前两项的和。该序列从
+    x[0] = 0 和 x[1] = 1 开始。序列的其他项由以下数学公式生成：'
 - en: '![10-unnumb-4-equation-10-1](../Images/10-unnumb-4-equation-10-1.png)'
+  id: totrans-27
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-4-equation-10-1](../Images/10-unnumb-4-equation-10-1.png)'
 - en: That is, term n is the sum of term n-1 and term n-2\. For the VIC cipher only
     the low-order digit is relevant. This can be written as
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 也就是说，第 n 项是第 n-1 项和第 n-2 项的和。对于 VIC 密码，只有低位数字是相关的。这可以写成
 - en: '![10-unnumb-4-equation-10-2](../Images/10-unnumb-4-equation-10-2.png)'
+  id: totrans-29
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-4-equation-10-2](../Images/10-unnumb-4-equation-10-2.png)'
 - en: A lagged Fibonacci generator can generalize this in three different ways. First,
     it can add terms other than the last two, such as
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 滞后斐波那契生成器可以通过三种不同的方式推广。首先，它可以添加除最后两个以外的其他项，例如
 - en: '![10-unnumb-4-equation-10-3](../Images/10-unnumb-4-equation-10-3.png)'
+  id: totrans-31
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-4-equation-10-3](../Images/10-unnumb-4-equation-10-3.png)'
 - en: Notice that the Chained Digit generator described in section 4.5.1 has this
     form, with j = 1 and k = 7.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，4.5.1 节中描述的链式数字生成器具有这种形式，其中 j = 1 并且 k = 7。
 - en: 'Second, the numbers can be generated with a different modulus. The most common
     modulus is some power p^e of a prime p:'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二，这些数字可以用不同的模生成。最常见的模是某个素数 p 的某个幂 p^e：
 - en: '![10-unnumb-4-equation-10-4](../Images/10-unnumb-4-equation-10-4.png)'
+  id: totrans-34
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-4-equation-10-4](../Images/10-unnumb-4-equation-10-4.png)'
 - en: Third, the two terms can be combined using a binary operator other than addition.
     Common choices are subtraction, multiplication, and exclusive-OR. This can be
     written
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三，两个项可以使用除加法以外的二元运算符结合。常见的选择有减法、乘法和异或。这可以写成
 - en: '![10-unnumb-4-equation-10-5](../Images/10-unnumb-4-equation-10-5.png)'
+  id: totrans-36
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-4-equation-10-5](../Images/10-unnumb-4-equation-10-5.png)'
 - en: where ● can represent + - × ⊕ or some other binary operator. (Division can also
     be used. It is the same as multiplying by the multiplicative inverse of the second
     operand. See section 3.6.) In practice, addition is used most often because additive
     generators produce the longest periods.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中 ● 可以表示 + - × ⊕ 或其他二元运算符。（也可以使用除法。它与乘以第二个操作数的乘法逆元相同。请参阅第 3.6 节。）实际上，最常用的是加法，因为加法生成器产生最长的周期。
 - en: Using this form of pseudorandom digit generator, monom-binom is rated Seven.******
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用这种形式的伪随机数字生成器，单项二项式评为七级。
 - en: 10.3 Periodic lengths
+  id: totrans-39
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 10.3 周期长度
 - en: One easy way to achieve variable-length encryption is to use multiple substitution
     tables, one table for each desired block length. If these were blocks of letters,
     the substitution tables would quickly become enormous. Instead, we’ll use bits.
@@ -209,32 +282,41 @@
     it into short blocks of bits and substituting a block of the same length using
     the substitution table for that length. The lengths of the blocks can be periodic
     using a repeating numeric key, or they can be produced by a random number generator.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 实现可变长度加密的一种简单方法是使用多个替换表，每个所需的块长度一个表。如果这些是字母块，替换表将很快变得庞大。相反，我们将使用位。让消息表示为位字符串。消息通过将其分成短位块并使用该长度的替换表替换相同长度的块来加密。块的长度可以使用重复的数字密钥进行周期性设置，或者可以由随机数生成器产生。
 - en: Let me demonstrate using a small example. There are 3 substitution tables for
     blocks of 2, 3 and 4 bits. In a practical cipher I would use blocks of 3, 4, 5
     and 6 bits, but you could go up to 16 bits, or possibly longer, if you had the
     storage.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
 - en: For this simple demonstration I have used a standard alphabet, filling it out
     to 32 characters by taking symbols from the top row of the keyboard going straight
     left to right.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
 - en: '![10-unnumb-5](../Images/10-unnumb-5.png)'
+  id: totrans-43
   prefs: []
   type: TYPE_IMG
 - en: The 3 substitution tables are
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
 - en: '![10-unnumb-6](../Images/10-unnumb-6.png)'
+  id: totrans-45
   prefs: []
   type: TYPE_IMG
 - en: 'Here is a sample encipherment using the repeating key 3,2,2,4,2:'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
 - en: '![10-unnumb-7](../Images/10-unnumb-7.png)'
+  id: totrans-47
   prefs: []
   type: TYPE_IMG
 - en: This version, which I will call *BitBlock SA* for Standard Alphabet, has modest
@@ -242,14 +324,17 @@
     additional key for the sequence of block sizes. When there are just a few substitution
     tables, the block sizes are all small, and the sequence of block sizes is small,
     BitBlock SA is rated Three. Otherwise it is rated Four.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
 - en: One way to strengthen this cipher is to use well-mixed keyed alphabets for converting
     the letters to bits and the resulting bits back to letters. Let’s call the mixed-alphabet
     version *BitBlock MA*. It is rated Seven.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
 - en: 10.4 Huffman Substitution
+  id: totrans-50
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -258,6 +343,7 @@
     substitution uses two sets of codes. The codes from the second set are substituted
     for the codes in the first set. These might be the same set of codes, but in different
     orders.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
 - en: The message is represented as a string of bits, for example by using one of
@@ -267,6 +353,7 @@
     not compress the message, although the length of the message, measured in bits,
     can change if the codes in the first set have different lengths from their substitutes
     in the second set.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
 - en: Recall that a set of Huffman codes must have the prefix property. That is, no
@@ -275,38 +362,51 @@
     string you are decoding started with **11011**, you would not know whether the
     first code had 4 bits or 5 bits. With the prefix property there is no need to
     have a separator between the codes the way that Morse code groups need to be separated.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s look at how to construct a set of Huffman codes with the prefix property.
     Begin by listing the single bits in either order, namely 0,1 or 1,0\. For example,
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
 - en: '![10-unnumb-8](../Images/10-unnumb-8.png)'
+  id: totrans-55
   prefs: []
   type: TYPE_IMG
 - en: 'For each item on this list, either accept it as a complete code, or extend
     it to make two longer codes by appending a 0 to one copy and a 1 to the other
     copy, again in either order. For example, we could accept the code 1 as complete,
     and extend the code 0 to make two codes, 00 and 01, like this:'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于此列表中的每一项，要么将其接受为完整代码，要么通过将一个副本附加0和另一个副本附加1的方式将其扩展为两个更长的代码，再以任何顺序。例如，我们可以接受代码1作为完整的，并将代码0扩展为两个代码，00和01，如下所示：
 - en: '![10-unnumb-9](../Images/10-unnumb-9.png)'
+  id: totrans-57
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-9](../Images/10-unnumb-9.png)'
 - en: This process can be repeated as often as desired. For example, we could accept
     the code 01 as complete, but extend the code 00 one more step to make codes 000
     and 001.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个过程可以根据需要重复进行。例如，我们可以接受代码01作为完成，但是将代码00再延长一步，使代码000和001。
 - en: '![10-unnumb-10](../Images/10-unnumb-10.png)'
+  id: totrans-59
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-10](../Images/10-unnumb-10.png)'
 - en: This process can be continued until you have the desired number of codes, or
     the desired range of code lengths. However, 4 codes are enough for this example.
     We will accept both 000 and 001 as complete codes, making a complete set of 4
     codes.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个过程可以继续进行，直到你获得了所需数量的代码或所需长度范围。但是，对于这个例子，4个代码就足够了。我们将接受代码000和001作为完整代码，组成完整的4个代码。
 - en: '*****We can estimate how long the average code will be when we encipher a bit
     string using these codes. There is a 1/2 chance that the string will begin with
     1, thus a 1/2 chance that the code will be 1 bit long. There is a 1/8 chance that
@@ -315,26 +415,38 @@
     will begin with 01 and the code will be 2 bits long. This is a complete set of
     codes so there are no other possibilities. Combining them gives the expected code
     length 1/2+3/8+3/8+2/4 = 14/8 = 1.75 bits.'
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: '*****当我们使用这些代码对比特串进行加密时，可以估计平均代码的长度。字符串以1开头的概率为1/2，因此代码长度为1位的概率为1/2。字符串以000开头的概率为1/8，以001开头的概率也为1/8。无论哪种情况，代码都将是3位长。字符串以01开头的概率为1/4，代码长度为2位。这是一个完整的代码集，因此没有其他可能性。将它们组合在一起得到预期的代码长度1/2+3/8+3/8+2/4
+    = 14/8 = 1.75位。'
 - en: After the first code has been substituted, the probabilities are the same for
     the next code, so the expected length of all codes is 1.75 bits. This is less
     than the average length of the codes, which is 2.25 bits.******
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第一个代码被替换后，下一个代码的概率相同，因此所有代码的期望长度都是1.75位。这比代码的平均长度小，平均长度为2.25位。******
 - en: Here is an example of Huffman substitution. There are two sets of Huffman codes.
     The codes in the left column are replaced by the codes in the right column. Both
     sets of codes have the prefix property. The plaintext is LIBERTY encoded with
     the standard 5-bit representation A = 00000, B = 000001, C = 00010, . . ., Z =
     11001.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是Huffman替换的一个例子。有两组Huffman代码。左列中的代码被右列中的代码替换。两组代码都具有前缀属性。明文是用标准的5位表示A = 00000，B
+    = 000001，C = 00010等编码的LIBERTY。
 - en: '![10-unnumb-11](../Images/10-unnumb-11.png)'
+  id: totrans-64
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-11](../Images/10-unnumb-11.png)'
 - en: '![10-unnumb-12](../Images/10-unnumb-12.png)'
+  id: totrans-65
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-12](../Images/10-unnumb-12.png)'
 - en: The first line of 5-bit groups is the word LIBERTY encoded in the standard way,
     A = 00000, B = 00001, and so on. The second line of binary is the same string
     of bits, but divided into Huffman codes from Set1\. The underlined digit 1 is
@@ -345,28 +457,36 @@
     that line 4 is 4 bits longer than line 1\. The final line is the ciphertext using
     the same standard 5-bit representation for the alphabet. The last letter of the
     ciphertext could be either I or J, since the last binary group has only 4 bits.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 5位组的第一行是用标准方式编码的单词LIBERTY，A = 00000，B = 00001等等。二进制的第二行是相同的比特串，但是分为了来自Set1的Huffman编码。下划线下的数字1是填充，用于填充最后一个Huffman编码。二进制的第三行用Set1中的每个编码替换为相应的Set2中的编码，也就是说，第三行是替换步骤的结果。二进制的第四行是与第三行相同的比特串，但是分为5位组。请注意，第4行比第1行长了4位。最后一行是使用相同的标准5位表示法为字母加密的密文。密文的最后一个字母可能是I或J，因为最后一个二进制组只有4位。
 - en: '*****If you are doing this by computer it is not necessary to compare the front
     end of the bit string to each of the Huffman codes in turn. Suppose that the longest
     code has 6 bits. You can make up a table of all 64 possible 6-bit combinations.
     Each entry in the table will tell the length of the code, in bits, and give its
     substitute. Each time you perform a substitution you use the first 6 bits of the
     string to look directly in the table.'
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: '*****如果您正在使用计算机执行此操作，则无需逐个将比特串的前端与每个赫夫曼编码进行比较。假设最长的编码有6位。您可以制作一个包含所有64种可能的6位组合的表。表中的每个条目都将告诉编码的长度（以比特为单位），并给出其替代项。每次执行替换时，您都可以使用字符串的前6位直接查找表。'
 - en: Suppose, for example, that the first Huffman code is 00000 and its substitute
     is 0110\. The possible values for the first 6 bits of a string starting with that
     code are 000000 and 000001\. So entries 000000 and 000001 in the table would both
     give the code length as 5, and the substitute for that code as 0110\. To perform
     the substitution, you would delete the first 5 bits of the string, and append
     0110 to the result string.******
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，假设第一个赫夫曼编码是00000，其替代项是0110。以该编码开头的字符串的前6位的可能值是000000和000001。因此，表中的条目000000和000001都将给出编码长度为5，以及该编码的替代项为0110。要执行替换，您将删除字符串的前5位，并将0110附加到结果字符串中。******
 - en: 10.5 Post tag systems
+  id: totrans-69
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 10.5 波斯特标签系统
 - en: 'Mathematician Emil Leon Post of the Courant Institute of New York University
     invented *Post Tag Systems* in 1920\. The basic idea is very simple. You start
     with a string of bits. Then you take some bits from the front of the string, replace
@@ -374,26 +494,35 @@
     keep doing this. One of three things will happen: either the string shrinks until
     you can’t do this anymore, or you get into an endless repeating cycle, or the
     string grows forever.'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 纽约大学Courant研究所的数学家埃米尔·莱昂·波斯特（Emil Leon Post）于1920年发明了*波斯特标签系统*。其基本思想非常简单。您从一串比特开始。然后，您从字符串的前面取一些比特，用不同的比特替换它们，并将它们放在字符串的末尾。您继续这样做。其中的一种情况会发生：要么字符串缩小直到您无法再这样做，要么您陷入无尽的重复周期，要么字符串永远增长。
 - en: Historical aside
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 历史背景
 - en: Post did not create his Post tags for use in cryptography. Post proved that
     the question of whether the string grows, shrinks or repeats cannot be answered
     within standard mathematics, then he used this fact to construct a proof of Kurt
     Gödel’s famous Incompleteness Theorems. I consider this to be a simpler and more
     elegant proof than Alan Turing’s proof using symbols written onto an infinite
     tape, although the similarity between Post’s bit string and Turing’s tape is striking.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 波斯特并未为密码学而创建他的波斯特标签。波斯特证明了字符串增长、缩小或重复的问题不能在标准数学框架内得到解答，然后他利用这一事实构建了对库尔特·哥德尔（Kurt
+    Gödel）著名的不完备性定理的证明。我认为这是一个比阿兰·图灵（Alan Turing）使用符号写在无限带上的证明更简单、更优雅的证明，尽管波斯特的比特串与图灵的磁带之间的相似之处令人惊讶。
 - en: This *Post Substitution* is similar to Huffman substitution, except that you
     move the substitute to the end of the bit string. The advantage of this system
     is that you can keep right on going after you have substituted for the entire
     string. That is, you can go through the string more than once. This obliterates
     the divisions between the Huffman codes.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个*后替换*与赫夫曼替换类似，只是你将替换移到了比特串的末尾。这个系统的优势在于，当你替换完整个字符串后，你可以继续进行下去。也就是说，你可以多次遍历字符串。这消除了赫夫曼编码之间的分割。
 - en: The pieces that you take from the front of the strings are called the *tags*.
     The set of tags must be chosen so that there is at most one tag that can be taken
     at each step. That is, the replacement process is *deterministic*. This requires
@@ -407,19 +536,25 @@
     The Huffman codes and Post tags have the same form, but they are used differently.
     For starters, Huffman codes are used to shorten the bit string, while Post tags
     are not.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 你从字符串前面取出的部分被称为*标签*。标签集必须被选择，以便每一步最多只能取一个标签。也就是说，替换过程是*确定性*的。这要求标签集具有前缀属性。这将允许你使用标签集来加密表示为比特字符串的消息。前缀属性在第4.2.1节中与Huffman编码一起讨论。简而言之，没有任何标签可以以任何其他标签开头。例如，你不能同时拥有1101和11011，因为如果字符串以11011开头，你将不知道是取前4位还是前5位。有了前缀属性，就不需要在标签之间加上分隔符，就像莫尔斯电码组需要分隔一样。Huffman编码和Post标签具有相同的形式，但它们的使用方式不同。首先，Huffman编码用于缩短比特字符串，而Post标签则不是。
 - en: A method for constructing a set of Huffman codes is described in section 10.4.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 构建一组Huffman编码的方法在第10.4节中描述。
 - en: When you encipher using Post tags, you replace each tag with another tag and
     move the new tag to the end of the string. Since Riva will have to decipher the
     message working from the right, the replacement tags will need to have the *suffix
     property*, that is, the inverse of the prefix property. None of the suffix tags
     can end with another suffix tag. For example, if 1011 is one of the suffix tags
     then neither 01011 nor 11011 could be a suffix tag.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你使用Post标签进行加密时，你会用另一个标签替换每个标签，并将新标签移到字符串的末尾。由于Riva将不得不从右边解密消息，替换标签将需要具有*后缀属性*，即与前缀属性相反。没有一个后缀标签可以以另一个后缀标签结尾。例如，如果1011是其中一个后缀标签，那么01011或11011都不能是后缀标签。
 - en: You can construct the set of suffix tags the same way that you construct the
     set of prefix tags, except that you extend each tag on the left rather than on
     the right. If this is confusing, you can just construct a second set of prefix
@@ -427,8 +562,10 @@
     There must be at least as many suffix tags as prefix tags. There can be more.
     The extra tags can be used as homophones. For example, the prefix tag 0111 might
     be replaced by a choice of suffix tag 110 or 10101.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以以与构建前缀标签相同的方式构建后缀标签集，只是在左边扩展每个标签而不是右边。如果这让你困惑，你可以简单地构建第二组前缀标签，然后颠倒该集合中的位的顺序以获得后缀标签。后缀标签必须至少与前缀标签一样多。可以有更多。额外的标签可以用作同音字。例如，前缀标签0111可能被后缀标签110或10101的选择替换。
 - en: When the expected length of the suffixes is less than the expected length of
     the prefixes the string is likely to shrink. That is, it is probable that there
     are some initial strings that will grow shorter. Conversely if the suffixes are
@@ -437,18 +574,24 @@
     length, the more the initial strings will shrink or grow. However, “probable”
     is no guarantee. It is possible to construct prefix/suffix sets that have the
     opposite behavior.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 当后缀的预期长度小于前缀的预期长度时，字符串可能会缩短。也就是说，很可能有一些初始字符串会变短。相反，如果后缀比前缀长，那么一些初始字符串可能会变长。这通常发生在使用同音字时。预期长度的差异越大，初始字符串的缩短或延长就越多。然而，“可能”并不是保证。可以构建具有相反行为的前缀/后缀集。
 - en: To use Post tags for encipherment, you first represent the message as a string
     of bits, then you perform the tag substitutions a few times. If you are enciphering
     by hand, you turn those bits back into characters. If you are enciphering by computer,
     this last step may be unnecessary; you simply transmit the resulting bit string.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 要使用Post标签进行加密，首先将消息表示为一串比特，然后进行几次标签替换。如果你是手动加密，你将这些比特转换回字符。如果你是通过计算机加密，最后一步可能是不必要的；你只需传输生成的比特字符串。
 - en: 10.5.1 Same-length tags
+  id: totrans-80
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 10.5.1 相同长度的标签
 - en: One problem with the cipher described in the preceding section is that Riva
     does not know how to divide the message she receives into blocks. You might need
     to have a separate length field for each block, or else treat the entire message
@@ -457,8 +600,11 @@
     That way, the blocks stay the same length throughout the process and there is
     no problem in demarcating the ends of the blocks. Block sizes of 32 bits or 64
     bits are typical.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 在上一节描述的密码中存在一个问题，Riva 不知道如何将她收到的消息分成块。你可能需要为每个块设置一个单独的长度字段，或者将整个消息视为一个单独的块。当消息很长时，这可能会很笨重。解决这个问题的一种方法是用相同长度的后缀标签替换每个前缀标签。这样，块在整个过程中保持相同的长度，而且没有标记块的结束的问题。32
+    位或 64 位的块大小是典型的。
 - en: I suggest doing a fixed number of substitutions for each block. You can determine
     the appropriate number from the shortest length and the expected length of the
     tags. Say the blocks are 32 bits, the shortest tag is 3 bits and the expected
@@ -466,41 +612,58 @@
     = 10.67 substitutions, then you are guaranteed that every bit in the block is
     substituted at least once. Round that up to 11\. Using the expected length, on
     average 32/4.3 = 7.44 substitutions are needed so that every bit gets substituted.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 我建议对每个块进行固定数量的替换。你可以从最短长度和标签的预期长度确定适当的数量。假设块大小为 32 位，最短标签为 3 位，预期标签长度为 4.3 位。使用最短长度，如果至少进行
+    32/3 = 10.67 次替换，那么可以保证每个块中的每个比特至少被替换一次。将其四舍五入到 11。使用预期长度，平均需要 32/4.3 = 7.44 次替换，以便每个比特都被替换。
 - en: A good margin of safety is to have each bit substituted twice on average. Double
     7.44 and round up to get 15 substitution steps. This is greater than 11, so it
     is certain that every bit is substituted at least once. On average every bit is
     substituted twice. About half the time some of the bits are substituted 3 times.
     Most importantly, Emily will not know how many times any given bit has been substituted.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个良好的安全保障是每个比特平均替换两次。将 7.44 倍于 2 并四舍五入得到 15 次替换步骤。这大于 11，因此可以确定每个比特至少被替换一次。平均每个比特替换两次。大约一半的时间，一些比特被替换
+    3 次。最重要的是，Emily 不会知道任何给定比特替换了多少次。
 - en: You may have noticed that I have been saying “every *bit* gets substituted”
     rather than “every *tag* gets substituted.” This may be confusing. The first time
     through the block, each tag gets replaced with a new tag that has the same length.
     So, on the first round, it is the tags that get replaced. But when the second
     round of substitution begins, it might not start on an even tag boundary. That
     is, the next tag may span two or more of the tags from the first round.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能已经注意到，我一直在说“每个 *比特* 被替换”而不是“每个 *标签* 被替换”。这可能会让人困惑。第一轮通过块时，每个标签都会被一个具有相同长度的新标签替换。所以，在第一轮中，被替换的是标签。但是当第二轮替换开始时，可能不会从一个偶数标签边界开始。也就是说，下一个标签可能横跨第一轮的两个或多个标签。
 - en: Here is a miniature example to illustrate the point using a 12-bit block. The
     first bit of the block is shaded, and the prefix tags are underlined.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里有一个迷你示例来说明使用 12 位块的观点。块的第一个比特被阴影覆盖，前缀标签被下划线划分。
 - en: '![10-unnumb-13](../Images/10-unnumb-13.png)'
+  id: totrans-86
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-13](../Images/10-unnumb-13.png)'
 - en: After four substitutions the first bit is now in the second position, right
     in the center of the next prefix tag, which is 011.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 经过四次替换后，第一个比特现在位于下一个前缀标签的中间位置，即 011。
 - en: For hand use I suggest encoding the letters of the alphabet as 5-bit or 6-bit
     groups, using 20 to 30 pairs of tags of 3 to 6 bits, 32-bit blocks, and 16 substitution
     steps, that is, about 2 times through the block. Convert the resulting bit strings
     back to characters using 4-bit groups to represent the letters A through P in
     some mixed order. Such a cipher would be rated Six.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于手工使用，我建议将字母表编码为 5 位或 6 位组，使用 3 到 6 位的 20 到 30 对标签，32 位块和 16 次替换步骤，即大约通过块两次。将结果位串转换回字符，使用
+    4 位组表示字母 A 到 P 以某种混合顺序。这样的密码将被评为六级。
 - en: For computer use I suggest using a standard 8-bit representation such as UTF-8
     for the letters, digits and special characters in the message. Use 40 to 80 pairs
     of tags of 4 to 8 bits, 64-bit blocks, and 32 substitution steps. Using 32 steps
@@ -510,6 +673,7 @@
     This cipher, called *Post64*, would be rated Ten. It would have 4 separate keys
     used to mix the initial substitution, the final substitution, the Post tags, and
     their substitutes.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
 - en: Another way to use Post tag substitution is to use short overlapping blocks.
@@ -520,9 +684,11 @@
     substitutions on this block. Continue this way until the last 4-byte block of
     the message. The final 3 blocks will wrap around to the front of the message.
     This method, called *PostOv*, is rated Six.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
 - en: 10.5.2 Different-length tags
+  id: totrans-91
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -531,12 +697,14 @@
     up aligned on byte boundaries. For example, a 32-bit block could become a 35-bit
     block. This means that Riva will need a means to separate the blocks. The simplest
     method is to transmit the length of each block.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
 - en: It might seem feasible simply to perform Post tag substitutions on a block until
     its length becomes a multiple of 8 bits again. Unfortunately, this potentially
     could take thousands or even millions of substitution steps—or it might never
     happen.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
 - en: The simplest solution is to encipher the entire message as a single block. The
@@ -544,13 +712,16 @@
     needs to add a 3-bit field to tell Riva how many bits are in the last byte, ranging
     from 1 to 8 bits. This could be placed at the start of the message, or it could
     be the last 3 bits of the last byte. The length field might require an extra byte.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
 - en: Here is an example of different-length Post tag encipherment. Each prefix tag
     and its resulting suffix tag have matching underlines.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
 - en: '![10-unnumb-14](../Images/10-unnumb-14.png)'
+  id: totrans-96
   prefs: []
   type: TYPE_IMG
 - en: '*****It might look like you will need to shift the entire message each time
@@ -560,6 +731,7 @@
     the bit position within the byte, and the high-order bits will give the byte position.
     Allocate a space 4 times the length of the message. Place the message at the start
     of this space, and zero-out the rest.'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
 - en: To delete a tag from the front of the string, just increment the front pointer
@@ -568,6 +740,7 @@
     increment the end pointer. Continue this process until you reach the end of the
     space. This means that the number of Post substitution steps depends on the message
     itself.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
 - en: That leaves just one shift to perform at the end to get the bit string onto
@@ -578,6 +751,7 @@
     this byte with a simple substitution so as not to give Emily the starting and
     ending positions. Also, be sure to fill the unused parts of the first and last
     bytes of the message with random bits.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
 - en: 'One question remains: since Riva does not know the original length of the message,
@@ -585,6 +759,7 @@
     know when to stop deciphering? Riva does not know how many substitution steps
     were done, and she cannot simply allocate a space 4 times the length of the received
     message, because that may not be the same as the length of the sent message.'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
 - en: 'Here’s how. Riva knows three things: the plaintext message started on a byte
@@ -595,6 +770,7 @@
     met, in particular until the distance from the start of the partially deciphered
     message to the end of the deciphering space is exactly 4 times the length of the
     message. This can happen only once.******'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
 - en: I suggest that you use 50 to 80 pairs of tags, with each tag 4 to 8 bits long.
@@ -609,6 +785,7 @@
     the length indicator, should be converted back into characters using a second,
     independent keyed simple substitution. If all of these suggestions are followed,
     then this cipher, called *PostDL*, is rated Ten.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
 - en: When you reach section 12.6, you will see that the PostDL cipher does not meet
@@ -618,9 +795,11 @@
     set up a correspondence between the plaintext bits and the ciphertext bits, and
     thus cannot set up equations relating the ciphertext bits to the plaintext and
     key bits.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
 - en: 10.5.3 Multiple alphabets
+  id: totrans-104
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -632,14 +811,17 @@
     in rotation, or you can use a keyword to select among them. If you are doing this
     by hand, you will not want more than 2, or at most 3, such alphabets, so I suggest
     using a numeric key, like 01101011.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
 - en: These ciphers, which may be called *PolyPost* and *PolyHuff*, are rated Four
     to Eight depending on the number of rounds, the number of alphabets and the key
     length.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
 - en: 10.5.4 Short and long moves
+  id: totrans-107
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -649,6 +831,7 @@
     again as part of the next tag. This makes the tags overlap. The advantage is that
     it conceals the boundaries between the tags. The disadvantage is that it requires
     more substitution steps per round, making the cipher slower.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
 - en: Conversely, when a Post tag has B bits you could move B+1 bits to the end of
@@ -659,12 +842,14 @@
     a serious weakness if Emily cannot determine which are the unchanged bits. Bits
     are anonymous. There is nothing about any bit that says, “This bit came from byte
     5, bit position 2 in the plaintext.”
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
 - en: Finally, the number of bits that are moved can be made independent of the length
     of the tag. You could have a table that tells the number of bits to move. This
     can be less than, more than or the same as the length of the tag. You can have
     several of each.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
 - en: When the number of bits moved is different from the length of the tag, the suffix
@@ -672,9 +857,11 @@
     bit strings that are actually moved must have the suffix property. For example,
     if the tag 0110 is replaced by 1101, but 5 bits are moved, then the set of suffix
     strings must include both **1101**0 and **1101**1.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
 - en: 10.6 Fractionation in other bases
+  id: totrans-112
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -684,15 +871,18 @@
     substitution in base 3 or base 4 than in binary. However, variable-length substitution
     can be done in any base, even oddball bases like 11 or 13\. This can give you
     extra substitutes, which can be used for homophones or for encoding bigrams.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
 - en: When you work in base 13, you can use any 13 of the 16 hexadecimal digits for
     substitution, and leave the other 3 digits as nulls. If done well, so that all
     16 digits have roughly equal frequency and distribution, Emily will not be able
     to tell the valid digits from the nulls.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
 - en: 10.7 Text compression
+  id: totrans-115
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -701,12 +891,15 @@
     present several more-advanced text compression schemes and some encryption schemes
     based on Huffman codes. The remainder of Chapter 10 is optional. If at any point
     the math becomes too daunting, just skip directly to the next chapter.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
 - en: '![10-unnumb-15](../Images/10-unnumb-15.png)'
+  id: totrans-117
   prefs: []
   type: TYPE_IMG
 - en: 10.7.1 Lempel-Ziv
+  id: totrans-118
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -718,6 +911,7 @@
     this. Huffman uses shorter codes in order to save space. Lempel-Ziv uses codes
     of roughly the same length, but has some of the codes represent longer letter
     combinations to save space.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
 - en: Huffman and Lempel-Ziv are opposite in another sense, too. Huffman bases the
@@ -729,18 +923,21 @@
     of Huffman codes. By contrast, Lempel-Ziv can be used for any type of computer
     file, text in any language or mixed languages, computer code, images, telemetry,
     music videos, and so forth.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
 - en: There are several versions of Lempel-Ziv. The version I present here, called
     *Lempel-Ziv-Welch*, or *LZW*, was developed by Terry Welch of Sperry Research
     in 1984\. LZW has both fixed-width and variable-width versions. I am presenting
     the variable-width version, which is easy to adapt for cryptographic use.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
 - en: All versions of Lempel-Ziv use a list of letters and letter combinations called
     a *dictionary*. The dictionary is built on the fly as the algorithm progresses
     through the file. In the LZ77 and LZ78 versions the dictionary starts empty. The
     code for any given letter combination is its location in the dictionary.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
 - en: LZW begins by assigning a code to each of the single characters in the file.
@@ -748,6 +945,7 @@
     in English, all in uppercase without punctuation or word divisions, then you would
     need 26 codes, so you could use 5-bit codes. It is more common to start with 256
     codes, one for each of the 256 possible values of an 8-bit byte.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
 - en: As the algorithm progresses through the file it looks for letter combinations
@@ -757,6 +955,7 @@
     file is M, and that THEM is not in the dictionary. It outputs the code for THE
     followed by the code for M, and adds THEM to the dictionary. The code for THEM
     is the next available location in the dictionary, say 248.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
 - en: Since THE was already in the dictionary, the algorithm will not look at combinations
@@ -765,6 +964,7 @@
     entry 249 and has the code 249\. The next time the algorithm finds THEM in the
     file it will be coded as 248, and the next occurrence of MOR will be coded as
     249.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
 - en: When the algorithm has filled up all 256 dictionary entries for 8-bit codes,
@@ -779,6 +979,7 @@
     will not be decompressed correctly. Enlarging the codes typically stops at 12
     bits. Increasing the code size from 12 bits to 13 bits usually does not improve
     the compression, and may even worsen it.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s look at an example. Let’s encode the word TETE-A-TETE using this algorithm.
@@ -786,9 +987,11 @@
     codes. Let’s follow the dictionary as it gets built. At each stage the bit strings
     to the left show the encoded word, while the letters to the right show the remaining
     portion of the word.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
 - en: '![10-unnumb-16](../Images/10-unnumb-16.png)'
+  id: totrans-128
   prefs: []
   type: TYPE_IMG
 - en: When Riva decompresses the message, the dictionary must be built up exactly
@@ -796,10 +999,12 @@
     by itself is not enough for Riva to decompress the message. She also needs to
     know that the codes **00**, **01** and **10** represent the characters A, E and
     T.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
 - en: Okay. That’s Lempel-Ziv compression. This is a book about cryptography. How
     can Lempel-Ziv compression be used for encryption?
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
 - en: In building the dictionary, Lempel-Ziv assigns codes sequentially. The 43rd
@@ -808,6 +1013,7 @@
     The first column contains the letter combinations, and the second column contains
     the corresponding codes. Instead of using the position in the dictionary as the
     code for each letter combination, use the number in the second column of the dictionary.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
 - en: Suppose that the dictionary starts with the 256 single-byte characters. The
@@ -819,11 +1025,13 @@
     from 256 to 511 in scrambled order. Likewise, when you move from 9-bit codes to
     10-bit codes the next 512 codes will be assigned at one time. Assigning codes
     in bulk is more efficient than assigning them one at a time.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
 - en: An alternative to assigning the codes in bulk is to assign only the first 256
     codes using a keyword or random number sequence. After that each new code is calculated
     by adding 256 to the code 256 entries earlier. That is, X(N) = X(N-256)+256.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
 - en: This cipher, which I will call *Lempel-Ziv Substitution*, is rated Three. The
@@ -834,6 +1042,7 @@
     will represent single letters. These codes are easily distinguished because they
     are the only 9-bit codes starting with 0\. Emily will have plenty of opportunities
     to use both letter frequencies and contact frequencies to crack the message.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
 - en: To make Lempel-Ziv substitution strong you can add a second substitution step.
@@ -842,9 +1051,11 @@
     This may never happen because codes are usually limited to 12 bits. Lempel-Ziv
     substitution followed by 7-bit substitution is rated Six. Both substitutions can
     be accomplished in a single left-to-right pass.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
 - en: 10.7.2 Arithmetic coding
+  id: totrans-136
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -852,6 +1063,7 @@
     that I invented in the 1970s (“Arithmetic Stream Coding Using Fixed Precision
     Registers,” *IEEE Trans. on Info. Theory* vol. 25 (Nov. 1979), pp. 672-675). It
     is based on a clever idea from Peter Elias of MIT.'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
 - en: Elias’s idea was to encode every character string as a fraction. Imagine all
@@ -864,6 +1076,7 @@
     of the range, namely .04 to .08\. Strings starting with Z get the last 1/25 of
     the range, .96 to .999... . (I am giving this example using decimal notation to
     make it easier to read. In a computer, binary fractions would be used.)
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
 - en: For the second character you divide this range again. Strings starting with
@@ -871,18 +1084,22 @@
     range .0016 to .0032\. Strings starting with BA would be in the range .0400 to
     .0416\. And so forth. Strings starting with ZZ would get the range from .9984
     to .9999... .
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
 - en: To visualize this, let’s use a miniature 5-letter alphabet with A being .0 to
     .2, B from .2 to .4, C from .4 to .6, D from .6 to .8, and E from .8 to .999...
     . Using this alphabet, let’s encode the word BED.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
 - en: '![10-unnumb-17](../Images/10-unnumb-17.png)'
+  id: totrans-141
   prefs: []
   type: TYPE_IMG
 - en: BED could be encoded as any fraction f with .384 ≤ f < .392\. As more characters
     are added, this interval will continue to shrink.
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
 - en: That’s the concept. However, this encoding of strings as fractions does not
@@ -891,6 +1108,7 @@
     proportional to the frequency of that letter. A would get 8.12%, B would get 1.49%,
     through Z, which would get .07%. The range for A would be .0 to .0812\. The range
     for B would be .0812 to .0961\. The range for Z would be .9993 to .9999... .
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
 - en: In theory this would give optimal compression based on the frequencies of the
@@ -898,6 +1116,7 @@
     fractions that potentially require thousands or even millions of digits. How can
     such fractions be represented in the computer? How can you perform arithmetic
     on them?
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
 - en: So, the method was great in theory, but seemingly infeasible in practice. It
@@ -905,6 +1124,7 @@
     multiply long fractions, whether decimal or binary, increases with their length,
     so even if there were a good way to represent these fractions the method would
     be impractically slow.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
 - en: The solution I found was to use a moving window where all of the arithmetic
@@ -914,6 +1134,7 @@
     or N/32768\. For example, the frequency for the letter A is 8.12%. This can be
     expressed as 2660/32768, or 665/8192\. This approximation was found to cause no
     detectable reduction in the degree of compression.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
 - en: Here is a decimal example to show how a letter is encoded and how the moving
@@ -921,9 +1142,11 @@
     is now .784627 to .784632\. The first 4 digits for the start and end of the range
     are the same, namely .7846\. These 4 digits would be output, and the window would
     be moved 4 digits to the right to show the range .2700 to .3200.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
 - en: '![10-unnumb-18](../Images/10-unnumb-18.png)'
+  id: totrans-148
   prefs: []
   type: TYPE_IMG
 - en: The width of this range is .0500\. Suppose the next character in the message
@@ -931,21 +1154,25 @@
     encoded by selecting that fraction of the current range .2700 to .3200\. Its width
     is .0500×.0300, which is .0015\. It will run from .2700+.0500×.4050 to .2700+.0500×.4350,
     which is .29025 to .29175\. Notice that the width of this range is .0015, as expected.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
 - en: '![10-unnumb-19](../Images/10-unnumb-19.png)'
+  id: totrans-150
   prefs: []
   type: TYPE_IMG
 - en: Since the start and end of this range both begin with the digits .29, these
     digits can be output. The digits that have been output are now 784629\. The window
     can now be moved 2 more digits to the right to make the current range .0250 to
     .1750.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
 - en: Arithmetic coding is ideally suited for encryption because there are no longer
     discrete codes for each letter or letter combination. There are no boundaries
     where the bit stream can be broken into separate codes. Instead, the code for
     each letter influences how all subsequent letters are represented.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
 - en: 'Now that we understand how the arithmetic coding method works, the next step
@@ -954,9 +1181,11 @@
     Instead, we can change the order of the characters, so that the range for each
     character falls in an unpredictable part of the full range. That is, unpredictable
     for Emily. For example, using just the letters A,B,C,D,E the ranges might be:'
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
 - en: '![10-unnumb-20](../Images/10-unnumb-20.png)'
+  id: totrans-154
   prefs: []
   type: TYPE_IMG
 - en: These intervals can be used to encode the letters of the message. Let’s call
@@ -965,6 +1194,7 @@
     It is true that Emily knows that the first range starts at .0 and that the last
     range ends at .999... , but Emily does not know which characters these ranges
     represent.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
 - en: There is one difficulty with arithmetic coding that has not been discussed yet.
@@ -975,12 +1205,14 @@
     of the message and appending this length code to the ciphertext, or by adding
     a special end-of-message character to the alphabet. This was not discussed earlier
     because it is not needed for arithmetic encipherment.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
 - en: With arithmetic encipherment all you need to do is assign a rare character,
     or any character that is seldom found at the end of a message, to the first range,
     that is, to the range starting at .0000\. Then when Riva sees ROTUNDVVV... or
     ROTUND###... it is obvious where the message ends.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
 - en: As described here, arithmetic encipherment is rated Five using a 26-letter alphabet,
@@ -992,6 +1224,7 @@
     improve the security without affecting the degree of compression. Using bigrams,
     or even trigrams, can sometimes increase the level of compression while improving
     the security. Using homophones and bigrams, arithmetic encipherment is rated Eight.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
 - en: Since arithmetic encipherment is so strong by itself, it takes very little extra
@@ -1001,9 +1234,11 @@
     encipherment with a period of 4 or higher is rated Ten. It leaves an opponent
     with nothing to go on, no letter frequencies, no contact frequencies, and no way
     to utilize a probable word.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
 - en: 10.7.3 Adaptive arithmetic coding
+  id: totrans-160
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1013,6 +1248,7 @@
     ways to make Huffman coding and arithmetic coding adaptive, and all of them make
     the corresponding encryption methods stronger. All such methods involve counting
     the characters in the file as you encode them.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
 - en: The more closely the character counts match the character frequencies in the
@@ -1022,6 +1258,7 @@
     as Sandra or she cannot decipher the file. The solution to this dilemma is for
     Sandra to count the characters as she enciphers, and for Riva to count the characters
     as she deciphers, so they will both have the same counts at all stages.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
 - en: All the character counts start at 1\. If you know the frequencies of the characters
@@ -1033,6 +1270,7 @@
     is proportional to its initial count. For example, if the 256 character counts
     total 500, and the initial count for the lowercase e is 25 then e would get a
     range of 25/500, or .05.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
 - en: There are two basic methods for adjusting the codes, character mode and batch
@@ -1040,6 +1278,7 @@
     each time a character is found in the file its range and the two adjacent ranges
     are adjusted. (One adjacent range when the character has either the first or last
     range. For the 26-letter standard alphabet that means A or Z.)
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
 - en: Here is an example. Suppose that the letter T has been encountered, and that
@@ -1051,6 +1290,7 @@
     ratio 15:20:5\. S gets .160×15/40, or .060\. T gets .160×20/40, or .080\. U gets
     .160×5/40, or .020\. Over time the ranges for the characters will converge to
     the correct widths.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
 - en: Character mode works reasonably well with a 26-letter alphabet. It works very
@@ -1058,6 +1298,7 @@
     to any of the high-frequency characters, so their frequencies will remain static.
     This is particularly true for the standard ASCII representation where all of the
     letters are clumped together.
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
 - en: Batch mode works for both arithmetic coding and Huffman coding. In batch mode
@@ -1067,12 +1308,14 @@
     range would be reapportioned according to the current character counts. This converges
     more rapidly than character mode, but between reapportionments you are working
     with old, unadjusted frequencies.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
 - en: In batch mode it is possible to count the frequencies for bigrams, and even
     trigrams. Bigrams or trigrams that occur more than once could be given their own
     Huffman codes or arithmetic code ranges. With this refinement, arithmetic coding
     will almost always give better compression than Lempel-Ziv.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
 - en: There is one problem with counting bigram and trigram frequencies, namely storage.
@@ -1084,6 +1327,7 @@
     trigrams to count. To determine the most frequent characters, counting of bigram
     and trigram frequencies could be postponed until some fixed number of single characters
     have been encoded, say 256 or 1024 characters.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
 - en: One way to accomplish these restricted counts is to count only single characters
@@ -1093,12 +1337,14 @@
     the high-frequency bigrams and trigrams have been chosen, they are given their
     own Huffman codes or arithmetic ranges. In other words, they are treated just
     like single characters.
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
 - en: For arithmetic coding, character mode and batch mode are not mutually exclusive.
     You can balance the ranges for each individual character as soon as it is encountered,
     and balance the extended set of characters plus bigrams and trigrams, at the end
     of each batch.
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
 - en: When doing Huffman encipherment or arithmetic encipherment, at the end of each
@@ -1108,6 +1354,7 @@
     before the codes change. For encipherment it may be preferable to use batches
     of irregular length, say after 217 characters, then after 503 characters, and
     so forth, so Emily will not know when the codes change.
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
 - en: One further refinement to adaptive coding is to divide all of the counts by
@@ -1116,9 +1363,11 @@
     on the ranges, and newer frequencies will have more influence. For example, suppose
     the text is a book of stories by different authors. Each author could have a different
     vocabulary or different subject matter, or even write in a different language.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
 - en: Of course Sandra and Riva must agree on all of this beforehand so that Riva
     will be able to decipher and decompress the message correctly.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL

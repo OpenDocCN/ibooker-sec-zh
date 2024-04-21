@@ -1,19 +1,24 @@
 - en: 2 What is cryptography?
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
 - en: Basic terms used in cryptography
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: What is an unbreakable cipher?
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: What are the different types of cryptography?
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -21,22 +26,26 @@
     It encompasses everything from invisible inks to transmitting messages by quantum
     entanglement of photons. In particular, cryptography includes the making and breaking
     of codes and ciphers.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
 - en: Different authors use cryptographic terminology in inconsistent ways, so let
     us begin by agreeing on some basic terms.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
 - en: '*Plaintext* or *cleartext* is the message or document that you wish to keep
     secret. In traditional cryptography, the message was text written in some language
     known to both sender and receiver. In a computer setting, this could be any type
     of file such as a PDF (text), JPG (image), MP3 (audio), or AVI (multimedia).'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
 - en: 'A *cipher* is a method, or *algorithm*, for garbling a message to make it unreadable:
     for example, by changing the order of the characters or by replacing some characters
     with different characters. In general, ciphers operate on individual characters
     or groups of characters in the text without regard for their meaning.'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
 - en: A *key* is a secret piece of information known only to the sender and the legitimate
@@ -45,22 +54,27 @@
     key might specify which order to use for that day’s messages. A key can be a letter,
     a word or phrase, a number, or a sequence of letters, words and numbers. The strength
     of a cipher is highly dependent on the total size of the keys it uses.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
 - en: A *keyword* or *keyphrase* is a word or phrase used as a key.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
 - en: '*Encryption* or *encipherment* is the process of changing the plaintext into
     an unreadable garble by the legitimate sender who knows the key.'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
 - en: '*Ciphertext* is the resulting garbled unreadable message or document, which
     will be transmitted or stored.'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
 - en: '*Decryption* or *decipherment* is the process that the legitimate receiver,
     who knows the method and the key, uses to turn the garbled ciphertext back into
     the original plaintext message.'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
 - en: A *code* is also a method for garbling a message to make it unreadable. By contrast
@@ -68,16 +82,19 @@
     code replaces words or phrases with groups of digits or letters. (Confusingly,
     the word *code* is also used to mean a standardized representation for letters,
     such as Morse code. Hopefully the meaning will be clear from the context.)
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
 - en: '*Cryptology* is the formal study of cryptography, the mathematics and methodologies
     used for constructing and solving ciphers. Scholars study cryptology; code-breakers
     study cryptanalysis.'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
 - en: '*Cryptanalysis* is the study of codes and ciphers for the specific purpose
     of identifying weaknesses and finding ways to break them or, conversely, ways
     to strengthen them.'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
 - en: '*Code-breaking* is the process of solving encrypted messages by third parties
@@ -85,9 +102,11 @@
     This can be done by mathematical methods or by the patient amassing and collating
     of intercepts, but in practice often comes down to the three B’s: bribery, blackmail
     and break-ins.'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
 - en: 2.1 Unbreakable ciphers
+  id: totrans-18
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -102,12 +121,14 @@
     in computers, add a margin of safety, and pick a number. Then, when you choose
     a cipher, you have a target to aim for. Reach that target and your cipher is effectively
     unbreakable.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
 - en: Remember that many messages have a limited lifespan. If your message is ATTACK
     AT DAWN, and your enemy reads your message at noon, it’s too late. You have already
     attacked. A cipher that can be broken in 12 hours is effectively unbreakable when
     your opponent does not have 12 hours.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
 - en: Just to make this concept doubly clear, when I say that a cipher has been *broken*,
@@ -119,6 +140,7 @@
     *a priori* way of telling which messages used which key, or which keys are nearly
     all-zero. It may never happen that you send two messages with the same length
     and same key, or where 63 key bits out of 64 are zero.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
 - en: If your cipher uses a 256-bit key, and an enemy cryptanalyst finds a mathematical
@@ -126,6 +148,7 @@
     may be weakened, but it is still unbroken if your chosen level of security is
     128 bits. Using a 256-bit key to achieve a security level of 128 bits provides
     a huge margin of safety.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
 - en: When the government decided that the old Data Encryption Standard was no longer
@@ -136,47 +159,56 @@
     was chosen. That’s what you need to do when your cipher is going to be a worldwide
     standard for governments, banking, industry and the military. If you decide to
     enter the next competition, this book will help prepare you.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
 - en: Most readers, however, will not attempt that. Their ciphers will have more limited
     scope. They may trust their own judgment, or whatever verification process they
     devise, for evaluating their ciphers. The principles in chapter 12 will help guide
     them to a sound and confident decision.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
 - en: 2.2 Types of cryptography
+  id: totrans-25
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: There are many different types of cryptography. Some types used in the past
     were
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
 - en: '*Hidden message*: for example, the messenger could swallow the message, or
     hide it in their boot heel or saddle, or simply memorize it. It was common in
     ancient times to have a messenger memorize a message phonetically in a language
     they did not understand.'
+  id: totrans-27
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Secret method*, such as the *Caesar Cipher*, where each letter of the alphabet
     is replaced by the letter 3 places later. That is, A becomes D, B becomes E, C
     becomes F, and so forth.'
+  id: totrans-28
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Disguised message*, where the message is made to look like something else,
     such as a design in the messenger’s garments.'
+  id: totrans-29
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Invisible* *message*, such as microdots, or invisible inks that become visible
     when heated or exposed to acid.'
+  id: totrans-30
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Misdirection*: for example, where the signature or the shape and color of
     the paper are the true messages, and everything else is distraction or disinformation.'
+  id: totrans-31
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -184,6 +216,7 @@
     described in the 1499 book *Steganographia* by Benedictine abbot Johannes Trithemius,
     born Johannes Heidenberg. Trithemius’s book is itself a form of steganography,
     since it is disguised as a book of magic.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
 - en: Some of these steganographic methods have modern counterparts. For example,
@@ -191,6 +224,7 @@
     of each pixel. Another example is to use a random number generator to pick certain
     bits in each byte of a file. The chosen bits contain the message, and the remaining
     bits can be random gibberish.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
 - en: Before describing modern ciphers, let me introduce a useful shorthand. A message
@@ -198,9 +232,11 @@
     some enemy from reading the message. For brevity, I call the sender Sandra, the
     intended receiver Riva, and the enemy Emily. That is more natural than Alice,
     Bob and Carol, isn’t it?
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
 - en: '![2-unnumb-1](../Images/2-unnumb-1.png)'
+  id: totrans-35
   prefs: []
   type: TYPE_IMG
 - en: 'Usually Sandra enciphers the message at her location before sending it to Riva.
@@ -209,13 +245,16 @@
     or even smoke signals if there is a direct line of sight. To make this picture
     more complete, the cipher may require a key as well as the plaintext, and there
     may be an enemy listening in. Here is a fuller image.'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
 - en: '![2-unnumb-2](../Images/2-unnumb-2.png)'
+  id: totrans-37
   prefs: []
   type: TYPE_IMG
 - en: 'Modern ciphers generally fall into three broad categories: Secret Key, Public
     Key and Personal Key. Their main distinguishing features are as follows.'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
 - en: '*Secret Key*: Sandra has a secret key, which she uses to encipher messages.
@@ -223,6 +262,7 @@
     This may be the same key or an *inverse* key. Usually Sandra controls the key.
     When Sandra changes the key, she must send the new key, or its inverse, to Riva.
     This is the standard paradigm of classical cryptography.'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
 - en: '*Public Key*: Riva has a public encryption key, which she makes known to everyone.
@@ -232,6 +272,7 @@
     essential that nobody else can compute this secret key from the public information.
     The dominant Public Key method is the RSA algorithm invented by Ronald Rivest,
     Adi Shamir and Len Adelman in about 1975.'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
 - en: '*Personal Key*: Sandra and Riva each have a personal key they share with nobody,
@@ -242,6 +283,7 @@
     sends this doubly enciphered message back to Sandra. (Pass 3) Sandra deciphers
     that message using her personal key and sends this back to Riva. The message is
     now enciphered only with Riva’s key, which she uses to read the message.'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
 - en: The tricky part here is that Sandra’s encryption and Riva’s encryption need
@@ -251,6 +293,7 @@
     The advantage of Personal Key cryptography is that anybody can communicate securely
     with anybody else without having to prearrange any keys or transmit any keys,
     so there is no possibility of a key being intercepted.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
 - en: Personal Key cryptography is also called the *Three Pass Protocol*. A *protocol*
@@ -258,9 +301,11 @@
     In other words, a protocol is an algorithm. The basic idea for the Three Pass
     Protocol was invented by Adi Shamir in about 1975, and the specific method I present
     in this book is my own.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
 - en: 2.3 Symmetric vs. asymmetric cryptography
+  id: totrans-44
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -274,6 +319,7 @@
     15.1 I describe the *Hill Cipher*, a Secret Key method where encryption consists
     of multiplying the message by the key, and decryption consists of multiplying
     by an inverse key—just like Public Key cryptography.'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
 - en: Categorizing a cipher as either symmetric or asymmetric is not particularly
@@ -281,6 +327,7 @@
     Key cryptography, namely that in Secret Key cryptography, all of the keys are
     kept secret, while in Public Key cryptography, each party keeps one key secret
     and makes one key public and available to everyone.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
 - en: Public Key cryptography and Personal Key cryptography both came out around 1975\.
@@ -288,9 +335,11 @@
     methods have received scant attention since that time. Public Key cryptography
     is fully covered in many books. This book focuses primarily on Secret Key cryptography,
     the mainstay and bedrock of cryptography.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
 - en: 2.4 Block ciphers vs. stream ciphers
+  id: totrans-48
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -298,6 +347,7 @@
     Block ciphers operate on blocks of characters in the message, say blocks of 5
     characters. Usually all of the blocks are the same size, and the same key is used
     for every block.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
 - en: Stream ciphers operate on one character of the message at a time. Each character
@@ -311,21 +361,25 @@
     and is called the *key stream*. This *aperiodic*, or non-periodic, style of enciphering
     is called the *one-time pad*. In chapter 13, there are discussions of how key
     streams can be generated.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
 - en: The block/stream classification is not exclusive. There are hybrid ciphers where
     the message is broken up into blocks, but different blocks are enciphered with
     different keys, so the cipher operates on a stream of blocks rather than a stream
     of characters.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
 - en: 2.5 Mechanical vs. digital
+  id: totrans-52
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: Ciphers can also be classified according to the means used to produce them.
     The earliest ciphers were done entirely by hand. Not using pencil and paper, but
     rather stylus and parchment, or stylus and clay tablet.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
 - en: The first mechanical means of encipherment was the *skytale* or *scytale* (pronounced
@@ -337,6 +391,7 @@
     unwound, only disconnected pieces of the letters were visible so that an enemy
     would not recognize that it contained a message. Additional squiggles or patches
     of color could be added to make it look like a decoration.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
 - en: The sender kept the staff for reading and writing future messages. Messengers
@@ -344,14 +399,17 @@
     The recipient needed a rod of identical diameter to reconstitute the message.
     Messengers, of course, were not told the purpose of the ribbon or thong. It might
     even be sewn into their garments without their knowledge.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
 - en: There is an image of a skytale in the 1593 edition of *De Occultis Literarum
     Notis* by Giovanni Battista Porta. It shows how each Greek letter spans several
     turns of the leather strip. Here is a modern version.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
 - en: '![2-unnumb-3](../Images/2-unnumb-3.png)'
+  id: totrans-57
   prefs: []
   type: TYPE_IMG
 - en: 'The Greeks kept the secret of the skytale for about 700 years. The Romans,
@@ -366,6 +424,7 @@
     with other governors, ambassadors and spies: for example, small for Londinium
     (now London), medium for Lugdunum (now Lyon), and large for Tarraco (now Tarragona
     in Catalonia).'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
 - en: So far as is known, the purpose of these dodecahedrons was never discovered
@@ -373,13 +432,16 @@
     have proposed a plethora of preposterous purposes for these artifacts, such as
     children’s toys, saddle ornaments, practice pieces for blacksmiths, candleholders,
     range-finders for artillery, or, the answer of last resort, religious objects.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
 - en: This is a bronze Roman dodecahedron found near Tongeren, the oldest town in
     Belgium, and displayed in the Gallo-Romeins Museum.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
 - en: '![2-unnumb-4](../Images/2-unnumb-4.png)'
+  id: totrans-61
   prefs: []
   type: TYPE_IMG
 - en: 'Here is an interesting side note: If you look up *skytale* in Wikipedia and
@@ -392,6 +454,7 @@
     Few Words on Secret Writing,” which gives a good description of the skytale and
     his method for decrypting these messages by matching up the broken fragments of
     letters.'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
 - en: To compound this error, if you look up “transposition cipher” in Wikipedia,
@@ -402,6 +465,7 @@
     could be a columnar transposition, never a rail fence. (I corrected these errors
     in Wikipedia, but my corrections were deleted. I have given up trying to be the
     Wikipedia Police.)
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
 - en: A 1960s version of the skytale was to sort a deck of computer punch cards, write
@@ -412,16 +476,20 @@
     was ever put into practice. Another modern equivalent is to write the message
     on the blank back of a jigsaw puzzle and then scramble the pieces. The receiver
     needs to solve the puzzle and then flip it over to read the message.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 20世纪60年代的一种天线是对一叠计算机打孔卡进行排序，用铅笔在卡片的外表面写下消息，然后彻底洗牌，只留下零散的点。当卡片通过卡片分类机时，卡片将恢复到原始顺序，消息可以被读取。程序员们广泛讨论了这个想法，但我不知道它是否被实践过。另一个现代等价物是在拼图的空白背面写下消息，然后打乱拼图块。接收者需要解决拼图，然后翻转它以阅读消息。
 - en: Another mechanical cipher was the Jefferson Wheel Cypher invented by Thomas
     Jefferson some time between 1790 and 1793\. It consisted of 36 same-sized wooden
     disks threaded on an iron rod to form a wooden cylinder. Around the exposed edge
     of each disk, the 26 letters of the alphabet were written in some scrambled order.
     The disks could be rotated independently to spell any message. Versions of the
     Jefferson cipher using disks or paper strips were used as recently as the 1960s.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一种机械密码是托马斯·杰斐逊在1790年至1793年间发明的杰斐逊轮密码机。它由36个相同大小的木制圆盘穿在一根铁棒上形成一个木制圆柱。在每个盘的外缘，按某种乱序写有26个字母。盘可以独立旋转以拼写任何消息。使用盘或纸条的杰斐逊密码的版本直到20世纪60年代仍在使用。
 - en: Many types of disk ciphers were developed from the 15th through the 19th centuries.
     The most common type used several thin flat concentric disks that could be rotated
     around a center pivot. Each disk had the alphabet or some set of numbers or symbols
@@ -432,16 +500,22 @@
     of the other disks as the ciphertext letter. Later types of disk ciphers advanced
     the inner disk after each letter was enciphered, either manually or through a
     clockwork mechanism.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 从15世纪到19世纪，许多类型的盘式密码机被发展出来。最常见的类型使用几个薄平面同心圆盘，可以围绕中心枢轴旋转。每个盘的上表面边缘写有字母或某些数字或符号，按某种顺序。盘逐渐变小，以便同时看到所有字母表。盘被对齐在某个位置，加密包括在一个盘上找到明文字母，然后使用另一个盘上对应的字母或符号作为密文字母。后来的盘式密码机在每个字母被加密后，手动或通过钟表机构推进内盘。
 - en: This is a picture of the Leon Battista Alberti cipher disk drawn by Augusto
     Buonafalce, from his 1467 book, *De compendis cifri*. (Image distributed by Wikimedia
     Commons.)
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是奥古斯托·布纳法尔切绘制的莱昂·巴蒂斯塔·阿尔贝蒂密码盘的图片，取自他1467年的著作*De compendis cifri*。（图片由维基共享资源分发。）
 - en: '![2-unnumb-5](../Images/2-unnumb-5.png)'
+  id: totrans-68
   prefs: []
   type: TYPE_IMG
+  zh: '![2-unnumb-5](../Images/2-unnumb-5.png)'
 - en: Starting in 1915, a long series of electromechanical rotor ciphers were invented.
     The most famous is the Enigma machine developed in the 1920s by German engineer
     Arthur Scherbius. Dozens of types were marketed up through the start of the computer
@@ -451,25 +525,31 @@
     turned, controlled by various cams, gears, lugs and pawls to change the substitutions
     in myriad ways. So, if the word INFANTRY came out as **PMRNQGFW**, that might
     not happen again for billions of turns.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 从1915年开始，一系列长期的电机机械转子密码机被发明出来。最著名的是20世纪20年代由德国工程师阿瑟·谢比乌斯开发的恩尼格玛机。直到计算机时代开始，几十种类型的密码机被推出市场。它们都产生流密码。基本思想是，字母的替代品由电流通过一系列旋转转子的路径确定。每个字母被加密后，一些转子转动，由各种凸轮、齿轮、凸耳和爪控制，以各种方式改变替代品。因此，如果单词INFANTRY变成**PMRNQGFW**，可能在数十亿次转动后不会再次发生。
 - en: Since the 1960s, cryptography has become increasingly computerized and digital.
     The Data Encryption Standard (DES) was developed by IBM in 1975 and certified
     by the National Bureau of Standards in 1977\. This touched off a series of block
     ciphers with names like Serpent and Twofish, culminating in the Advanced Encryption
     Standard (AES) adopted by the National Institute of Standards and Technology (NIST)
     in 2001\. This class of ciphers is covered in chapter 11.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
 - en: The progression has been from manual ➔ mechanical ➔ electromechanical ➔ digital.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
 - en: 2.6 Why choose Secret Key?
+  id: totrans-72
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: In this era of Public Key cryptography, the question naturally arises, why would
     anyone choose Secret Key cryptography? There are several reasons.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
 - en: Secret Key cryptography is much faster. Even the strongest, most complex Secret
@@ -477,6 +557,7 @@
     Public Key methods. In fact, the main use of Public Key cryptography is to encrypt
     keys for Secret Key cryptography. The keys are sent using Public Key methods,
     but the messages themselves are sent using Secret Key methods.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
 - en: Public Key cryptography (PKC) requires a Public Key Infrastructure. There must
@@ -492,6 +573,7 @@
     every party involved must be authenticated. The receiver must verify that the
     received message has not been altered or replaced by some third party. This all
     makes for a profusion of messages.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
 - en: Secret Key cryptography can operate without any of that administrative overload.
@@ -499,6 +581,7 @@
     else or any intermediating system. When several people are exchanging Secret Key
     messages, the only authorization required is that each party has the current key.
     An unauthorized person won’t have the keys and can’t read the messages.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
 - en: Exchanging messages is not the only use for cryptography. An equally important
@@ -506,6 +589,7 @@
     device such as a flash drive, or in cloud storage, often for a long time. PKC
     cannot be used for this purpose. Only Secret Key methods are suited for keeping
     data files secret.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
 - en: When a message needs to be broadcast to many receivers at the same time, this
@@ -516,6 +600,7 @@
     of all of the recipients, with all of the attendant authorization and verification.
     This cannot be prearranged because the participants are free to change their public
     keys at any time.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
 - en: The most common Public Key method is the RSA method. The strength of this method
@@ -525,14 +610,17 @@
     become available, this will all change. MIT professor Peter Shor developed a quantum
     algorithm that can easily factor a number that size. When that happens, all of
     the RSA messages stored on computers will be able to be read.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
 - en: There is, so far, no known way to use quantum computers for cracking secret
     key ciphers. If quantum computers are a concern, Secret Key cryptography is the
     only choice.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
 - en: 2.7 Why build your own?
+  id: totrans-81
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -540,6 +628,7 @@
     You build your own ciphers because that’s your hobby. Model train hobbyists design,
     build, and run model trains. Model plane fans design, build and fly model planes.
     Cipher hobbyists design, build and solve ciphers.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
 - en: If you are a cryptography student, building your own cipher is good training.
@@ -547,30 +636,35 @@
     standard cipher, AES (section 11.5), will not last forever, and somebody will
     need to design its replacement. If you want to be part of that effort, this book
     may be your best starting point.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
 - en: If you are a serious cryptographer with responsibilities for protecting high-value
     data and communications, you might build your own ciphers out of a healthy skepticism
     that the government-approved ciphers are as safe and secure as your government
     claims. Let me give you one story that will support your doubts.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
 - en: Circa 1975, IBM proposed the cipher now called DES, the Data Encryption Standard.
     It became a worldwide standard for secret key encryption. As IBM originally designed
     it, DES had a 64-bit key. The National Security Agency (NSA) required that the
     key be reduced from 64 bits to 56 bits, with the other 8 bits used as a checksum.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
 - en: This made no sense. If a checksum were really needed, then the key could be
     increased from 64 to 72 bits. It was widely believed that the real reason the
     NSA made this demand was that it knew how to crack messages using a 56-bit key,
     but not messages using a 64-bit key. This proved to be true.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
 - en: You could reasonably conclude that the NSA would never approve any encryption
     standard that it could not crack. In that case, you could infer that the NSA can
     crack all of the different forms of AES. And if the NSA can crack AES, then it
     is likely that its Russian and Chinese counterparts can crack AES as well.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
 - en: There are just a handful of experts who construct the candidate ciphers from
@@ -581,17 +675,20 @@
     is some backdoor that lets the NSA, and only the NSA, solve these ciphers easily.
     It is also plausible that the NSA could offer jobs, contracts and research grants
     that might induce the experts to adopt those vulnerable methods.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
 - en: There is a good bit of speculation here, but cryptographers tend to be very
     conservative. If you can imagine a plausible weakness or vulnerability, whether
     or not your opponent can realistically exploit it, it is best to guard against
     it whenever you can.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
 - en: Finally, you might just be after speed, simpler implementation, or cheaper hardware.
     You might want to construct your own ciphers to achieve these goals without giving
     up security. You will find methods in this book that can help you do that.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
 - en: That said, remember that there are plenty of pitfalls. Don’t just create a cipher
@@ -600,11 +697,13 @@
     as starting every message with a standard header, frequently reusing keys, or
     sending the identical message using different keys. For example, many German messages
     were solved during WW II because they all began, “Heil Hitler.”
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
 - en: This book contains all the information you need to construct an unbreakable
     cipher, but remember that reading only one book about cryptography will not make
     you an expert overnight. Be sure to check the strength of your cipher using the
     principles detailed in chapter 12.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL

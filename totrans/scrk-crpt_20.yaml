@@ -1,47 +1,72 @@
 - en: Appendix B. Challenge
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 附录B. 挑战
 - en: These cryptograms are presented as a challenge to readers. The methods are not
     given. It is your task to determine the method and solve the cryptogram. Sufficient
     material is given so that a skilled amateur who has determined the method can
     solve it. In all cases the language is English. The text reads normally and grammatically.
     No special effort has been made to distort standard English letter frequencies
     or contact frequencies.
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些密码图被呈现给读者作为挑战。 方法未给出。 您的任务是确定方法并解决密码图。 提供了足够的材料，以便已确定方法的有经验的业余爱好者可以解决它。 在所有情况下，语言都是英语。
+    文本读起来正常且符合语法。 没有特别努力来扭曲标准英语字母频率或联系频率。
 - en: These are all single-step ciphers. There is no mixing of methods, such as combining
     a substitution with a transposition. These challenge ciphers are rated Three.
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些都是单步密码。 没有混合方法，比如将替换与置换相结合。 这些挑战密码被评为三级。
 - en: 'C1: Challenge #1'
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 'C1: 挑战 #1'
 - en: This is a paper-and-pencil cipher. The plaintext consists of 250 uppercase letters
     without word spaces or punctuation.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一种纸笔密码。 明文由250个大写字母组成，没有单词间隔或标点符号。
 - en: '![20-unnumb-1](../Images/20-unnumb-1.png)'
+  id: totrans-5
   prefs: []
   type: TYPE_IMG
+  zh: '![20-unnumb-1](../Images/20-unnumb-1.png)'
 - en: 'C2: Challenge #2'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 'C2: 挑战 #2'
 - en: This cipher can be solved by hand, but it is easier with some computer assistance
     to manage the hexadecimal representation. The plaintext consists of 200 characters
     in mixed case with word spacing and punctuation.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个密码可以手工解密，但使用一些计算机辅助来管理十六进制表示会更容易。 明文由混合大小写的200个字符组成，带有单词间隔和标点符号。
 - en: '![20-unnumb-2](../Images/20-unnumb-2.png)'
+  id: totrans-8
   prefs: []
   type: TYPE_IMG
+  zh: '![20-unnumb-2](../Images/20-unnumb-2.png)'
 - en: 'C3: Challenge #3'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 'C3: 挑战 #3'
 - en: This cipher can be encrypted and decrypted by hand. The plaintext consists of
     180 letters in uppercase without word spacing or punctuation.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个密码可以手工加密和解密。 明文由180个大写字母组成，没有单词间隔或标点符号。
 - en: '![20-unnumb-3](../Images/20-unnumb-3.png)'
+  id: totrans-11
   prefs: []
   type: TYPE_IMG
+  zh: '![20-unnumb-3](../Images/20-unnumb-3.png)'

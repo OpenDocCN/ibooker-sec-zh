@@ -1,34 +1,44 @@
 - en: Epilogue
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 结语
 - en: 'This book has presented some 140 different ciphers, along with innumerable
     variations. This may bewilder some readers. They may want to know just one thing:
     “What is the best cipher for me?” That question is complicated, because the book
     is intended for such a wide range of readers. In this epilogue I hope to provide
     some useful answers.'
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 这本书介绍了大约140种不同的密码，以及无数的变体。这可能会使一些读者困惑。他们可能只想知道一件事：“对我来说什么是最好的密码？”这个问题很复杂，因为这本书是为如此广泛的读者群体而设计的。在这个结语中，我希望提供一些有用的答案。
 - en: '**Children**: There are several ciphers here that children can understand and
     use. They can use simple substitution ciphers, especially the Caesar cipher. Children
     particularly like ciphers where the letters are replaced by pictures or symbols,
     such as 🙂☽♡⚇⚓🎾🧙☼◈☆. Children also like route transpositions. Teens may like columnar
     transpositions and the Belaso cipher.'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '**儿童**：这里有几种儿童可以理解和使用的密码。他们可以使用简单的替换密码，尤其是凯撒密码。儿童特别喜欢字母被图片或符号替换的密码，比如🙂☽♡⚇⚓🎾🧙☼◈☆。儿童也喜欢路径置换。青少年可能会喜欢列置换和贝拉索密码。'
 - en: '**Hobbyists**: Hobbyists may enjoy exchanging ciphers with friends, challenging
     one another to solve them. Ciphers that are best suited for this are simple substitution,
     polyalphabetic substitution, autokey, running key, Playfair, bifid, diagonal bifid,
     trifid, Two Square, route transposition, columnar transposition, Bazeries, and
     fractionated Morse.'
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: '**爱好者**：爱好者可能会喜欢与朋友交换密码，挑战彼此解密。最适合这样做的密码是简单替换、多表替换、自动密钥、流动密钥、Playfair、双密码、对角双密码、三密码、双方密码、路径置换、列置换、巴泽里斯和分数莫尔斯。'
 - en: I encourage hobbyists to join the American Cryptogram Association, [www.cryptogram.org](https://www.cryptogram.org),
     where they can submit their ciphers for other members to solve, and solve the
     cryptograms that other members have submitted. Their webpage [https://www.cryptogram.org/resource-area/cipher-types/](https://www.cryptogram.org/resource-area/cipher-types/)
     has a list of the cipher types they accept.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 我鼓励爱好者加入美国密码协会，[www.cryptogram.org](https://www.cryptogram.org)，在那里他们可以提交他们的密码供其他会员解决，并解决其他会员提交的密码。他们的网页[https://www.cryptogram.org/resource-area/cipher-types/](https://www.cryptogram.org/resource-area/cipher-types/)列出了他们接受的密码类型。
 - en: '**Developers**: People who want to develop or invent their own ciphers will
     find scores of methods here, which can be combined in myriad ways. Letters can
     be replaced by other letters, or by fixed-length or variable-length groups of
@@ -37,27 +47,35 @@
     again, compressed, multiplied by large integers or by matrices, converted into
     other number bases, or chained together. Parts of some groups may be used to encipher
     parts of other groups.'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: '**开发者**：想要开发或发明自己的密码的人会在这里找到许多方法，这些方法可以以无数种方式组合。字母可以被其他字母替换，或者被固定长度或可变长度的比特组、莫尔斯符号、任何数制的数字或数学环的元素替换。所有这些都可以进行置换和重新分组。组可以再次被替换、压缩、乘以大整数或矩阵，转换为其他数制，或者链接在一起。一些组的部分可以用来加密其他组的部分。'
 - en: '**Crypto service providers**: Companies that provide encrypted communication
     services typically use their own proprietary algorithms. They may use any of the
     techniques just listed for developers, but they must ensure that their cipher
     meets all of the criteria of chapter 12\. The cipher should have large blocks
     and long keys. It should be highly non-linear, and have good diffusion and saturation.'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: '**加密服务提供商**：提供加密通信服务的公司通常使用自己的专有算法。他们可以使用开发者刚列出的任何技术，但他们必须确保他们的密码符合第12章的所有标准。密码应该有大块和长密钥。它应该是高度非线性的，具有良好的扩散和饱和度。'
 - en: If the service provider uses a standard algorithm such as 3DES or AES, then
     the standard cipher should be preceded and followed by a keyed secret substitution
     or a keyed secret transposition.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果服务提供商使用标准算法如3DES或AES，那么标准密码应该在前后都加上一个有密钥的秘密替换或秘密置换。
 - en: '**Banking**: Banking and financial companies are required to use AES for all
     communications so that they can interchange information among themselves, as well
     as with the Federal Reserve, the SEC, the IRS and other government agencies. Banks
     also make wide use of public key cryptography to establish encryption keys and
     for authentication and verification.'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: '**银行业务**：银行和金融公司被要求在所有通信中使用AES，以便它们可以相互之间以及与美联储、证券交易委员会、国税局和其他政府机构进行信息交换。银行还广泛使用公钥密码学来建立加密密钥以及进行身份验证和验证。'
 - en: '**Military and diplomatic**: The US military and State Department are mandated
     by NSA regulations to use 256-bit AES. This has the force of law. This is done
     on PCs, laptops and even smartphones with an AES chip, or with AES software. However,
@@ -67,19 +85,26 @@
     or work product is illegal in many countries. Additionally, foreign armies and
     diplomatic corps may distrust any AES hardware or software, all of which can come
     only from the NSA or suppliers regulated by the NSA.'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: '**军事和外交**：美国军方和国务院根据NSA规定被强制使用256位AES。这具有法律效力。这在个人电脑、笔记本电脑甚至带有AES芯片或AES软件的智能手机上完成。然而，军方和情报机构在可能计算机和手机无法工作的地方和条件下操作，或者一个配备AES的手机可能会引起怀疑或违法。在许多国家，拥有任何形式的密码设备、文献或工作成果都是非法的。此外，外国军队和外交团体可能会对来自NSA或受NSA监管的供应商的任何AES硬件或软件表示不信任。'
 - en: For these reasons, armies and intelligence services have both codes and ciphers
     to back up their electronic cryptographic equipment. Hand ciphers suitable for
     use in combat conditions include diagonal bifid, TwoSquare+1, Two Square ripple,
     and Playfair TwoSquare. Another idea is to use bifid or Two Square followed by
     a piecewise transposition.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于这些原因，军队和情报机构都备有代码和密码来支持他们的电子加密设备。适用于战斗条件的手写密码包括对角线双字母密码、TwoSquare+1、Two Square
+    ripple 和 Playfair TwoSquare。另一个想法是使用双字母密码或Two Square，然后是逐块置换。
 - en: '**Large files**: For very large files it is much faster to use a stream cipher
     rather than a block cipher. You generate a stream of pseudorandom numbers and
     combine this with the data file to simulate a one-time pad. You can use Xorshift,
     FRand or Gen5 for the PRNG, and you can use **xors**, **adds** or **poly** for
     the combining function. Or, you could use GenX for both generating and combining.'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: '**大文件**：对于非常大的文件，使用流密码比块密码要快得多。您可以生成一系列伪随机数，并将其与数据文件组合以模拟一次性密码本。您可以使用Xorshift、FRand或Gen5进行PRNG，并且可以使用**xors**、**adds**或**poly**进行组合功能。或者，您可以同时使用GenX进行生成和组合。'

@@ -1,24 +1,32 @@
 - en: Appendix A. Fun pages
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 附录A. 娱乐页面
 - en: There are four separate ciphers in this diagram, S1 to S4\. Each cipher is a
     simple monoalphabetic substitution. Your job is to identify the type, such as
     Morse code, and then solve it. Each cipher is written in standard English, using
     uppercase letters without spaces or punctuation. Each cipher is between 75 and
     90 letters long. All begin in the upper-left cell. The first 3 ciphers read left
     to right across the rows. The last cipher reads clockwise around the border.
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个图表中有四个独立的密码，从S1到S4。每个密码都是一个简单的单表替换。你的任务是识别类型，比如摩斯码，然后解决它。每个密码都以标准英文书写，使用大写字母，不带空格或标点符号。每个密码长度介于75到90个字母之间。所有密码都从左上角单元格开始。前3个密码从左到右跨越行读取。最后一个密码按照顺时针方向沿着边界读取。
 - en: '![19-unnumb-1](../Images/19-unnumb-1.png)'
+  id: totrans-2
   prefs: []
   type: TYPE_IMG
+  zh: '![19-unnumb-1](../Images/19-unnumb-1.png)'
 - en: The methods are all described in this book. The only difference is the visual
     presentation. You need to determine which features are relevant in each cipher,
     such as height, width, position or color. You can submit your answers for credit
     by following the instructions hidden elsewhere in this book.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有方法都在这本书中描述了。唯一的区别是视觉呈现方式。你需要确定每个密码中哪些特征是相关的，比如高度、宽度、位置或颜色。你可以按照本书其他地方隐藏的说明提交你的答案以获取学分。
 - en: Here are some additional fun ciphers using some of the most popular hobbyist
     ciphers. These are in standard English, with a few proper names. By convention,
     the letters are grouped by fives, regardless of the period. If you want lots more
@@ -26,64 +34,102 @@
     You can submit your answers for credit by following the instructions hidden, in
     plain view, elsewhere in this book. You can find more cryptograms to solve at
     [www.contestcen.com/crypt.htm](http://www.contestcen.com/crypt.htm).
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里有一些额外的有趣密码，使用了一些最流行的业余爱好者密码。这些密码是标准英文，带有一些专有名词。按照惯例，字母被分组为五个，不论周期。如果你想要更多类似的密码，可以考虑加入美国密码协会，网址为[cryptogram.org](http://cryptogram.org)。你可以按照本书其他地方隐藏的说明提交你的答案以获取学分。你可以在[www.contestcen.com/crypt.htm](http://www.contestcen.com/crypt.htm)找到更多要解决的密码。
 - en: 'F1: Belaso cipher (section 5.8.1)'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: F1：Belaso密码（第5.8.1节）
 - en: '![19-unnumb-2](../Images/19-unnumb-2.png)'
+  id: totrans-6
   prefs: []
   type: TYPE_IMG
+  zh: '![19-unnumb-2](../Images/19-unnumb-2.png)'
 - en: 'F2: Vigenère cipher (section 5.8.2)'
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: F2：维吉尼亚密码（第5.8.2节）
 - en: '![19-unnumb-3](../Images/19-unnumb-3.png)'
+  id: totrans-8
   prefs: []
   type: TYPE_IMG
+  zh: '![19-unnumb-3](../Images/19-unnumb-3.png)'
 - en: 'F3: Columnar transposition (section 7.2)'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: F3：栏式置换（第7.2节）
 - en: '![19-unnumb-4](../Images/19-unnumb-4.png)'
+  id: totrans-10
   prefs: []
   type: TYPE_IMG
+  zh: '![19-unnumb-4](../Images/19-unnumb-4.png)'
 - en: 'F4: Playfair cipher (section 9.2)'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: F4：Playfair密码（第9.2节）
 - en: '![19-unnumb-5](../Images/19-unnumb-5.png)'
+  id: totrans-12
   prefs: []
   type: TYPE_IMG
+  zh: '![19-unnumb-5](../Images/19-unnumb-5.png)'
 - en: 'F5: Bifid cipher (section 9.6)'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: F5：Bifid密码（第9.6节）
 - en: The block size is 7, and the subject is horticulture.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 区块大小为7，主题是园艺。
 - en: '![19-unnumb-6](../Images/19-unnumb-6.png)'
+  id: totrans-15
   prefs: []
   type: TYPE_IMG
+  zh: '![19-unnumb-6](../Images/19-unnumb-6.png)'
 - en: 'F6: One-time pad (chapter 14)'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: F6：一次性密码本（第14章）
 - en: For each letter in the message, a random number is generated. If this number
     is even, X is added modulo 26 to the letter, otherwise Y is added modulo 26.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于消息中的每个字母，都生成一个随机数。如果这个数字是偶数，就对字母加上X对26取模，否则对Y对26取模。
 - en: '![19-unnumb-7](../Images/19-unnumb-7.png)'
+  id: totrans-18
   prefs: []
   type: TYPE_IMG
+  zh: '![19-unnumb-7](../Images/19-unnumb-7.png)'
 - en: The one-time pad, of course, is not a hobbyist cipher. I included this as a
     fun cipher to make the point that some one-time pad ciphers can be broken in practice.
     Can you see how to find the values of X and Y without trying all 676 combinations?
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，一次性密码本不是一种业余爱好者密码。我把它包括在内是为了说明一些一次性密码本密码在实践中是可以被破解的。你能看出如何找到X和Y的值而不尝试所有676种组合吗？
 - en: 'F7: General polyalphabetic (section 5.9.3)'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: F7：通用多表密码（第5.9.3节）
 - en: For an extra level of fun there are characters from several languages, and more
     than 26 characters are used. Each alphabet, however, contains only 26 different
     characters, and the message is in standard English.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了增加乐趣，还有来自几种语言的字符，并且使用了超过26个字符。然而，每个字母表只包含了26个不同的字符，并且消息是标准英文。
 - en: '![19-unnumb-8](../Images/19-unnumb-8.png)'
+  id: totrans-22
   prefs: []
   type: TYPE_IMG
+  zh: '![19-unnumb-8](../Images/19-unnumb-8.png)'

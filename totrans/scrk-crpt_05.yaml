@@ -943,15 +943,18 @@
   id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 你不想因为无法区分有效重复和偶然重复而将其抛弃。你可以做以下事情。假设你有一个周期候选者。例如，假设你怀疑周期是6。将重复序列出现的位置减去6的模数。（还记得模数算术吗？如果不记得，再看一下第3.5节。）
 - en: Let’s try the *modulo method*. Look at the 4 occurrences of **YR** again, and
     reduce their positions modulo 5, modulo 6 and modulo 7 to see what happens.
   id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们尝试一下*模数法*。再次看看**YR**的4次出现，并将它们的位置减去5、减去6和减去7，看看会发生什么。
 - en: '![5-unnumb-29](../Images/5-unnumb-29.png)'
   id: totrans-125
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-29](../Images/5-unnumb-29.png)'
 - en: All 4 residues modulo 7 are different. If the period is 7, then all of the repeats
     of **YR** are accidental. There are only 2 equal residues modulo 5\. If the period
     is 5, then only 2 out of 4 occurrences come from repeated plaintext. But if the
@@ -962,23 +965,27 @@
   id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有4个模7余数都不同。如果周期是7，那么**YR**的所有重复都是偶然的。模5余数只有2个相等。如果周期是5，那么4次出现中只有2次来自重复的明文。但是如果周期是6，那么我们现在看到**YR**的4次出现来自明文中的2个不同的重复双字母组，一个双字母组在明文的位置18和54处，距离为36，另一个双字母组在明文的位置59和71处，距离为12。
 - en: How did that happen? Look back at the list of repeated sequences. You can see
     that the bigram **YR** occurs in the repeated trigram **RYR** and in the repeated
     tetragram **YXYR**. Each of these contributed one repetition.
   id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 那是怎么发生的？回顾一下重复序列的列表。你可以看到重复的双字母组**YR**在重复的三字母组**RYR**和重复的四字母组**YXYR**中出现。每个重复都贡献了一个重复。
 - en: Let’s look at a second method for determining the period of a polyalphabetic
     cipher. If the evidence from the repeated sequences is inconclusive, it is good
     to have a backup plan.
   id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看第二种确定多表密码周期的方法。如果重复序列的证据不足以得出结论，那么有备用计划是很好的。
 - en: 5.7 Index of Coincidence
   id: totrans-129
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 5.7 巧合指数
 - en: The *Index of Coincidence* was invented by American cryptanalyst William F.
     Friedman in 1922\. The idea is very simple, but its importance is profound. Imagine
     two messages enciphered using a polyalphabetic cipher, but with different keys,
@@ -992,10 +999,12 @@
   id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: '*巧合指数*由美国密码分析专家威廉·F·弗里德曼于1922年发明。这个想法非常简单，但其重要性深远。想象一下，使用多表密码编写了两条消息，但使用了不同的密钥，可能还有不同的周期。如果逐字比较两个密文，两个对应字母相同的概率是26分之1，约为0.0385。如果两条消息都是52个字符长，你期望有52/26=2对相应字母相等。在这里，我使用密钥分别为火星和金星的Belaso密码编写了52字母的明文“春日少年的幻想变成了棒球”。两个相同的字母已经被突出显示。（两对相同字母都是F纯属偶然。）'
 - en: '![5-unnumb-30](../Images/5-unnumb-30.png)'
   id: totrans-131
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-30](../Images/5-unnumb-30.png)'
 - en: Now imagine two messages enciphered by the same key. Each pair of corresponding
     letters is enciphered by the same key character, so if the plaintext letters are
     the same, then the ciphertext letters will be the same. The frequency of A is
@@ -1361,10 +1370,12 @@
   id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是使用这种形式的维吉尼亚密码加密的样本消息。其周期为5。
 - en: '![5-unnumb-39](../Images/5-unnumb-39.png)'
   id: totrans-176
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-39](../Images/5-unnumb-39.png)'
 - en: This cipher has a serious weakness. Since each row in the tableau is the standard
     alphabet shifted by a number of positions, each cipher alphabet will be the same
     as all of the other cipher alphabets shifted by some number of positions. You
@@ -1374,6 +1385,8 @@
   id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种密码有一个严重的弱点。由于表中的每一行都是标准字母表移位了一些位置，因此每个密码字母表将与所有其他密码字母表移位了一些位置相同。您无法将密码字母表与标准字母表有用地比较，因为它们是按混合顺序排列的，但是，您可以通过直接比较密码字母表或使用Tall
+    Peaks方法来确定移位。
 - en: The following figure shows the histograms for the 5 cipher alphabets, shifted
     to match up their peaks and valleys. All of the ciphertext letters in the first
     column (shaded) represent the same plaintext letter. This means S in the first
@@ -1385,20 +1398,24 @@
   id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 下图显示了5个密码字母表的直方图，将它们移位以匹配它们的峰值和谷值。第一列（阴影）中的所有密文字母代表相同的明文字母。这意味着第一个字母表中的S，第二个字母表中的C和第四个字母表中的L都代表相同的字母。将所有这些替换为A。第二列中没有字母。在第三列中，第三个字母表中的M和第五个字母表中的T代表相同的明文字母。将所有这些替换为C，依此类推。第26列中的密文字母将全部替换为Z。
 - en: '![5-unnumb-40](../Images/5-unnumb-40.png)'
   id: totrans-179
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-40](../Images/5-unnumb-40.png)'
 - en: This converts the ciphertext into a simple substitution which can now be solved
     using the methods of section 5.1\. The Vigenère cipher is rated Two.
   id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将把密文转换为一个简单的替换，现在可以使用第5.1节的方法解决。维吉尼亚密码的评级为Two。
 - en: 5.9.3 Solving a general polyalphabetic cipher
   id: totrans-181
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5.9.3 解决一般多表密码
 - en: 'A general polyalphabetic cipher can also be done using a tableau. The rows
     of the tableau can be mixed according to any scheme, independently of one another.
     It is worth noting that the number of rows need not be the same as the number
@@ -1410,16 +1427,19 @@
   id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 也可以使用表格来完成一般的多表密码。表格的行可以根据任何方案混合，彼此独立地进行。值得注意的是，行数不必与列数相同。对于计算机密码，将表格宽度设置为256个字符，深度设置为512行，以便每个密文字符在每列中出现两次。这将使已获得密文及其相应明文的对手难以确定密钥。以下是100行表格的部分示例：
 - en: '![5-unnumb-41](../Images/5-unnumb-41.png)'
   id: totrans-183
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-41](../Images/5-unnumb-41.png)'
 - en: This tableau would be used with a numeric key where 2 decimal digits would be
     used to select the row for enciphering. A 20-digit key would produce a polyalphabetic
     cipher whose period is 10.
   id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 该表将与数值键一起使用，其中2位小数将用于选择用于加密的行。20位数字键将产生周期为10的多表密码。
 - en: Solving a general polyalphabetic cipher is very like solving a monoalphabetic
     cipher. You begin by taking a frequency count and making a contact table for each
     column. In this case the contacts for column C will be in columns C-1 and C+1,
@@ -1429,14 +1449,17 @@
   id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 解决一般多表密码与解决单表密码非常相似。您首先进行频率统计，并为每一列制作一个接触表。在这种情况下，列C的联系将在C-1和C+1列中，必要时从最右边的列绕到第一列。每列中的每个字母的出现次数会减少，因此您需要从较少的数据中进行推断。这需要很多经验来自的灵感猜测。
 - en: Let’s begin with this polyalphabetic ciphertext.
   id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们从这个多表密码开始。
 - en: '![5-unnumb-42](../Images/5-unnumb-42.png)'
   id: totrans-187
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-42](../Images/5-unnumb-42.png)'
 - en: A quick examination of this ciphertext shows two long repeated sequences, **YSUZONSOO**
     at positions 13 and 93, and **SNZYYZK** at positions 39 and 124\. In both cases
     the distance between the two occurrences is a multiple of 5, confirming that the
@@ -1445,6 +1468,7 @@
   id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 快速检查此密文显示两个长重复序列，位置分别为13和93的**YSUZONSOO**，以及位置分别为39和124的**SNZYYZK**。在这两种情况下，两次出现之间的距离是5的倍数，证实了周期为5。这些长重复可能代表常见的单词或短语，或者是与消息主题相关的单词。
 - en: The contact charts for each of the 5 key letters follow. To make it easier to
     explain the deductions, I will tag each ciphertext letter with a digit specifying
     its alphabet number. So **C1** would mean the ciphertext letter **C** in alphabet
@@ -1453,15 +1477,18 @@
   id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个5个关键字母的联系图表如下。为了更容易解释推断，我将使用数字标记每个密文字母，指定其字母编号。所以**C1**表示字母**C**在字母表1中的密文字母（即使用密钥的第一个字母进行加密），**H3**表示字母**H**在字母表3中的密文字母（使用密钥的第三个字母），依此类推。
 - en: Recall that letters with many different contacts on both sides tend to be vowels,
     while letters with fewer distinct contacts tend to be consonants.
   id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 请记住，两边有许多不同接触的字母倾向于是元音，而具有较少不同接触的字母倾向于是辅音。
 - en: '![5-unnumb-43](../Images/5-unnumb-43.png)'
   id: totrans-191
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-43](../Images/5-unnumb-43.png)'
 - en: Based on these contacts we can tentatively identify as vowels **G2**, **K2**,
     **O2**, **P2**, **H3**, **K5** and as consonants **R1**, **Z1**, **K3**, **N3**,
     **D4**, **S4**, **O5**, **U5**. Based on its high frequency, **S4** probably represents
@@ -1469,6 +1496,7 @@
   id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据这些联系，我们可以暂时将**G2**，**K2**，**O2**，**P2**，**H3**，**K5**识别为元音，将**R1**，**Z1**，**K3**，**N3**，**D4**，**S4**，**O5**识别为辅音。基于其高频率，**S4**可能代表明文T。
 - en: You proceed exactly as you did for simple substitution. You update the contact
     charts to show those letters that have been identified as vowels and consonants,
     and you also write the ciphertext with the vowels and consonants marked. You use
@@ -1477,17 +1505,20 @@
   id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 您的操作步骤与简单替换一样。您更新联系图表以显示已被识别为元音和辅音的字母，并且还将带有标记的元音和辅音的密文写下。您使用这个来完善和修复元音/辅音的识别，并识别单个字母。
 - en: I will not repeat all the steps taken in section 5.1\. It is the same logic,
     but the incremental steps are smaller and more numerous, with more back-tracking.
     The general polyalphabetic cipher is rated Three.
   id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 我不会重复5.1节中所采取的所有步骤。逻辑是相同的，但增量步骤更小，更多，需要更多的回溯。一般的多字母密码评定为三。
 - en: 5.10 Autokey
   id: totrans-195
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 5.10 自动关键字
 - en: You may recall that I said in section 5.9.2 that Vigenère made two improvements
     to the Belaso cipher. The first improvement was placing the guides around the
     edges of the tableau to produce a mixed alphabet. The second improvement was the
@@ -1495,6 +1526,7 @@
   id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可能还记得我在5.9.2节中提到维吉尼亚对贝拉索密码进行了两项改进。第一个改进是将指南放在表的边缘以产生混合字母表。第二个改进是*自动关键字*。
 - en: The autokey uses the plaintext of the message as a key to encipher the rest
     of the message. An early version was invented by Italian physician/mathematician/astrologer
     Girolamo Cardano. In Cardano’s system each letter was enciphered using itself
@@ -1506,6 +1538,7 @@
   id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 自动关键字使用消息的明文作为密钥来加密消息的其余部分。早期版本是由意大利医生/数学家/占星家吉罗拉莫·卡尔达诺发明的。在卡尔达诺的系统中，每个字母都使用自身作为密钥进行加密。这仅在您拥有具有奇数字母的字母表时才有效。使用26个字母的英文字母表，A会产生一个**A**，而N也会产生一个**A**，所以受信者必须弄清楚哪一个是指的。即使使用了奇数大小的字母表，卡尔达诺自动关键字也仅仅产生了简单的替换。
 - en: Vigenère improved upon the Cardano method by using a lag. Vigenère used a 1-letter
     key to encipher the first letter, used the first plaintext letter to encipher
     the second letter, used the second plaintext letter to encipher the third letter,
@@ -1601,6 +1634,9 @@
   id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 运行密钥类似于自动密钥，但是不是使用一个简短的关键词或短语，而是使用一个*密钥文本*，它可能和消息本身一样长。运行密钥从未在实践中被广泛使用，因为它要求双方都完全正确地获得密钥文本。如果一方记住或复制了密钥为“MINE
+    EYES HAVE SEEN THE GLORY OF THE COMING OF THE LORD”，而另一方记住了“MY EYES HAVE SEEN
+    THE GLORY OF THE COMING OF THE LORD”，那么他们将无法进行通信。解决这个问题的一种方法是使用双方都有的印刷书籍中的密钥文本，尽管他们必须随身携带这本书。对于计算机通信来说，这不是问题，因为计算机可以存储成千上万本书籍。
 - en: Again, assuming the Belaso tableau with the standard English alphabet, running
     key is straightforward, albeit laborious, to decrypt. One technique, which works
     for both autokey and running key, is to guess a likely word that may appear in
@@ -1612,6 +1648,7 @@
   id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设使用标准的英文字母表构成的贝拉索表，运行密钥的解密方法虽然直截了当，但也很费力。有一种技巧，适用于自动密钥和运行密钥，就是猜测文本中可能出现的一个合适的单词。这个单词可能出现在密钥文本中，也可能出现在明文中。密码学家稍后需要解开这个谜。这个可能的单词，或者*暗语*，可能是一个常见的英文单词，比如THE或AND，也可能是与疑似主题相关的词。例如，如果消息涉及贸易谈判，那么可能的单词可能是TARIFF、SHIPPING、REPRESENTATIVE、BARGAINING等。
 - en: The idea is to try the probable word in all possible positions in the message.
     This is called *word dragging*. Knowing the plaintext word and the corresponding
     ciphertext gives you a snippet of the key. If the word is correctly placed, then
@@ -1622,6 +1659,7 @@
   id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: 思路是在消息中尝试可能的单词的所有可能位置。这被称为*词拖拽*。知道明文单词和相应的密文可以给你一个密钥的片段。如果单词放置正确，那么这个片段看起来就像正常的英语。可能的单词越长，你就越有信心它是正确的。一旦找到一个单词，你就尝试猜测字母，然后是文本中在它之前或之后的单词，以扩大漏洞。
 - en: There is a second technique, one which is suitable for computer solution. This
     requires a new mathematical concept called *conditional probability*. This is
     the probability that an event A will occur if event B also occurs. The probability
@@ -1632,6 +1670,8 @@
   id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 还有一种技术，适用于计算机求解。这需要一个新的数学概念，叫做*条件概率*。这是事件A在事件B发生时发生的概率。单个事件A的概率用P(A)表示，给定事件B发生的条件下事件A的条件概率用P(A|B)表示。如果AB表示事件“A和B”，那么给定B的条件下A的条件概率是P(A|B)
+    = P(AB)/P(B)。这意味着P(AB) = P(A|B)P(B)。
 - en: An example may help to clarify this. If you are throwing two standard dice,
     the probability of throwing a 12 is 1/36\. However, if you throw the first die
     and the result is 6, then the chance of throwing 12 becomes 1/6\. Let A mean “throwing
@@ -1643,6 +1683,9 @@
   id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 举个例子来帮助澄清这个问题。如果你掷两个标准骰子，掷出12的概率是1/36。然而，如果你掷第一个骰子，结果是6，那么掷出12的机会变成了1/6。令 A
+    表示“掷出12”，B 表示“第一次掷出6”。那么 P(A) = 1/36，P(B) = 1/6。P(AB) 意味着第一次掷出6时掷出12。P(AB) 也是1/36，因为如果你掷出12，第一次掷出的一定是6。使用条件概率符号，P(A|B)
+    = P(AB)/P(B) = (1/36)/(1/6) = 1/6。因此，当第一次掷出6时掷出12的条件概率是1/6。
 - en: Let’s use conditional probability to solve a running key cipher. The tools that
     are needed are tables of single-letter, bigram and trigram probabilities. These
     can be compiled by counting the letters, bigrams and trigrams in a large body
@@ -1651,6 +1694,8 @@
   id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们使用条件概率来解密一个流动密钥密码。所需的工具是单个字母、二字母和三字母概率表。这些可以通过统计大量文本中的字母、二字母和三字母来编制。你可以在古腾堡计划网站
+    [www.gutenberg.org](http://www.gutenberg.org) 上找到许多这样的文本。选择明文选项。你也可以在互联网上找到一些统计表。
 - en: You will need to assign a probability for every possible bigram and trigram,
     not just those found in that body. For bigrams this is obvious. If AB is a bigram
     that did not appear in the count, you could set P(AB) = P(A)P(B), however, I suggest
@@ -1664,6 +1709,10 @@
   id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 你需要为每个可能的二字母和三字母分配一个概率，而不仅仅是在那个文本中找到的。对于二字母组，这是显而易见的。如果 AB 是一个没有出现在计数中的二字母组，你可以设置
+    P(AB) = P(A)P(B)，然而，我建议将其设置得更低，简单地因为 AB 从未被发现。我使用 P(AB) = P(A)P(B)/3。一旦你有了完整的二字母组概率集合，你可以通过将
+    P(ABC) 设置为 P(A)P(BC) 和 P(AB)P(C) 中较大的一个来扩展到三字母组。同样，我建议将它们设置得更低，因为三字母组 ABC 从未出现过。例如，将
+    P(ABC) 设置为 P(A)P(BC)/3 和 P(AB)P(C)/3 中较大的一个。这些人为的概率意味着所有二字母组和所有三字母组的总概率都大于1。数学上来说这是无意义的，但它没有实际影响。
 - en: Now that we have the necessary tools, we can tackle a running key cipher. Choose
     a starting position in the message, say, s, and try all possible key trigrams
     in positions s, s+1, s+2\. See what the corresponding plaintext trigrams are.
@@ -1681,6 +1730,10 @@
   id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们有了必要的工具，可以解决一个流动密钥密码。选择消息中的一个起始位置，比如 s，并尝试位置为 s，s+1，s+2 的所有可能的关键三字母组。查看相应的明文三字母组。将关键三字母组和文本三字母组的概率相乘以获得该位置的概率。保留这些位置中的前10000个，并丢弃其余的。对于每个选择的三字母组，尝试
+    s+3 位置的所有可能的关键字母，并查看相应的明文字母是什么。假设关键三字母组是 JKL，下一个关键字母是 M，相应的明文四字母组是 ABCD。您可以使用条件概率
+    P(KLM|KL) 来估计关键四字母组 JKLM 的概率，这是 M 跟在 KL 后面的概率。这是根据三字母组的概率计算出来的，如 P(KLM)/P(KL)，这是三字母组
+    KLM 的概率除以二字母组 KL 的概率。因此，四字母组的概率被估计为 P(JKL)P(KLM|KL)。这对于关键四字母组和明文四字母组都是如此。
 - en: Estimate the probability of this placement by multiplying the probabilities
     of the key tetragram and the plaintext tetragram. Again, keep the top 10,000 and
     toss out the rest. Keep going until the solution becomes obvious. This can all
@@ -1688,15 +1741,18 @@
   id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过将关键四字母组和明文四字母组的概率相乘来估计这个位置的概率。同样，保留前 10,000 个，丢弃其余的。一直持续到解决方案变得明显为止。所有这些都可以由计算机完成，无需任何人的监督。
 - en: Vigenère running key using standard alphabets is rated Four.
   id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用标准字母表的维吉尼亚运行密钥评为四级。
 - en: '*5.12 Simulated rotor machines'
   id: totrans-218
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '*5.12 模拟转子机'
 - en: The *sine qua non* of polyalphabetic ciphers are the electro-mechanical rotor
     machines used from the 1920s on. These machines can have periods in the billions
     or trillions, or no period at all if the movement of the rotors depends on the
@@ -1706,6 +1762,8 @@
   id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: 多表密码的必不可少之物是从 20 世纪 20 年代开始使用的电机械转子机。这些机器的周期可以达到数十亿或数万亿，或者如果转子的运动取决于明文或密文字符，则根本没有周期。从大约
+    1915 年到二战后，至少生产了 70 种不同类型的机器。有几个网站有这些机器的图片和描述。
 - en: Each machine has one or more rotors, usually 3 to 6, but sometimes as many as
     10\. Each rotor performs a simple substitution. After each letter is enciphered,
     some of the rotors turn so that a different substitution is used for the next
@@ -1714,10 +1772,12 @@
   id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: 每台机器都有一个或多个转子，通常为 3 到 6 个，但有时多达 10 个。每个转子执行简单的替换。在每个字母被加密后，一些转子会转动，以便下一个字母使用不同的替换。各种齿轮、凸缘、凸轮、杠杆和棘轮的系统使得转子以不可预测的方式转动。也就是说，对于你的对手来说是不可预测的。
 - en: '![5-unnumb-46](../Images/5-unnumb-46.png)'
   id: totrans-221
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-46](../Images/5-unnumb-46.png)'
 - en: It is easier to describe the rotor machines if we replace the letters of the
     alphabet with numbers. For mechanical rotor machines, where each rotor has 26
     positions corresponding to the 26 letters of the alphabet, we replace A by 0,
@@ -1730,12 +1790,17 @@
   id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果我们用数字替换字母表中的字母，描述转子机器会更容易。对于机械转子机器，每个转子有 26 个位置对应于字母表的 26 个字母，我们用数字代替 A 为
+    0，B 为 1，C 为 2，直到 Z，其被 25 代替。换句话说，我们使用经典的数字系统减去 1。对于计算机模拟，我们使用 8 位字节，并用一些标准化系统（如
+    UTF-8 编码）中的数字代码替换字符。在这个系统中，A 是 65，B 是 66，C 是 67，直到 Z，其为 90。其他字符，如小写字母、数字和标点符号，也被它们的
+    UTF-8 字符代码替换。
 - en: Now that we are dealing with numbers, we can do arithmetic on them, such as
     adding to them and taking residues modulo 26 or 256, as appropriate. If you wish
     to review modular arithmetic, refer back to section 3.6.
   id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 既然我们在处理数字，我们可以对它们进行算术运算，例如加法和取模 26 或 256 的余数，视情况而定。如果你想复习模数算术，请参考第 3.6 节。
 - en: Cipher machines with as many as 16 rotors have been produced. This is the 10-rotor
     assembly of the Russian-made Fialka machine, which was used by the Warsaw Pact
     nations from 1956 until the 1990s. Photo courtesy of Paul Hudson and licensed
@@ -1743,15 +1808,19 @@
   id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: 生产了多达 16 个转子的密码机。这是俄罗斯制造的菲阿尔卡机器的 10 个转子组件，它从 1956 年直到 1990 年代被华沙条约国家使用。照片由保罗·哈德森提供，并根据
+    CC BY 2.0 许可证授权。
 - en: '![5-unnumb-47](../Images/5-unnumb-47.png)'
   id: totrans-225
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-47](../Images/5-unnumb-47.png)'
 - en: 5.12.1 Single-rotor machine
   id: totrans-226
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5.12.1 单转子机
 - en: Let’s start with a single mechanical rotor. The rotor performs a simple substitution,
     so it can be simulated by a substitution table S. The table S is just a scrambled
     alphabet, like one row of a tableau. The entries in the list are numbered from
@@ -1762,6 +1831,9 @@
   id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们从一个单独的机械转子开始。转子执行简单的替换，因此可以通过替换表 S 进行模拟。表 S 只是一个乱序的字母表，就像一个表的一行。列表中的条目从 0
+    到 25 编号，对应于字母表的 26 个字母。替换表中的第 N 个条目，表示为 S(N)，是字母表的第 N 个字母的替换。因此，S(0) 是 A 的替换，S(1)
+    是 B 的替换，依此类推。
 - en: As the rotors turn, they change position. The position can be represented by
     a number P, which can range from 0 to 25\. When a rotor has turned 26 positions
     it will be back to its starting position, namely position 0\. The substitute for
@@ -1773,6 +1845,9 @@
   id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: 当转子转动时，它们会改变位置。位置可以用一个数字 P 来表示，它的范围是从 0 到 25。当一个转子转动了 26 个位置时，它会回到起始位置，即位置 0。当转子处于位置
+    P 时，第 N 个字母的替代是 S(N+P)。因此，当转子处于位置 5 时，S(5) 是 A 的替代，S(6) 是 B 的替代，依此类推。我们理解 N+P
+    会循环，所以 S(26) 和 S(0) 是相同的，S(27) 和 S(1) 是相同的，依此类推。换句话说，N+P 实际上是 (N+P) mod 26 的简写。
 - en: In a mechanical rotor machine, the rotors turn by different amounts after enciphering
     each letter. This irregular motion can be simulated by using a sequence of *step
     numbers*, say (a,b,c,d,e). On the first cycle the rotor steps (advances, rotates)
@@ -1788,6 +1863,11 @@
   id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: 在机械转子机器中，每个字母加密后，转子的转动量不同。这种不规则的运动可以通过使用一个 *步数序列* 来模拟，比如 (a,b,c,d,e)。在第一个周期，转子向前推进
+    a 个位置。在第二个周期，它向前推进 b 个位置，依此类推。第六个周期序列重复。因此，如果转子从位置 P 开始，经过一个周期后，它将处于位置 P+a。经过两个周期后，它将处于位置
+    P+a+b。经过 5 个周期后，它将处于位置 P+a+b+c+d+e。经过 6 个周期后，转子将处于位置 P+2a+b+c+d+e。在机械设备中，每个转子通常只转动几个位置，通常是
+    0 或 1 个位置，具体取决于特定凸轮的位置是上还是下。在计算机模拟中，我们没有这样的限制。在模拟机械转子时，步数可以是从 0 到 25 个位置，或者使用
+    8 位字节来表示字符时，可以是从 0 到 255 个位置。
 - en: Since we chose a key with 5 steps, this single-rotor machine will repeat after
     5×26 = 130 cycles. When a+b+c+d+e is even, the machine will repeat after 65 cycles,
     and if a+b+c+d+e is a multiple of 13, the machine will repeat after only 10 cycles.
@@ -1796,11 +1876,14 @@
   id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于我们选择了 5 步的密钥，这台单转子机器将在 5×26 = 130 个周期后重复。当 a+b+c+d+e 是偶数时，机器将在 65 个周期后重复，如果
+    a+b+c+d+e 是 13 的倍数，机器将在仅 10 个周期后重复。显然，一个转子不能提供太多安全性。单转子机器密码被评为 Three。
 - en: 5.12.2 Three-rotor machine
   id: totrans-231
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5.12.2 三转子机器
 - en: Let’s look at simulating a more practical kind of rotor machine. This machine
     has 3 rotors and uses the 8-bit UTF-8 code. Three rotors need 3 substitution tables,
     S[1], S[2] and S[3]. When the rotors are in positions P[1], P[2] and P[3,] the
@@ -1808,6 +1891,8 @@
   id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看看如何模拟一种更实用的转子机器。这台机器有 3 个转子，使用 8 位 UTF-8 代码。三个转子需要 3 个替换表，S[1]、S[2] 和 S[3]。当转子处于位置
+    P[1]、P[2] 和 P[3] 时，字母表的第 N 个字母被加密为 S[3](S[2](S[1](N+P[1])+P[2])+P[3])。
 - en: 'Each of the 3 substitution tables has its own list of steps: say S[1] has steps
     (a[1],a[2],a[3],...,a[i]), S[2] has steps (b[1],b[2],b[3],...,b[j]) and S[3] has
     steps (c[1],c[2],c[3],...,c[k]). If the sum of the steps for each rotor is an
@@ -1818,6 +1903,10 @@
   id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个3个替换表都有自己的步骤列表：假设 S[1] 有步骤 (a[1],a[2],a[3],...,a[i])，S[2] 有步骤 (b[1],b[2],b[3],...,b[j])，而
+    S[3] 有步骤 (c[1],c[2],c[3],...,c[k])。如果每个转子的步数之和是奇数，并且 i、j 和 k 是互质的，那么该机器的周期是 256ijk。例如，如果
+    i = 10，j = 11，k = 13，则 ijk 为 1430，周期为 1430×256 = 366,080。效果就像是有一个多表代换密码，其表格有 366,080
+    行，每个周期只使用一次每行。
 - en: Suppose the 3 substitution tables and the sequences of steps are known, for
     example, suppose they have been standardized over a large network. One might imagine
     that Emily needs to try only the 256³ = 1.67×10⁷ initial rotor settings to crack
@@ -1826,6 +1915,7 @@
   id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设已知三个替换表和步骤序列，例如，假设它们已经在一个大型网络上标准化。一个可能想象的是，艾米丽只需要尝试256³ = 1.67×10⁷个初始转子设置就能破解每个消息。这可能在当前的个人电脑上只需要几秒钟。这是误导性的。
 - en: Consider two different states of the machine. Both states have the rotors in
     the same positions, but they are in different parts of the stepping sequence.
     Starting to encipher from those two states will give different sequences of the
@@ -1837,10 +1927,12 @@
   id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: 考虑机器的两种不同状态。两个状态的转子处于相同的位置，但它们处于步进序列的不同部分。从这两个状态开始加密将会产生不同的密码字母序列，因此相同的消息将会被加密成不同的样子。通过穷举搜索来破解此密码将需要尝试所有可能的转子设置和步骤序列中的所有可能位置，总共为256³×1430，或2.40×10^(10)个情况。这仍然可以使用个人电脑来完成，但需要几个小时，而不是几秒钟。
 - en: With known rotors and known step sequences, this 3-rotor cipher is rated Four.
   id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于已知转子和已知步骤序列，这个三转子密码的等级是Four。
 - en: If the rotors and step sequences are secret, then Emily must fall back on the
     techniques for a general polyalphabetic cipher, namely gathering large numbers
     of intercepts and matching them up to find sections that are enciphered with the
@@ -1854,6 +1946,8 @@
   id: totrans-237
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果转子和步骤序列是保密的，那么艾米丽必须回到一般多表密码的技术上，即收集大量拦截并将它们匹配起来找出使用相同设置加密的部分。为了区分真实匹配和偶然匹配，需要对长重叠进行重合指数测试（第5.7节）。建议至少200个字符。匹配应仅尝试长于200个字符的消息。对于长度为L个字符的消息，其中L
+    ≥ 200，可匹配位置的数量为L-199。当所有拦截消息的可匹配位置的组合总数M超过√2.40×10^(10) = 1.55×10⁵时，可以开始检测文本部分的匹配。
 - en: This does not seem like much, but the work to detect these overlaps is on the
     order of M². Moreover, a single overlap is nowhere near sufficient. You need enough
     overlaps that you can start to distinguish high-frequency letters and separate
@@ -1863,11 +1957,13 @@
   id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: 这似乎不算什么，但是检测这些重叠的工作是按M²量级的。此外，单个重叠远远不够。你需要足够的重叠，以便开始区分高频字母，并将元音与辅音分开。这将需要一台大型机和一些有才华的密码分析员。未知转子和未知步骤序列的三转子机的等级是Six。
 - en: 5.12.3 Eight-rotor machine
   id: totrans-239
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5.12.3 八转子机器
 - en: Three rotors is a good start. To really ratchet up the strength of the simulated
     rotor machine, let’s increase the number of rotors from 3 to 8\. Let the number
     of steps for the rotors be 11, 13, 17, 19, 23, 25, 27 and 31, in some order, and
@@ -1876,6 +1972,7 @@
   id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: 三个转子是一个很好的开始。为了真正提高模拟转子机的强度，让我们将转子的数量从3增加到8。让转子的步数为11、13、17、19、23、25、27和31，按某种顺序，并且使每个转子的步数总和为奇数。这台机器的周期约为5.69×10^(12)。
 - en: If this is a hardware device, the internal wiring of the rotors and the sequences
     of steps might be built in. Even if this is the case, it still would not be feasible
     to match up messages the way we did with the 3-rotor version. This is because
@@ -1886,6 +1983,8 @@
   id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果这是一个硬件设备，转子的内部布线和步骤序列可能已经内置。即使是这种情况，也不可能像我们在3转子版本中那样匹配消息。这是因为现在有256⁸ = 1.84×10^(19)个8个转子的可能初始位置。由于周期为5.69×10^(12)，机器的总状态数变为(1.84×10^(19))×(5.69×10^(12))
+    = 1.05×10^(32)。当转子和步进序列无法更改时，这个8转子机器被评为九级。
 - en: Let’s take this further. Instead of 8 rotors, suppose we have a supply of 16
     possible rotors. For each message we select 8 out of the 16 rotors in some order.
     There are 5.19×10⁸ such permutations. For each such permutation there are 1.84×10^(19)
@@ -1894,6 +1993,7 @@
   id: totrans-242
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们再深入一点。假设我们有16个可能的转子供应。对于每个消息，我们以某种顺序选择其中的8个转子。有5.19×10⁸种这样的排列。对于每种排列，有1.84×10^(19)个可能的初始转子位置和5.69×10^(12)个步进序列位置，总共有5.43×10^(40)个状态。
 - en: Even if Emily somehow knows the substitution tables and the stepping sequences
     for all 16 rotors, it is not feasible to crack a message enciphered with this
     machine, even using the largest and fastest supercomputer in the world. (At this
@@ -1902,6 +2002,8 @@
   id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: 即使艾米丽以某种方式知道所有16个转子的替换表和步进序列，使用这台机器加密的消息也不可能被破解，即使使用世界上最大最快的超级计算机也不行。（目前世界上最快的超级计算机是Summit计算机，最高可达200
+    petaflops。）这个8转子密码被评为十级。
 - en: If the contents of the substitution tables and the stepping sequences are kept
     secret, or are changed frequently, this rotor cipher with 8 interchangeable rotors
     should remain far beyond the reach of the largest supercomputers for 10, 20, or
@@ -1909,6 +2011,7 @@
   id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果替换表和步进序列的内容保密，或者经常更改，这个具有8个可互换转子的转子密码应该在未来10、20或甚至30年内仍远远超出最大超级计算机的能力范围。
 - en: Since this is a software simulation of a rotor machine, the rotors can be changed
     at will. Instead of a fixed set of 16 rotors, the rotors could be changed for
     every message by using a key to mix each of the 8 rotor alphabets. This would
@@ -1919,6 +2022,7 @@
   id: totrans-245
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于这是一个转子机器的软件模拟，转子可以随意更改。可以通过使用密钥来混合每个8个转子字母表，为每个消息更换转子，而不是固定的16个转子集合。这将大大增加安全性，但需要为每个消息进行单独的设置阶段。中等安全级别是使用16个转子集合中的7个标准转子，以及为每个消息独立生成字母表的1个转子。这将减少87%的设置时间。
 - en: Even though this cipher has already earned a rating of Ten, you may still wish
     to strengthen it. You might not trust my rating, or you believe your opponent
     has stupendous computing power available. One way is to use the output of some
@@ -1931,6 +2035,7 @@
   id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: 即使这个密码已经获得了十级评价，你可能仍希望加强它。你可能不相信我的评价，或者你认为你的对手拥有惊人的计算能力。一种方法是使用一些转子的输出来修改操作。我建议在加密过程中的中途取第四个转子的输出，并使用该字符来推进第一个转子。可以直接使用字符，也可以对字符进行简单的替换以获得推进第一个转子的位置数。除了消息中的第一个字符外，第一个转子被推进两次，一次来自其步进序列，一次使用第四个转子的反馈。
 - en: This double-stepping does not affect the encipherment of the current character.
     It is the next message character that is enciphered using this modified setting.
     Double-stepping might be difficult to accomplish with a hardware rotor machine,
@@ -1939,6 +2044,7 @@
   id: totrans-247
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种双步进不会影响当前字符的加密。使用这种修改后的设置对下一个消息字符进行加密。在硬件转子机器上实现双步进可能会很困难，但在模拟机器上可以很容易地完成，因为转子是依次模拟的。
 - en: BTW, it might seem like it would be stronger to use the output of the eighth
     rotor, but this is not true. The output of the eighth rotor is the ciphertext
     character, which would be known to an eavesdropper. The outputs of the two middle
@@ -1947,9 +2053,11 @@
   id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: 顺便说一下，使用第八转子的输出似乎会更强大，但这是不正确的。第八转子的输出是密文字符，这对窃听者是已知的。中间两个转子的输出，即第四和第五转子，对窃听者的获取是最困难的，因此最安全。
 - en: This feedback from the fourth rotor makes the simulated 8-rotor machine aperiodic.
     No matter how many messages are sent, Emily can never find two messages with the
     same sequence of rotor settings.******
   id: totrans-249
   prefs: []
   type: TYPE_NORMAL
+  zh: 第四转子的反馈使得模拟的 8 转子机器是非周期性的。无论发送多少消息，埃米莉都永远找不到具有相同转子设置序列的两条消息。

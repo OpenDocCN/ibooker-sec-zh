@@ -1,42 +1,60 @@
 - en: 6 Countermeasures
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 6对策
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章内容包括
 - en: Double encipherment
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 双重加密
 - en: Null characters and null bits
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 空字符和空位
 - en: Homophones
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 同音字
 - en: Hiding messages within images or computer files
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在图像或计算机文件中隐藏消息
 - en: To recap section 5.9, polyalphabetic ciphers can be solved by a two-step process.
     First, the period or the key length is determined using the Kasiski Method or
     the Index of Coincidence. This separates the ciphertext into several smaller texts,
     each enciphered by just one letter of the key. Second, these individual texts
     are deciphered using the standard methods for simple substitution ciphers, frequency
     and contacts.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 总结第5.9节，多表密码可以通过两步过程解决。首先，使用Kasiski方法或Coincidence指数确定周期或密钥长度。这将把密文分成几个较小的文本，每个文本只有一个字母的密钥。其次，使用标准的简单替换密码方法对这些单独的文本进行解密，包括频率和接触。
 - en: Let’s turn it around. What can the cryptologist do to prevent a polyalphabetic
     cipher from being cracked by this two-step process? We will look at a few countermeasures.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们把它反过来。密码分析者可以采取哪些措施来防止多表密码被这两个步骤破解？我们将看几种对策。
 - en: 6.1 Double encipherment
+  id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.1双重加密
 - en: If a message is enciphered with one polyalphabetic cipher whose period is P,
     and the resulting intermediate text is enciphered with a second polyalphabetic
     cipher whose period is Q, the result is equivalent to a polyalphabetic cipher
@@ -45,36 +63,46 @@
     example, if P is 10 and Q is 11, then the double encipherment will have a period
     of 110, but if P is 10 and Q is 12, then the double encipherment will have a period
     of 60 because 60 is a multiple of both 10 and 12.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果一条消息使用一个周期为P的多表密码加密，然后使用周期为Q的第二个多表密码加密结果中间文本，那么结果等同于一个周期为P和Q的最小公倍数的多表密码，表示为*lcm(P,Q)*。也就是说，周期是P和Q的最小整数倍数。例如，如果P为10，Q为11，那么双重加密将具有110的周期，但如果P为10，Q为12，那么双重加密将具有60的周期，因为60是10和12的倍数。
 - en: Each of the individual alphabets in the double encipherment is the composition
     of the two alphabets from the first and second encipherments, as described in
     section 11.7.4\. If these are shifted standard alphabets, the result is also a
     shifted standard alphabet. If these are mixed alphabets, the result is likely
     an alphabet that is more thoroughly mixed.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 双重加密中的每个个体字母都是第一次和第二次加密中的两个字母的组合，如第11.7.4节所述。如果这些是移位标准字母表，那么结果也是移位标准字母表。如果这些是混合字母表，那么结果很可能是更彻底混合的字母表。
 - en: Even though the double encipherment is still polyalphabetic, it can be stronger
     than a single polyalphabetic encipherment because the period is longer, and there
     will be fewer letters enciphered by each character of the key. This type of double
     encipherment is rated Three.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管双重加密仍然是多表加密，但它可能比单个多表加密更强，因为周期更长，每个密钥字符将加密的字母更少。这种类型的双重加密评为三级。
 - en: If the two polyalphabetic encipherments are autokey, running key, or one of
     each, the double encipherment will be a running key encipherment. However, the
     key will not be English text, so that the word dragging technique of section 5.11
     cannot be used. The probabilistic technique in that section, though, can be adapted
     for use with two running keys.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果两个多表加密是自动键、流动密钥或一个键，双重加密将是流动密钥加密。然而，密钥不会是英文文本，所以第5.11节的单词拖拽技术无法使用。那节的概率技术，尽管如此，可以用于两个流动密钥。
 - en: If the encipherment is done with straight alphabets, that is, with the Belaso
     tableau, then the order of the encipherments does not matter. Enciphering a message
     M with the running key R and then reenciphering with running key S is the same
     as enciphering the running key R with the running key S to get a new composite
     running key C, then enciphering the message M with that composite running key
     C.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果加密使用直接字母表，即使用Belaso表，那么加密顺序并不重要。用流动密钥R加密消息M，然后用流动密钥S重新加密与用流动密钥S加密流动密钥R以获取新的复合流动密钥C，然后用该复合流动密钥C加密消息M是相同的。
 - en: Keys derived this way, by enciphering one running key with another running key,
     are not random. They have their own characteristic letter frequencies and contact
     frequencies. There are common sequences, such as THE enciphered by THE, or AND
@@ -82,23 +110,32 @@
     STATES OF AMERICA or NEGOTIATING STRATEGY is dragged through a text you can look
     for sections of the running key that adhere to this distribution. Thus double
     running key encipherment can be solved by computer.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过用一个流动密钥对另一个流动密钥进行加密而派生的密钥并不是随机的。它们具有自己的特征字母频率和接触频率。有常见的序列，比如THE被THE加密，或者AND被THE加密。所有这些都可以列成表。如果将长短语（如UNITED
+    STATES OF AMERICA或NEGOTIATING STRATEGY）拖过文本，您可以寻找符合此分布的流动密钥部分。因此，双流动密钥加密可以通过计算机解决。
 - en: With unmixed alphabets, the composition of two autokey and/or running key encipherments
     is rated Four. With well-mixed keyed alphabets, the composition is rated Six.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用未混合字母表，两个自动密钥和/或流动密钥加密的组合被评为四。使用混合良好的密钥字母表，该组合被评为六。
 - en: 6.2 Null characters
+  id: totrans-16
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.2 空字符
 - en: Nulls are a time-honored way of thwarting enemy code-breakers. They have been
     used at least as far back as the Argenti family in the 15th century. Nulls are
     meaningless characters that are inserted into a message to confound enemy cryptanalysts.
     They are most commonly used with codes. With polyalphabetic ciphers they can pollute
     the frequency counts and disrupt a Kasiski or Index of Coincidence analysis.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 空字符是阻止敌人破译代码的一种历史悠久的方法。它们至少可以追溯到15世纪的阿根提家族。空字符是插入到消息中以迷惑敌方密码分析员的无意义字符。它们最常与代码一起使用。对于多表密码，它们可以污染频率计数并破坏卡西斯基或重合指数分析。
 - en: There are several ways that nulls can be used. The most direct way is to add
     a null character to the alphabet. This is commonly represented as an * asterisk.
     This character could then be sprinkled into the plaintext. It should be used sparingly,
@@ -109,79 +146,108 @@
     THE about half of the time, T*HE one-quarter of the time and TH*E one-quarter
     of the time. It is not beneficial to use *THE or THE* because the THE trigram
     remains intact.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 空字符可以有几种使用方式。最直接的方法是向字母表中添加一个空字符。这通常表示为一个*星号。然后可以将此字符散布到明文中。应该适度使用，以免显眼和明显。约3%至6%的空字符是合理的。使用空字符的一个有用方法是将它们插入高频词中以迷惑卡西斯基攻击。这应该是随机的。如果您将*每个*
+    THE更改为T*HE，则正在通过提供4个字符重复来帮助Emily。最好一半时间使用THE，四分之一时间使用T*HE，四分之一时间使用TH*E。使用*THE或THE*并不有益，因为THE三字母组保持完整。
 - en: The enciphering tableau would then be 27 columns wide, and asterisks would appear
     in the ciphertext. You might think that this would be a giveaway that nulls are
     being used, but there is a cipher called a trifid cipher, described in section
     9.9, which utilizes a 27-character alphabet. Emily might think your polyalphabetic
     cipher is a trifid (not to be confused with the 3-legged monster plants from John
     Wyndham’s 1951 novel *The Day of the Triffids*).
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 加密表将变为27列宽，并且星号将出现在密文中。您可能会认为这将透露正在使用空字符，但有一种称为三重密码的密码，描述在第9.9节中，它利用了一个27字符的字母表。Emily可能会认为您的多表密码是三重密码（不要与约翰·温德姆1951年小说《三脚怪植物的末日》中的三条腿怪物植物混淆）。
 - en: Using nulls this way is fairly weak. It does not change the letter frequencies
     much, and does not affect the Kasiski or Index of Coincidence badly. The method
     is rated Three.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 以这种方式使用空字符相当薄弱。它不会显著改变字母频率，并且不会对卡西斯基或重合指数产生不良影响。该方法被评为三。
 - en: A second way to use nulls is to have some specific null letter sequences that
     are inserted into a plaintext. These need to be easily recognizable. I suggest
     forming the null sequences from a small number of medium-frequency letters such
     as C, D and P. The bigrams CC, DD and PP could be used to represent letters C,
     D and P, and the other 6 bigram combinations of these letters would be nulls.
     This method is also rated Three.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用空字符的第二种方法是在明文中插入一些特定的空字母序列。这些序列需要容易识别。我建议从一小部分中频字母（如C、D和P）形成空序列。双字母组CC、DD和PP可以用来表示字母C、D和P，这些字母的其他6个双字母组合将成为空字符。这种方法也被评为三。
 - en: 6.3 Interrupted key
+  id: totrans-22
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.3 中断密钥
 - en: A stronger way of using nulls is to insert the nulls into the ciphertext so
     that they break up the repeating period. A simple way of doing this is first to
     encipher the message using the polyalphabetic cipher in the normal way. Then each
     time some *trigger* event, such as some chosen letter or bigram, occurs in the
     ciphertext, insert a null after it. The null can be any letter or even a bigram.
     It is the presence of the trigger that marks it as a null.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用空字符的更强大的方法是将空字符插入到密文中，以打破重复周期。这样做的简单方法首先是以正常方式使用多表密码加密消息。然后每次在密文中发生某些*触发*事件，例如某个选择的字母或双字母时，在其后插入一个空字符。空字符可以是任何字母，甚至是双字母。触发器的存在标记它为一个空字符。
 - en: This type of null insertion can be fairly elaborate. You could insert a null
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种空字符插入类型可能相当复杂。你可以插入一个空字符
 - en: 4 characters after each W in the ciphertext, for example ciphertext **NPGWSOVKLEWPIDF**
     could become **NPGWSOV****T****KLEWPID****C****F**,
+  id: totrans-25
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在密文中每个W之后的4个字符，例如密文**NPGWSOVKLEWPIDF**可能变为**NPGWSOV****T****KLEWPID****C****F**，
 - en: After every second H in the ciphertext,
+  id: totrans-26
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在密文中每第二个H之后，
 - en: After the first A that follows each Q in the ciphertext,
+  id: totrans-27
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在密文中每个跟随Q的第一个A之后，
 - en: 1 position after the first V, then 2 positions after the next B, 3 positions
     after the next L, then repeat V, B, L, V, B, L, ... ,
+  id: totrans-28
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第一个V之后的1个位置，然后下一个B之后的2个位置，下一个L之后的3个位置，然后重复V、B、L、V、B、L、...，
 - en: After each double letter in the ciphertext, or after 3 consecutive vowels, or
     after 4 letters in a row in either ascending or descending alphabetic order,
+  id: totrans-29
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在密文中每个双字母之后，或在连续3个元音之后，或在字母表中按升序或降序连续4个字母之后，
 - en: or some combination of these. The only limit is your imagination. Just don’t
     make it so complex that Sandra and Riva can’t encipher and decipher quickly and
     accurately. If Sandra is supposed to insert a null after every second K, and every
     third M, and she misses one, or puts the null after the fourth M, then Riva may
     be unable to decipher the message.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者这些的组合。唯一的限制是你的想象力。只是不要让它变得太复杂，以至于桑德拉和里瓦无法快速准确地加密和解密。如果桑德拉应该在每第二个K之后插入一个空字符，以及每第三个M之后，而她错过了一个，或者在第四个M之后放置了空字符，那么里瓦可能无法解密消息。
 - en: This method of inserting nulls is rated Four with standard alphabets, and Five
     with well-mixed alphabets, assuming, as always, that the mixed alphabets are kept
     secret.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种插入空字符的方法使用标准字母评为四，使用混合字母评为五，前提是，如常，混合字母保密。
 - en: There are several other methods for interrupting the periodic repetition of
     the key. One way is to restart the key whenever some trigger occurs in the plaintext.
     This is more secure than the preceding method where the trigger is in the ciphertext
@@ -190,81 +256,113 @@
     Riva can just scan through and delete the nulls by eye. When the triggers are
     in the plaintext, Riva must decipher one character at a time, watching for the
     triggers.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 还有几种打破关键周期重复的方法。一种方法是在明文中发生某些触发器时重新启动关键。这比前一种方法更安全，因为触发器在密文中，艾米丽可以看到密文，但看不到明文。另一方面，对于合法的接收者来说更困难。当触发器在密文中时，里瓦只需扫描并通过眼睛删除空字符。当触发器在明文中时，里瓦必须逐个解密字符，注意触发器。
 - en: The triggers can be similar to the ciphertext triggers just mentioned, except
     in the plaintext, not in the ciphertext. The action that is taken after the trigger
     occurs could be
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 触发器可以类似于刚才提到的密文触发器，只不过在明文中，而不是在密文中。触发器发生后所采取的行动可能是
 - en: Skip a specific number of characters in the key, or
+  id: totrans-34
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 跳过关键中特定数量的字符，或
 - en: Repeat a specific number of characters in the key, or
+  id: totrans-35
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 重复关键中特定数量的字符，或
 - en: Restart the key from the first character, or
+  id: totrans-36
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 从第一个字符重新启动关键，或
 - en: Switch directions, go backward through the key.
+  id: totrans-37
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 切换方向，通过关键向后走。
 - en: 'Here are examples of these 4 types of key interruption using the key SAMPLE
     and the trigger letter A:'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里是使用关键SAMPLE和触发字母A的这4种类型的关键中断的示例：
 - en: '![6-unnumb-1](../Images/6-unnumb-1.png)'
+  id: totrans-39
   prefs: []
   type: TYPE_IMG
+  zh: '![6-unnumb-1](../Images/6-unnumb-1.png)'
 - en: This form of key interruption is rated Five with straight alphabets, and Six
     when using well-mixed alphabets. The key should not be restarted too often, otherwise
     the first character of the key will be overused while the last character of the
     key could be neglected.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种形式的关键中断使用直接字母评为五，使用混合字母评为六。关键不应该经常重新启动，否则关键的第一个字符将被过度使用，而关键的最后一个字符可能会被忽略。
 - en: 'A stronger form of key interruption is to use two separate keys of different
     lengths. This cipher is strongest when the key lengths are mutually prime. When
     the trigger occurs, you switch from one key to the other. This method is rated
     Six when well-mixed alphabets are used. Here is an example using the keys FIRST
     and SECOND and the trigger A:'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 更强的关键中断形式是使用两个不同长度的密钥。当密钥长度互质时，此密码最强。当触发器发生时，您从一个密钥切换到另一个密钥。当混合字母表混合良好时，此方法评为六。这是一个使用密钥FIRST和SECOND以及触发器A的示例：
 - en: '![6-unnumb-2](../Images/6-unnumb-2.png)'
+  id: totrans-42
   prefs: []
   type: TYPE_IMG
+  zh: '![6-unnumb-2](../Images/6-unnumb-2.png)'
 - en: This cipher keeps track of which letter of the key was last used. When you switch
     to the other alphabet encipherment continues with the next letter of the key.
     For example, plaintext MA is enciphered with the key letters FI, so the next key
     letter is R. After enciphering RYHA with the key letters SECO in the second key,
     encipherment resumes in the first key with the key letters RS.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 此密码会跟踪上次使用的密钥字母。当你切换到另一个字母表时，加密将继续使用密钥的下一个字母。例如，明文MA使用密钥字母FI进行加密，因此下一个密钥字母是R。在使用第二个密钥SECO加密RYHA后，加密将在第一个密钥RS的密钥字母中继续。
 - en: This way, all of the letters in each key are used about the same number of times.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样，每个密钥中的所有字母大致相同的次数。
 - en: 6.4 Homophonic substitution
+  id: totrans-45
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.4 同音字替换
 - en: Homophonic substitution, introduced in section 4.2, provides several substitutes
     for each plaintext letter in order to flatten the letter frequencies. The most
     common method is to enlarge the ciphertext alphabet to provide extra substitutes.
     Since classical polyalphabetic ciphers employ a fixed 26-letter alphabet, at least
     for English, they normally do not use homophonic substitution.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 同音字替换，介绍在4.2节中，为了平坦化字母频率，为每个明文字母提供几个替代字。最常见的方法是扩大密文字母表以提供额外的替代字。由于经典的多字母密码使用固定的26个字母表，至少对于英语来说，它们通常不使用同音字替换。
 - en: For a computer implementation using 8-bit bytes, homophonic substitution is
     easy to accomplish. There are 256 possible values for a byte. The 26 uppercase
     letters, 26 lowercase letters, 10 digits and perhaps 32 punctuation marks use
     up only 94 of the 256 values. Call it 98 if you include the control characters
     tab, backspace, line feed and carriage return. That leaves 158 characters that
     can be used for nulls, bigrams and trigrams, and key interruption.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于使用8位字节的计算机实现，同音字替换很容易实现。一个字节有256个可能的值。26个大写字母，26个小写字母，10个数字，以及可能的32个标点符号只使用了256个值中的94个。如果包括制表符、退格、换行和回车，就有98个。这样就留下了158个字符，可以用于空字符、双字母组合和三字母组合以及关键中断。
 - en: 'Let’s look at how homophonic substitution could be achieved using paper and
     pencil with a normal 26×26 mixed tableau. If you reserve one letter as a trigger
     letter, that letter will have such a high frequency that it can be spotted easily.
@@ -276,32 +374,44 @@
     frequency, which works against the goal of flattening the letter frequencies.
     That leaves 54 bigrams that can be used as nulls, homophones and key interrupters.
     Here is one possible set:'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看如何使用纸和笔以及正常的26×26混合表进行同音字替换。如果您将一个字母保留为触发字母，那么该字母的频率将非常高，很容易被发现。同样，使用2个触发字母也是可能的。我建议使用3个触发字母，每个字母的频率都低于4%。让我们称这个密码为*Trig3*。字母BCDFGJKLMPQUVWXYZ是合适的。假设您选择了B、C和D。以这3个字母开头的双字母组合有78个，即3×26。您不会使用包含高频字母AEINORST的双字母组合，因为那会增加它们的频率，这与平坦化字母频率的目标相悖。这样就留下了54个可以用作空字符、同音词和关键中断的双字母组合。这里是一组可能的双字母组合：
 - en: '![6-unnumb-3](../Images/6-unnumb-3.png)'
+  id: totrans-49
   prefs: []
   type: TYPE_IMG
+  zh: '![6-unnumb-3](../Images/6-unnumb-3.png)'
 - en: Here **-** represents a null character, so plaintext BD, BL, CC, and so on,
     are nulls. Codes +1, +2 and +3 are key-interrupters meaning skip 1, skip 2 and
     skip 3 key letters, respectively. The set of homophones includes 6 bigrams, AN,
     ER, IN, ON, RE and TH as well as single letters.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里的**-**代表空字符，所以明文BD、BL、CC等都是空的。Codes +1、+2和+3是关键中断符，意思是跳过1个、跳过2个和跳过3个关键字母。同音词集包括6个双字母组合，AN、ER、IN、ON、RE和TH以及单个字母。
 - en: It is important to maintain balance. If you overuse these substitutes, then
     the letters B, C and D will have too-high frequencies and will be easily spotted
     as the triggers. If you use them too sparely, then they won’t have any useful
     impact. About 10% is right, using the B, C and D bigrams roughly equally often,
     so about 3% each. Remember, with this cipher you cannot use the letters B, C and
     D by themselves, you must use their substitutes, DM, CD and CG.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 保持平衡很重要。如果你过度使用这些替代字符，那么字母B、C和D的频率就会过高，很容易被发现作为触发器。如果你使用得太少，那么它们就不会有任何有用的影响。大约10%是正确的，使用B、C和D的双字母组合频率大致相等，每个约为3%。记住，使用这种密码时不能单独使用字母B、C和D，必须使用它们的替代品DM、CD和CG。
 - en: Used properly, with well-mixed keyed alphabets, the Trig3 cipher is rated Five.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果正确使用，使用混合得很好的键入字母表，Trig3密码的评级为五。
 - en: 6.4.1 Cipher 5858
+  id: totrans-53
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6.4.1 密码5858
 - en: Let me present one more cipher before moving on to bigram substitution. I call
     it *Cipher 5858*. This is a computer cipher using 5-bit characters. Five bits
     gives an alphabet of 32 characters, enough for 26 letters, 3 nulls and 3 homophones.
@@ -318,43 +428,59 @@
     message is enciphered using a general polyalphabetic cipher and a well-mixed 32×32
     tableau of 5-bit characters. (7) The string of 5-bit characters is then regrouped
     into 8-bit bytes, and a second 8-bit substitution is done.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 在转向双字母组合替换之前，让我再介绍一个密码。我称之为*Cipher 5858*。这是一个使用5位字符的计算机密码。五位字符给出32个字符的字母表，足够26个字母、3个空字符和3个同音字使用。（1）明文被写成一个混合字母的5位字符序列。（2）插入空字符和同音字，每个约占明文的3%，总共占明文的18%。最好是以随意的方式使用它们，而不是以系统化的方式。（3）明文被填充，使其长度成为8的倍数，如果需要，添加一个空字符，并最多添加4个随机位。（4）填充后的消息被视为8位字节的字符串，并进行混合替换。例如，如果消息包含80个5位字符，则将按顺序取400位，作为50个8位字节。（5）将消息再次视为5位字符的字符串。选择其中的三个字符作为键中断器+1、+2和+3，就像Trig3密码一样。（6）使用一个通用的多表多字母密码和一个混合得很好的32×32的5位字符表对消息进行加密。（7）5位字符的字符串然后重新分组成8位字节，并进行第二次8位替换。
 - en: To recap, Cipher 5858 uses 4 substitution steps, an initial 5-bit substitution,
     an 8-bit substitution, a 5-bit general polyalphabetic substitution with key interruption,
     and a final 8-bit substitution. This cipher is rated Seven.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 总之，密码5858使用4个替换步骤，一个初始的5位替换，一个8位替换，一个带有键中断的5位通用多字母替换，以及最后一个8位替换。这个密码的评级为七。
 - en: 6.5 Bigram and trigram substitution
+  id: totrans-56
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.5 双字母组合和三字母组合替换
 - en: 'Another way to prevent Emily from using letter and contact frequencies to break
     your cipher is to perform substitution on bigrams or even trigrams. The simplest
     way to do this is with a tableau. For bigrams you would use a 26×26 tableau where
     each entry would be a bigram. Here is the start of such a tableau:'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 防止Emily使用字母和联系频率破解您的密码的另一种方法是对双字母组合甚至三字母组合进行替换。最简单的方法是使用一个表格。对于双字母组合，您可以使用一个26×26的表格，其中每个条目都是一个双字母组合。以下是这样一个表格的开头：
 - en: '![6-unnumb-4](../Images/6-unnumb-4.png)'
+  id: totrans-58
   prefs: []
   type: TYPE_IMG
+  zh: '![6-unnumb-4](../Images/6-unnumb-4.png)'
 - en: The substitute for AA would be **BL**, the substitute for AB would be **TC**,
     and so forth. For trigram substitution you might use a booklet with 26 such tableaus,
     one for each first letter of the trigram.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: AA的替代品将是**BL**，AB的替代品将是**TC**，依此类推。对于三字母组合替换，您可以使用一个小册子，其中包含26个这样的表格，每个表格对应三字母组合的第一个字母。
 - en: This type of substitution can be used by itself, or it could be combined with
     another method, such as polyalphabetic substitution. Used alone, bigram substitution
     is rated Three, and trigram substitution is rated Four. Bigram substitution followed
     by polyalphabetic substitution with secret well-mixed alphabets is rated Five,
     and trigram substitution followed by polyalphabetic substitution with secret well-mixed
     alphabets is rated Six.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种替换方法可以单独使用，也可以与另一种方法结合使用，例如多表替换。单独使用时，二元替换评为三，三元替换评为四。二元替换后跟着使用混合良好的秘密字母表的多表替换评为五，三元替换后跟着使用混合良好的秘密字母表的多表替换评为六。
 - en: '*6.6 Hiding messages in images'
+  id: totrans-61
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '*6.6 在图像中隐藏消息'
 - en: An interesting idea, dating back to about 1999, is hiding messages inside various
     types of data files on a computer. This is a modern version of steganography (section
     2.2). Let’s look at one such method, hiding messages inside a bitmap, or BMP file.
@@ -365,22 +491,29 @@
     order, notice that Blue, Green and Red are in alphabetic order.) For example,
     0,0,0 has no color so it is pure black, 255,255,255 has maximum depth for all
     3 colors so it is white, and 255,0,0 would be a pure blue.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个有趣的想法，可以追溯到大约1999年，是将消息隐藏在计算机上各种类型的数据文件中。这是隐写术（第2.2节）的现代版本。让我们看看其中一种方法，将消息隐藏在位图或BMP文件中。位图是以像素为单位存储的图像。最常见的位图格式通过3个字节表示每个像素，指定图像上单个点的蓝色、绿色和红色色深度。
+    （这是微软位图图像标准中的设备无关顺序。如果你记不住顺序，注意蓝色、绿色和红色按字母顺序排列。）例如，0,0,0表示没有颜色，因此是纯黑色，255,255,255表示所有3种颜色的最大深度，因此是白色，255,0,0将是纯蓝色。
 - en: 'Pixels are commonly represented in hexadecimal, so pure blue would be FF0000\.
     In some computer languages this is written $FF0000 or X''FF0000'' or even 0xFF0000
     since 255 in decimal is FF in hexadecimal. In some languages the order of the
     color components is reversed. For example, in HTML pure blue would be #0000FF.'
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 像素通常用十六进制表示，因此纯蓝色将是FF0000。在一些计算机语言中，这样写$FF0000或X'FF0000'甚至0xFF0000，因为十进制255在十六进制中是FF。在一些语言中，颜色组件的顺序是相反的。例如，在HTML中，纯蓝色将是#0000FF。
 - en: The entire image may contain hundreds or thousands of rows of pixels, each row
     containing hundreds or thousands of pixels. It is not unusual for a bitmap to
     contain 3000 rows of 4000 pixels each. Such an image would have 12,000,000 pixels,
     and would require 36,000,000 bytes of storage, plus 54 bytes of header information.
     That’s why having many high-resolution images can fill up a computer’s memory
     so quickly.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 整个图像可能包含数百或数千行像素，每行包含数百或数千个像素。一个位图包含3000行，每行包含4000个像素并不罕见。这样的图像将有12,000,000个像素，并且需要36,000,000字节的存储空间，再加上54字节的头部信息。这就是为什么许多高分辨率图像会迅速填满计算机的内存。
 - en: The trick is to use the low-order bit in each component of the pixel to carry
     one bit of the message. This could go undetected because the difference between
     FF0000 and FE0000 or even FE0101 is barely perceptible to the eye. In a single
@@ -389,16 +522,20 @@
     that the file containing the image is transmitted exactly. The image must not
     be enlarged, reduced, cropped, rotated, skewed, compressed or converted into another
     image format.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 诀窍是使用像素的每个组件中的低阶位来携带一位消息。这可能不会被察觉，因为FF0000和FE0000甚至FE0101之间的差异对肉眼几乎是不可察觉的。在大图像的单个像素中，这将在视觉上是不可察觉的。此外，一半的位不会改变值。在图像中隐藏消息时，关键是传输包含图像的文件时必须完全准确。图像不得放大、缩小、裁剪、旋转、倾斜、压缩或转换为另一种图像格式。
 - en: The message can be enciphered with any method. However, if Emily suspects you
     are hiding the message this way, then it would not add any extra security. You
     would be paying the price of transmitting 8 bits of data for every bit of the
     message with no corresponding benefit. If you simply took every low-order bit
     from each pixel in turn, the rating would be the same as whatever method of encipherment
     you chose.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 消息可以用任何方法加密。但是，如果Emily怀疑你是以这种方式隐藏消息，那么它不会增加任何额外的安全性。你将为每个消息位传输8位数据而不获得任何相应的好处。如果你简单地依次取每个像素的低阶位，评级将与你选择的加密方法相同。
 - en: One way of gaining some extra security from this scheme is not to use all of
     the bits, but to select certain bits from each pixel in some cyclic order. To
     do this you use a string of octal digits (see the table in section 3.1) such as
@@ -410,15 +547,21 @@
     key bit is 1, do the same for the green component, and if the third bit is 1 do
     this for the red component. Then repeat this for the second pixel and the second
     digit of the selection key. And so forth.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 从这种方案中获得额外安全性的一种方法是不使用所有位，而是以某种循环顺序从每个像素中选择特定位。为此，您可以使用一串八进制数字（请参阅第3.1节中的表）作为选择消息位的密钥，例如
+    1,3,7,4,6。这可以称为*选择密钥*。它有5个八进制数字，因此有15个选择位。从图像的第一个像素和选择密钥的第一个数字开始。如果该数字的第一个位为1，则将消息的一位放入像素的蓝色分量的低阶位，否则将低阶位随机设置为0或1。如果第二个密钥位为1，则对绿色分量执行相同操作，如果第三位为1，则对红色分量执行相同操作。然后对第二个像素和选择密钥的第二个数字重复此操作。依此类推。
 - en: Someone might think that when the key bit is 0 it is better to leave the corresponding
     bit of the image unchanged. This would result in less distortion of the image
     and make it harder for Emily to detect that it contained a hidden message. True,
     but if Emily suspects that you are using this method then it will make it possible
     to determine the selection key.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 有人可能会认为，当密钥位为0时，最好保持图像对应位不变。这样会导致图像失真较小，并且使得 Emily 更难检测到其中包含隐藏消息。没错，但如果 Emily
+    怀疑你在使用这种方法，那么就可能确定选择密钥。
 - en: Suppose this is the case. Emily has intercepted your message containing a bitmap
     image. Further suppose Emily has done an image search on the internet and found
     the original image. Emily can match up the two images, pixel by pixel and color
@@ -430,22 +573,33 @@
     column where the selection bit is 0 will contain all X’s, while the columns where
     the selection bit is 1 will contain half X’s and half |’s. For example, again
     using the selection key 1,3,7,4,6 you might see
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设情况如此。Emily 拦截了包含位图图像的消息。进一步假设 Emily 在互联网上进行了图像搜索，并找到了原始图像。Emily 可以逐像素和颜色分量地将两个图像进行匹配。这使得
+    Emily 能够制作出两个图像版本之间差异的地图。在低阶位匹配的地方，Emily 可以在地图中标记一个 X，而在不匹配的地方，Emily 可以标记一个 |。然后，Emily
+    可以尝试每个可能的选择密钥长度。当选择正确长度 L，并且标记以 L 像素间隔对齐时，那么每一列选择位为0的地方将包含所有的 X，而选择位为1的列将包含一半的
+    X 和一半的 |。例如，再次使用选择密钥 1,3,7,4,6，你可能会看到
 - en: '![6-unnumb-5](../Images/6-unnumb-5.png)'
+  id: totrans-70
   prefs: []
   type: TYPE_IMG
+  zh: '![6-unnumb-5](../Images/6-unnumb-5.png)'
 - en: For every column that contains a | the corresponding bit of the selection key
     must be 1\. All other bits of the selection key are probably 0\. With more rows
     in the difference map, the probability gets higher.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于每一列包含 | 的情况，选择密钥的对应位必须为1。选择密钥的所有其他位可能为0。随着差异图中行数的增加，概率会变得更高。
 - en: For this reason, wherever the selection bit is 0 the low-order bit of the color
     component should be set randomly. Using a cyclic selection key, this method of
     hiding the message adds 2 if the rating of the underlying cipher is One to Four,
     or 1 if the rating is Five to Eight.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，无论选择位是0还是1，颜色分量的低阶位都应该随机设置。使用循环选择密钥，隐藏消息的这种方法在底层密码的评级为1到4时添加2，或者在评级为5到8时添加1。
 - en: The selection key could also be generated using the Chained Digit pseudorandom
     generator from section 4.5 using a qualified seed of 7, 9 or 10 digits. Use generated
     digits from 0 to 7 as selection digits. If the generated digit is 8 or 9, discard
@@ -453,83 +607,114 @@
     digits are statistically random. The essential property is that the sequence of
     generated digits is longer than the message, measured in bits, so that Emily cannot
     match up sections of the ciphertext that have the same selection key.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择密钥也可以使用第 4.5 节的链式数字伪随机生成器生成，使用 7、9 或 10 位数的合格种子。使用从 0 到 7 生成的数字作为选择数字。如果生成的数字是
+    8 或 9，则丢弃它并生成下一个数字。这里不重要伪随机数字是否具有统计随机性。重要的性质是生成的数字序列比消息更长，以比特为单位衡量，这样艾米丽就不能匹配具有相同选择密钥的密文部分。
 - en: Using a Chained Digit selection key, this method of hiding the message adds
     3 if the rating of the underlying cipher is One to Four, 2 if the rating is Five
     to Seven, and 1 if the rating is Eight.******
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用链式数字选择密钥，如果底层密码的评级为一到四，则此隐藏消息的方法添加 3，如果评级为五到七，则添加 2，如果评级为八，则添加 1。
 - en: 6.7 Adding null bits
+  id: totrans-75
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.7 添加空位
 - en: 'This idea of mixing bits of the message with null bits can also be done without
     embedding the message in an image or other file, and it can be done by hand. First
     encipher the message using simple substitution, or any method of your choice.
     Write this preliminary ciphertext in binary, say 5-bit binary. The simple substitution
     and conversion to binary can be done in one step. You could just substitute 5-bit
     numbers for the 26 letters of the alphabet in some mixed order, like this:'
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 将消息的位与空位的这种混合思想也可以在不嵌入消息于图像或其他文件中的情况下实现，并且可以手工完成。首先使用简单替换法或您选择的任何方法对消息进行加密。将这个初步的密文写成二进制形式，比如
+    5 位二进制。简单替换和转换为二进制可以一步完成。您可以只是按一些混合顺序替换字母表的 26 个字母为 5 位二进制数，就像这样：
 - en: '![6-unnumb-6](../Images/6-unnumb-6.png)'
+  id: totrans-77
   prefs: []
   type: TYPE_IMG
+  zh: '![6-unnumb-6](../Images/6-unnumb-6.png)'
 - en: Notice that there are 6 decimal digits in addition to the 26 letters of the
     alphabet. The digits 0, 1, 2 and 5 are omitted to prevent confusion with the letters
     O, I, Z and S when handwritten. This gives you the 32 characters necessary to
     convert the 5-bit numbers back into symbols for transmission.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，除了字母表的 26 个字母外，还有 6 个十进制数字。省略了数字 0、1、2 和 5，以防止手写时与字母 O、I、Z 和 S 混淆。这给了您将 5
+    位数转换回符号以进行传输所需的 32 个字符。
 - en: Now that the message is in the form of a bit string, the null bits can be added.
     A selection key is used to specify where the null bits are inserted. The selection
     key has the form m1,n1,m2,n2,m3,n3,..., which means take m[1] bits of the message
     and insert n1 null bits, take m2 more bits of the message and add n2 more null
     bits, take another m3 bits of the message and add n3 more null bits, and so on.
     Here is an example using the selection key 2,1,3,1,4,2,3,2.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，消息以位串的形式给出，可以添加空位了。选择密钥用于指定插入空位的位置。选择密钥的形式是 m1,n1,m2,n2,m3,n3,...，表示取 m[1]
+    位消息并插入 n1 个空位，再取 m2 位消息并添加 n2 个空位，再取 m3 位消息并添加 n3 个空位，依此类推。以下是使用选择密钥 2,1,3,1,4,2,3,2
+    的示例。
 - en: '![6-unnumb-7](../Images/6-unnumb-7.png)'
+  id: totrans-80
   prefs: []
   type: TYPE_IMG
+  zh: '![6-unnumb-7](../Images/6-unnumb-7.png)'
 - en: With this scheme MESSAGE is enciphered as **Q9JIF PGUFF F**. Four null bits
     (the shaded bits) are appended to complete the last group of 5 bits. This is called
     *padding* or *null-padding*.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用此方案，消息被加密为**Q9JIF PGUFF F**。四个空位（阴影部分）被附加以完成最后一组 5 位。这称为*填充*或*空填充*。
 - en: The selection key could also be given in binary form, say 110111011110011100\.
     Each 1 bit in the key means take the next message bit, while each 0 bit means
     insert a null bit.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择密钥也可以以二进制形式给出，比如 110111011110011100。密钥中的每个 1 位表示取下一个消息位，而每个 0 位表示插入一个空位。
 - en: This scheme is stronger when two different alphabets are used for changing the
     letters to bits and for changing the bits back to letters. The strength is also
     improved by using variable-length substitutes like the Huffman codes described
     in section 10.4\. For this purpose, the lengths of the codes need not correspond
     to the frequencies of the letters, but they still must have the prefix property
     so that Riva can decipher the message.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 当使用两个不同的字母表来将字母转换为比特和将比特转换回字母时，此方案更加强大。使用可变长度的替代品，如第 10.4 节中描述的哈夫曼编码，也可以提高强度。为此，代码的长度不需要与字母的频率相对应，但它们仍然必须具有前缀属性，以便里瓦能够解密消息。
 - en: 'You can avoid the need for adding extra characters for the second substitution,
     which goes from bits back to letters, in two ways. (1) You could take the bits
     in groups of 4 and use only 16 letters of the alphabet, or use the 16 hexadecimal
     digits, or (2) you could use a variable-length code with six 4-bit code groups
     and twenty 5-bit code groups. Again, these code groups must have the prefix property.
     Here is an example:'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
 - en: '![6-unnumb-8](../Images/6-unnumb-8.png)'
+  id: totrans-85
   prefs: []
   type: TYPE_IMG
 - en: Notice that I used 4-bit substitutes for the 6 highest-frequency letters. This
     will make those 6 letters have about twice the frequency in the ciphertext as
     the other 20 letters. This could make an unwary opponent believe this is an entirely
     different type of cipher.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
 - en: Adding null bits is applicable to many types of encipherment. Since a null bit
     is indistinguishable from any other bit, adding null bits is stronger than adding
     null characters. It can increase the rating of a cipher by as much as Three.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s look at a specific example. Call it *Cipher Null5*. As earlier, there
@@ -539,12 +724,15 @@
     E,T,A,O,I,N. Null bits are inserted using a selection key, as in section 6.6\.
     Bits are converted back to letters using a 4-bit/5-bit substitution like the previous
     table.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
 - en: Cipher Null5 is rated Six.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
 - en: 6.8 Merging multiple messages
+  id: totrans-90
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -552,6 +740,7 @@
     That is, the bits of two messages are interleaved to form a single message. A
     merge key in base 3 or base 4 could be used to merge 3 or 4 messages. A base-4
     merge key could likewise merge 3 messages plus null bits.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
 - en: Two advantages of merging multiple messages are that you don’t add as much extra
@@ -559,6 +748,7 @@
     interleave 4 messages with a long merge key, and you use a different simple substitution
     for each message, that alone gets a rating of Five. If you perform an additional
     simple substitution on the merged message, the rating increases to Eight.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
 - en: The keys for merging messages can take two forms, a bit count form or a selection
@@ -569,9 +759,11 @@
     from. These examples show how the messages **010101111010001101011** and **11101010011011100110**
     are merged by the bit count method using the key 123123, and by the selection
     method using the key 12122112.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
 - en: '![6-unnumb-9](../Images/6-unnumb-9.png)'
+  id: totrans-94
   prefs: []
   type: TYPE_IMG
 - en: Merging multiple messages may be messy when the messages have different lengths.
@@ -585,18 +777,21 @@
     8-bit bytes, you could divide the 263×8 = 2104 bits into 4 strands of 526 bits
     each. It is not necessary to split the bit string on even byte boundaries, but
     you should choose keys that take an equal number of bits from each strand.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
 - en: Incidentally, the number of messages and the number of strands are independent.
     There can be one message or many, and any number of strands from 2 up. For example,
     one message could be divided into 3 strands, and 3 messages could be divided into
     2 strands.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
 - en: Balancing is half the solution. The other half comes when you get near the end
     of the merging process. Eventually you will have merged all the bits from one
     of the strings, while the other strings have bits left. If the merge key specifies
     another bit from a string that has no bits left, just skip to the next bit selection.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s pull all of this together into one cipher, which can be called *Merge8*.
@@ -610,9 +805,11 @@
     so there are 32!/(4!)⁸ = 2.39×10^(24) possible merge keys. A second simple substitution
     is performed on the resulting string. An 8-bit substitution is used for both the
     base-26 and base-256 versions. Merge8 is rated Six.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
 - en: 6.9 Embedding a message in a file
+  id: totrans-99
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -623,47 +820,65 @@
     ways to hide a plaintext message inside a file. I will simply list some of the
     options. As in section 6.6, for each byte of the file a certain number of plaintext
     bits are hidden among the 8 bits.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
 - en: A fixed number of plaintext bits or a variable number of plaintext bits are
     taken each time.
+  id: totrans-101
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The bits are placed in fixed bit locations or variable bit locations within
     each byte.
+  id: totrans-102
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 每个字节内的位可以放置在固定的位位置或可变的位位置。
 - en: The bits are placed in order, or rearranged.
+  id: totrans-103
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 位按顺序放置，或者重新排列。
 - en: The plaintext bits are inserted as is, or lightly enciphered, for example by
     simple substitution.
+  id: totrans-104
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 明文位可以原样插入，也可以轻微加密，例如通过简单的替换。
 - en: The ciphertext bits are left as is, or lightly enciphered, for example by simple
     substitution.
+  id: totrans-105
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 密文位可以原样保留，也可以轻微加密，例如通过简单替换。
 - en: The number of bits, the locations of the bits and the order of the bits can
     be controlled by either a periodic key or some random sequence. Depending on which
     options are chosen, ciphers in this class may be rated anywhere from One to Ten.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 位的数量、位的位置和位的顺序可以由周期性密钥或某些随机序列控制。根据所选择的选项，这一类密码的评级可以从一到十不等。
 - en: Here is an example of such a cipher. (1) Perform a well-mixed keyed simple substitution
     on the message. (2) Using a pseudorandom number generator with a large internal
     state, choose 2 to 6 bit positions in each byte. Place the next 2 to 6 bits of
     the message, in order, into these 2 to 6 bit positions. Set the remaining bit
     positions to random values. (3) Perform a second well-mixed keyed simple substitution.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个这样密码的例子。 (1) 对消息执行混合良好的密钥简单替换。(2) 使用具有大内部状态的伪随机数生成器，在每个字节中选择 2 到 6 位位置。按顺序将消息的下一个
+    2 到 6 位放置到这些 2 到 6 位位置中。将剩余位位置设置为随机值。(3) 执行第二次混合良好的密钥简单替换。
 - en: This method, called *EmbedBits*, is extremely fast and simple. The downside
     is that the ciphertext is about twice as long as the plaintext. EmbedBits is rated
     Eight. To bump the rating up to Ten, replace the simple substitution with a bigram
     substitution such as Two Square.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种称为*EmbedBits*的方法极其快速简单。缺点是密文长度约为明文的两倍。EmbedBits 被评为八分。要将评级提升到十分，可以将简单替换替换为双字母替换，例如
+    Two Square。

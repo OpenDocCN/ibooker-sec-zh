@@ -1,34 +1,50 @@
 - en: 18 Quantum computers
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 18 量子计算机
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章内容包括
 - en: Properties of quantum computers
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 量子计算机的特性
 - en: Using quantum computers for communications
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用量子计算机进行通信
 - en: Using quantum computers for key exchange
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用量子计算机进行密钥交换
 - en: Using quantum computers for solving optimization problems
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用量子计算机解决优化问题
 - en: Using quantum computers for decrypting block ciphers
+  id: totrans-6
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用量子计算机解密分组密码
 - en: Ultracomputers, a step beyond quantum computers
+  id: totrans-7
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 超级计算机，超越量子计算机
 - en: As I write this book, quantum computers are in their infancy. There are no more
     than 20 quantum computers in the entire world, none of which contain more than
     about 50 qubits, or quantum bits. I write this chapter knowing that much or all
@@ -36,8 +52,10 @@
     of the mathematics used in quantum mechanics and quantum computing is well beyond
     the scope of this book, so parts of this chapter will simply mention quantum methods
     and algorithms without any explanation of how they work.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 当我写这本书时，量子计算机还处于萌芽阶段。全世界没有超过20台量子计算机，其中没有一台包含超过大约50个qubit或量子比特。我写这一章时知道其中很多内容可能已经过时，甚至在书发布之前就被证明是错误的。量子力学和量子计算中使用的许多数学远远超出了本书的范围，因此本章的部分内容将简单提及量子方法和算法，而不解释它们的工作原理。
 - en: The basis for quantum computing is the *quantum bit*, or *qubit*. A qubit has
     two *basis states* that are denoted **|**0〉 and **|**1〉, corresponding to the
     0 and 1 states of an ordinary bit in a conventional computer. The notation **|**1〉
@@ -45,20 +63,26 @@
     is called *bra*, so 〈0| is read “bra-0.” When the angled brace is on the right
     it is called *ket*, so **|**1〉 is read “ket-1.” The notation was invented by Nobel
     Prize winner English physicist Paul Adrien Maurice Dirac.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 量子计算的基础是*量子比特*，或*qubit*。一个qubit有两个*基态*，分别表示为**|**0〉和**|**1〉，对应于传统计算机中普通比特的0和1状态。符号**|**1〉被称为*bra-ket*符号。当尖括号在左边时，如〈0|，称为*bra*，因此〈0|读作“bra-0”。当尖括号在右边时，称为*ket*，因此**|**1〉读作“ket-1”。这种符号是由诺贝尔物理奖获得者英国物理学家保罗·阿德里安·莫里斯·狄拉克发明的。
 - en: An ordinary bit in a conventional computer has a definite value that may be
     0 or 1\. The value can be only 0 or 1, not some value between, not multiple values
     at once, and not sometimes 0 and sometimes 1\. The physical device, such as a
     magnetic spot on a surface, may be switched from one value to the other by applying
     a current or a magnetic field. There can be a brief transition, but the device
     cannot stay in any type of intermediate or mixed state.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 在传统计算机中，普通比特具有明确的值，可能是0或1。该值只能是0或1，不能是某个中间值，也不能同时是多个值，有时是0有时是1。物理设备，如表面上的磁点，可以通过施加电流或磁场从一个值切换到另一个值。可能会有一个短暂的过渡，但设备不能停留在任何类型的中间或混合状态。
 - en: 18.1 Superposition
+  id: totrans-11
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 18.1 叠加
 - en: By contrast, a qubit does not have a value until a measurement or observation
     is taken. At that point its value will be either 0 or 1\. The basis state **|**0〉
     means that there is a 1.0 probability that its value will be 0, and the basis
@@ -70,29 +94,41 @@
     of a complex number a+bi is √(*a*² + *b*²). Since the result of the measurement
     is probabilistic, the measurement of two qubits in identical states can give different
     results. Any number of states may be superposed.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 相比之下，qubit在进行测量或观察之前没有值。在那时，它的值将是0或1。基态**|**0〉表示其值为0的概率为1.0，基态**|**1〉表示其值为1的概率为1.0。一般来说，qubit将处于两个基态α**|**0〉+β**|**1〉的*叠加*状态，其中α和β是复数，使得|α|²+|β|²
+    = 1。当测量时，这个qubit产生0的概率是|α|²，产生1的概率是|β|²。符号|α|表示α的*幅度*。复数a+bi的幅度是√(*a*² + *b*²)。由于测量结果是概率性的，两个处于相同状态的qubit的测量结果可能不同。可以叠加任意数量的状态。
 - en: When a quantum state x consists of several qubits, say x[1], x[2], x[3], the
     state 〈x| is represented as a row vector (*x*̅[1], *x*̅[2], *x*̅[3]) where the
     bar over each component means the *complex conjugate*. If the complex number *α*
     is a+bi, then its complex conjugate *α̅* is a-bi. The complex conjugate has the
     property that the product *α**α̅* = a²+b² = |*α*|². Conversely, the state |y〉
     is represented by a column vector
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 当一个量子态x由几个量子比特组成，比如x[1]、x[2]、x[3]时，态〈x|被表示为一个行向量（*x*̅[1]，*x*̅[2]，*x*̅[3]），其中每个分量上方的横线表示*复共轭*。如果复数*α*为a+bi，则其复共轭*α̅*为a-bi。复共轭具有性质，即乘积*α**α̅*
+    = a²+b² = |*α*|²。反之，态|y〉被表示为一个列向量。
 - en: '![18-equation-18-4](../Images/18-equation-18-4.png)'
+  id: totrans-14
   prefs: []
   type: TYPE_IMG
+  zh: '![18-equation-18-4](../Images/18-equation-18-4.png)'
 - en: Since the row vector in this example is a 1×3 matrix, and the column vector
     is a 3×1 matrix, they can be multiplied. The matrix product, denoted 〈x|y〉, is
     a 1×1 matrix whose single element is the inner product *x̅*•y. That is, 〈x|y〉
     is a scalar. (If this is unfamiliar, you can review section 11.3.)
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于这个示例中的行向量是一个1×3矩阵，列向量是一个3×1矩阵，它们可以相乘。矩阵乘积，表示为〈x|y〉，是一个1×1矩阵，其单个元素是内积*x̅*•y。也就是说，〈x|y〉是一个标量。(如果这很陌生，你可以复习第11.3节。)
 - en: Since any two states can be superposed, and those states, in turn, can be superposed,
     any qubit may be in a superposition of arbitrarily many states.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于任意两个状态可以叠加，并且这些状态反过来又可以叠加，任意量子比特可能处于任意多个状态的叠加中。
 - en: Superposed states are fragile. Small perturbations, such as temperature fluctuations
     or mechanical vibrations, can cause the qubit to drop out of the superposed state
     and back into one of the basis states. This is called *decohering*. This fragility
@@ -100,8 +136,10 @@
     when a measurement is taken, the qubit will *decohere* and drop into whichever
     basis state was observed. Similarly, a qubit cannot be copied because that would
     require an observation.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 叠加态是脆弱的。小的扰动，比如温度波动或机械振动，可以导致量子比特退出叠加态，并回到基态之一。这称为*退相干*。这种脆弱性是实现大型可靠量子计算机的主要障碍。特别是，当进行测量时，量子比特将*退相干*并掉入观察到的任一基态。同样，量子比特不能被复制，因为那将需要一个观测。
 - en: If it is hard to understand the concept of a coefficient that is a complex number,
     maybe this will help. Visualize the point (a,b) in Cartesian coordinates. The
     line segment from the origin (0,0) to the point (a,b) is a vector. It has both
@@ -112,19 +150,27 @@
     |α|²+|β|² = 1 again. The rescaling can be eliminated if α and β are described
     in terms of angles, using the trigonometry formulas for sums and differences of
     angles.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果难以理解复数系数的概念，也许这会有所帮助。在笛卡尔坐标中想象点(a,b)。从原点(0,0)到点(a,b)的线段是一个向量。它既有大小又有方向。当两个状态叠加时，根据坐标几何的规则将这些向量相加，这恰好是复数相加的方式。这就是为什么概率被表示为复数的原因。在向量相加后，必须重新调整系数，使|α|²+|β|²
+    = 1。如果α和β用角度描述，则可以消除重新调整，使用角度的三角函数公式描述角度的和与差。
 - en: Qubits can be manipulated using some elementary logic functions to form quantum
     circuits. One example is the conditional NOT function, CNOT, which operates on
     2-bit qubits, **|**xy〉. CNOT is defined as **|**xy〉 if x = 0, and **|**xy'〉 if
     x = 1\. In other words, the first bit is left unchanged, and the second bit is
     the exclusive-OR of the two bits.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 量子比特可以使用一些基本逻辑函数进行操作，以形成量子电路。一个例子是条件非门函数CNOT，它对2比特量子比特**|**xy〉进行操作。CNOT定义为**|**xy〉如果x
+    = 0，和**|**xy'〉如果x = 1。换句话说，第一个比特保持不变，第二个比特是两个比特的异或。
 - en: 18.2 Entanglement
+  id: totrans-20
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 18.2 纠缠
 - en: Besides superposition, particles can display a second quantum-mechanical property
     called *entanglement*. A group of particles is called *entangled* if there is
     a correlation between some property of one particle and the same property of the
@@ -133,8 +179,10 @@
     Or, the polarization among a group of photons may be entangled. This entanglement
     may exist even when the particles are far apart. This allows entanglement to be
     used for communications.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了叠加之外，粒子还可以显示第二个量子力学属性，称为*纠缠*。如果一个粒子的某个属性与其他粒子的同一属性之间存在相关性，则称该粒子组为*纠缠*。例如，电子具有称为*自旋*的属性。关于特定轴（如x轴）的自旋可能在粒子组中是相关的。或者，一组光子的极化可能是纠缠的。即使粒子相距很远，这种纠缠也可能存在。这使得纠缠可以用于通信。
 - en: The process begins by creating an entangled pair of particles. One method is
     to pass a laser beam through a special type of crystal. This causes some high-energy
     photons to split into two low-energy photons. Some of those photon pairs will
@@ -143,8 +191,10 @@
     and receiving. For long distances the usual way is by transmitting them over a
     fiber-optic cable, although they can be carried physically using cavities in a
     crystal lattice.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 该过程始于创建一对纠缠粒子。一种方法是将激光束通过一种特殊类型的晶体。这导致一些高能光子分裂成两个低能光子。其中一些光子对将是纠缠的，尽管产率非常低，例如十亿分之一。下一步是将这些纠缠光子传输到桑德拉和莉娃将要传输和接收的地方。对于长距离传输，通常的方法是通过光纤传输它们，尽管它们也可以通过晶格中的空腔物理携带。
 - en: When Sandra is ready to send her message, she interacts her photon with some
     specially prepared ancillary photons called *ancillas*. This interaction causes
     her photon to take the desired state that she wishes to transmit. This causes
@@ -152,27 +202,35 @@
     It used to be imagined that this happened instantaneously, but the change is propagated
     at the speed of light. Information cannot be transmitted instantaneously, despite
     what generations of science fiction writers have fantasized.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 当桑德拉准备发送她的消息时，她将她的光子与一些特别准备好的称为*辅助光子*的光子相互作用。这种相互作用导致她的光子采取她希望传输的所需状态。这导致了莉娃的纠缠光子，它可能在数英里之外，采取互补状态。过去人们认为这是瞬时发生的，但是变化是以光速传播的。信息不能瞬间传输，尽管几代科幻作家都幻想过这一点。
 - en: Finally, Riva measures her entangled photon and determines the 1-bit message—or
     not, since this is a probabilistic process. This is sometimes called *quantum
     teleportation* by scientists who grew up reading way too much science fiction.
     This is supposedly secure against eavesdropping because if Emily measures the
     photon it will decohere, and this presumably is detectable by Sandra and Riva.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，莉娃测量她的纠缠光子并确定1比特的消息——或者不确定，因为这是一个概率过程。这有时被科学家们称为*量子传送*，他们读了太多科幻小说。据说这是安全的，因为如果艾米丽测量了光子，它会解缠，桑德拉和莉娃应该可以检测到。
 - en: There are two flaws here. (1) Emily may not care if her eavesdropping is detected.
     As long as she knows the information, it may not matter if Sandra and Riva know
     that she knows. (2) Emily’s goal might not be to gather information; her goal
     might be to disrupt communications. Emily might not learn the secret battle plans,
     but neither will Riva. In fact, if Sandra and Riva detect that Emily is eavesdropping,
     they might use the quantum link less often, which would also be to Emily’s advantage.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里存在两个缺陷。(1) 艾米丽可能不在乎她的窃听是否被发现。只要她知道这些信息，桑德拉和莉娃知道她知道可能并不重要。(2) 艾米丽的目标可能不是收集信息；她的目标可能是扰乱通讯。艾米丽可能不会得知秘密作战计划，但莉娃也不会。实际上，如果桑德拉和莉娃发现艾米丽在窃听，他们可能会更少地使用量子链接，这对艾米丽也是有利的。
 - en: 18.3 Error correction
+  id: totrans-26
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 18.3 错误校正
 - en: Since quantum events are probabilistic, quantum computers have a much higher
     error rate than conventional computers. There must be some means of detecting
     and correcting errors. In classical computers, there are error-detecting and error-correcting
@@ -181,8 +239,10 @@
     of the 8 data bits. That means the 9-bit byte with the error bit will always have
     even parity. If the parity is odd, that shows an error has occurred, but it does
     not tell what the error was.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于量子事件是概率性的，量子计算机的错误率比传统计算机高得多。必须有一些手段来检测和纠正错误。在经典计算机中，有错误检测和纠正码。这些码使用额外的位来检测差异，例如通过为每个字节添加奇偶校验位来检测错误。奇偶校验位通常是8个数据位的异或。这意味着带有错误位的9位字节将始终具有偶校验。如果奇偶校验是奇数，那表明发生了错误，但它并不告诉错误是什么。
 - en: The simplest form of an error-correcting code for conventional computers is
     the 2-out-of-3 code. There are 3 copies of each bit. If a single-bit error occurs,
     two of the copies will still have the correct value. If the chance of a single-bit
@@ -192,8 +252,10 @@
     and convolutional codes that use fewer extra bits, some of which can detect and
     correct multibit errors. Error-free communication is absolutely essential in current
     cryptography where changing even a single bit could render a message unreadable.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 传统计算机最简单的纠错码形式是2-3码。每个位有3个副本。如果发生单位错误，两个副本仍将具有正确值。如果单位错误的几率是，比如，10⁷中的1，那么使用这种常见值将将错误几率降低到10^(14)中的3，这是一个巨大的改进。使用3位来表示每个数据位是昂贵的，但有几种类型的码，如海明码和卷积码，使用更少的额外位，其中一些可以检测和纠正多位错误。在当前的加密中，无错误的通信是绝对必要的，即使改变一个位也可能使消息无法阅读。
 - en: This type of error detection and error correction is impossible in a quantum
     computer. These codes rely on the ability to copy the value of a bit and check
     the parity of a code. These cannot be done with qubits, because measuring the
@@ -201,36 +263,46 @@
     generally rely on using extra qubits. The error-detection and -correction qubits
     may be interspersed with the data qubits in a planar lattice arrangement known
     as a *surface code*.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种类型的错误检测和纠正在量子计算机中是不可能的。这些码依赖于复制位的值并检查码的奇偶性。这些在量子比特中无法完成，因为测量量子比特的值会导致其退相干。提供量子纠错通常依赖于使用额外的量子比特。错误检测和纠正量子比特可以与数据量子比特交错排列在一个被称为*表面码*的平面晶格结构中。
 - en: So far, quantum error correction is just theoretical. Nobody has yet built a
     practical device. The need for extra error-correcting bits boosts the number of
     qubits required for a practical quantum computer. Since quantum error rates are
     high, practical quantum computers are probably still far in the future. Bear this
     in mind as you read the descriptions of the various quantum algorithms in the
     following sections.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，量子纠错仅仅是理论上的。还没有人建造出实用的设备。额外的纠错位需求增加了实用量子计算机所需的量子比特数量。由于量子错误率很高，实用量子计算机可能仍然遥不可及。在阅读以下各节中各种量子算法的描述时，请记住这一点。
 - en: 18.4 Measurement
+  id: totrans-31
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 18.4 测量
 - en: Measuring the polarization of a photon is a tricky business. Think for a moment
     about how you would measure the polarization of a beam of light. You pass the
     beam through a polarity filter and observe the brightness. Then you slowly rotate
     the filter until the filtered light reaches maximum brightness. At that point
     the filter is aligned with the polarization of the beam, and you can measure the
     angle.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 测量光子的极化是一件棘手的事情。想一想你如何测量一束光的极化。你通过一个极性滤波器传递光束并观察亮度。然后慢慢旋转滤波器，直到经过滤的光达到最大亮度。在那一点上，滤波器与光束的极化对齐，你可以测量角度。
 - en: Riva, however, has no such luxury. She is dealing with a single photon. It passes
     through her filter or crystal, and either she detects a flash or she doesn’t.
     If her filter is not aligned the same way as Sandra’s emitter, then her odds of
     getting the same state as Sandra depends on the relative angle. For instance,
     if her detector is at a 90º angle to Sandra’s emitter, then she has exactly a
     50% chance of getting the same value for the qubit.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，里瓦没有这样的奢侈。她正在处理一个单光子。它穿过她的滤光片或晶体，要么她检测到闪光，要么没有。如果她的滤光片与桑德拉的发射器不对齐，那么她获得与桑德拉相同状态的几率取决于相对角度。例如，如果她的探测器与桑德拉的发射器呈90º角度，那么她获得量子位相同值的几率正好是50%。
 - en: The solution to this problem is for Sandra to send a burst of photons. Riva
     can sample these photons, sending them through a variety of filters. She can measure
     the brightness of each sample by using a light sensor and voltmeter, and calculate
@@ -238,12 +310,16 @@
     basis state as Sandra with a very high probability. The ability to use quantum
     computers for cryptography may ultimately depend on the ability to distinguish
     tiny gradations in polarization.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 解决这个问题的方法是桑德拉发送一串光子。里瓦可以对这些光子进行采样，通过各种滤光片进行传输。她可以通过使用光传感器和电压表测量每个样本的亮度，并计算准确的极化角度。然后她以那个角度进行测量，并以非常高的概率获得与桑德拉相同的基态。利用量子计算机进行密码学可能最终取决于区分极化中微小渐变的能力。
 - en: 18.5 Quantum 3-stage protocol
+  id: totrans-35
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 18.5 量子三阶段协议
 - en: This sets the stage for the *Three-Stage Quantum Protocol* invented in 2006
     by Subhash Kak of the University of Oklahoma Stillwater. Kak’s 3-stage protocol
     uses the same 3-message framework as the other three-pass algorithms discussed
@@ -256,8 +332,11 @@
     ψ, which Riva removes to read the qubit. If Emily attempts to measure any of the
     rotated qubits, she has no way of knowing if her detector has the correct angle,
     and therefore no way to know the probability of getting the correct value.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 这为2006年由俄克拉荷马州立大学的Subhash Kak发明的*三阶段量子协议*奠定了基础。Kak的3阶段协议使用与第16.1、16.2和16.4节讨论的其他三次传递算法相同的3消息框架。在量子版本中，加密操作是围绕选择的空间轴随机旋转极化。桑德拉和里瓦必须就轴达成一致意见，否则旋转将不会交换。
+    (1) 桑德拉发送经过她随机角度φ旋转的光子， (2) 里瓦将光子旋转她的秘密角度ψ并发送经过φ+ψ旋转的光子， (3) 桑德拉应用逆旋转-φ并发送经过里瓦角度ψ旋转的光子，里瓦移除以读取量子位。如果艾米丽尝试测量任何旋转的量子位，她无法知道她的探测器是否具有正确的角度，因此也无法知道获得正确值的概率。
 - en: With this method Sandra and Riva must change their angles frequently, preferably
     for every bit. Otherwise, Emily can just pick a random angle and attempt to read
     every message. If Emily’s angle is close to the correct angle, then she will get
@@ -265,28 +344,39 @@
     her to read the message. With luck she will be able to read about 25% of the messages.
     Note that it is just as useful for Emily’s angle to be close to 180º off, because
     that would give her the inverses of 80% to 90% of the bits.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用这种方法，桑德拉和里瓦必须经常改变它们的角度，最好是每个比特都要改变。否则，艾米丽可以随意选择一个随机角度并尝试读取每条消息。如果艾米丽的角度接近正确角度，那么她将在80%甚至90%的比特上得到正确值。这足以让她能够读取消息。幸运的话，她将能够读取大约25%的消息。请注意，艾米丽的角度接近180º也同样有用，因为这将给她80%到90%的比特的逆。
 - en: 18.6 Quantum key exchange
+  id: totrans-38
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 18.6 量子密钥交换
 - en: There are several algorithms for quantum key exchange, analogous to Diffie-Hellman
     key exchange. The best-known of these algorithms is *BB84*, named for its inventors
     Charles H. Bennett of IBM Research and Gilles Brassard of the Université de Montréal.
     The algorithm uses 4 qubits to allow for the detection and correction of noise
     in the communications channel. Any perturbations caused by Emily are simply treated
     as additional noise in the channel, so they need no further detection or correction.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 有几种类似于 Diffie-Hellman 密钥交换的量子密钥交换算法。其中最著名的算法是*BB84*，以其发明者 IBM 研究院的查尔斯·H·贝内特和蒙特利尔大学的吉尔·布拉萨德命名。该算法使用
+    4 个量子位允许在通信信道中检测和纠正噪声。由 Emily 引起的任何扰动都简单地视为通道中的额外噪声，因此不需要进一步检测或纠正。
 - en: A corollary of this work is that several loosely entangled particles may be
     combined to produce a smaller number of tightly entangled particles.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 这项工作的一个推论是，几个松散纠缠的粒子可以结合成更少数量的紧密纠缠粒子。
 - en: 18.7 Grover’s algorithm
+  id: totrans-41
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 18.7 格罗弗算法
 - en: '*Grover’s* *cryptographic algorithm* is an algorithm for breaking secret key
     block ciphers such as DES and AES using quantum computers. It was developed in
     1996 by Lov Kumar Grover of Bell Labs based on his quantum file-searching algorithm.
@@ -294,8 +384,12 @@
     unsorted database. The algorithm reduces the expected number of evaluations from
     K to √K, where K is the number of possible keys. In effect this reduces the key
     size from n bits to n/2 bits.'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: '*格罗弗的* *密码算法* 是一种使用量子计算机破解诸如 DES 和 AES 这样的秘密密钥分块密码的算法。它由贝尔实验室的洛夫·库马尔·格罗弗在 1996
+    年开发，基于他的量子文件搜索算法。该算法将加密函数的每次评估都视为对未排序数据库的一次读取访问。该算法将期望的评估次数从 K 减少到 √K，其中 K 是可能的密钥数量。实际上，这将密钥大小从
+    n 位减小到 n/2 位。'
 - en: Grover’s algorithm finds, with high probability, the key k for which E(k,p)
     = c, where E is the encryption function, p is the plaintext and c is the ciphertext.
     The algorithm requires one block of known plaintext for each such key. A quantum
@@ -304,8 +398,11 @@
     That would be inefficient because it would require extra rounds of the block cipher.
     For example, AES with a 128-bit key uses 10 rounds, while AES with a 256-bit key
     uses 14 rounds.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 格罗弗算法以很高的概率找到密钥 k，使得 E(k,p) = c，其中 E 是加密函数，p 是明文，c 是密文。该算法需要每个这样的密钥一个已知明文块。一个量子物理学家，可能对密码学知之甚少，可能会得出这样的结论，即对抗格罗弗算法需要将所有加密密钥的大小加倍。这是低效的，因为它会需要额外的块密码轮次。例如，使用
+    128 位密钥的 AES 使用 10 轮，而使用 256 位密钥的 AES 使用 14 轮。
 - en: A cheaper alternative is to inflate the key size by preceding and following
     the main encryption with a simple, fast cipher step such as simple substitution.
     The keys for mixing the two simple substitution alphabets can be up to 1684 bits
@@ -314,8 +411,12 @@
     but in a more limited way since 16! is only around 2^(44). If you choose to use
     transposition, you can transpose the blocks 2 at a time, since 32! is about 2^(118),
     a significant increase in total key size.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个更便宜的替代方法是通过在主加密前后添加一个简单快速的密码步骤，如简单替代，来增加密钥大小。用于混合两个简单替代字母表的密钥可以达到每个 1684 位（5.2
+    节），因为每个字母表可以有 256! 种可能的排列，接近于 2^(1684)。简单的转位也可以帮助扩展密钥大小，但方式更受限，因为 16! 大约是 2^(44)。如果选择使用转位，您可以一次转位两个块，因为
+    32! 大约是 2^(118)，总密钥大小显著增加。
 - en: Readers of this book will realize that Grover’s algorithm also can be defeated
     by such elementary means as using nulls, using a different key for each block,
     chaining the blocks or compressing the message. This means that preceding the
@@ -324,108 +425,168 @@
     Huffman is that it changes the block size. It may be wiser to use Huffman substitution
     (section 10.4) or Post substitution (section 10.5) before and after the block
     cipher.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 读者们会意识到，格罗弗算法也可以通过使用空值、为每个块使用不同的密钥、链接块或压缩消息等基本手段来进行打败。这意味着在块加密之前通过混合哈夫曼（4.2.1
+    节）之类的压缩密码实现两个目标，即更大的密钥和压缩，一举两得。混合哈夫曼的缺点是它改变了块大小。在块密码之前和之后使用哈夫曼替换（10.4 节）或者邮件替换（10.5
+    节）可能更明智。
 - en: 18.8 Equations
+  id: totrans-46
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 18.8 方程式
 - en: Before we can discuss the next topic, quantum simulated annealing, we need to
     discuss equations. Many ciphers can be expressed as systems of equations. The
     Belaso cipher can be expressed as C = P+K, where C is the ciphertext, P is the
     plaintext and K is the key, all expressed as integers modulo 26\. The Hill cipher
     is a set of linear equations. Ciphers like the Playfair and Two-Square would be
     expressed as equations in base 5.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们讨论下一个话题——量子模拟退火之前，我们需要讨论方程式。 许多密码可以表示为方程组。 比拉索密码可以表示为 C = P+K，其中 C 是密文，P
+    是明文，K 是密钥，都是在模26的整数中表示的。 希尔密码是一组线性方程。 像普莱费尔和双平方这样的密码会被表示为基于5的方程式。
 - en: 18.8.1 Transpositions
+  id: totrans-48
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 18.8.1 交换
 - en: Transpositions are easily expressed as sets of equalities. For example, the
     columnar transposition
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 交换可以很容易地表示为相等集合。 例如，列转置
 - en: '![18-unnumb-1](../Images/18-unnumb-1.png)'
+  id: totrans-50
   prefs: []
   type: TYPE_IMG
+  zh: '![18-unnumb-1](../Images/18-unnumb-1.png)'
 - en: can be expressed as c[1] = m[1], c[2] = m[4], c[3] = m[7], c[4] = m[2], c[5]
     = m[5], c[6] = m[3], c[7] = m[6], where the m[i] are the plaintext message characters
     and the c[j] are the ciphertext characters.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以表示为 c[1] = m[1], c[2] = m[4], c[3] = m[7], c[4] = m[2], c[5] = m[5], c[6]
+    = m[3], c[7] = m[6]，其中 m[i] 为明文消息字符，c[j] 为密文字符。
 - en: '*Logical functions* can be converted to numerical equations like this:'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: '*逻辑函数*可以转换为如下的数值方程：'
 - en: '**not** x → 1-x'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: '**not** x → 1-x'
 - en: x **or** y → x+y-xy
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: x **or** y → x+y-xy
 - en: x **and** y → xy
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: x **and** y → xy
 - en: x **xor** y → x+y-2xy
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: x **xor** y → x+y-2xy
 - en: 18.8.2 Substitutions
+  id: totrans-57
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 18.8.2 替换
 - en: Substitutions can be converted to equation form by a 3-step process. First,
     express each ciphertext bit as a Boolean expression using the bits of the key
     and the plaintext. For example, consider this substitution that takes a 1-bit
     key K and a 2-bit plaintext AB to produce a 2-bit ciphertext XY.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 替换可以通过一个三步过程转换为方程形式。 首先，使用密钥和明文的比特将每个密文比特表示为布尔表达式。 例如，考虑这个替换，它接受一个1位密钥K和一个2位明文AB，生成一个2位密文XY。
 - en: '| **K** | **AB** | **XY** | **Boolean inputs** |'
+  id: totrans-59
   prefs: []
   type: TYPE_TB
+  zh: '| **K** | **AB** | **XY** | **布尔输入** |'
 - en: '| 0 | 00 | 01 | ***K̅A̅B̅*** |'
+  id: totrans-60
   prefs: []
   type: TYPE_TB
+  zh: '| 0 | 00 | 01 | ***K̅A̅B̅*** |'
 - en: '| 0 | 01 | 11 | ***K̅A̅B*** |'
+  id: totrans-61
   prefs: []
   type: TYPE_TB
+  zh: '| 0 | 01 | 11 | ***K̅A̅B*** |'
 - en: '| 0 | 10 | 00 | ***K̅AB̅*** |'
+  id: totrans-62
   prefs: []
   type: TYPE_TB
+  zh: '| 0 | 10 | 00 | ***K̅AB̅*** |'
 - en: '| 0 | 11 | 01 | ***K̅AB*** |'
+  id: totrans-63
   prefs: []
   type: TYPE_TB
+  zh: '| 0 | 11 | 01 | ***K̅AB*** |'
 - en: '| 1 | 00 | 10 | ***KA̅B̅*** |'
+  id: totrans-64
   prefs: []
   type: TYPE_TB
+  zh: '| 1 | 00 | 10 | ***KA̅B̅*** |'
 - en: '| 1 | 01 | 00 | ***KA̅B*** |'
+  id: totrans-65
   prefs: []
   type: TYPE_TB
+  zh: '| 1 | 01 | 00 | ***KA̅B*** |'
 - en: '| 1 | 10 | 10 | ***KAB̅*** |'
+  id: totrans-66
   prefs: []
   type: TYPE_TB
+  zh: '| 1 | 10 | 10 | ***KAB̅*** |'
 - en: '| 1 | 11 | 11 | ***KAB*** |'
+  id: totrans-67
   prefs: []
   type: TYPE_TB
+  zh: '| 1 | 11 | 11 | ***KAB*** |'
 - en: Here ***K̅A̅B̅*** means that K = 0, A = 0 and B = 0, ***K̅A̅B*** means that
     K = 0, A = 0 and B = 1, and so forth. The ciphertext bit X can now be written
     as X = ***K̅A̅B***+***KA̅B̅***+***KAB̅***+***KAB;***. There is a similar expression
     for Y.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里 ***K̅A̅B̅*** 意味着 K = 0，A = 0 和 B = 0， ***K̅A̅B*** 意味着 K = 0，A = 0 和 B = 1，依此类推。
+    现在可以将密文位X写为 X = ***K̅A̅B***+***KA̅B̅***+***KAB̅***+***KAB***。 Y也有类似的表达式。
 - en: 18.8.3 Karnaugh maps
+  id: totrans-69
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 18.8.3 卡诺图
 - en: '*Karnaugh maps* are used to reduce or simplify these expressions. This is the
     second step. The concept was invented by Maurice Karnaugh of Bell Labs in 1953\.
     The idea is to picture the set of all possible n-bit inputs as an n-dimensional
     space, 2×2×2×...×2\. Fill each cell where the output bit is 1\. This is the space
     for the output bit X. There would be a similar map for Y.'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: '*卡诺图*用于简化或简化这些表达式。 这是第二步。 这个概念是贝尔实验室的莫里斯·卡诺纳于1953年发明的。 这个想法是把所有可能的n位输入集合看作n维空间，2×2×2×...×2。
+    填充每个输出比特为1的单元格。 这是输出比特X的空间。 Y也会有一个类似的图。'
 - en: '![18-unnumb-2](../Images/18-unnumb-2.png)'
+  id: totrans-71
   prefs: []
   type: TYPE_IMG
+  zh: '![18-unnumb-2](../Images/18-unnumb-2.png)'
 - en: Notice how the columns in this map are labeled. As you move from one cell to
     the next going left to right only one bit changes at each step, including the
     wraparound step from column 4 to column 1\. This arrangement is called a *Gray
@@ -436,8 +597,13 @@
     pair, then you list them in the reverse order with a ***C*** appended to each
     pair. The ***C***-bit changes only twice, after the fourth code group and after
     the eighth code group wrapping around to the start.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意此地图中的列是如何标记的。 当您从一个单元格移到下一个单元格时，从左到右只有一个位改变，包括从第 4 列到第 1 列的环绕步骤。 这种排列被称为*格雷码*。
+    格雷码由贝尔实验室的弗兰克·格雷于 1947 年发明。 通过一次附加一个位轻松构造格雷码。 例如，要将这个 2 位格雷码扩展为 3 位格雷码，首先以顺序列出
+    4 个 A,B 对 ***A̅B̅***，***AB̅***，***AB***，***A̅B***，每个对应的 ***C̅***，然后以相反的顺序列出每个对应的
+    ***C***。 ***C*** 位只更改两次，第四个代码组后和第八个代码组后环绕到开始。
 - en: The Karnaugh maps let you optimize the logic by eye up to about 6 bits, 3 horizontal
     and 3 vertical, which uses an 8-cell by 8-cell map. Above 6 bits it is best to
     do it by a program. At each step you add the largest rectangular block that fits
@@ -446,43 +612,61 @@
     will also be a power of 2\. If there are several blocks of maximal size, choose
     the one that covers the most cells not yet covered. Continue until all filled
     cells are covered.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 卡诺图让您通过眼睛优化逻辑达到大约 6 位的水平，3 水平和 3 垂直，使用一个 8 单元格乘以 8 单元格的地图。 超过 6 位最好用程序来做。 每个步骤都要添加最大的矩形块，该矩形块适合填充区域内，并覆盖至少一个尚未被覆盖的新单元格。
+    块的每个维度都必须是 2 的幂，因此其体积也将是 2 的幂。 如果有几个最大尺寸的块，请选择覆盖尚未覆盖的大多数单元格的块之一。 继续，直到所有填充单元都被覆盖。
 - en: In the K,A,B example, there are two 1×2 blocks in the filled region, namely
     ***KA*** and ***KB̅***. Each one covers 2 cells. Since together they cover 3 cells,
     both are needed. That leaves only the cell ***KAB̅*** to be covered. So, the reduced
     expression for X is ***KA***+***KB̅***+***KAB̅***.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 K，A，B 示例中，填充区域中有两个 1×2 块，即 ***KA*** 和 ***KB̅***。 每个都覆盖 2 个单元格。 由于它们一起覆盖 3
+    个单元格，因此两者都是必需的。 这只留下了单元格 ***KAB̅*** 需要被覆盖。 因此，X 的简化表达式为 ***KA***+***KB̅***+***KAB̅***。
 - en: The third step in expressing the substitution as a set of equations is to replace
     the **and**, **or** and **not** functions in these expressions by arithmetic expressions,
     following the earlier rules.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 将替换这些表达式中的**and**，**or**和**not**函数为算术表达式，遵循先前的规则，作为将替换的第三步。
 - en: 18.8.4 Intermediate variables
+  id: totrans-76
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 18.8.4 中间变量
 - en: If you attempt to express each ciphertext bit in a complex block cipher like
     AES as a single expression, the size of that expression will grow exponentially
     with each round. This problem is sometimes cited as a reason why you cannot use
     equations to break block ciphers. Horse feathers. This problem can be eliminated
     by using intermediate variables. Let the outputs of each round be a separate set
     of variables.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您尝试将诸如 AES 这样的复杂分组密码中的每个密文位表示为单个表达式，则该表达式的大小将随每轮呈指数增长。 这个问题有时被引用为你不能使用方程式来破解分组密码的原因。
+    胡扯。 这个问题可以通过使用中间变量来消除。 让每一轮的输出成为一个单独的变量集。
 - en: The inputs to the first round, the key, the plaintext and the chain vector(s),
     are *independent* variables. Any one of these bits may change independently of
     the others. The outputs of each round, or each stage within a round, are *dependent*
     variables. This includes the chain vectors for the next block. Their values are
     completely determined by the values of the independent variables. It is impossible
     to change one of these bits without changing some of the other variables.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一轮的输入，密钥，明文和链向量(s)是*独立*变量。 这些位中的任何一个都可以独立于其他位变化。 每一轮或每一轮内的每个阶段的输出是*相关*变量。 这包括下一个块的链向量。
+    它们的值完全由独立变量的值确定。 不能改变其中一个位而不改变其他变量的一些位。
 - en: 18.8.5 Known plaintext
+  id: totrans-79
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 18.8.5 已知明文
 - en: Suppose Emily has a quantity of known plaintext. For simplicity, let’s suppose
     this is an n-bit message block. Her goal is to use the known plaintext and the
     intercepted ciphertext to determine the key. Suppose Emily has found an expression
@@ -491,19 +675,28 @@
     For any given key K, Emily can measure the difference between the ciphertext that
     would result from enciphering the known plaintext using the key K, and the intercepted
     ciphertext by calculating
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设 Emily 有一定量的已知明文。为简单起见，假设这是一个 n 位的消息块。她的目标是利用已知的明文和拦截的密文确定密钥。假设 Emily 已经找到了每个密文位的表达式，这些表达式是关于明文、密钥和可能的链向量的。设第
+    i 位的表达式为 E[i]，设 c[i] 为密文的第 i 位。对于任何给定的密钥 K，Emily 可以通过计算对应于使用密钥 K 对已知明文进行加密得到的密文与拦截的密文之间的差异来衡量：
 - en: '![18-unnumb-2-equation-18-6](../Images/18-unnumb-2-equation-18-6.png)'
+  id: totrans-81
   prefs: []
   type: TYPE_IMG
+  zh: '![18-unnumb-2-equation-18-6](../Images/18-unnumb-2-equation-18-6.png)'
 - en: When the correct key has been found, D(K) will be 0\. Here, D(K) is called the
     *objective function*, or simply the *score*.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 当找到正确的密钥时，D(K) 将为 0。在这里，D(K) 称为*目标函数*，或简称*分数*。
 - en: 18.9 Minimization
+  id: totrans-83
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 18.9 最小化
 - en: Introducing the objective function converts the problem of finding the correct
     key into a minimization problem. The purpose is to minimize the value of the function
     D(K). Quantum computers work because the quantum state of the system always tends
@@ -513,25 +706,34 @@
     energy state will correspond to the minimum value of the objective function. If
     this configuration can be accomplished, then quantum computers will be able to
     solve a wide range of real-world problems, including code-breaking.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 引入目标函数将找到正确密钥的问题转换为一个最小化问题。目的是最小化函数 D(K) 的值。量子计算机的工作原理是因为系统的量子态总是趋向于最低能量态。如果可以配置量子计算机，使得量子比特或量子比特组表示变量的值，而系统的能量对应于目标函数的值，那么最低能量态将对应于目标函数的最小值。如果可以实现这种配置，那么量子计算机将能够解决各种现实世界的问题，包括破译密码。
 - en: To begin, replace the bits in the key with real numbers. Ultimately these numbers
     must be either 0 or 1, but it is advantageous to allow the variables to get outside
     the 0-1 range during the search. Start from some initial value such as setting
     all the bits to .5, or to random values in the 0-1 range, then tweak their values
     to reduce the value of D(K), trying to get it down to 0.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 起初，用实数替换密钥中的位。最终这些数字必须是 0 或 1，但允许变量在搜索过程中超出 0-1 范围是有利的。从某些初始值开始，例如将所有位设置为 .5，或将它们设置为
+    0-1 范围内的随机值，然后调整它们的值以减少 D(K) 的值，尝试将其减少到 0。
 - en: There are many optimization techniques now used with conventional computers,
     but let’s look at just three. Using these algorithms to find cryptographic keys
     will require a large amount of known plaintext. At a minimum the known plaintext
     should be at least 3 times the size of the key.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在有许多与传统计算机一起使用的优化技术，但让我们只看三种。使用这些算法找到加密密钥将需要大量已知明文。至少已知明文应该是密钥大小的 3 倍。
 - en: 18.9.1 Hill climbing
+  id: totrans-87
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 18.9.1 爬山法
 - en: '*Hill* *Climbing*, also called *Steepest Descent* or the *Gradient Method*,
     is the oldest of the optimization methods. The idea is to start at some point
     P[1] and look at several equidistant points in random directions. Among these
@@ -543,29 +745,42 @@
     D(K) is minimum. The search repeats using P[4] as the starting point. As the search
     progresses, the sizes of the steps from P[i] to P[i+1] are increased each time
     an improvement is found, and decreased if there is no improvement.'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: '*爬山法*，也称为*最陡下降法*或*梯度法*，是最古老的优化方法之一。其思想是从某一点 P[1] 开始，看看随机方向上的几个等距点。在这些点中，选择改进最大的点
+    P[2]，也就是具有最小 D(K) 值的点。然后通过查看接近 P[2] 的随机点来细化方向。从 P[2] 到任何这些点的距离将远小于从 P[1] 到 P[2]
+    的距离。将这个点称为 P[3]。从 P[1] 到 P[3] 的线定义了搜索方向。最后，找到这条线上使 D(K) 最小的点 P[4]。搜索重复使用 P[4]
+    作为起点。随着搜索的进行，从 P[i] 到 P[i+1] 的步长在找到改进时逐渐增加，如果没有改进则减小。'
 - en: This form of search works well when the search space is shaped like a single
     mountain in n-dimensional space, or a large central mountain surrounded by much
     smaller foothills. It can fail badly in more complex topography with many local
     optima. In this picture, the darker the color, the better the score.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种搜索形式在搜索空间形状像 n 维空间中的单个山或被许多较小的山丘包围的大中央山时效果很好。在具有许多局部最优解的更复杂地形中，它可能失败得很严重。在这个图中，颜色越深，分数越好。
 - en: '![18-unnumb-3](../Images/18-unnumb-3.png)'
+  id: totrans-90
   prefs: []
   type: TYPE_IMG
+  zh: '![18-unnumb-3](../Images/18-unnumb-3.png)'
 - en: 18.9.2 Mille sommets
+  id: totrans-91
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 18.9.2 千峰
 - en: '*Mille* *Sommets*, or *Thousand Peaks*, is an idea I used for achieving winning
     scores in a variety of puzzle contests that I entered in the 1970s. I later started
     to write up this search method for some computer journals, but I got bogged down
     in trying to characterize the types of objective functions for which this search
     method was better than other search methods. The method was rediscovered in the
     1990s under the name *particle swarm* optimization.'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: '*千峰*，或*千峰*，是我在20世纪70年代参加各种谜题比赛中取得胜利的方法。后来，我开始为一些计算机期刊撰写这种搜索方法，但我陷入了试图表征这种搜索方法比其他搜索方法更好的目标函数类型的困境中。这种方法在20世纪90年代以*粒子群*优化的名字重新被发现。'
 - en: Picture the search space as a mountain range with many peaks, valleys and ridges.
     Now imagine a fleet of planes flying over the terrain and dropping hundreds of
     mountaineers by parachute. In other words, there are many simultaneous starting
@@ -578,11 +793,15 @@
     team splitting up into several parties to try different paths. It is best not
     to take all of the improved solutions, because that quickly concentrates all of
     the climbers into just a few areas.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象搜索空间就像是一个有许多峰、谷和山脊的山脉。现在想象一队飞机飞越这片地形，通过降落伞投放数百名登山者。换句话说，有许多同时的起点。这些登山者会查看附近的点，看看这些地点是更高还是更低。有两种变体。（1）你可以选择这些点中最好的一个，并将登山者移动到那里。在这种情况下，如果没有一个点更好，你会减小步长并重试。如果这次失败，比如连续失败3次，那么你会引入一个新的登山者，他会从一个随机位置开始。（2）你保留显示改进的几个点。你可以将这看作是登山队分成几个小组尝试不同的路径。最好不要选择所有改进的解决方案，因为这会迅速将所有登山者集中在几个区域。
 - en: '![18-unnumb-4](../Images/18-unnumb-4.png)'
+  id: totrans-94
   prefs: []
   type: TYPE_IMG
+  zh: '![18-unnumb-4](../Images/18-unnumb-4.png)'
 - en: My original idea was to keep all of the solutions in a heap structure so that
     the top entry is always the worst solution. You take that worst entry and try
     to improve it. This proved to be inefficient because you spend a great deal of
@@ -592,19 +811,25 @@
     a solution yields several improved solutions, it is not always beneficial to choose
     the best among these. Sometimes it is better to choose randomly among the several
     improved solutions.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 我最初的想法是将所有解保留在一个堆结构中，以便顶部条目始终是最差的解。你拿到那个最差的条目并尝试改进它。但这被证明是低效的，因为你花了大量的精力去改进最终被丢弃的差解。相反，总是选择最好的解会把所有爬山者都集中在一个单一的高峰上。最佳策略是随机选择下一个爬山者。同样，在一个解产生多个改进解时，不总是选择其中最好的有利。有时，随机选择几个改进解更好。
 - en: 18.9.3 Simulated annealing
+  id: totrans-96
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 18.9.3 模拟退火
 - en: '*Simulated* *Annealing* is a popular optimization technique, mainly because
     it is so easy to implement. You start from a random point in the search space,
     and look at a nearby point. If that solution is better, then you move to that
     point with probability B. If that solution is worse, then you move to that point
     with probability W.'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: '*模拟退火*是一种流行的优化技术，主要是因为它很容易实现。你从搜索空间中的一个随机点开始，并查看附近的一个点。如果那个解更好，那么以概率B移动到该点。如果那个解更差，那么以概率W移动到该点。'
 - en: The defining feature of simulated annealing is that you change the probabilities
     while you search. Initially you set the chance of rejecting a good solution or
     accepting a bad solution fairly high. Say you reject 40% of better solutions and
@@ -613,8 +838,11 @@
     Perhaps in this second stage you reject 20% of better solutions and accept 15%
     of worse solutions. After another interval, say another 2000 steps, you might
     start rejecting only 10% of better solutions and accepting 7% of worse solutions.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 模拟退火的定义特征是在搜索过程中改变概率。最初，你设定拒绝好解的机会或接受坏解的机会相当高。比如，你拒绝40%的更好解，接受30%的更差解，即B = .6和W
+    = .3。然后在一段时间后，比如1000步之后，你会降低拒绝好解的概率。也许在第二阶段，你拒绝更好解的20%，接受更差解的15%。再过一段时间，比如再2000步之后，你可能只开始拒绝更好解的10%，接受更差解的7%。
 - en: This process is called simulated annealing because it resembles the heat annealing
     process in metallurgy, where the metal is first heated until glowing, and then
     very slowly cooled. This changes the crystalline structure of the metal to reduce
@@ -625,60 +853,83 @@
     to the slow cooling of the metal. Descriptions of simulated annealing commonly
     refer to the several stages in which the probabilities are stepped as *reducing
     the temperature*.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个过程被称为模拟退火，因为它类似于金属热处理中的热退火过程，在这个过程中，金属首先被加热直到发光，然后非常缓慢地冷却。这改变了金属的结晶结构，减少了其硬度，增加了其韧性和延展性，使其更容易加工。在模拟退火中，拒绝更好解和接受更差解的高初始概率类似于金属的高温状态，而这些概率的逐渐降低则类似于金属的缓慢冷却。对模拟退火的描述通常提到概率逐步降低的几个阶段称为*降温*。
 - en: 'Let me pass on a few tips from my own experience with simulated annealing:'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我传授一些我在模拟退火中的经验：
 - en: It doesn’t pay to go too slowly. It is a waste of time to reject 40% of improved
     solutions, then 39%, then 38%, and so forth. At each stage the acceptance/ rejection
     rate should be somewhere between 1/2 and 2/3 of the preceding rate. For example,
     40% in the first stage, then 20%, 10%, 5% and 3%. Or, start at 40%, then 25%,
     15%, 10%, 6%, 4%, and finally 2.5%.
+  id: totrans-101
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 过于缓慢是不值得的。每个阶段的接受/拒绝率应该在前一率的1/2到2/3之间。例如，第一阶段是40%，然后20%，10%，5%，3%。或者，从40%开始，然后25%，15%，10%，6%，4%，最后2.5%。
 - en: Five stages are usually enough.
+  id: totrans-102
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通常五个阶段就足够了。
 - en: It is a waste of time to start with a 50% acceptance rate. Start between 60%
     and 75%.
+  id: totrans-103
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 以50%的接受率开始是浪费时间的。从60%到75%之间开始。
 - en: It does not pay to go to 0%. You will get greater improvement if the last stage
     accepts 2% to 3% of worse solutions.
+  id: totrans-104
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将接受率降到 0% 是得不偿失的。如果最后一个阶段接受了 2% 到 3% 的更差的解决方案，你将获得更大的改进。
 - en: Quit when nothing is happening. You may have planned 1000 trials in each stage,
     but if you have made 100 tries with no changes, stop.
+  id: totrans-105
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 当什么都不发生时停止。你可能计划在每个阶段进行 1000 次试验，但如果你已经进行了 100 次尝试而没有改变，就停止吧。
 - en: Make the percentages depend on the size of the improvement. For example, in
     the first stage you might accept 60% of the changes that improve the score by
     1%, 75% of the changes that improve the score by 2%, and 90% of the changes that
     improve the score by 3% or more.
+  id: totrans-106
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 让百分比取决于改进的大小。例如，在第一阶段，你可以接受改进分数为 1% 的变化的 60%，改进分数为 2% 的变化的 75%，改进分数为 3% 或更多的变化的
+    90%。
 - en: Experiment. Every optimization problem is different. Try varying the number
     of stages, the number of trials per stage, the rates of changing the probabilities,
     the step size and the relationship between the degree of improvement and the percentage
     of acceptance.
+  id: totrans-107
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 实验。每个优化问题都是不同的。尝试改变阶段的数量、每个阶段的试验次数、改变概率的速率、步长和改进程度与接受率之间的关系。
 - en: The hill climbing, mille sommets and simulated annealing techniques may be freely
     combined to produce a variety of hybrid methods.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 爬山、千山万峰和模拟退火技术可以自由组合，产生各种混合方法。
 - en: 18.10 Quantum simulated annealing
+  id: totrans-109
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 18.10 量子模拟退火
 - en: There are several proposed methods for using quantum computers to do simulated
     annealing. These methods use quantum phenomena such as superposition to perform
     many searches in parallel. However, every trial requires evaluating the objective
@@ -687,20 +938,27 @@
     means. The quantum computer can use a conventional computer to evaluate the expressions,
     but this loses the parallelism. So far, quantum searches have not shown any speed
     improvement over conventional computer searches.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 有几种提议的方法可以利用量子计算机进行模拟退火。这些方法利用量子现象如叠加来并行执行许多搜索。然而，每次试验都需要在选择的点上评估目标函数。量子计算机不适用于评估表达式。到目前为止，尚无方法可以通过量子手段并行评估这些函数。量子计算机可以利用传统计算机来评估表达式，但这将失去并行性。到目前为止，量子搜索还没有显示出比传统计算机搜索更快的改进。
 - en: 18.11 Quantum factoring
+  id: totrans-111
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 18.11 量子因式分解
 - en: The strength of the RSA public key cryptosystem rests on the difficulty of factoring
     large integers. Given two large integers A and B it is easy to multiply them to
     get the product AB, but it is very hard to reverse that process and determine
     the factors of a large integer. Factoring a large number has the same degree of
     difficulty as computing a discrete logarithm (section 16.3), and uses many of
     the same techniques.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: RSA 公钥密码系统的强度取决于大整数因式分解的难度。给定两个大整数 A 和 B，将它们相乘得到乘积 AB 是很容易的，但要反向执行这个过程并确定大整数的因子则非常困难。对一个大数进行因式分解的难度与计算离散对数（第
+    16.3 节）的难度相同，并且使用许多相同的技术。
 - en: This security may potentially be breached by Shor’s algorithm for factoring
     large numbers. This was the first quantum algorithm ever developed, invented by
     Peter Shor of MIT in 1994\. If the algorithm can be implemented successfully for
@@ -709,22 +967,32 @@
     was factored into 3×5 in 2001, and the number 21 was factored into 3×7 in 2012\.
     At this rate we may expect the number 35 to be factored into 5×7 some time around
     2023.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种安全性可能会被用于因式分解大数的 Shor 算法突破。这是第一个量子算法，由 MIT 的 Peter Shor 在 1994 年发明。如果该算法能够成功地用于大整数，那么
+    RSA 必须被放弃，或者模数必须变得更大，也许是数百万位。到目前为止，使用 Shor 算法，2001 年将数字 15 因式分解为 3×5，2012 年将数字
+    21 因式分解为 3×7。按照这个速度，我们可以期待到 2023 年左右将数字 35 因式分解为 5×7。
 - en: Humor aside, it may be decades before Shor’s algorithm becomes a real threat
     to the security of RSA.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 开个玩笑，Shor 算法对 RSA 安全性的真正威胁可能要几十年后才会出现。
 - en: 18.12 Ultracomputers
+  id: totrans-115
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 18.12 超级计算机
 - en: Quantum computers are not made for evaluating expressions—today. But let’s suppose
     that this is merely a technical problem. Suppose that in time there will be hybrid
     computers that combine the calculating power of supercomputers with the parallelism
     of quantum computers. Let’s call these *ultracomputers*.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 量子计算机并不是为了评估表达式而制造的——至少目前不是。但让我们假设这只是一个技术问题。假设将来会有混合计算机，结合了超级计算机的计算能力和量子计算机的并行性。让我们称这些为*超级计算机*。
 - en: What can Sandra do today to prepare for the time when Emily has an ultracomputer?
     We can take a cue from the way we defeated Grover’s algorithm (section 18.6).
     We expanded the size of the key to exceed the capability of the algorithm. This
@@ -732,25 +1000,33 @@
     the computer needs to deal with beyond whatever capabilities you estimate the
     ultracomputer may possess. Let us look at two aspects of this, substitution and
     random number generation.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 桑德拉今天可以做些什么来为艾米莉拥有超级计算机的时代做准备？我们可以从我们击败格罗弗算法的方式中获得启示（第18.6节）。我们扩大了密钥的大小，超过了算法的能力。这在超级计算机上也是可行的。我们可以增加计算机需要处理的未知数的数量，超出您估计超级计算机可能具有的任何能力。让我们看看这两个方面，替换和随机数生成。
 - en: These algorithms will require extremely large encryption keys. Let’s simply
     accept that in the future world where ultracomputers exist, such huge keys will
     be manageable.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些算法将需要极其庞大的加密密钥。让我们简单地接受，在未来存在超级计算机的世界中，这样巨大的密钥将是可管理的。
 - en: 18.12.1 Substitution
+  id: totrans-119
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 18.12.1 替换
 - en: If a substitution is not defined by some mathematical rule, then it can be defined
     by a substitution table. Each entry in the table is a value known to Sandra, but
     unknown to Emily. Each table entry can be regarded as a variable in the mathematical
     sense. Initially, each variable can take on any value. If Emily learns some of
     these values, that narrows the choices for the other variables, but initially
     any character could substitute for any other.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果一个替换没有通过某种数学规则定义，那么它可以通过一个替换表来定义。表中的每个条目是桑德拉知道但艾米莉不知道的值。每个表条目可以被视为数学意义上的一个变量。最初，每个变量可以取任何值。如果艾米莉学到了其中一些值，那么对其他变量的选择就会变得更加狭窄，但最初任何字符都可以替换为任何其他字符。
 - en: Sandra’s objective is to overwhelm the capabilities of the ultracomputer. A
     general polyalphabetic cipher has a 26×26 tableau for hand use, but a 256×256
     tableau for computer use. That provides 2^(16), or 65,536 unknown values. There
@@ -764,128 +1040,176 @@
     Let’s call the 2^(24)-element tableau *Tab24*. Each row of Tab24 has its own mixing
     key. If this mixing key has 256 bits, then the entire tableau has 256×65536 =
     16,777,216 key bits.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 桑德拉的目标是压倒超级计算机的能力。一个通用的多表密码手动使用26×26的表格，但计算机使用256×256的表格。这提供了2^(16)，或者65,536个未知值。然而，并没有理由限制表格中的行数为256。如果艾米莉有一个超级计算机，那么桑德拉也有一个速度快、内存大的计算机是合理的。桑德拉可以使用1024行带有10位密钥的表格，或者使用4096行带有12位密钥的表格，甚至使用65536行带有16位密钥的表格。这需要2^(24)
+    = 16,777,216字节的内部存储空间用于替换表，远远在当前个人计算机的容量范围内。此外，对于8位替换使用16位密钥提供了非常理想的冗余性。让我们称这个2^(24)元素的表格为*Tab24*。Tab24的每一行都有自己的混合密钥。如果这个混合密钥有256位，那么整个表格就有256×65536
+    = 16,777,216位密钥。
 - en: It is also feasible for Sandra to use a full bigram table. A 256×256 bigram
     table using an 8-bit key to select a row (actually, a layer) would require 2^(25)
     = 33,554,432 bytes of internal storage. Again, this is feasible today. It would
     require a much larger computer if the tableau had 65,536 layers and 16-bit keys.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于桑德拉来说，使用完整的双字母频率表也是可行的。一个256×256的双字母频率表，使用8位密钥选择一行（实际上是一层），需要2^(25) = 33,554,432字节的内部存储空间。同样，这在今天是可行的。如果表格有65536层和16位密钥，那么将需要一个更大的计算机。
 - en: Remember, however, these substitution tables must be kept secret, and they must
     be fully random. Even if they are generated by some algorithm, it must be absolutely
     beyond the capability of Emily’s ultracomputer to determine the initial state
     and parameters of the generator. See section 13.13 for some relevant methods.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 但请记住，这些替换表必须保密，并且必须是完全随机的。即使它们是由某种算法生成的，也必须绝对超出艾米莉的超级计算机确定生成器的初始状态和参数的能力。请参阅第13.13节了解一些相关方法。
 - en: 18.12.2 Random numbers
+  id: totrans-124
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 18.12.2 随机数
 - en: The methods of section 13.13 are a good start, but to produce a pseudorandom
     number generator that will stand up to an ultracomputer we combine the concept
     of a selection generator from section 13.11 with the techniques for refreshing
     the generator in section 13.15.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 第13.13节的方法是一个很好的起点，但要制作一个能经得起超级计算机考验的伪随机数生成器，我们将第13.11节的选择生成器概念与第13.15节的刷新生成器技术相结合。
 - en: 'The *ultragenerator* UG (pronounced HUGE-ee) uses three arrays, A, B and C.
     Arrays A and B each contain 65,536 entries that are 24-bit integers. Array C contains
     2^(24), or 16,777,216 entries that are 8-bit integers. The 3 arrays can be initialized
     from nature photos, as described in section 13.14.2\. Sandra and Riva must have
     identical arrays. The generator produces an 8-bit output in each cycle. Cycle
     n consists of these steps:'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: '*超级生成器* UG（发音为HUGE-ee）使用三个数组，A、B和C。数组A和B各包含65,536个条目，每个条目都是24位整数。数组C包含2^(24)，即16,777,216个条目，每个条目都是8位整数。这3个数组可以从自然照片中初始化，如第13.14.2节所述。桑德拉和里瓦必须有相同的数组。生成器在每个周期中产生一个8位输出。第n个周期包括以下步骤：'
 - en: Calculate x = (A[n]+A[n-103]+A[n-1071]) mod 16777216, and replace A[n] by x.
+  id: totrans-127
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 计算x = (A[n]+A[n-103]+A[n-1071]) mod 16777216，并将A[n]替换为x。
 - en: Reduce x = x mod 65536, and set y = B[x].
+  id: totrans-128
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 减少x = x mod 65536，并设置y = B[x]。
 - en: The output of the UG generator on this cycle is C[y].
+  id: totrans-129
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: 该周期内UG生成器的输出是C[y]。
 - en: Replace B[x] by (B[x]+B[x-573]+B[x-2604]) mod 16777216.
+  id: totrans-130
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将B[x]替换为(B[x]+B[x-573]+B[x-2604]) mod 16777216。
 - en: Replace C[y] by (C[y]+C[y-249]+C[y-16774]) mod 256.
+  id: totrans-131
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将C[y]替换为(C[y]+C[y-249]+C[y-16774]) mod 256。
 - en: The subscripts wrap around modulo 65536, or modulo 16777216, as appropriate.
     There is nothing special about the lags 103, 1071, ... , 16774\. I did not test
     to see whether these values produce especially long periods. With such huge seed
     arrays, even degenerate periods will be extremely long. You may use any of the
     combining functions of section 13.1, such as **madd**, or lagged linear addition
     from section 13.14.1.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 下标根据需要在模65536或模16777216下循环。103、1071、...、16774这些滞后值并没有什么特别之处。我没有测试这些值是否产生特别长的周期。有了如此巨大的种子数组，即使是退化周期也会非常长。你可以使用第13.1节的任何组合函数，比如**madd**，或者第13.14.1节的滞后线性加法。
 - en: When you refresh these random numbers, the two methods of section 13.14 are
     not sufficient when your opponent has an ultracomputer, but they can be combined
     to make a strong refresh function. Each time you refresh you will need a new random
     array R of 65,536 or more 24-bit integers. Let the lengths of A, B, C and R be
     L[A], L[B], L[C] and L[R].
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你刷新这些随机数时，第13.14节的两种方法在你的对手拥有超级计算机时不足以使用，但它们可以结合起来制作一个强大的刷新函数。每次刷新时，你将需要一个包含65,536个或更多24位整数的新随机数组R。让A、B、C和R的长度分别为L[A]、L[B]、L[C]和L[R]。
 - en: '![18-unnumb-4-equation-18-7](../Images/18-unnumb-4-equation-18-7.png)'
+  id: totrans-134
   prefs: []
   type: TYPE_IMG
+  zh: '![18-unnumb-4-equation-18-7](../Images/18-unnumb-4-equation-18-7.png)'
 - en: Here a = ⌊L[C]/L[R]⌋-1\. The notation ⌊L[C]/L[R]⌋, which is read “floor of L[C]/L[R]”,
     means the greatest integer not exceeding L[C]/L[R]. For example, ⌊8/3⌋ is 2 and
     ⌊9/3⌋ is 3\. The effect of using C[an] instead of C[n] is to spread the bytes
     of R evenly throughout the C array.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里a = ⌊L[C]/L[R]⌋-1。符号⌊L[C]/L[R]⌋，读作“L[C]/L[R]的底”，表示不超过L[C]/L[R]的最大整数。例如，⌊8/3⌋是2，⌊9/3⌋是3。使用C[an]而不是C[n]的效果是将R的字节均匀分布在C数组中。
 - en: '![18-unnumb-4-equation-18-8](../Images/18-unnumb-4-equation-18-8.png)'
+  id: totrans-136
   prefs: []
   type: TYPE_IMG
+  zh: '![18-unnumb-4-equation-18-8](../Images/18-unnumb-4-equation-18-8.png)'
 - en: These 2 steps should be repeated 3 or more times. As always, the subscripts
     wrap around.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 这两个步骤应该重复3次或更多次。如常，下标循环。
 - en: By the way, there is no requirement that the size of the C array must be a power
     of 2\. L[C] could be, for example, 77,777,777 in which case the A, B and R arrays
     would need to contain integers modulo 77777777, and the modulus 16777216 would
     be replaced by 77777777 in the calculations above. The only limits on the size
     of L[C] are the amount of storage you wish to use and the practicalities of distributing
     such a large key.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 顺便说一句，C数组的大小不一定必须是2的幂。L[C]可以是，例如，77,777,777，这种情况下A、B和R数组需要包含模77777777的整数，而模16777216将在上述计算中被77777777替换。对于L[C]的大小的唯一限制是您希望使用的存储量以及分发如此大密钥的实际情况。
 - en: These two techniques, substitution and random number generation, can be combined
     to make any number of block and stream ciphers that will withstand ultracomputers.
     The next two sections illustrate one cipher of each type.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 这两种技术，替换和随机数生成，可以结合起来制作任意数量的块和流密码，可以抵御超级计算机。接下来的两节介绍了每种类型的一种密码。
 - en: 18.12.3 Ultrasubstitution cipher US-A
+  id: totrans-140
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 18.12.3 超替代密码US-A
 - en: One great temptation in writing this section is to specify a gigantic block
     size such as 65,536 or even 16,777,216 bytes. However, simply because the cryptography
     must change in the era of ultracomputers does not mean that the types of messages
     will change. Messages of fewer than 100 characters will still be common, and it
     would be grossly inefficient to pad such messages to a block size of 65,536 bytes
     or larger.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 写这一节时的一个巨大诱惑是指定一个巨大的块大小，比如65,536甚至16,777,216字节。然而，仅仅因为在超级计算机时代加密必须改变，并不意味着消息的类型会改变。少于100个字符的消息仍然很常见，将这样的消息填充到65,536字节或更大的块大小将是极其低效的。
 - en: 'Let’s call the sample ultrasubstitution cipher *US-A*. The US-A cipher operates
     on blocks of 32 bytes, or 256 bits. The 32 bytes in each block are viewed alternately
     as 32 individual bytes, and as a 16×16 array of bits. The US-A cipher has 15 rounds,
     each consisting of 3 steps: a substitution, a row transposition, and flipping
     the array. The 15 rounds are followed by a final substitution step.'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们将样本超替代密码称为*US-A*。US-A密码以32字节或256位的块为单位运行。每个块中的32字节交替地被视为32个单独的字节和一个16×16位的位数组。US-A密码有15轮，每轮包括3个步骤：替换、行置换和翻转数组。15轮后跟着最后的替换步骤。
 - en: The 16 substitution steps use the Tab24 substitution table, which needs 16 key
     bits for each character for a total of 16×32 = 512 bits per round, or 8192 bits
     for the 15 rounds plus final substitution. The second stage in each of the 15
     rounds is to transpose each row. This might be just a cyclic shift of the row,
     which would require only 4 bits per row, hence 64 bits per round or 960 bits altogether.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 16个替换步骤使用Tab24替换表，每个字符需要16个密钥位，每轮总共需要16×32 = 512位，或者15轮加上最后的替换需要8192位。每个15轮中的第二阶段是对每一行进行置换。这可能只是行的循环移位，每行只需要4位，因此每轮需要64位，总共960位。
 - en: A stronger option for the bit transposition would be to have a table of transpositions,
     say 256 different transpositions, such as key transpositions (section 7.6). Each
     row of the 16×16 bit matrix would be transposed separately. Each row transposition
@@ -894,27 +1218,35 @@
     is 10, and so forth. The transposition for each row would be chosen from the table
     by an 8-bit key, requiring 8×16 = 128 bits per round, or 1920 bits altogether
     for the 15 rounds.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于位置换的更强选项是拥有一个置换表，比如256个不同的置换，比如密钥置换（第7.6节）。16×16位矩阵的每一行将被单独置换。每行置换将由16个十六进制数字指定，比如**5A3F1E940B2D68C7**，意味着第一个位将移到位置5，第二个位移到位置A，即10，依此类推。每行的置换将由一个8位密钥从表中选择，每轮需要8×16
+    = 128位，或者15轮总共需要1920位。
 - en: The third stage in each round is flipping the array of bits, that is, swapping
     the bit at (i,j) with the bit at (j,i). This is described in section 11.7, and
     a fast method for flipping the array is given in section 11.2.3\. This stage does
     not have a key.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 每轮的第三阶段是翻转位数组，即交换(i,j)处的位和(j,i)处的位。这在第11.7节中有描述，并且在第11.2.3节中给出了翻转数组的快速方法。这个阶段没有密钥。
 - en: Let’s pull all 3 stages together. The US-A cipher requires 8192 bits for the
     substitution keys and, say, 1920 bits for the key transpositions, or 10,112 key
     bits altogether. This is far short of the 65,536 bits needed to resist an ultracomputer.
     Fear not. Don’t forget that the substitution uses the Tab24 tableau, which used
     16,777,216 key bits for mixing its 65,536 rows, not to mention however many bits
     were used to mix the transposition table.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
 - en: For just that extra layer of strength, I recommend using plaintext-to-plaintext
     (mode **PP**) block chaining (section 11.10) with the US-A cipher.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
 - en: 18.12.4 Ultrastream cipher US-B
+  id: totrans-148
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -923,14 +1255,17 @@
     Call it the *US-B* cipher. US-B uses a preliminary step before enciphering to
     give the plaintext a random look. Let the message be M and its length be L[M].
     The pre-encipherment step is
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
 - en: '![18-unnumb-4-equation-18-9](../Images/18-unnumb-4-equation-18-9.png)'
+  id: totrans-150
   prefs: []
   type: TYPE_IMG
 - en: The extra 16 wraparound iterations serve to doubly hash the first 16 characters
     of the message. This step adds no cryptographic strength, but it makes it difficult
     for Emily to recognize when she has found the correct key.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
 - en: Each 16-bit character key K[n] is generated by taking two consecutive output
@@ -939,6 +1274,7 @@
     needed.) The key K[n] is used to encipher message character M[n] in the Tab24
     substitution table as Tab24(K[n],M[n]). That is, the substitute for M[n] is taken
     from row K[n] of the tableau.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
 - en: You may recognize this as a general polyalphabetic cipher using a large tableau
@@ -946,5 +1282,6 @@
     Chiffre Indéchiffrable*. Using the UG ultragenerator, the US-B polyalphabetic
     cipher finally is indecipherable, even in the era of ultracomputers. We have achieved
     Unbreakable Cryptography.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL

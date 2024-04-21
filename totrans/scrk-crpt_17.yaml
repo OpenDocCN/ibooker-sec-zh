@@ -3,14 +3,17 @@
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 17 密码
 - en: This chapter covers
   id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: Ideas for constructing a code
   id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 构建密码的思路
 - en: Over the centuries, despite advances in ciphers, then cipher machines, and now
     digital cryptography, the military has always relied on codes. Even today, we
     can assume that the military still has codes as a backup in case electronic devices
@@ -18,6 +21,7 @@
   id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管在密码、密码机和现在的数字加密方面取得了进步，但军队始终依赖于密码。即使在今天，我们也可以假设军队仍然将密码作为备用，以防电子设备出现故障或电力不可用。
 - en: Most codes replace letters, syllables, words or phrases with groups of a fixed
     size, usually 3, 4 or 5 decimal digits, or groups of 3 or 4 letters. Variable-length
     codes are uncommon. Codes generally fall into two types, single codes and double
@@ -31,6 +35,9 @@
   id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 大多数密码将字母、音节、单词或短语替换为固定大小的组，通常是 3、4 或 5 位十进制数字，或者是 3 或 4 个字母的组。可变长度的密码很少见。密码通常分为两种类型，单一密码和双重密码。在单一密码中，单词和短语按字母顺序列出，并且代码组按数字顺序分配，尽管不是连续的，因此可以使用相同的列表查找单词和代码组。这种方法的弱点是显而易见的。如果你的对手已经弄清楚了代码
+    08452 的含义是 CANNON，那么他们就知道与 08452 接近的任何代码必须有类似 CAMOUFLAGE、CAMPAIGN、CANCEL、CANINE、CANVAS、CAPITAL、CAPITULATE、CAPSIZE、CAPTAIN
+    等含义。
 - en: In a double code, the code groups are assigned in random order. The code book
     will contain two separate lists, one that lists the words and phrases in alphabetic
     order, and one that lists the code groups in numeric order. In the past, double
@@ -40,6 +47,8 @@
   id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 在双重密码中，代码组是以随机顺序分配的。密码书将包含两个单独的列表，一个按字母顺序列出单词和短语，另一个按数字顺序列出代码组。过去，双重密码需要数月的时间才能编制，并且成本很高。因此，一个政府可能会多年使用相同的代码，从而大大削弱其有效性。自
+    1960 年代以来，编制双重密码的工作可以在几秒钟内由计算机完成。
 - en: Compilers of codes had lots of tricks to make their codes more secure. For common
     words and phrases they would provide lots of equivalent code groups, or synonyms.
     Thus a naval code might have 10 to 20 code groups for “ship”, while an army code
@@ -51,6 +60,7 @@
   id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 密码编制者有很多技巧来使他们的密码更加安全。对于常见的单词和短语，他们会提供许多等效的代码组，或者同义词。因此，海军密码可能有 10 到 20 个代码组代表“ship”，而陆军密码可能有相同数量的代码组代表“artillery”，外交密码可能有同样多的代码组代表“treaty”。密码往往有很多空组。消息的整个部分可能完全为空。某些代码组可能具有多重含义，取决于某个指示器，例如前一组的最后一个数字。
 - en: Some code books are printed in two columns. The code is taken from either the
     left or the right column according to some indicator. For example, if the current
     code group begins with an even digit, take the next code group from the left column,
@@ -58,11 +68,13 @@
   id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 有些密码书是以两列印刷的。根据某个指示器，密码来自左列或右列。例如，如果当前的代码组以偶数数字开头，则从左列取下一个代码组，否则从右列取下一个代码组。
 - en: 17.1 The Joker
   id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 17.1 小丑
 - en: The *Joker* is a style of code of my own invention. If any readers want to devise
     their own codes, the Joker may give them some useful ideas. The basic concept
     is that in each code group one letter or digit is distinct from the others. In
@@ -73,6 +85,8 @@
   id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: '*小丑* 是我自己发明的一种密码风格。如果有读者想要设计自己的密码，小丑可能会给他们一些有用的思路。基本概念是，在每个代码组中，一个字母或数字与其他字母或数字不同。例如，在一个
+    5 字符组中，4 个字符将携带意义，而另一个字符，称为小丑，存在于此以制造混乱。仅仅有一个空字符就会让对手的工作变得更加困难，但是你还可以用这个特殊的字母或数字做更多的事情。'
 - en: Let’s assume a code of 5-digit groups. Four of the digits are the code itself,
     and the other digit is the Joker. To get started, suppose the Joker is always
     in the middle position in the first code group in each message. Let’s also assume
@@ -270,20 +284,24 @@
   id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 特殊指示器需要更详细的解释。在特殊指示器中，代码组的所有5位数字都有特殊用途，比如告诉小丑将在哪里，或者使用哪一列。例如，特殊指示器13152可能意味着在接下来的5组中，小丑将按顺序出现在位置1、3、1、5和2。特殊指示器还可以告诉接下来的5个代码从哪一列取出，奇数表示代码来自左列，偶数表示代码来自右列。特殊指示器10384可能意味着在接下来的5组中，代码将依次从左、右、左、右和右列中取出。
 - en: 'Another use for a special indicator might be to specify numbers to add to the
     codes in the next 5 groups. For example, the special indicators might mean to
     add the following values to the 4-digit codes:'
   id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个特殊指示器的用途可能是指定要添加到接下来的5组代码中的数字。例如，特殊指示器可能意味着将以下值添加到4位代码中：
 - en: '![17-unnumb-1](../Images/17-unnumb-1.png)'
   id: totrans-42
   prefs: []
   type: TYPE_IMG
+  zh: '![17-unnumb-1](../Images/17-unnumb-1.png)'
 - en: These values would be added using non-carrying addition, addition modulo 10.
   id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些值将使用非进位加法，模10加法进行相加。
 - en: The Joker always indicates an action to be taken in the following group or groups,
     never in the current or preceding group. For example, you should not use a Joker
     whose meaning is “cancel the previous Joker.” When a Joker indicates an action
@@ -294,6 +312,7 @@
   id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 小丑总是指示接下来的组或组中要采取的行动，而不是当前组或前一组。例如，不应使用意思为“取消前一个小丑”的小丑。当一个小丑指示涵盖几个后续组的行动时，请确保两个不同小丑的行动不冲突。例如，不应该在第20组中有一个小丑说，“接下来的3个代码取自左列”，然后在第21组中有一个小丑说，“接下来的3个代码取自右列”。
 - en: Another trick that can be used with the Joker code is to use a letter A through
     E instead of a Joker. This letter may appear in any position, and supersedes the
     expected position for the Joker. A letter A means the next Joker will be in position
@@ -303,6 +322,7 @@
   id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以与小丑代码一起使用的另一个技巧是使用字母A到E代替小丑。这个字母可以出现在任何位置，并取代小丑的预期位置。字母A表示下一个小丑将在位置1，B表示位置2，依此类推。您还可以为字母F、G和H分配含义。例如，F可以表示代码应从相反的列中取出，下一个小丑将在位置1。
 - en: Do not use the letter I if there is any chance that it could be mistaken for
     the digit 1\. I like to use the letter J as a super-Joker. It means that everything
     following is null. You can bang on for another 10, 20 or 100 code groups of gibberish
@@ -311,3 +331,4 @@
   id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果有可能将字母I误认为是数字1，请不要使用字母I。我喜欢使用字母J作为超级小丑。它表示接下来的一切都是空的。您可以继续输入另外10、20或100组代码的胡言乱语，真的让艾米莉陷入狂喜。或者，您可以使用这些空白来发送一个误导性的虚假消息，比如“诺曼底登陆推迟到6月10日在犹他海滩进行”。

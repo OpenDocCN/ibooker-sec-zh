@@ -1,26 +1,38 @@
 - en: 12 Principles for secure encryption
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 安全加密的12个原则
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: Five principles for secure encryption
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 安全加密的五个原则
 - en: Large blocks and long keys
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 大块和长密钥
 - en: Confusion, or non-linearity
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 混淆或非线性
 - en: Diffusion and saturation
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 扩散和饱和
 - en: Let’s pull together everything we learned in chapter 11\. In sections 12.1 to
     12.5 we will distill the 5 underlying principles that make a block cipher secure.
     One hallmark of a secure block cipher is that changing any bit in the key or any
@@ -29,12 +41,16 @@
     will cause about 50% of the bits in the ciphertext block to change, but in a different
     pattern. Let’s call this the *Fifty-Fifty* property. This chapter will describe
     how to make that happen.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们将在第11章学到的一切汇总起来。在12.1到12.5节中，我们将概括出使块密码安全的5个基本原则。安全块密码的一个标志是，改变密钥中的任何位或明文中的任何位将导致密文块中约50%的位发生变化，最好是以看似随机的模式。改变任何其他位也会导致密文块中约50%的位发生变化，但是以不同的模式。让我们称之为*五五开*特性。本章将描述如何实现这一点。
 - en: 12.1 Large blocks
+  id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 12.1 大块
 - en: We have seen that a bigram cipher can be solved just like a simple substitution
     cipher by compiling bigram frequencies and contact frequencies. This can also
     be done for trigrams and tetragrams, although a very large amount of ciphertext
@@ -46,16 +62,22 @@
     an extreme case, if the block size is 1 character, then no matter how large the
     key is, and how many encryption steps are used, the cipher is still just a simple
     substitution.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经看到，双字母密码可以像简单替换密码一样解决，方法是编制双字母频率和接触频率。这也可以用于三字母和四字母，尽管需要大量的密文。对于手工完成的块密码，应考虑的最小块大小是5个字符。对于计算机密码，最小块大小是8字节。大块大小的一个目的是防止Emily像解码一样解决密码。也就是说，Emily会找到重复的密文块，并从它们的频率和在消息中的位置推断它们的含义。以极端情况为例，如果块大小为1个字符，那么无论密钥有多大，使用了多少加密步骤，密码仍然只是一个简单的替换。
 - en: There are numerous 8-character sequences in English that are common enough to
     appear repeatedly in a long message. Here are a dozen examples, using an ellipsis
     ... to represent a blank space.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 在英语中有许多8个字符的序列是足够常见的，以至于在长消息中会重复出现。以下是一打例子，使用省略号...表示空格。
 - en: '![12-unnumb-1](../Images/12-unnumb-1.png)'
+  id: totrans-10
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-1](../Images/12-unnumb-1.png)'
 - en: Today’s standard block size is 16 bytes. There is no high-frequency English
     phrase that long. There could be some long contextual phrases such as UNITED STATES
     GOVERNMENT, EXECUTIVE COMMITTEE, INTERNATIONAL WATERS, and so forth. However,
@@ -63,41 +85,56 @@
     same way with the block boundaries. For example, 16-byte plaintext blocks UNITED**...**STATES**...**GO
     and NITED**...**STATES**...**GOV would not produce recognizable ciphertext repeats
     when you are using a strong block cipher.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 如今的标准块大小是16字节。没有那么长的高频英文短语。可能会有一些长的上下文短语，比如UNITED STATES GOVERNMENT，EXECUTIVE
+    COMMITTEE，INTERNATIONAL WATERS等等。然而，要产生重复的密文块，这些明文重复必须以相同的方式与块边界对齐。例如，16字节的明文块UNITED**...**STATES**...**GO和NITED**...**STATES**...**GOV在使用强大的块密码时不会产生可识别的密文重复。
 - en: The problem of repeated ciphertext blocks disappears when you use block chaining
     (section 11.9). With block chaining, any block size 8 bytes or longer, can be
     used.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 当您使用块链接（第11.9节）时，重复的密文块问题消失了。使用块链接时，可以使用任何大于等于8字节的块大小。
 - en: 12.2 Long keys
+  id: totrans-13
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 12.2 长密钥
 - en: We know that a secure cipher must have a large key to prevent a brute-force
     attack. The current standard is a 128-bit key. If you need your messages to remain
     secret for 20 years or longer, I recommend a minimum of 160 bits. That is equivalent
     to about 48 decimal digits, 40 hexadecimal digits or 34 single-case letters.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们知道，安全的密码必须具有一个大密钥以防止暴力破解攻击。当前的标准是128位密钥。如果您希望您的消息保密20年或更长时间，我建议最低使用160位。这相当于约48个十进制数字，40个十六进制数字或34个单个字母。
 - en: If you are typing the key by hand, I suggest that you structure your keys in
     a uniform way. Divide the key into blocks of equal size with a consistent format.
     Here are two styles of uniformly structured keys. In the first style, all of the
     characters in each block are the same type, uppercase letters, lowercase letters
     or digits. In the second style, the blocks have the same format, 2 uppercase letters
     and 3 digits.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你是手动输入密钥，我建议你以统一的方式构建你的密钥。用一致的格式将密钥分成相同大小的块。这里有两种统一结构密钥的样式。在第一种样式中，每个块中的所有字符都是相同类型的，大写字母、小写字母或数字。在第二种样式中，块的格式相同，有两个大写字母和三个数字。
 - en: '![12-unnumb-2](../Images/12-unnumb-2.png)'
+  id: totrans-16
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-2](../Images/12-unnumb-2.png)'
 - en: The first of these two keys is equivalent to about 191 bits, and the second
     is equivalent to about 174 bits. For long keys like these you must be able to
     see the characters while you are typing, so that you can review them and make
     corrections when needed. When the key is complete, the application should display
     a checksum so you can verify that the key is correct.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 这两个密钥中的第一个相当于约191位，第二个相当于约174位。对于这样长的密钥，你必须能够在输入时看到字符，以便在需要时进行复查和更正。当密钥完成时，应用程序应显示一个校验和，以便您验证密钥是否正确。
 - en: One advantage of this regularity is that it prevents mistaking a letter O for
     a digit 0, or a letter I for a digit 1\. I do not recommend random mixing of characters,
     like **$v94H;t}=Nd^8**, because it leads to mistakes. If you have a data file
@@ -105,43 +142,59 @@
     that data file could now be unrecoverable. You may never figure out what went
     wrong and how to fix it. Using uniform blocks in your keys helps prevent such
     disasters.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种规律的一个好处是防止将字母O误认为数字0，或者字母I误认为数字1。我不建议随机混合字符，比如**$v94H;t}=Nd^8**，因为这会导致错误。如果你使用密钥**$v94H;t}=Nd^8**加密了一个数据文件，然后你用密钥**$V94H;t}=Nd^8**解密它，那么该数据文件现在可能无法恢复。你可能永远都不知道出了什么问题以及如何解决。在你的密钥中使用统一的块有助于防止这种灾难发生。
 - en: 'Another form of key that helps to prevent typing errors is artificial words.
     Make up your own pronounceable letter combinations, like this:'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一种有助于防止输入错误的密钥形式是人工词。制造你自己的可以发音的字母组合，就像这样：
 - en: '![12-unnumb-3](../Images/12-unnumb-3.png)'
+  id: totrans-20
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-3](../Images/12-unnumb-3.png)'
 - en: Try to avoid patterns, such as using the same vowel combinations, **palek mafner
     vadel glabet**, and the like, where all of the words use the A-E vowel pattern.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽量避免模式，比如使用相同的元音组合，**palek mafner vadel glabet**之类的，所有单词都使用A-E元音模式。
 - en: These alphanumeric keys can be converted into binary form by software. The **madd**
     ripple cipher (section 11.8) is well-suited for this task.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些字母数字密钥可以被软件转换成二进制形式。**madd**连锁密码（第11.8节）非常适合这个任务。
 - en: An alternative to typing the keyword for each message or data file that gets
     encrypted is to use a *keyword manager* that generates the keywords and associates
     them with the messages or files. The keyword manager could be installed on a website
     accessible to both Sandra and Riva. This topic will not be covered in this book.
     Note that a keyword manager is different from a password manager because Sandra
     and Riva, working on different computers, must use the same keyword for each file.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为加密每条消息或数据文件的关键字的替代方案是使用一个*关键字管理器*，它生成关键字并将它们与消息或文件关联起来。关键字管理器可以安装在一个对桑德拉和里娃都可访问的网站上。这个话题不会在本书中涵盖。请注意，关键字管理器与密码管理器不同，因为桑德拉和里娃在不同的计算机上工作时必须为每个文件使用相同的关键字。
 - en: 12.2.1 Redundant keys
+  id: totrans-24
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.2.1 冗余密钥
 - en: In some cases it may be possible for Emily to devise equations that relate the
     ciphertext to the plaintext and the key. If Emily knows, or can guess, some of
     the plaintext, these equations may make it possible for her to determine the key.
     For example, she may know that some of the messages begin with ATTENTION in all-cap
     letters. This might be sufficient for her to solve a 64-bit key when an 8-byte
     block size is used.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 在某些情况下，艾米丽可能会设计方程，将密文与明文和密钥相关联。如果艾米丽知道或能够猜测一些明文，这些方程可能使她能够确定密钥。例如，她可能知道一些消息以全大写字母ATTENTION开头。这可能足以使她在使用8字节块大小时解决64位密钥。
 - en: One way to defeat this potential attack is to enlarge the key. For example,
     if the block size is 64 bits, but the key is 32 bits larger, namely 96 bits, then
     you would expect, on average, that there would be about 2^(32) possible keys that
@@ -149,25 +202,35 @@
     these 2^(32) solutions to find the correct one. This could be a difficult task
     because many of the more than 4,000,000,000 possibilities could look like plausible
     text.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 战胜这种潜在攻击的一种方法是扩大密钥。 例如，如果块大小为64位，但密钥大32位，即96位，则您可以期望，平均而言，会有大约2^(32)个可能的密钥将已知的明文转换为密文。
+    艾米莉需要筛选这2^(32)个解决方案以找到正确的解决方案。 这可能是一项困难的任务，因为超过4,000,000,000个可能性中的许多可能看起来像合理的文本。
 - en: Enlarging the key will make Emily’s task much harder, but not necessarily impossible.
     If she has twice as much known plaintext, then the equations for two cipher blocks
     might be used to solve for the key. However, it is much rarer to have that much
     known plaintext, and solving twice as many equations may take far longer than
     merely twice as long. Depending on the type of equations Emily is using, it may
     be feasible to solve a set of 64 equations, but not a set of 128 equations.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 扩大密钥会使艾米莉的任务变得更加困难，但不一定是不可能的。 如果她有两倍于已知明文的量，则可能使用两个密码块的方程式来解出密钥。 但是，拥有这么多已知明文是非常罕见的，解决两倍数量的方程可能需要的时间远远超过两倍。
+    根据艾米莉使用的方程式类型，解决一组64个方程可能是可行的，但解决一组128个方程可能是不可行的。
 - en: If Emily does not have solvable equations, then redundant keys serve to make
     a brute-force attack far more difficult and costly. Either way, redundant keys
     make Emily work harder.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果艾米莉没有可解的方程式，则冗余密钥可使暴力攻击变得更加困难和昂贵。 无论如何，冗余密钥都会使艾米莉工作更加艰难。
 - en: 12.3 Confusion
+  id: totrans-29
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 12.3 混淆
 - en: In 1945 Claude Shannon, the founder of information theory, described two properties
     that a strong cipher must possess. He called these *confusion* and *diffusion*.
     By *confusion*, Shannon meant that there should not be a strong correlation between
@@ -175,15 +238,21 @@
     between the key and the ciphertext. By *diffusion*, Shannon meant that every part
     of the ciphertext should depend on every part of the plaintext and every part
     of the key.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 在1945年，信息论创始人克劳德·香农描述了强密码必须具备的两个属性。 他称这些为*混淆*和*扩散*。 通过*混淆*，香农指的是明文和密文之间不应有强相关性。
+    同样，密钥和密文之间也不应有强相关性。 通过*扩散*，香农指的是密文的每一部分都应该依赖于明文的每一部分和密钥的每一部分。
 - en: There is a third property that I will add to Shannon’s two. I call this property
     *saturation*. The idea is to measure how strongly each bit or byte of the ciphertext
     depends on each bit or byte of the plaintext and the key. The greater the saturation,
     the stronger the cipher. This section, and the following two sections, will discuss
     these three properties, confusion, diffusion and saturation, in detail.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 我将添加到香农两个属性的第三个属性。 我称这个属性为*饱和*。 这个想法是衡量密文的每一位或每一字节如何依赖于明文的每一位或每一字节以及密钥的每一位或每一字节。
+    饱和度越高，密码就越强。 本节以及接下来的两节将详细讨论这三个属性，混淆、扩散和饱和。
 - en: There are two types of substitutions that are used in block ciphers, fixed and
     keyed. Keyed substitutions are variable, and can be changed for each message,
     or even each block. There is a discussion of the pros and cons of these methods
@@ -192,8 +261,11 @@
     can construct your mixed alphabet or tableau using the SkipMix algorithm described
     in sections 5.2 and 12.3.7 and choose the sequence of skips using a pseudorandom
     number generator.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 在分组密码中有两种替换类型，固定和键入。 键入的替换是可变的，可以为每个消息甚至每个块更改。 在第11.6节中讨论了这些方法的利弊。 如果您决定使用键入的替换，或者如果您发现本节中的数学很困难，那么您可以直接跳转到第12.4节。
+    您可以使用在第5.2节和12.3.7节中描述的SkipMix算法构建您的混合字母表或表，然后使用伪随机数生成器选择跳过的顺序。
 - en: Confusion, in Shannon’s sense, is basically an issue of linearity versus non-linearity.
     If your block cipher uses a fixed alphabet or tableau, linearity is of paramount
     importance. The entire field of linear algebra is based on the concept of linearity.
@@ -202,8 +274,12 @@
     the Cartesian coordinates of a point on a line. If the line is not parallel to
     the y-axis, the equation can be expressed as y = ax+b. Both ax+by = c and y =
     ax+b are examples of linear equations, or linear relationships.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 在香农的理解中，混淆基本上是线性与非线性的问题。 如果您的分组密码使用固定的字母表或表格，线性性质至关重要。 整个线性代数领域都建立在线性概念上。 *线性性*
+    这个术语来自解析几何学。 一条直线的方程是 ax+by = c，其中 a、b 和 c 是常数，变量 x 和 y 表示直线上某点的笛卡尔坐标。 如果直线不与
+    y 轴平行，方程可以表示为 y = ax+b。 ax+by = c 和 y = ax+b 都是线性方程或线性关系的例子。
 - en: The Caesar cipher (section 4.2) is an example of a linear cipher. The Caesar
     cipher may be regarded as adding the key to the plaintext to get the ciphertext,
     c = p+k. Here c is the ciphertext letter, p is the plaintext letter and k is the
@@ -211,15 +287,21 @@
     a shift of 3 positions, meaning that each letter of the alphabet was replaced
     by the letter 3 positions later, c = p+3, with letters near the end of the alphabet
     wrapping around to the front.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 凯撒密码（第 4.2 节）是线性密码的一个例子。 凯撒密码可以被看作是将密钥加到明文上以获得密文，c = p+k。 这里 c 是密文字母，p 是明文字母，k
+    是密钥。 密钥是字母已经移动的量。 凯撒大帝使用了一个移位为 3 位的密码，这意味着字母表中的每个字母都被替换为后面 3 位的字母，c = p+3，字母接近字母表末尾的位置将被移到字母表的开头。
 - en: By the way, Caesar’s method is not nearly as weak as it sounds because Caesar
     wrote his messages in Greek using the Greek alphabet. In Caesar’s time well-educated
     upper-class Romans, like Caesar and his generals, knew Greek, just as in the 19th
     century the upper-class English studied Latin and aristocratic Russians spoke
     French.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 顺便说一句，凯撒的方法并不像听起来那样脆弱，因为凯撒用希腊字母写他的信息。 在凯撒时代，受过良好教育的上层罗马人，如凯撒及其将军，懂希腊语，就像 19
+    世纪的上层英国人学习拉丁语和贵族俄罗斯人说法语一样。
 - en: In a block cipher involving both substitution steps and transposition steps,
     the cipher as a whole is non-linear if the individual substitutions are non-linear.
     In fact, if the block cipher has multiple rounds of substitution, the cipher as
@@ -228,19 +310,27 @@
     be regained in a later round. It would be much stronger to have every round be
     non-linear, but having even a single non-linear round is stronger than having
     none, especially if it comes near the start.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 在涉及替换步骤和置换步骤的分组密码中，如果单个替换是非线性的，则整个密码是非线性的。 实际上，如果分组密码有多轮替换，那么只要有一个早期轮次是非线性的，整个密码就是非线性的，前提是该轮次涉及块中的所有单元。
+    一旦失去了线性性质，就无法在后来的轮次中重新获得它。 让每一轮都是非线性的将会更加强大，但是即使只有一个非线性轮次，特别是如果它出现在开始位置，也比没有强。
 - en: There are degrees of linearity and non-linearity. A substitution may be highly
     linear, weakly linear, weakly non-linear or highly non-linear. One example of
     each kind should get the point across. I have drawn a line between the position
     of each letter in the plaintext alphabet and its position in the ciphertext alphabet.
     You can see right away how much better the mixing of the alphabet becomes as the
     substitution becomes more non-linear.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 有线性和非线性的程度。 替换可以是高度线性的、弱线性的、弱非线性的或高度非线性的。 每种情况的一个例子应该可以说明问题。 我已经在明文字母表中的每个字母位置与密文字母表中的对应位置之间画了一条线。
+    你可以立即看到，随着替换变得更加非线性，字母表的混合程度有多好。
 - en: '![12-unnumb-4](../Images/12-unnumb-4.png)'
+  id: totrans-38
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-4](../Images/12-unnumb-4.png)'
 - en: In the discussions that follow, I refer to the S-box inputs as the plaintext
     and the key, and to the output as the ciphertext. These terms mean the plaintext
     and ciphertext for that individual S-box, and not necessarily the plaintext and
@@ -248,18 +338,24 @@
     S-boxes do not have keys, they merely perform a simple substitution. In that case
     you can imagine that the S-box has a key that has the constant value 0, or that
     the S-box key is 0 bits long.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 在接下来的讨论中，我将S盒的输入称为明文和密钥，将输出称为密文。这些术语指的是该单个S盒的明文和密文，并不一定是整个多轮分组密码的明文和密文。在某些分组密码中，S盒没有密钥，它们仅执行简单的替换。在这种情况下，你可以想象S盒具有一个密钥，其常量值为0，或者S盒密钥的长度为0位。
 - en: It is assumed here that Emily is able to test the S-box(es) for linearity because
     the cipher has been published, or she has obtained a copy of the device. If all
     that Emily has available is the input to the first round and the output from the
     last round, then linearity testing might not be feasible.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设Emily能够测试S盒的线性度，因为密码已经发表，或者她已经获得了该设备的副本。如果Emily所拥有的仅仅是第一轮的输入和最后一轮的输出，那么线性度测试可能就不可行了。
 - en: 12.3.1 Correlation coefficient
+  id: totrans-41
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.3.1 相关系数
 - en: There is a well-established statistical method for testing the correlation between
     two numerical variables. For example, you could test the correlation between daily
     temperature, measured in degrees Celsius, and sunlight, measured in hours. Temperature
@@ -268,8 +364,10 @@
     day. This would give you two lists of numbers, one list for the temperature and
     a corresponding list for the sunlight hours. The statistic measures the correlation
     between these two lists of numbers.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 有一种既定的统计方法用于测试两个数值变量之间的相关性。例如，你可以测试温度和阳光之间的相关性，温度以摄氏度度量，阳光以小时为单位度量。温度和小时是数值变量。你可以进行多次试验，在某个固定的时间测量温度，并记录那天的阳光小时数。这将为你提供两个数字列表，一个列表用于温度，另一个列表用于相应的阳光小时数。该统计量衡量这两个数字列表之间的相关性。
 - en: In our case the two variables are the plaintext letters and the ciphertext letters.
     The “trials” are the positions in the alphabet. For example, the first trial could
     be “A” and the last trial could be “Z”. The letters of the alphabet need to be
@@ -279,8 +377,10 @@
     any ternary digit of the plaintext letters and any ternary digit of the ciphertext
     letters. In the following two sections I will discuss this in detail for the 26-letter
     alphabet and the 256-character alphabet.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们的情况下，两个变量是明文字母和密文字母。"试验"是字母在字母表中的位置。例如，第一个试验可以是"A"，最后一个试验可以是"Z"。字母表中的字母需要以某种方式编号。编号将取决于字母表的大小。例如，一个27个字母的字母表可以使用3个三进制（基数3）数字编号，就像我们在第9.9节中对三肽密码所做的那样。相关性可以是明文字母的任何三进制数字与密文字母的任何三进制数字之间的相关性。在接下来的两节中，我将详细讨论这一点，分别讨论26个字母的字母表和256个字符的字母表。
 - en: Linearity is measured by calculating the correlation between the two variables.
     By far the most widely used measure of correlation is the Pearson product-moment
     correlation coefficient developed by English mathematician Karl Pearson, the founder
@@ -289,32 +389,43 @@
     The purpose of the correlation coefficient is to have a single number that tells
     how well two variables are correlated, a number that has the same meaning regardless
     of the units of measurement or the sizes of the numbers involved.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 线性度通过计算两个变量之间的相关性来衡量。到目前为止，最广泛使用的相关性度量是由英国数学家卡尔·皮尔逊（Karl Pearson）开发的皮尔逊积差相关系数，他是生物统计学的奠基人，并于1895年发表，尽管这个公式本身在1844年由法国物理学家奥古斯特·布拉维斯（Auguste
+    Bravais）发布，他以晶体学的工作而闻名。相关系数的目的是得到一个单一的数字，告诉我们两个变量的相关程度，这个数字的含义不受测量单位或所涉及的数字大小的影响。
 - en: If the two variables have a linear relationship the correlation is 1\. If the
     variables have no correlation whatsoever the correlation is 0\. If the two have
     an inverse relationship the correlation is -1\. For example, the number of heads
     in 20 flips of a coin will have an inverse relationship to the number of tails.
     A correlation of .8 indicates a strong linear relationship, while a correlation
     of .2 indicates the relationship is highly non-linear.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果两个变量具有线性关系，则相关性为1。如果变量之间没有任何相关性，则相关性为0。如果两者具有反向关系，则相关性为-1。例如，抛硬币20次中正面朝上的次数与反面朝上的次数将具有反向关系。相关性为0.8表示强烈的线性关系，而相关性为0.2表示关系高度非线性。
 - en: Instead of merely presenting the formula, as most textbooks do, I am going to
     explain how and why it works. Understanding how it works will help you to use
     it appropriately and correctly.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 与大多数教科书一样，我不仅仅是呈现公式，我将解释它是如何以及为什么有效的。理解它的工作原理将帮助您正确和适当地使用它。
 - en: The goal here is to compare two variables. This is done by comparing the sequence
     of values over the set of trials. For example, we might want to compare the price
     of magic carpets sold at the Qeisarieh bazaar in Isfahan, Persia, with their size.
     There are many factors affecting the price of magic carpets, including the type
     of yarn, the density of the knots, the complexity of the design and, of course,
     airspeed.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里的目标是比较两个变量。这是通过比较一系列试验中的值来完成的。例如，我们可能想比较在伊斯法罕的凯萨里耶巴扎尔出售的魔毯价格与其尺寸。影响魔毯价格的因素有很多，包括纱线类型、结的密度、设计的复杂性，当然还有飞行速度。
 - en: Centering
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 居中
 - en: The first step in comparing the variables is to put them side by side, just
     as you would do if you were comparing them by sight. To put that a different way,
     you want to eliminate the +x term in the linear relationship P = mA+x, where P
@@ -323,8 +434,10 @@
     because P and A are in different units. Carpet area A is measured in square *arsani*
     (roughly one meter), while carpet prices P in the bazaar are denominated in *toman*
     (Persian currency).
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 比较变量的第一步是将它们并排放置，就像您通过视觉比较它们一样。换句话说，您希望消除线性关系P = mA+x中的+x项，其中P是价格，A是面积。看起来您可以计算差值P[i]-A[i]，然后从P中减去平均差值。然而，这是没有意义的，因为P和A是以不同单位表示的。地毯面积A以平方阿尔萨尼（大约一米）为单位，而巴扎尔中的地毯价格P以图曼（波斯货币）计价。
 - en: You need to adjust the area figures and the price figures separately because
     they are in different units. The trick is to take the mean price and subtract
     that from all the price figures to get new, adjusted price figures P'. You calculate
@@ -334,8 +447,10 @@
     You would subtract 1300 from each of the prices to get the adjusted prices -300,
     -100 and 400\. As you can see, the adjusted prices P' add up to 0\. In a sense,
     the adjusted prices are centered around 0.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 您需要分别调整面积数字和价格数字，因为它们是以不同单位表示的。诀窍是取平均价格并从所有价格数字中减去以获得新的调整后的价格数字P'。您通过将地毯价格相加并除以地毯数量来计算平均价格μ[P]。例如，如果价格分别为1000、1200和1700图曼，您将把这3个价格相加1000+1200+1700，然后除以3得到平均价格1300。您将从每个价格中减去1300以获得调整后的价格-300、-100和400。正如您所看到的，调整后的价格P'相加为0。在某种意义上，调整后的价格围绕0居中。
 - en: The area figures are centered in the same way. You add up the areas and divide
     by the number of carpets to get the mean area. For example, if the areas were
     10, 12 and 17 square arsani you would add up the 3 areas 10+12+17 and divide by
@@ -343,21 +458,29 @@
     to get the adjusted areas -3, -1 and 4\. The adjusted areas A' also add up to
     0\. The adjusted areas and adjusted prices are now both centered around 0\. They
     are side by side and ready for the comparison.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 区域图形以相同的方式居中。您将所有区域相加，然后除以地毯数量得到平均面积。例如，如果面积分别为10、12和17平方阿尔萨尼，您将把这3个面积相加10+12+17，然后除以3得到平均面积13。然后，您将从每个面积中减去13以获得调整后的面积-3、-1和4。调整后的面积A'也相加为0。现在，调整后的面积和调整后的价格都围绕0居中。它们并排放置，准备进行比较。
 - en: '![12-unnumb-5](../Images/12-unnumb-5.png)'
+  id: totrans-52
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-5](../Images/12-unnumb-5.png)'
 - en: Scaling
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 缩放
 - en: The next step is to get the prices and the areas on the same scale. The prices
     are in toman, the areas are in square arsani, and there is no such thing as a
     conversion from toman to square arsani. That would be like a conversion from bushels
     to Celsius. Pearson, or rather Bravais, used an idea from linear algebra called
     *normalization*.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一步是将价格和面积放在同一尺度上。价格是以土曼为单位的，面积是以平方阿尔萨尼为单位的，而从土曼到平方阿尔萨尼的转换是不存在的。那就像是从蒲式耳到摄氏度的转换一样。皮尔逊，或者更确切地说是布拉维，使用了线性代数中的一个概念，称为*归一化*。
 - en: Suppose that you have a vector (a,b) and you want to find a vector pointing
     in the same direction, but whose length is 1\. Any multiple of the vector (a,b),
     such as (ma,mb), will point in the same direction. Multiplying a vector changes
@@ -367,46 +490,64 @@
     in feet. If you divide the vector by its length, then you have feet divided by
     feet. The result is just a number, with no units. It is dimensionless. The same
     is true when the vector is measured in toman or square arsani.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设你有一个向量（a，b），你想找到一个指向同一方向的向量，但长度为1。任何向量（a，b）的倍数，比如（ma，mb），都会指向同一方向。乘以一个向量会改变它的长度，但不会改变它的方向。如果你将向量除以它的长度，新向量（a/L，b/L）的长度将为1，并且方向与原始向量相同。这也清除了单位。想象一下，向量的长度是用英尺来衡量的。如果你将向量除以它的长度，那么你得到的就是英尺除以英尺。结果只是一个数字，没有单位。它是无量纲的。当向量用土曼或平方阿尔萨尼来衡量时，情况也是如此。
 - en: The length of the vector can easily be found by using the Pythagorean Theorem,
     *L* = √(*a*² + *b*²). This can be extended to any number of dimensions, *L* =
     √(*a*² + *b*² + *c*² + ...). Let’s try an example to see if this works. Try the
     vector (3,4). The length of this vector is √(3² + 4²) = √(9 + 16) = √25 = 5. The
     normalized vector is (3/5,4/5). Therefore √((3/5)² + (4/5)²) = √(9/25 + 16/25)
     = √25/25 = 1 is the length of the normalized vector, as expected. It worked.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 向量的长度可以很容易地通过使用勾股定理找到，*L* = √(*a*² + *b*²)。这可以扩展到任意维度，*L* = √(*a*² + *b*² +
+    *c*² + ...)。让我们试一个例子来看看这是否有效。尝试向量（3，4）。这个向量的长度是 √(3² + 4²) = √(9 + 16) = √25 =
+    5。归一化向量是 (3/5,4/5)。因此 √((3/5)² + (4/5)²) = √(9/25 + 16/25) = √25/25 = 1 是归一化向量的长度，如预期的那样。它有效。
 - en: P, A, P' and A' are all lists of numbers, so they are vectors. They have lengths
     just like any vector, and they can be normalized like any vector. In geometry,
     a vector is normalized by dividing it by its length. The length of any normalized
     vector is always 1.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: P、A、P' 和 A' 都是数字列表，因此它们是向量。它们像任何向量一样有长度，并且可以像任何向量一样归一化。在几何学中，通过将向量除以其长度来归一化向量。任何归一化向量的长度始终为1。
 - en: To normalize P' you just square all of the adjusted prices, add those squares
     and take the square root of the sum. That gives you the length of P'. Divide the
     adjusted prices P' by the length to get the normalized prices P''. To normalize
     A' you square all of the adjusted areas, add those squares and take the square
     root of the sum. That gives you the length of A'. Divide all of the adjusted areas
     A' by the length to get the normalized areas A''.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 要将 P' 归一化，你只需对所有调整后的价格进行平方，然后将这些平方相加并取这个和的平方根。这给出了 P' 的长度。将调整后的价格 P' 除以长度得到归一化价格
+    P''。要将 A' 归一化，你只需对所有调整后的面积进行平方，然后将这些平方相加并取这个和的平方根。这给出了 A' 的长度。将所有调整后的面积 A' 除以长度得到归一化面积
+    A''。
 - en: '![12-unnumb-6](../Images/12-unnumb-6.png)'
+  id: totrans-59
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-6](../Images/12-unnumb-6.png)'
 - en: To recap, (1) center the prices and areas by subtracting the mean, then (2)
     normalize the prices and areas by dividing by the length. The result is a standardized
     list of prices and a standardized list of areas where the sum of the terms in
     each list is 0, and the sum of the squares of the terms in each list is 1.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 总结一下，（1）通过减去平均值来将价格和面积居中，然后（2）通过除以长度来归一化价格和面积。结果是一个标准化的价格列表和一个标准化的面积列表，其中每个列表中项的总和为0，每个列表中项的平方和为1。
 - en: Now we are all set up for the formula. Multiply each term in the normalized
     list of prices by the corresponding term in the normalized list of areas, so P''[i]×A''[i].
     Add up those products. That’s the correlation coefficient. (In linear algebra
     this is called the *inner product*, or *dot product*, of the normalized price
     vector and the normalized area vector.)
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们准备好使用公式了。将价格的归一化列表中的每一项乘以面积的归一化列表中的相应项，即 P''[i]×A''[i]。将这些乘积相加。这就是相关系数。（在线性代数中，这被称为归一化价格向量和归一化面积向量的*内积*或*点积*。）
 - en: Let’s give this a reality check. Imagine we are testing the correlation between
     Celsius temperature and Fahrenheit temperature. We know these are related by the
     linear formula F = 1.8C+32, so the correlation coefficient ought to be 1\. Suppose
@@ -418,29 +559,42 @@
     is 18\. Divide C' by 18 to get C'', the normalized Celsius temperatures (3/18,
     13/18, -5/18, -11/18). The length of the adjusted Fahrenheit vector F' is 32.4
     and the normalized Fahrenheit vector F'' is (3/18, 13/18, -5/18, -11/18).
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们对此进行现实检验。想象我们正在测试摄氏温度和华氏温度之间的相关性。我们知道它们通过线性公式 F = 1.8C+32 相关，因此相关系数应该为1。假设我们在上午11点、下午3点、晚上7点和11点测量温度，并发现摄氏温度分别为（14，24，6，0），华氏温度为（57.2，75.2，42.8，32）。摄氏温度的平均值为（14+24+6+0）/4
+    = 11，因此调整后的摄氏温度 C' 为（3，13，-5，-11），对应的调整后的华氏温度 F' 为（5.4，23.4，-9，-19.8）。摄氏温度 C'
+    的长度为18。将 C' 除以 18 得到 C''，归一化后的摄氏温度（3/18，13/18，-5/18，-11/18）。调整后的华氏温度 F' 的长度为32.4，归一化后的华氏温度
+    F'' 为（3/18，13/18，-5/18，-11/18）。
 - en: We multiply C'' by F'' element by element and add the 4 products to get the
     correlation coefficient. This sum is (3/18)²+(13/18)²+(-5/18)²+(-11/18)². It all
     adds up to 1\. This supports the claim that the procedure described previously,
     centering by subtracting the mean, normalizing by dividing by the length, and
     then multiplying term by term and summing, does indeed produce a valid correlation
     coefficient.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们将 C'' 逐个元素与 F'' 相乘，然后将4个乘积相加以得到相关系数。这个和是（3/18）²+（13/18）²+（-5/18）²+（-11/18）²。总和为1。这支持了先前描述的过程，即通过减去平均值进行居中，通过除以长度进行归一化，然后逐项相乘并求和，确实产生了有效的相关系数。
 - en: 'To recap: you test for linearity by calculating the correlation coefficient.
     This section has shown you how to calculate the correlation coefficient. The calculation
     yields a number between -1 and +1\. Here is a chart for interpreting the correlation
     coefficient.'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 总结一下：通过计算相关系数来测试线性。本节向您展示了如何计算相关系数。计算结果为介于-1和+1之间的数字。以下是解释相关系数的图表。
 - en: '![12-unnumb-7](../Images/12-unnumb-7.png)'
+  id: totrans-65
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-7](../Images/12-unnumb-7.png)'
 - en: 12.3.2 Base-26 linearity
+  id: totrans-66
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.3.2 基-26线性
 - en: 'Let’s start the investigation of linearity with substitutions based on a 26-character
     alphabet. This might be valuable if you are designing a mechanical or electromechanical
     cipher device, or if you are simulating one. Each rotor in such a machine performs
@@ -452,11 +606,16 @@
     lead to 3 different ways of numbering the characters: N1, N2 and N3, as shown.
     The discussion of these 3 numbering schemes uses modular arithmetic. If you would
     like to review modular arithmetic at this time, see section 3.6.'
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们从基于26个字符的字母表的替换开始调查线性。如果您正在设计机械或机电密码设备，或者正在模拟这样一个设备，这可能很有价值。这种机器中的每个转子都对一个包含26个字符的字母表进行替换。首先考虑一个没有密钥的
+    S-box。在使用26个字母表时，可能会出现多种形式的线性，这取决于字母的编号方式。可以从3种方式来看待字母表：将字母表视为一个26个字母的序列，将其视为一个2×13的字母数组，或者将其视为一个13×2的字母数组。这导致3种不同的字符编号方式：N1、N2和N3，如所示。对这3种编号方案的讨论使用模运算。如果您现在想复习模运算，请参阅第3.6节。
 - en: '![12-unnumb-8](../Images/12-unnumb-8.png)'
+  id: totrans-68
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-8](../Images/12-unnumb-8.png)'
 - en: Numbering schemes N2 and N3 follow the usual convention of using the letters
     A, B and C to represent digits beyond 9\. That is, they use the first 13 of the
     16 hexadecimal digits. In the simplest linear encipherment (the Belaso cipher)
@@ -468,11 +627,18 @@
     first digit is added modulo 13 and the second digit is added modulo 2\. Here are
     examples showing how the word THE is enciphered by adding the key J in each of
     the 3 schemes.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 编号方案 N2 和 N3 遵循常规约定，使用字母 A、B 和 C 表示 9 以外的数字。也就是说，它们使用了 16 个十六进制数字中的前 13 个。在最简单的线性加密（Belaso
+    密码）中，密钥只是加到明文中。当将密钥加到明文字符中时，在 N1 编号方案中，它使用传统的模 26 加法。当将密钥加到 N2 编号方案中的明文字符时，第一个数字是模
+    2 加法，第二个数字是模 13 加法。相反，当将密钥加到 N3 编号方案中的明文字符时，第一个数字是模 13 加法，第二个数字是模 2 加法。以下是展示单词
+    THE 如何在每种方案中通过添加密钥 J 进行加密的示例。
 - en: '![12-unnumb-9](../Images/12-unnumb-9.png)'
+  id: totrans-70
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-9](../Images/12-unnumb-9.png)'
 - en: If the plaintext, the key and the ciphertext alphabets are all numbered using
     the N1 scheme, then a linear substitution, or linear transformation, would take
     the plaintext character p and transform it using the key k into the ciphertext
@@ -481,8 +647,12 @@
     if m = 5, p = 10, k = 3 and f(k) = k²+6, then c = 13 because 5×10+3²+6 = 65≡13
     (mod 26). The constant m and the function f(k) can be built into the substitution
     table.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果纯文本、密钥和密文字母都使用 N1 方案编号，则线性替换或线性变换会将明文字符 p 转换成密文字符 c = mp+f(k)，其中 m 是一个乘数，必须与
+    26 互质，f(k) 是任意整数值函数，算术运算是模 26 运算。例如，如果 m = 5，p = 10，k = 3，而 f(k) = k²+6，则 c =
+    13，因为 5×10+3²+6 = 65 ≡ 13 (mod 26)。常数 m 和函数 f(k) 可以构建到替换表中。
 - en: If the plaintext, the key and the ciphertext alphabets are all numbered using
     the N2, or 2×13 numbering scheme, either the first digit or the second digit or
     both digits can be linear. Suppose that both digits are linear. Then a plaintext
@@ -491,8 +661,12 @@
     to 13, and f(k) and g(k) may be any integer-valued functions. The arithmetic is
     done modulo 2 and modulo 13, respectively. The constants m and n, and the functions
     f(k) and g(k) can be built into the substitution table.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果纯文本、密钥和密文字母都使用 N2 或 2×13 编号方案进行编号，则第一个数字或第二个数字或两个数字都可以是线性的。假设两个数字都是线性的。那么，一个明文字符
+    p = a,b 使用密钥 k 转换成密文字符 c = ma+f(k),nb+g(k)，其中 m 必须与 2 互质，即 m = 1，n 必须与 13 互质，而
+    f(k) 和 g(k) 可以是任意整数值函数。分别进行模 2 和模 13 运算。常数 m 和 n，以及函数 f(k) 和 g(k) 可以构建到替换表中。
 - en: If the plaintext, the key and the ciphertext alphabets are all numbered using
     the N3, or 13×2 numbering scheme, either the first digit or the second digit or
     both digits can be linear. Suppose that both digits are linear. Then a plaintext
@@ -501,8 +675,12 @@
     n = 1, and f(k) and g(k) may be any integer-valued functions. The arithmetic is
     done modulo 13 and modulo 2, respectively. The constants m and n, and the functions
     f(k) and g(k), can be built into the substitution table.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果纯文本、密钥和密文字母都使用 N3 或 13×2 编号方案进行编号，则第一个数字或第二个数字或两个数字都可以是线性的。假设两个数字都是线性的。那么，一个明文字符
+    p = a,b 使用密钥 k 转换成密文字符 c = ma+f(k),nb+g(k)，其中 m 必须与 13 互质，n 必须与 2 互质，即 n = 1，而
+    f(k) 和 g(k) 可以是任意整数值函数。分别进行模 13 和模 2 运算。常数 m 和 n，以及函数 f(k) 和 g(k)，可以构建到替换表中。
 - en: There is no requirement that the plaintext and the ciphertext are numbered the
     same way. There can be a correlation between any digit of the plaintext and any
     digit of the ciphertext in any numbering. Emily might test any or all of these
@@ -514,52 +692,75 @@
     cases each substitution will diminish the weakness of the other. Of course, you
     should test this by hunting for linear relationships between the plaintext and
     the final ciphertext produced by the last round.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 平文和密文没有必要以相同的方式编号。在任何编号中，平文的任何数字与密文的任何数字之间都可能存在相关性。艾米莉可能会测试这些组合中的任何一个或全部，寻找可利用的弱点。因此，密码的设计者必须测试所有可能的编号和相关性，以验证没有这种弱点存在，或者了解必须采取哪些对策以防止艾米莉利用这种弱点。例如，您可以在分组密码的交替轮次中使用具有不同弱点的替换。在大多数情况下，每个替换都会减弱另一个的弱点。当然，您应该通过搜索明文和最终密文之间的线性关系来测试这一点，后者是由最后一轮产生的。
 - en: 'If you wish to test the linearity of a substitution, you cannot apply the correlation
     coefficient directly. This is because all of these substitutions are done using
     modular arithmetic. Consider this substitution using the N1 numbering scheme:'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你想测试替换的线性性，就不能直接应用相关系数。这是因为所有这些替换都是使用模算术完成的。考虑一下使用N1编号方案进行的这种替换：
 - en: '![12-unnumb-10](../Images/12-unnumb-10.png)'
+  id: totrans-76
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-10](../Images/12-unnumb-10.png)'
 - en: This is almost exactly c = 2p, so it is highly linear. However, the correlation
     coefficient between the plaintext and the ciphertext alphabets using this numbering
     scheme is .55556, indicating that the substitution is only weakly linear. The
     correlation coefficient should have been calculated using the following distribution,
     which is equivalent modulo 26.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 这几乎完全是c = 2p，所以它非常线性。然而，使用该编号方案计算的明文和密文字母之间的相关系数为0.55556，表明替换只是弱线性的。应该使用以下分布计算相关系数，该分布在模26下是等效的。
 - en: '![12-unnumb-11](../Images/12-unnumb-11.png)'
+  id: totrans-78
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-11](../Images/12-unnumb-11.png)'
 - en: The correlation coefficient using this numbering is .99987, correctly showing
     very strong linearity.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用该编号的相关系数为0.99987，正确显示了非常强的线性性。
 - en: This illustrates a difficulty of using the correlation coefficient in cryptography.
     You are always working modulo the size of the alphabet. To find the correct correlation
     you need to add 26, then 52, 78 and so forth for the N1 numbering, or 13, 26,
     39, ... for the N2 and N3 numberings. In the previous example the place where
     you needed to start adding 26 was obvious. It was where the ciphertext numbering
     went **22 24 1 3**. That drop from 24 down to 1 made it apparent.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 这说明了在密码学中使用相关系数的困难。你总是在字母表的大小模下工作。要找到正确的相关性，你需要添加26，然后是52、78等等，对于N1编号是这样，或者对于N2和N3编号是13、26、39等等。在前面的例子中，你需要开始添加26的地方是显而易见的。它是在密文编号变为**22
+    24 1 3**的地方。从24降到1就表明了这一点。
 - en: When the ciphertext alphabet is less linear, when it jumps around a bit, it
     may be harder to spot. For example, this substitution has a correlation of .3265,
     moderately non-linear.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 当密文字母表的线性性较低，即在一定程度上跳动时，可能更难以发现。例如，这种替换的相关性为0.3265，具有中度非线性。
 - en: '![12-unnumb-12](../Images/12-unnumb-12.png)'
+  id: totrans-82
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-12](../Images/12-unnumb-12.png)'
 - en: When it is adjusted by adding multiples of 26 like this
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 当通过这种方式调整时
 - en: '![12-unnumb-13](../Images/12-unnumb-13.png)'
+  id: totrans-84
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-13](../Images/12-unnumb-13.png)'
 - en: the correlation becomes .9944, highly linear. I have used single, double and ![bold](../Images/bold.png) underlining
     to show where 26, 52 and ![78](../Images/78.png), respectively, have been added
     to the ciphertext characters. An important feature to notice here is that 26 was
@@ -567,16 +768,20 @@
     the following ciphertext characters, 21 and 25\. Likewise, 52 was added to the
     ciphertext character 1, corresponding to plaintext 14, but not to the following
     ciphertext character, 24.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 相关性变为0.9944，非常线性。我已经使用单个、双重和 ![bold](../Images/bold.png) 下划线来显示在密文字符中添加了26、52和 ![78](../Images/78.png)，分别对应的是明文字符。在此要注意的一个重要特征是，在密文字符2处添加了26，对应于明文字符5，但没有添加到后续的密文字符21和25。同样，对于密文字符1，添加了52，对应于明文字符14，但没有添加到后续的密文字符24。
 - en: It is fairly easy to determine which multiple of 26 to add when the ciphertext
     alphabet is close to linear. When the ciphertext alphabet is badly behaved it
     becomes much harder. But ... that doesn’t matter. When the substitution is non-linear,
     that is all you need to know. It makes no difference if the correlation coefficient
     is .01 or .35\. In either case there is not enough correlation for Emily to exploit.
     Don’t waste time calculating the exact value.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 当密文字母接近线性时，确定要添加的26的倍数相当容易。当密文字母行为不良时，这变得更加困难。但是...那没关系。当替代是非线性的时候，这就是您需要知道的全部。相关系数是0.01还是0.35都没有关系。在任一情况下，没有足够的相关性供Emily利用。不要浪费时间计算精确值。
 - en: That handles the case with no key. Now suppose there is a key. If the substitution
     is linear, then it will have the form d(p)+f(k), where p is the plaintext, k is
     the key and d and f are integer-valued functions. The addition can be done in
@@ -590,20 +795,26 @@
     then all of these differences will be equal. If you repeat that for all possible
     keys, then you are certain S(k,p) has the desired form, and you can test for linearity
     without considering the key.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 处理没有密钥的情况。现在假设有一个密钥。如果替代是线性的，那么它将具有形式d(p)+f(k)，其中p是明文，k是密钥，d和f是整数值函数。加法可以在任何3个编号方案N1、N2或N3中进行。在这种情况下，密钥在测试线性方面没有任何作用。f(k)只是添加到密文的常量。添加常量对相关系数没有影响，因为当您从每个值列表中减去均值（居中操作）时，它只是被再次减去。很容易测试替换S(k,p)是否采用形式d(p)+f(k)。只需选择两个密钥k[1]和k[2]，并取差异S(k[1],0)-S(k[2],0)，S(k[1],1)-S(k[2],1)，S(k[1],2)-S(k[2],2)，...如果S-box具有形式d(p)+f(k)，那么所有这些差异将相等。如果您对所有可能的密钥重复这样做，那么您可以确定S(k,p)具有所需的形式，并且您可以在不考虑密钥的情况下测试线性。
 - en: 12.3.3 Base-256 linearity
+  id: totrans-88
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.3.3 256进制线性
 - en: This analysis of linearity in base 26 is just a warmup for base-256 linearity
     because there are two distinct forms of linearity that can occur in base 256\.
     Let’s call them *serial* and *condensed*. In serial linearity each group of bits
     represents an integer. For example, the 3-bit groups 000, 001, 010, ... , 111
     represent the numbers 0, 1, 2, ... , 7\. The two forms of linearity can be combined
     to make a hybrid form of linearity. This is discussed later in section 12.3.6.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于26进制线性的分析只是对256进制线性的热身，因为在256进制中可能会发生两种不同的线性形式。我们称它们为*串行*和*压缩*。在串行线性中，每组位代表一个整数。例如，3位组000、001、010、...，111表示数字0、1、2、...，7。可以将两种形式的线性结合起来，以制作混合形式的线性。这在第12.3.6节中讨论。
 - en: Serial linearity is what we saw with base 26\. In base 26, there could be correlations
     between the N1, N2 and N3 numberings in any combination and in any order, so there
     were many pairings that had to be tested for linearity. In base 256 there are
@@ -612,8 +823,10 @@
     These bit groups need not be the same size. A 4-bit group taken from the plaintext,
     covering the range from 0 to 15, may be highly correlated with a 3-bit ciphertext
     group covering the range 0 to 7, so the number of possible pairings is much greater.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 串行线性是我们在26进制中看到的。在26进制中，N1、N2和N3编号之间可能存在任何组合和任何顺序的相关性，因此必须测试许多成对是否具有线性。在256进制中有更多的可能性。串行线性可能存在于明文字母和/或密钥与密文字母中的任何位组之间。这些位组的大小不必相同。从明文中取出的4位组，覆盖范围从0到15，可能与覆盖范围从0到7的3位密文组高度相关，因此可能的配对数量更多。
 - en: To make matters worse, the 4 bits in that 4-bit group could be any bits from
     the plaintext byte. Bits 7,2,5,1 in that order are just as valid as bits 1,2,3,4\.
     The linear substitution might add these 4 bits to 4 different bits of the key
@@ -621,26 +834,35 @@
     any group of bits in any order in the plaintext character plus key character can
     be linearly correlated with any group of bits in any order in the ciphertext character.
     That’s a boatload of correlations to test.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 事情变得更糟，那个 4 位组中的 4 位可能是明文字节中的任意位。按顺序的位 7、2、5、1 和位 1、2、3、4 一样有效。线性替换可能将这 4 位加到密钥字节的
+    4 个不同位上，取模 16。可能的组合数量变得巨大。总之，明文字符和密钥字符中任何顺序的任何位组合都可能与密文字符中任何顺序的任何位组合线性相关。这是一大堆需要测试的相关性。
 - en: Before you reach for the Excedrin, or the tequila, here is some good news. You
     probably don’t need to test for any of them. Unless the cipher is specifically
     designed to pass these values intact from round to round, these correlations won’t
     matter. They will get so weakened with each successive round that they won’t be
     detectable from the initial plaintext through the last round of the block cipher.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 在你伸手拿阿司匹林或者龙舌兰酒之前，这里有个好消息。你可能不需要测试它们中的任何一个。除非密码是专门设计成从一轮传递到下一轮保持这些值不变，否则这些相关性不会有所影响。它们会随着每一轮的进行而逐渐削弱，以至于从初始明文到区块密码的最后一轮都不会被检测出来。
 - en: 12.3.4 Adding a backdoor
+  id: totrans-93
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 添加后门
 - en: You may have noticed that I said “probably.” The exception is when you suspect
     that a cipher may have a backdoor, that is, it has been deliberately designed
     so that people who know the secret can read messages without knowing the key.
     For example, a national espionage agency might supply its agents with a cipher
     that has a backdoor so that the agency can monitor their messages and detect traitors.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能已经注意到我说了“可能”。例外情况是当你怀疑一个密码可能有后门时，也就是说，它已经被故意设计成让知道秘密的人可以在不知道密钥的情况下阅读消息。例如，一个国家间谍机构可能会向其特工提供一个带有后门的密码，以便该机构可以监视他们的消息并检测叛徒。
 - en: At this point, let’s change hats. Suppose that you are Z, the spymaster who
     has been tasked with designing this cipher. You need to build a cipher that looks
     and acts like a strong block cipher, so the users will not suspect a thing. For
@@ -649,8 +871,10 @@
     bits to change in a random-looking pattern. If the substitutions in your block
     cipher were not all linear, this would be a sure sign of a strong block cipher.
     You want your fake cipher to mimic that property.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 此时，让我们换个角色。假设你是 Z，被委派设计这个密码的间谍大师。你需要构建一个看起来和表现得像一个强大的区块密码的密码，这样用户就不会起疑。例如，你希望你的密码具有五十五的属性，即仅改变密钥或明文中的一个比特就会导致大约一半的密文比特以随机的模式改变。如果你的区块密码中的替代不都是线性的，那就是一个强大的区块密码的确切迹象。你希望你的假密码模仿这种属性。
 - en: 'Here is one method you can use to hide a backdoor in a cipher. It is based
     on serial linearity, so let’s call it the *Backdoor* *Serial* method for constructing
     a cipher, and let’s call ciphers constructed by this method *Backdoor* *Serial*
@@ -658,61 +882,92 @@
     needing to know the key, but for anyone who does not know how the backdoor works,
     they look like strong, secure block ciphers. The method has three parts: *disguise*,
     *concealment* and *camouflage*.'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里有一种方法可以在密码中隐藏后门。它基于串行线性性，所以让我们称之为 *后门串行* 方法来构建密码，并让使用这种方法构建的密码称为 *后门串行* 密码。Z
+    可以阅读使用后门串行密码发送的消息，而无需知道密钥，但是对于不知道后门工作原理的任何人来说，它们看起来像是强大的、安全的区块密码。该方法分为三个部分：*伪装*、*隐藏*
+    和 *伪装*。
 - en: Disguise
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 伪装
 - en: The backdoor serial ciphers will use linear substitutions on hex digits. Each
     block of the plaintext and the key is treated as a sequence of 4-bit hexadecimal
     digits. The enciphering operation is addition modulo 16 on the hex digits of the
     message block and the key. Suppose the two hex digits in a byte are p[1] and p[2],
     and the hex digits of the key that is used to encipher them are k[1] and k[2].
     The linear substitution will replace p[1] and p[2] by
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 后门串行密码将对十六进制数字进行线性替换。明文块和密钥的每个块都被视为一个 4 位十六进制数字的序列。加密操作是在消息块和密钥的十六进制数字上进行的模
+    16 加法。假设字节中的两个十六进制数字是 p[1] 和 p[2]，用于对它们进行加密的密钥的十六进制数字是 k[1] 和 k[2]。线性替换将 p[1]
+    和 p[2] 替换为
 - en: '![12-unnumb-13-equation-12-5](../Images/12-unnumb-13-equation-12-5.png)'
+  id: totrans-99
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-13-equation-12-5](../Images/12-unnumb-13-equation-12-5.png)'
 - en: The coefficients a, b, c, d, e, f, g, h, i and j may be any integers from 0
     to 15, and ag-fb must be odd. If your cipher has multiple rounds, these 10 values
     may be different for every round.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 系数 a、b、c、d、e、f、g、h、i 和 j 可以是从 0 到 15 的任意整数，而 ag-fb 必须是奇数。如果您的密码有多轮，这 10 个值可以每轮不同。
 - en: 'This type of linear substitution is easy for Emily to detect. In particular,
     the low-order bit of each hex digit is purely linear, so a simple bit-to-bit test
     for linearity will find it. To avoid detection, we can disguise the hex digits.
     First, list the hex digits in some scrambled order, like this:'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种线性替换易于 Emily 发现。特别是，每个十六进制数位的低阶位纯粹是线性的，因此对线性的简单位对位测试将找到它。为了避免检测，我们可以伪装十六进制数位。首先，按某种乱序列出十六进制数位，就像这样：
 - en: '![12-unnumb-14](../Images/12-unnumb-14.png)'
+  id: totrans-102
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-14](../Images/12-unnumb-14.png)'
 - en: To add two disguised hex digits, you add their positions in the scrambled list
     to get the position of the sum in the scrambled list. For example, to add **1**+**2**,
     you find that the digit **1** is in position 9 and the digit **2** is in position
     F, so you add 9+F mod 16 to get 8\. The sum is in position 8 in the list. The
     digit in position 8 is **D**, so **1**+**2** = **D**.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 要将两个伪装的十六进制数位相加，您将它们在乱序列表中的位置相加，以获得总和在乱序列表中的位置。例如，要计算 **1**+**2**，您发现数字 **1**
+    在位置 9，数字 **2** 在位置 F，因此您将 9+F 模 16 得到 8。总和在列表中的位置 8。位置 8 中的数字是 **D**，因此 **1**+**2**
+    = **D**。
 - en: Likewise, to multiply two disguised hex digits, you multiply their positions
     in the scrambled list to get the position of the product in the scrambled list.
     For example, to multiply **2**×**3** you note that the digit **2** is in position
     F and the digit **3** is in position 2, so you multiply F×2 mod 16 to get E. The
     product is in position E in the list. The digit in position E is **7**, so **2**×**3**
     = **7**.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 同样地，要将两个伪装的十六进制数位相乘，您将它们在乱序列表中的位置相乘，以获得乘积在乱序列表中的位置。例如，要计算 **2**×**3**，您注意到数字
+    **2** 在位置 F，数字 **3** 在位置 2，因此您将 F×2 模 16 得到 E。该产品位于列表中的位置 E。位置 E 中的数字是 **7**，所以
+    **2**×**3** = **7**。
 - en: Essentially the disguise is a simple substitution done on the hex digits. If
     the substitution is non-linear, then none of the bits will have a linear relationship
     between the plaintext and the ciphertext. This type of disguised linearity is
     much harder for Emily to detect, but to really confound Emily you can conceal
     the disguised hex digits.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 本质上，伪装是对十六进制数位进行的简单替换。如果替换是非线性的，则没有一个位将在明文和密文之间具有线性关系。这种伪装的线性性质对于 Emily 来说要难得多，但是要真正迷惑
+    Emily，您可以隐藏伪装的十六进制数位。
 - en: Concealment
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 隐蔽性
 - en: If the hex digits are always bits 1-4 and bits 5-8 of each byte of the block
     and key, then Emily still stands a chance of discovering the linearity. To really
     make Emily’s task seriously hard, you can conceal the bits within each byte. Instead
@@ -722,8 +977,11 @@
     of the key, and put the resulting sum into bits (8,6,1,7) of the ciphertext byte.
     You can use any combination of 4 bits that you choose, in any order, as long as
     the 2 hex digits in each byte use all 8 bits once each.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果十六进制数的位始终是每个字节的块和密钥的位 1-4 和位 5-8，那么 Emily 仍有可能发现线性性。为了使 Emily 的任务真正艰难，您可以隐藏每个字节中的位。而不是使用明文的位（1,2,3,4）和密钥的位（1,2,3,4），并将结果总和放入密文的位（1,2,3,4），您可以按顺序使用明文的位（2,7,4,1）的十六进制数位，以及密钥的位（4,8,3,5），并将结果总和放入密文字节的位（8,6,1,7）。您可以选择任意顺序的
+    4 位的任何组合，只要每个字节中的 2 个十六进制数位都使用了所有 8 位。
 - en: Just to be clear, we are not saying that Sandra extracts these bits from each
     byte, deciphers the disguised linear substitution, performs the arithmetic, then
     repacks the resulting bits in a different order. That would be far too slow, and
@@ -731,17 +989,24 @@
     the substitution tableau. To encipher, she simply uses the key byte to select
     a row in the tableau and then performs the substitution on the plaintext byte.
     All of the disguise and concealment are built into the substitution tableau.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了明确起见，我们并不是说 Sandra 从每个字节中提取这些位，解密伪装的线性置换，执行算术，然后以不同顺序重新打包结果位。那样太慢了，而且 Emily
+    会清楚地知道发生了什么。相反，Sandra 在构建替代表时进行了这项工作。为了加密，她只需使用密钥字节选择表中的一行，然后对明文字节执行替代。所有的伪装和隐蔽都内置在替代表中。
 - en: Camouflage
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 伪装
 - en: The cipher, as described so far, is merely a very complicated polyalphabetic
     cipher. Emily could solve messages using the techniques of section 5.8.3\. To
     make a backdoor serial cipher look like a strong block cipher, you need some camouflage
     to hide the polyalphabetic cipher that is at its core.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，所描述的密码仅仅是一个非常复杂的多表密码。Emily 可以使用第 5.8.3 节的技术解密消息。为了使后门序列密码看起来像一个强大的区块密码，你需要一些伪装来隐藏其核心的多表密码。
 - en: One method is to use a bit transposition that is applied to the block after
     each round. This will make the cipher look like a substitution-permutation network
     (section 11.1). To preserve the hidden linearity, the 4 bits that make up each
@@ -751,8 +1016,11 @@
     fed into two other bytes at the next round in some transposed order. Unfortunately,
     if Emily has access to the published specifications for the backdoor serial cipher,
     she might well discover this type of camouflage.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 一种方法是在每一轮后对块应用位转置。这将使密码看起来像是一个置换-置换网络（第 11.1 节）。为了保留隐藏的线性性，组成每个十六进制数字的 4 位必须最终位于一个字节中。它们不必在该字节中的相同位位置，也不必是连续的，但它们必须在一个字节中。换句话说，输入的每个字节都被分成两个十六进制数字，这些数字以某种转置顺序被馈送到下一轮的两个其他字节中。不幸的是，如果
+    Emily 能够获得后门序列密码的发布规范，她很可能会发现这种类型的伪装。
 - en: Let’s look at a second form of camouflage that is much harder for Emily to uncover.
     This method borrows an idea from the Data Encryption Standard (DES) (section 11.2).
     Each cipher block is divided into two halves. In each round, first the left half
@@ -760,15 +1028,20 @@
     the keys to encipher the left half. We have already seen how the linearity can
     be disguised and concealed within the substitution tableau, so let’s take advantage
     of that to create the illusion of a strong block cipher.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看另一种更难于 Emily 揭示的伪装方式。这种方法借鉴了数据加密标准（DES）的一个想法（第 11.2 节）。每个密码块被分为两半。在每一轮中，首先使用左半部分作为密钥来加密右半部分，然后使用右半部分作为密钥来加密左半部分。我们已经看到了如何将线性性质伪装并隐藏在替代表中，所以让我们利用这一点来制造一个强大的区块密码的幻觉。
 - en: Each round of the cipher will consist of four steps. (1) Each byte in the left
     half is enciphered using one byte of the key. (2) Each byte of the right half
     is enciphered using one byte of the left half as the key. (3) Each byte in the
     right half is enciphered using one byte of the key. (4) Each byte of the left
     half is enciphered using one byte of the right half as the key.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 每轮密码会包括四个步骤。(1) 左半部分中的每个字节都使用一个字节的密钥进行加密。(2) 右半部分的每个字节都使用左半部分的一个字节作为密钥进行加密。(3)
+    右半部分中的每个字节都使用一个字节的密钥进行加密。(4) 左半部分的每个字节都使用右半部分的一个字节作为密钥进行加密。
 - en: To make this look ultrastrong, each byte of the block should be enciphered using
     a different byte of the key in each round, and each byte of one half of the block
     should be enciphered using a different byte from the opposite half in each round.
@@ -776,11 +1049,15 @@
     key for every round. You can make the key larger than the block to present an
     even greater impression of strength. The cipher remains linear, however, because
     the linearity has been preserved in every step of every round.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了使其看起来非常强大，每个块的每个字节应在每一轮中使用不同的密钥字节进行加密，并且每个块的一半的每个字节应在每一轮中使用来自另一半的不同字节进行加密。您可以通过在每一轮中对块中的字节和密钥中的字节进行洗牌来使其更加复杂。您可以使密钥比块更大，以展示更强大的印象。然而，密码仍然是线性的，因为在每一轮的每一步中都保持了线性性。
 - en: Storage
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 存储
 - en: Let’s look at the mechanics of the backdoor serial cipher. In each byte of the
     key, the plaintext and the ciphertext there are two hex digits. Each of these
     could occupy any 4 bits of the byte, in any order. Let’s call that ordered set
@@ -788,8 +1065,10 @@
     digits in a byte the *byte configuration*. The key does not normally change configuration,
     but the byte configuration of the plaintext and ciphertext can change at any stage
     of the encipherment.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看看后门串行密码的机制。在密钥的每个字节中，明文和密文中都有两个十六进制数字。每个数字可以占据字节的任何4位，以任何顺序。让我们称这组有序的4位为十六进制数字的*位配置*，并且字节中的2个十六进制数字的组合为*字节配置*。密钥通常不会更改配置，但是明文和密文的字节配置可以在加密的任何阶段更改。
 - en: For each substitution there are 6 bit configurations, 2 for the key, 2 for the
     plaintext and 2 for the ciphertext. For each hex digit, the permutation (scrambled
     order) of the 16 hex values also can be different, so there are also 6 permutations
@@ -797,19 +1076,25 @@
     2 for the ciphertext. This combination of 6 configurations and 6 permutations
     determines the substitution tableau. For each distinct combination of bit configurations
     and permutations a separate substitution tableau is needed.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于每个替换，有6种位配置，2种用于密钥，2种用于明文，2种用于密文。对于每个十六进制数字，16个十六进制值的排列（乱序）也可以不同，因此对于每个替换，每个位配置和排列也有6种排列，2种用于密钥，2种用于明文，2种用于密文。这种6种配置和6种排列的组合确定了替换表。对于每个不同的位配置和排列组合，都需要一个单独的替换表。
 - en: Each tableau uses 65,536 bytes, so storage might be a problem. If this is an
     issue, I suggest using at most 2 byte configurations, and for each bit configuration
     using at most 2 different permutations, perhaps alternating from one round to
     the next. To further reduce the amount of storage required, you could consider
     using the same permutation each time you use any given bit configuration.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个表格使用65,536字节，因此存储可能会成为问题。如果这是一个问题，我建议最多使用2字节配置，并且对于每个位配置最多使用2种不同的排列，也许可以在每一轮中交替使用。为了进一步减少所需的存储量，您可以考虑每次使用任何给定的位配置时都使用相同的排列。
 - en: 12.3.5 Condensed linearity
+  id: totrans-119
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.3.5 精简线性
 - en: In most cases, you will not be building a backdoor into your cipher, and you
     will not be concerned with serial linearity. Let’s turn our attention to the second
     type of linearity, condensed linearity. In this form of linearity, a group of
@@ -823,8 +1108,10 @@
     and the final last-round ciphertext. The designer of the cipher must either avoid
     using exclusive-OR this way, or must make a thorough check to be certain that
     the S-boxes do not contain any such linearities.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 在大多数情况下，您将不会在密码中构建后门，也不会关注串行线性性。让我们把注意力转向第二种线性性，即压缩线性性。在这种线性性形式中，一组位通过将它们进行异或运算压缩为单个位。因此，000、011、101或110将被压缩为0，而001、010、100或111将被压缩为1。明文和/或密钥的任何位组合都可能与每个S-box的密文的位组合相关。如果块密码使用异或将S-box的输出与块的其余部分结合在一起，则此线性性可以从一轮传递到另一轮，并且原始第一轮明文与最终最后一轮密文之间将存在线性关系。密码的设计者必须避免以这种方式使用异或，或者必须进行彻底的检查，以确保S-box不包含任何这样的线性性。
 - en: Suppose the S-box takes an 8-bit plaintext and produces an 8-bit ciphertext.
     There are 255 different ways a group of bits can be selected from the plaintext
     and likewise 255 ways a bit group can be selected from the ciphertext. (The order
@@ -832,8 +1119,11 @@
     pairings of groups to test. Each test is a correlation between the 256 plaintext
     values and the 256 ciphertext values. This is easily feasible, even on a personal
     computer.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设S-box接受一个8位明文并产生一个8位密文。从明文中选择一组位有255种不同的方式，同样地，从密文中选择一组位也有255种方式。（位的顺序并不重要，因为a⊕b
+    = b⊕a。）这使得有255² = 65,025种不同的组配对需要测试。每个测试都是256个明文值与256个密文值之间的相关性。即使在个人电脑上，这也是很容易实现的。
 - en: If the S-box takes an 8-bit plaintext plus an 8-bit key and produces an 8-bit
     ciphertext, then there are 65,535 different ways a group of bits can be selected
     from the plaintext plus key, and again 255 ways a bit group can be selected from
@@ -841,8 +1131,11 @@
     This takes a good while on a PC because each correlation involves all 65,536 plaintext
     and key combinations. That’s over 10^(12) values that need to be centered, scaled
     and summed.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果S-box接受一个8位明文加上一个8位密钥并产生一个8位密文，那么从明文加密钥中选择一组位有65,535种不同的方式，同样地从密文中选择一组位也有255种方式。这使得有65,535×255
+    = 16,711,425种不同的配对需要测试。这在个人电脑上需要花费一段时间，因为每个相关性都涉及所有65,536个明文和密钥组合。这是需要居中、缩放和求和的超过10^(12)个值。
 - en: This is the ideal time to talk about how to do these tests efficiently. There
     are a few tricks that greatly speed up the process. (1) To select a combination
     of bits, use a mask that selects those bits from each byte. For example, if you
@@ -855,20 +1148,28 @@
     table lookup. If there is a combination of key bits and plaintext bits, these
     can be exclusive-ORed together and the result can be condensed using the table,
     so you will need one table lookup instead of two.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是谈论如何高效进行这些测试的理想时间。有一些技巧可以大大加快这个过程。 (1) 为了选择一组位，使用一个从每个字节中选择这些位的掩码。例如，如果你想要第2、4和7位，使用掩码01010010，它在位位置2、4和7上有1。将这个掩码与每个明文字节进行AND运算，以选择所需的位。
+    (2) 要尝试所有可能的位组合，不要逐个构造掩码，只需将掩码步进到所有值1到255。 (3) 要压缩位，不要每次都使用移位和XOR。只需执行一次并构建压缩值的表。然后，通过表查找可以将位组合压缩。如果有一组密钥位和明文位，这些位可以通过异或在一起，然后使用表来压缩，这样您只需要一次表查找而不是两次。
 - en: 12.3.6 Hybrid linearity
+  id: totrans-124
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.3.6 混合线性性
 - en: For the sake of completeness, I will mention that it is possible to have a hybrid
     form of linearity that combines serial and condensed linearity. Suppose that you
     divide each 8-bit byte into four 2-bit groups. These 2-bit groups could be serially
     linear under addition modulo 4\. You could condense two or more of these groups
     by adding them modulo 4\. The same could be done with 3-bit groups modulo 8 or
     4-bit groups modulo 16.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了完整起见，我要提到可以有一种混合形式的线性性，将串行和压缩线性结合起来是可能的。假设你将每个 8 位字节分成四个 2 位组。这些 2 位组可以通过加法模
+    4 串行线性。你可以通过将它们模 4 相加来压缩两个或多个这些组。同样的操作也可以用于模 8 的 3 位组或模 16 的 4 位组。
 - en: Let’s stick with 2-bit groups. Each group could consist of 2 bits taken from
     anywhere in the byte. For example, a byte could be decomposed into 4 groups, bits
     (6,1), (4,8), (2,5) and (7,3). You can condense several 2-bit groups into a single
@@ -876,26 +1177,38 @@
     4\. For instance, if the 2-bit groups are A, B, C and D you could combine them
     into a new 2-bit group pA+qB+rC+sD+t (mod 4), where p, q, r, s and t are fixed
     integers in the range 0 to 3, with at least one of p, q, r and s being odd.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们坚持使用 2 位组。每个组可以由字节中的任何 2 位组成。例如，一个字节可以分解为 4 个组，位 (6,1)，(4,8)，(2,5) 和 (7,3)。你可以通过将几个
+    2 位组相加模 4 或取任意的线性组合模 4 来压缩几个 2 位组为一个 2 位组。例如，如果 2 位组是 A、B、C 和 D，你可以将它们组合成一个新的
+    2 位组 pA+qB+rC+sD+t (mod 4)，其中 p、q、r、s 和 t 是固定整数，范围为 0 到 3，其中至少有一个是奇数。
 - en: These types of condensed groups could be correlated with similar hybrid groups
     of bits in the ciphertext, or with regular bit groups or condensed bit groups
     from the ciphertext. If you want to be absolutely thorough, then all of the possible
     pairings of linear groups, condensed groups and hybrid groups need to be tested
     for correlation.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些类型的压缩组可能与密文中类似的混合组或正常位组或密文中的压缩位组相关联。如果你想要绝对彻底，那么所有可能的线性组、压缩组和混合组的配对都需要进行相关性测试。
 - en: 12.3.7 Constructing an S-box
+  id: totrans-128
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.3.7 构建 S 盒
 - en: 'Here are three methods for constructing an S-box with good non-linearity properties:
     the *Clock Method*, *SkipMix* and the *Meld8* *Method*.'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 有三种构建具有良好非线性特性的 S 盒的方法：*时钟方法*，*SkipMix* 和 *Meld8* *方法*。
 - en: Clock method
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 时钟方法
 - en: On a sheet of paper, arrange the letters of the alphabet evenly spaced clockwise
     around a large circle like the numerals on a clock face. Choose a starting letter
     and a second letter and draw a straight line from the first to the second. Then
@@ -905,8 +1218,11 @@
     For example, using the 26-letter alphabet, the span from C to D is 1, and the
     span from D to C is 25\. To make the substitution as non-linear as possible, make
     each span a different length.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 在一张纸上，将字母按照顺时针均匀间隔地排列在一个大圆圈周围，就像时钟表盘上的数字一样。选择一个起始字母和一个第二个字母，并从第一个字母到第二个字母之间画一条直线。然后选择一个第三个字母，并从第二个字母到第三个字母之间画一条直线，依此类推。将每条线的
+    *跨度* 定义为从每个字母顺时针移动到下一个字母的字母位置数。例如，使用 26 个字母的字母表，从 C 到 D 的跨度是 1，从 D 到 C 的跨度是 25。为了使替换尽可能非线性，使每个跨度长度都不同。
 - en: Here is how it can be done. For each letter of the alphabet, make a list of
     all the letters that can possibly follow it. When you begin, the list for each
     letter will contain every other letter, so you would have 26 lists of 25 letters
@@ -916,63 +1232,93 @@
     lists. For example, suppose you have added P and then R to the alphabet. The span
     from P to R is 2 positions, PQR. Therefore, in the A list you would delete C,
     in the B list you would delete D, in the C list you would delete E, and so forth.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面是具体操作。为字母表中的每个字母制作一个列表，其中包含可能跟随它的所有字母。当你开始时，每个字母的列表都会包含其他每个字母，所以你会得到 26 个含有
+    25 个字母的列表。每次选择一个字母并将其添加到混合字母表中时，从所有列表中删除该字母。如果从前一个字母到该字母的跨度是 s，则还要从所有列表中删除任何跨度为
+    s 的其他字母。例如，假设你已经将 P 和 R 添加到字母表中。从 P 到 R 的跨度是 2 个位置，PQR。因此，在 A 列表中，你会删除 C，在 B 列表中，你会删除
+    D，在 C 列表中，你会删除 E，依此类推。
 - en: Eventually some lists become empty. If there is only one letter whose list is
     empty, then that letter will have to be the last letter in your mixed alphabet.
     If there are two lists that are empty, then you have hit a dead end. Start over,
     or backtrack and try again. Each time you choose the next letter to add to the
     alphabet, choose a letter that has a short list, but not one with an empty list,
     unless that’s the last letter left.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 最终，一些列表会变为空。如果只有一个字母的列表为空，那么该字母将成为混合字母表中的最后一个字母。如果有两个空列表，那么你已经陷入了僵局。重新开始，或者回溯并再试一次。每次选择要添加到字母表中的下一个字母时，选择一个列表较短的字母，但不要选择一个空列表的字母，除非那是剩下的最后一个字母。
 - en: Historic aside
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 历史背景
 - en: This heuristic is called Warnsdorff’s Rule for H. C. von Warnsdorff, who used
     it in 1823 for constructing knight’s tours on a chessboard. An improved version
     that looked 2 moves ahead was given by Ira Pohl of UC Santa Cruz circa 1965.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种启发式方法称为Warnsdorff规则，以H. C. von Warnsdorff的名字命名，他在1823年用于在棋盘上构建骑士之旅。1965年左右，加州大学圣克鲁斯分校的Ira
+    Pohl提出了一个向前看2步的改进版本。
 - en: 'Here is an example of an alphabet constructed by the clock method:'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个通过时钟方法构建的字母表示例：
 - en: '![12-unnumb-15](../Images/12-unnumb-15.png)'
+  id: totrans-137
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-15](../Images/12-unnumb-15.png)'
 - en: 'There are 5 different numberings that need to be tested to check the linearity
     of this alphabet: the N1 numbering, the first and second digits of the N2 numbering,
     and the first and second digits of the N3 numbering. Each of these must be correlated
     with the same 5 numberings for the standard Latin alphabet, making 25 correlations
     in total. You want all of the correlations to be between -.5 and +.5\. Even better
     would be to have them all between -.333 and +.333.'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 有5种不同的编号需要测试，以检查该字母表的线性性：N1编号，N2编号的第一和第二位数字，以及N3编号的第一和第二位数字。每个都必须与标准拉丁字母表的相同5个编号相关联，总共有25个相关性。你希望所有相关性都在-.5和+.5之间。最好的情况是它们都在-.333和+.333之间。
 - en: Here are the results of those tests, the 25 correlation coefficients.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些测试的结果如下，25个相关系数。
 - en: '![12-unnumb-16](../Images/12-unnumb-16.png)'
+  id: totrans-140
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-16](../Images/12-unnumb-16.png)'
 - en: As you can see, all of the correlations are between -.226 and +.288, with 6
     of them falling between -.1 and +.1, so the clock method is an excellent method
     for constructing non-linear substitutions.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如你所看到的，所有相关性都在-.226和+.288之间，其中有6个落在-.1和+.1之间，因此时钟方法是构建非线性替换的绝佳方法。
 - en: There is no guarantee that you will get such good results every time. You still
     need to test for linearity.
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 并不保证每次都能获得如此好的结果。你仍然需要测试线性性。
 - en: SkipMix
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: SkipMix
 - en: Earlier in this section (12.3) I mentioned that an alphabet could be constructed
     using the SkipMix algorithm (section 5.2) with a pseudorandom number generator.
     In general, choosing an alphabet at random does not lead to good non-linearity
     properties, so let me describe the best way to use SkipMix in more detail. This
     time I will illustrate with a 256-character alphabet.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节（12.3）的前面，我提到可以使用SkipMix算法（第5.2节）与伪随机数生成器构建字母表。一般来说，随机选择字母表不会导致良好的非线性特性，所以让我更详细地描述如何最好地使用SkipMix。这次我将以256个字符的字母表为例进行说明。
 - en: As always, you begin by listing the 256 available characters. Generate a random
     number in the range 1 to 256 to select the first character. Suppose that is position
     54 in the alphabet. Take that character and then delete it from the list. Now
@@ -982,29 +1328,38 @@
     position 30, and delete it from the list. You have now taken 2 characters, and
     there are 254 characters left, so you generate a random number in the range 1
     to 254\. And so forth.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 一如既往，你首先列出256个可用字符。在1到256的范围内生成一个随机数以选择第一个字符。假设那是字母表中的第54位。取出该字符，然后从列表中删除它。现在剩下255个字符。在1到255的范围内生成一个随机数。假设该数字是231。下一个位置将是54+231
+    = 285。由于这大于255，你减去255得到30。从位置30取下一个字符，并从列表中删除它。现在你已经取了2个字符，剩下254个字符，所以你在1到254的范围内生成一个随机数。依此类推。
 - en: The resulting alphabet has good non-linearity properties because you generate
     the random number in a different range each time. This is loosely analogous to
     making all of the spans different in the clock method. Here is an example of a
     26-letter alphabet generated by this version of SkipMix.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
 - en: '![12-unnumb-17](../Images/12-unnumb-17.png)'
+  id: totrans-147
   prefs: []
   type: TYPE_IMG
 - en: This can be tested the same way as the clock alphabet. The results are
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
 - en: '![12-unnumb-18](../Images/12-unnumb-18.png)'
+  id: totrans-149
   prefs: []
   type: TYPE_IMG
 - en: These results are good. All of the correlations lie between -.127 and +.344,
     with 5 of them falling between -.1 and +.1, however, they are not as good as the
     clock method results.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
 - en: Meld8 method
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
 - en: This method is basically a special-purpose pseudorandom number generator. I
@@ -1015,10 +1370,12 @@
     a modulus N of 35 to 37 bits. The modulus must be a prime. It is best if m is
     a primitive root of N, however, since I have not explained what that is yet, just
     make both m and N prime.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
 - en: Test your choices of m and N by multiplying them together. If the result is
     greater than 2^(62), or about 4.611×10^(18), then make either m or N smaller.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
 - en: To generate the random numbers, start with any integer s between 2 and N-1 as
@@ -1026,6 +1383,7 @@
     number. Multiply the first random number by m and reduce it modulo N to get the
     second random number, and so forth. That gives you a sequence of random numbers
     in the range 1 to N-1\. You will use those random numbers to generate the alphabet.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
 - en: 'Suppose N has 36 bits. Number the bits of N from 1 to 36 starting at the high-order
@@ -1033,9 +1391,11 @@
     the high-order end, and exclusive-OR them with the next 8 bits, bits 9 to 16\.
     This is the Meld8 operation. Its purpose is to make the sequence of characters
     non-linear. Here is an example:'
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
 - en: '![12-unnumb-19](../Images/12-unnumb-19.png)'
+  id: totrans-156
   prefs: []
   type: TYPE_IMG
 - en: The next step is to use the 28-bit random number to generate a character. This
@@ -1043,6 +1403,7 @@
     For a 26-character alphabet, multiply this number by 26 and divide by 2^(28) (or
     shift right 28 places) to get the next character. For a 256-character alphabet,
     just divide by 2^(20), or shift right 20 places to get the next character.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
 - en: 'Start with an empty alphabet and add one character at a time. If this is a
@@ -1050,35 +1411,48 @@
     it. Since you are not taking consecutive random numbers, this also works to make
     the alphabet non-linear. Here is an example of such an alphabet generated with
     the modulus N = 90392754973, the multiplier m = 23165801 and the seed s = 217934:'
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
 - en: '![12-unnumb-20](../Images/12-unnumb-20.png)'
+  id: totrans-159
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-20](../Images/12-unnumb-20.png)'
 - en: The resulting correlation coefficients are
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果相关系数为
 - en: '![12-unnumb-21](../Images/12-unnumb-21.png)'
+  id: totrans-161
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-21](../Images/12-unnumb-21.png)'
 - en: The correlations range from -.170 to +.267 with 11 of them falling between -.1
     and +.1\. This is the best of the three examples, however, it would be folly to
     conclude that Meld8 was the best method based on a single example of each technique.
     Always test.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 相关性范围从-.170到+.267，其中有11个落在-.1和+.1之间。这是三个示例中最好的，然而，基于每种技术的单个示例得出Meld8是最佳方法的结论是愚蠢的。始终进行测试。
 - en: 12.3.8 S-box with a key
+  id: totrans-163
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.3.8 带有密钥的S盒
 - en: In section 12.3.7 we dealt with S-boxes that had no key. They performed a simple
     substitution. When a key is used, the S-box performs a general polyalphabetic
     substitution (section 5.8.3). The S-box can be considered a tableau, with each
     row being one mixed alphabet. The S-box can be generated by constructing each
     of these mixed alphabets using the clock method, SkipMix or Meld8, or by any combination
     of methods.
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第12.3.7节中，我们处理了没有密钥的S盒。它们执行简单的替换。当使用密钥时，S盒执行一般的多表替换（第5.8.3节）。S盒可以被视为一个表，其中每一行都是一个混合字母表。可以通过使用时钟方法、SkipMix或Meld8构建每个混合字母表来生成S盒，或者通过任何组合方法。
 - en: If you use the clock method or SkipMix, use a different random seed each time.
     If you use Meld8, it is acceptable to use the same modulus each time, but use
     a different seed and a different multiplier. As always, test, test, test. Your
@@ -1087,53 +1461,72 @@
     a lot of the correlation coefficients are outside the range -.35 to +.35, it might
     take no more than replacing one row or swapping two rows of the tableau to fix
     the problem.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果使用时钟方法或SkipMix，请每次使用不同的随机种子。如果使用Meld8，则可以每次使用相同的模数，但使用不同的种子和不同的乘数。一如既往，测试，测试，测试。你的目标是避免密钥和明文与密文的组合之间存在任何线性关系。如果结果不佳，即许多相关系数在-.35到+.35范围之外，也许只需替换一个行或交换两个行的表就能解决问题。
 - en: 12.4 Diffusion
+  id: totrans-166
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 12.4 扩散
 - en: Shannon’s second property is *diffusion*. The idea is that every bit or byte
     of the ciphertext should depend on every bit or byte of both the plaintext and
     the key.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 香农的第二个特性是*扩散*。这个想法是密文的每一位或每一字节都应该依赖于明文和密钥的每一位或每一字节。
 - en: To illustrate this, let’s go back to Delastelle’s bifid cipher, described in
     section 9.6\. To refresh your memory, the bifid is a block cipher based on a Polybius
     square. If the block size is S, then each letter of the message is replaced by
     two base-5 digits and the digits are written vertically into a 2×S grid and read
     out horizontally. Then the pairs of digits are turned back into letters using
     the same or a different Polybius square.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了说明这一点，让我们回到第9.6节中描述的Delastelle的bifid密码。为了提醒你，bifid是基于Polybius方阵的分组密码。如果块大小为S，则消息的每个字母将被两个基于5的数字替换，并且这些数字被垂直写入一个2×S网格并水平读出。然后这些数字对再使用相同或不同的Polybius方阵转换回字母。
 - en: Let the block size be 7, and call the letters in the plaintext block A,B,C,D,E,F,G.
     Let the digits representing these letters be aa,bb,cc,dd,ee,ff,gg. I have left
     off the subscripts because it does not matter here which digit is first and which
     digit is second. The block will then be
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 让块大小为7，并将明文块中的字母称为A、B、C、D、E、F、G。让表示这些字母的数字为aa,bb,cc,dd,ee,ff,gg。我没有写下标，因为这里不重要哪个数字先出现，哪个数字后出现。那么块将是
 - en: '![12-unnumb-22](../Images/12-unnumb-22.png)'
+  id: totrans-170
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-22](../Images/12-unnumb-22.png)'
 - en: When the letters are read out of the block horizontally you get ab,cd,ef,ga,bc,de,fg.
     Notice that each letter of the ciphertext depends on two letters of the plaintext.
     The first ciphertext letter depends on A and B, the second letter depends on C
     and D, and so forth.
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 当字母水平读出时，你会得到ab,cd,ef,ga,bc,de,fg。请注意，密文的每个字母都取决于明文的两个字母。第一个密文字母取决于A和B，第二个字母取决于C和D，依此类推。
 - en: 'At this point I need to introduce a special notation to show which plaintext
     letters each ciphertext letter depends on. If a ciphertext letter depends on plaintext
     letters P, Q and R it gets designated pqr. Using this notation, if you enciphered
     the letters A,B,C,D,E,F,G a second time, the block would look like this:'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一点上，我需要引入一种特殊的符号来显示每个密文字母依赖于哪些明文字母。如果一个密文字母依赖于明文字母P、Q和R，则它被指定为pqr。使用这种符号，如果你再次加密字母A、B、C、D、E、F、G，块会像这样：
 - en: '![12-unnumb-23](../Images/12-unnumb-23.png)'
+  id: totrans-173
   prefs: []
   type: TYPE_IMG
+  zh: '![12-unnumb-23](../Images/12-unnumb-23.png)'
 - en: Reading these letters out horizontally you get abcd, efga, bcde, fgab, cdef,
     gabc, defg. Since the order of the digits is irrelevant, this could also be given
     as abcd, aefg, bcde, abfg, cdef, abcg, defg. After two encipherments, each ciphertext
     letter depends on four plaintext letters.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
 - en: If you encipher this block a third time using the bifid cipher, every ciphertext
@@ -1141,6 +1534,7 @@
     with block size 7, three rounds of encipherment are required to get full diffusion.
     If the block size were 9, 11, 13 or 15, four rounds of encipherment would be needed.
     (Recall that the block size in a bifid cipher should always be odd.)
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
 - en: In general, to test diffusion you begin with each plaintext character or bit
@@ -1149,6 +1543,7 @@
     digits in some other base, or individual bits, you trace the diffusion on the
     basis of those units. For the bifid cipher, the units are the Polybius square
     coordinates, or base-5 digits.
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
 - en: To track the diffusion, you need a way to represent the set of plaintext units
@@ -1160,6 +1555,7 @@
     vector*. Each element of the dependency vector will correspond to one input, either
     a plaintext or key unit. The dependency element will have the value 1 if the ciphertext
     unit depends on that input unit, and 0 otherwise.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
 - en: When two or more input units are combined to form an output unit, their dependency
@@ -1167,9 +1563,11 @@
     illustrate how this works, let’s go through the bifid example again using this
     notation. Initially each character depends only on itself. This is represented
     by the vectors
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
 - en: '![12-unnumb-24](../Images/12-unnumb-24.png)'
+  id: totrans-179
   prefs: []
   type: TYPE_IMG
 - en: After the first application of the bifid cipher, each resulting letter depends
@@ -1179,9 +1577,11 @@
     letters, so you OR their dependency vectors together **0010000**∨**0001000** to
     get **0011000**, and so forth. The output of the first round is represented by
     the vectors
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
 - en: '![12-unnumb-25](../Images/12-unnumb-25.png)'
+  id: totrans-181
   prefs: []
   type: TYPE_IMG
 - en: After the second round of bifid, the first output letter depends on the first
@@ -1191,33 +1591,40 @@
     vectors together **0000110**∨**1000001** to get **1000111**, and so on. After
     two rounds of bifid each letter depends on four plaintext letters, represented
     as
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
 - en: '![12-unnumb-26](../Images/12-unnumb-26.png)'
+  id: totrans-183
   prefs: []
   type: TYPE_IMG
 - en: After the third round of bifid, each output letter depends on all 7 of the round
     1 plaintext letters, for example, **1111000**∨**1000111** is **1111111**. The
     output of the third round is represented as
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
 - en: '![12-unnumb-27](../Images/12-unnumb-27.png)'
+  id: totrans-185
   prefs: []
   type: TYPE_IMG
 - en: Any time an S-box is encountered, the dependency vectors for the output units
     are formed by ORing together the vectors for each input that contributes to that
     output. Let’s look at some other situations that may occur in a block cipher.
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
 - en: If two units are exclusive-ORed together, the dependency vector for the output
     unit is formed by ORing together the vectors for each input. The same is done
     when several units are combined using any combining function, such as **sxor**
     or **madd**.
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
 - en: When the units of a block are transposed using a key, each output unit is then
     dependent on all of the units of that key, so the vectors for the key are ORed
     with the vector for each output unit.
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
 - en: Suppose an S-box is created by mixing its alphabet using a key. If the S-box
@@ -1226,6 +1633,7 @@
     for each encryption, then the output units of that S-box are dependent on all
     of the units of that key. The vectors for the key are ORed with the vector for
     each output unit.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
 - en: It is possible to express diffusion as a single number. Form a matrix from the
@@ -1236,6 +1644,7 @@
     1\. If the matrix elements are all 1, then there is complete diffusion and the
     diffusion index is 1\. If the S-boxes are non-linear and the key is long, this
     is an indication that the block cipher is strong.
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
 - en: Diffusion is not the full story. There are valid cipher designs where the diffusion
@@ -1245,6 +1654,7 @@
     the final round, may not. However, if the keys that are fully diffused contain
     your target number of bits, then the cipher may well be secure, and the partly
     diffused keys are just insurance.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
 - en: Here is an example that may help illustrate how the cipher can be strong even
@@ -1257,9 +1667,11 @@
     168 bits of fully diffused keys. If your target strength is 128 key bits, then
     you have already surpassed your goal. The partially diffused keys from rounds
     8 through 12 are a bonus.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
 - en: 12.5 Saturation
+  id: totrans-193
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -1272,6 +1684,7 @@
     a more refined version of diffusion. With diffusion, the dependency can have a
     value of only 0 or 1, but with saturation, the dependency can have any non-negative
     value.
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
 - en: Here is the quick explanation of saturation. Suppose block cipher X consists
@@ -1282,6 +1695,7 @@
     X would have little saturation because each byte of the ciphertext depends on
     each byte of the key only once. To get higher saturation, each output byte would
     need to depend on each input byte multiple times.
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
 - en: 'Another example might help make this clearer. Imagine a cipher that operates
@@ -1291,20 +1705,25 @@
     on each of the 8 bytes. After the first round, the first output byte **C1** depends
     on the last 7 bits of the first plaintext byte and the first bit of the second
     plaintext byte, like this:'
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
 - en: '![12-unnumb-28](../Images/12-unnumb-28.png)'
+  id: totrans-197
   prefs: []
   type: TYPE_IMG
 - en: Ciphertext character **C1** depends on 7 bits from plaintext byte **P1** and
     1 bit from plaintext byte **P2**. It makes sense to say that **C1** depends 7/8
     on **P1** and 1/8 on **P2**.
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s look at the second round. Call the second-round outputs **D1** ... **D6**.
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
 - en: '![12-unnumb-29](../Images/12-unnumb-29.png)'
+  id: totrans-200
   prefs: []
   type: TYPE_IMG
 - en: Ciphertext character **D1** depends 7/8 on **C1** and 1/8 on **C2**. Here **C1**
@@ -1314,12 +1733,15 @@
     to say **D1** depends 49/64 on **P1**. For the same reason **D1** depends 1/64
     on **P3**. Let’s call these figures *saturation coefficients*, and call this calculation,
     when there is a single dependency, the *S1 calculation*.
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
 - en: A diagram might make the configuration clearer.
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
 - en: '![12-unnumb-30](../Images/12-unnumb-30.png)'
+  id: totrans-203
   prefs: []
   type: TYPE_IMG
 - en: What about **P2**? **D1** gets contributions from **P2** via both **C1** and
@@ -1332,6 +1754,7 @@
     is repeated many times, all these diffusion figures will converge to 1/48\. That
     is not what the concept of saturation is trying to capture. Saturation should
     increase whenever a unit receives contributions from several different sources.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
 - en: 'When a unit gets multiple contributions, a different calculation is used to
@@ -1342,14 +1765,17 @@
     component saturation coefficients are sorted in descending order, a ≥ b ≥ c ≥
     d ≥ e... . To recap, when multiple saturation coefficients are combined, the results
     are as follows:'
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
 - en: '![12-unnumb-30-equation-12-6](../Images/12-unnumb-30-equation-12-6.png)'
+  id: totrans-206
   prefs: []
   type: TYPE_IMG
 - en: Let’s call this calculation, when there are multiple dependencies, the *S2 calculation*.
     Use the S1 calculation for a single source, and use the S2 calculation for multiple
     sources.
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
 - en: The S2 calculation may seem ad hoc, perhaps even eccentric, but it has just
@@ -1358,6 +1784,7 @@
     greater than a. Second, it does not increase too fast. At most, the saturation
     coefficients can double from one round to the next. This is because a+a/2+a/4+...+a/2^n
     < 2a for any n. For example, 1+1/2+1/4+1/8 = 15/8 = 1.875.
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
 - en: In the present case, **D1** depending on **P2**, the contributing coefficients
@@ -1366,6 +1793,7 @@
     numbers were. The resulting saturation vector for **D1** is thus (49/64, 15/16,
     1/64, 0, 0, 0). These vectors can then be formed into a saturation matrix. The
     saturation index is the smallest coefficient in the saturation matrix.
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s look at a more realistic cipher, one that has been proposed in the literature
@@ -1376,6 +1804,7 @@
     Each round has two steps. (1) A simple substitution is applied to the eight 8-bit
     bytes. (2) The 8×8 matrix of bits is flipped. The finishing step is, again, substituting
     for each of the 8-bit bytes.
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
 - en: 'The 8×8 matrix of bits requires a 64×64 dependency matrix. This is too large
@@ -1383,9 +1812,11 @@
     of bits, which has a 9×9 dependency matrix. This cipher will be analyzed twice,
     once using diffusion, and once using saturation. Diffusion first. Let’s start
     by labeling the bits in the text block and in the dependency matrix, like so:'
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
 - en: '![12-unnumb-31](../Images/12-unnumb-31.png)'
+  id: totrans-212
   prefs: []
   type: TYPE_IMG
 - en: Before the first round each bit depends only on itself, so the dependency matrix
@@ -1393,9 +1824,11 @@
     3 bits in its character, so the dependency matrix looks like (2). After the first-round
     flip, the dependency matrix looks like (3). After the second-round substitution,
     the dependency matrix looks like (4).
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
 - en: '![12-unnumb-32](../Images/12-unnumb-32.png)'
+  id: totrans-214
   prefs: []
   type: TYPE_IMG
 - en: In other words, at this point every bit of the ciphertext depends on every bit
@@ -1403,15 +1836,18 @@
     after the final substitution. So, if we relied only on the dependency calculation,
     we would conclude that this cipher would be secure after only two rounds. This
     is untrue. Adi Shamir has shown that two rounds are insufficient.
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
 - en: Now let’s analyze the SFlip cipher using the saturation index. After the first-round
     substitution, each bit of the ciphertext depends 1/3 on each of the 3 corresponding
     plaintext bits. The saturation matrix will look like (5). After the first-round
     flip, the saturation matrix will look like (6).
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
 - en: '![12-unnumb-33](../Images/12-unnumb-33.png)'
+  id: totrans-217
   prefs: []
   type: TYPE_IMG
 - en: The second-round substitution makes each bit of the output dependent on all
@@ -1420,17 +1856,21 @@
     have this value, so the saturation index will be 7/12\. The target value for the
     saturation index is 1, although you could set it higher if you wanted greater
     certainty. Here is what the saturation index will be after several rounds.
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
 - en: '![12-unnumb-34](../Images/12-unnumb-34.png)'
+  id: totrans-219
   prefs: []
   type: TYPE_IMG
 - en: So 3 rounds are sufficient for the 3×3 cipher, but 5 rounds are necessary for
     the 8×8 cipher.
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s now turn to some of the other situations where an output unit depends
     on one or more input units.
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
 - en: When an S-box has both plaintext and key inputs, say p plaintext units and k
@@ -1439,11 +1879,13 @@
     for each output bit. If the inputs to the S-box are themselves dependent on earlier
     inputs, then either the S1 or the S2 calculation should be used, as appropriate,
     to compute the saturation index.
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
 - en: Similarly, if two or more units are combined using exclusive-OR or some other
     combining function, the dependency is 1/n for n total inputs. The calculation
     of the saturation index is the same as for an S-box with the same inputs.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
 - en: When a key of k bits is used for a transposition, each output unit of the transposition
@@ -1453,6 +1895,7 @@
     will be the same as the saturation vector for p before the transposition, except
     in those columns corresponding to the bits of the transposition key. In those
     columns the saturation coefficient will be determined by either the S1 or S2 calculation.
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
 - en: Here is an example. Suppose that t is one of the bits of the transposition key.
@@ -1462,6 +1905,7 @@
     then the saturation coefficient would be determined by the S2 calculation. If
     the coefficient in column t were x, then after the transposition the saturation
     coefficient in column t would be x+1/2k if x ≥ 1/k, or 1/k+x/2 if x < 1/k.
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
 - en: When a key of k bits has been used to mix the alphabet or tableau for a substitution
@@ -1471,32 +1915,39 @@
     with the dependencies of the input character (and substitution key, if any) using
     either the S1 or S2 calculation to get the saturation coefficient for the output
     character.
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
 - en: Summary
+  id: totrans-227
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: 'A block cipher will be unbreakable in practice if it adheres to *all* of these
     rules:'
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
 - en: It has a sufficiently large block size. The current standard is 16 characters
     or 128 bits.
+  id: totrans-229
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: It has a sufficiently large key. The current standard is 128 to 256 bits. The
     key must be at least as large as the block, and preferably larger.
+  id: totrans-230
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Either it uses fixed S-boxes that are strongly non-linear, or it uses variable
     substitution tables that are well-mixed using a large key.
+  id: totrans-231
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: The saturation index is at least 1.
+  id: totrans-232
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
@@ -1504,5 +1955,6 @@
     key longer and use more rounds than required because computers get faster and
     new attacks get discovered continually. In particular, you could set your target
     for the saturation index higher than 1, perhaps 2, 3 or even 5.
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL

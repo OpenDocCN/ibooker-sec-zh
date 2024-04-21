@@ -1,186 +1,272 @@
 - en: 16 Cross-site request forgery
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 16 跨站请求伪造
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: Managing session ID usage
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 管理会话 ID 的使用
 - en: Following state management conventions
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 遵循状态管理约定
 - en: Validating the `Referer` header
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 验证`Referer`头
 - en: Sending, receiving, and verifying CSRF tokens
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 发送、接收和验证 CSRF 令牌
 - en: This chapter examines another large family of attacks, *cross-site request forgery*
     (*CSRF*). A CSRF attack aims to trick the victim into sending a forged request
     to a vulnerable website. CSRF resistance boils down to whether or not a system
     can distinguish a forged request from a user’s intentional requests. Secure systems
     do this via request headers, response headers, cookies, and state management conventions;
     *defense in depth* is not optional.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章研究了另一个大类攻击，即*跨站请求伪造*（*CSRF*）。CSRF 攻击旨在诱使受害者向易受攻击的网站发送伪造请求。CSRF 抵抗取决于系统是否能区分伪造请求和用户的有意请求。安全系统通过请求头、响应头、cookies
+    和状态管理约定来实现这一点；*深度防御*并非可选。
 - en: 16.1 What is request forgery?
+  id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 16.1 什么是请求伪造？
 - en: Suppose Alice deploys admin.alice.com, the administrative counterpart of her
     online bank. Like other administrative systems, admin.alice.com lets administrators
     such as Alice manage the group memberships of other users. For example, Alice
     can add someone to a group by submitting their username and the group name to
     /group-membership/.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设 Alice 部署了 admin.alice.com，作为她在线银行的管理对应物。像其他管理系统一样，admin.alice.com 允许像 Alice
+    这样的管理员管理其他用户的组成员资格。例如，Alice 可以通过提交其用户名和组名到/group-membership/来将某人添加到一个组中。
 - en: One day, Alice receives a text message from Mallory, a malicious bank employee.
     The text message contains a link to one of Mallory’s predatory websites, win-iphone.mallory.com.
     Alice takes the bait. She navigates to Mallory’s site, where the following HTML
     page is rendered by her browser. Unbeknownst to Alice, this page contains a form
     with two hidden input fields. Mallory has prefilled these fields with her username
     and the name of a privileged group.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 有一天，Alice 收到了一条来自 Mallory 的文本消息，Mallory 是一个恶意的银行员工。这条短信包含一个链接到 Mallory 的捕食性网站
+    win-iphone.mallory.com。Alice 接了这个钓鱼。她导航到了 Mallory 的网站，在那里她的浏览器呈现了以下 HTML 页面。Alice
+    不知情，这个页面包含一个带有两个隐藏输入字段的表单。Mallory 已经预先填充了这些字段，分别是她的用户名和一个特权组的名称。
 - en: 'The remaining portion of this attack requires no further action from Alice.
     An event handler for the body tag, shown in bold font, automatically submits the
     form immediately after the page loads. Alice, currently logged in to admin.alice.com,
     unintentionally adds Mallory to the administrators group. As an administrator,
     Mallory is now free to abuse her new privileges:'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 此攻击的剩余部分不需要 Alice 进行进一步操作。一个加粗的 body 标签的事件处理程序会在页面加载后自动提交表单。当前已经登录到 admin.alice.com
+    的 Alice 无意间将 Mallory 添加到管理员组中。作为管理员，Mallory 现在可以自由滥用她的新权限：
 - en: '[PRE0]'
+  id: totrans-11
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: ❶ This event handler fires after the page loads.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 此事件处理程序在页面加载后触发。
 - en: ❷ URL of the forged request
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 伪造请求的 URL
 - en: ❸ Prefilled hidden input fields
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 预填充的隐藏输入字段
 - en: In this example, Mallory literally executes CSRF; she tricks Alice into sending
     a forged request from another site. Figure 16.1 illustrates this attack.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个例子中，Mallory 实际上执行了 CSRF；她欺骗 Alice 从另一个站点发送伪造请求。图 16.1 说明了这种攻击。
 - en: '![CH16_F01_Byrne](Images/CH16_F01_Byrne.png)'
+  id: totrans-16
   prefs: []
   type: TYPE_IMG
+  zh: '![CH16_F01_Byrne](Images/CH16_F01_Byrne.png)'
 - en: Figure 16.1 Mallory uses a CSRF attack to escalate her privileges.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 16.1 Mallory 使用 CSRF 攻击提升她的权限。
 - en: This time, Alice is tricked into escalating Mallory’s privileges. In the real
     world, the victim can be tricked into performing any action a vulnerable site
     allows them to do. This includes transferring money, buying something, or modifying
     their own account settings. Usually, the victim isn’t even aware of what they’ve
     done.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 这次，Alice 被欺骗升级了 Mallory 的权限。在现实世界中，受害者可能会被欺骗执行易受攻击的站点允许他们执行的任何操作。这包括转账、购买商品或修改自己的帐户设置。通常，受害者甚至不知道他们做了什么。
 - en: CSRF attacks are not limited to shady websites. A forged request can be sent
     from an email or messaging client as well.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: CSRF 攻击不仅限于不可信的网站。伪造请求也可以通过电子邮件或消息客户端发送。
 - en: Regardless of the attacker’s motive or technique, a CSRF attack succeeds because
     a vulnerable system isn’t capable of differentiating between a forged request
     and an intentional request. The remaining sections examine different ways to make
     this distinction.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 无论攻击者的动机或技术如何，CSRF 攻击成功是因为易受攻击的系统无法区分伪造请求和有意请求。剩余部分将检查不同的方法来区分这种区别。
 - en: 16.2 Session ID management
+  id: totrans-21
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 16.2 会话 ID 管理
 - en: A successful forged request must bear a valid session ID cookie of an authenticated
     user. If the session ID were not a requirement, the attacker would just send the
     request themselves instead of trying to bait the victim.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 成功的伪造请求必须携带经过身份验证用户的有效会话ID cookie。如果会话ID不是必需的，攻击者将直接发送请求而不是试图诱骗受害者。
 - en: The session ID identifies the user but can’t identify their intentions. It is
     therefore important to forbid the browser from sending the session ID cookie when
     it isn’t necessary. Sites do this by adding a directive, named `SameSite`, to
     the `Set-Cookie` header (you learned about this header in chapter 7).
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 会话ID标识用户，但无法确定他们的意图。因此，当不必要时，禁止浏览器发送会话ID cookie非常重要。网站通过向`Set-Cookie`头部添加一个名为`SameSite`的指令来实现这一点（您在第7章学习过这个头部）。
 - en: A `SameSite` directive informs the browser to restrict the cookie to requests
     from the “same site.” For example, a form submission from https://admin.alice.com/profile/
     to https://admin.alice.com/group-membership/ is a *same-site request*. Table 16.1
     lists several more examples of same-site requests. In each case, the source and
     destination of the request have the same registrable domain, bob.com.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: '`SameSite`指令告知浏览器将cookie限制在“同一站点”的请求中。例如，从 https://admin.alice.com/profile/
+    提交表单到 https://admin.alice.com/group-membership/ 是*同站点请求*。表16.1列出了几个更多的同站点请求示例。在每种情况下，请求的源和目的地具有相同的可注册域，bob.com。'
 - en: Table 16.1 Same-site request examples
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 表16.1 同站点请求示例
 - en: '| Source | Destination | Reason |'
+  id: totrans-26
   prefs: []
   type: TYPE_TB
+  zh: '| 来源 | 目的地 | 原因 |'
 - en: '| **https**://bob.com | **http**://bob.com | Different protocols do not matter.
     |'
+  id: totrans-27
   prefs: []
   type: TYPE_TB
+  zh: '| **https**://bob.com | **http**://bob.com | 不同协议不重要。 |'
 - en: '| https://**social**.bob.com | https://**www**.bob.com | Different subdomains
     do not matter. |'
+  id: totrans-28
   prefs: []
   type: TYPE_TB
+  zh: '| https://**social**.bob.com | https://**www**.bob.com | 不同子域不重要。 |'
 - en: '| https://bob.com/**home/** | https://bob.com/**profile/** | Different paths
     do not matter. |'
+  id: totrans-29
   prefs: []
   type: TYPE_TB
+  zh: '| https://bob.com/**home/** | https://bob.com/**profile/** | 不同路径不重要。 |'
 - en: '| https://bob.com:**42** | https://bob.com:**443** | Different ports do not
     matter. |'
+  id: totrans-30
   prefs: []
   type: TYPE_TB
+  zh: '| https://bob.com:**42** | https://bob.com:**443** | 不同端口不重要。 |'
 - en: A *cross-site request* is any request other than a same-site request. For example,
     submitting a form or navigating from win-iphone.mallory.com to admin.alice.com
     is a cross-site request.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: '*跨站点请求*是除同站点请求之外的任何请求。例如，从win-iphone.mallory.com提交表单或导航到admin.alice.com都是跨站点请求。'
 - en: 'Note A cross-site request is not to be confused with a cross-origin request.
     (In the previous chapter, you learned that an origin is defined by three parts
     of the URL: protocol, host, and port.) For example, a request from https:/./social.bob.com
     to https:/./www.bob.com is cross-origin but not cross-site.'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意跨站点请求不要与跨源请求混淆。（在前一章中，您了解到一个源由URL的三个部分定义：协议、主机和端口。）例如，从 https:/./social.bob.com
+    到 https:/./www.bob.com 的请求是跨源的，但不是跨站点的。
 - en: 'The `SameSite` directive assumes one of three values: `None`, `Strict`, or
     `Lax`. An example of each is shown here in bold font:'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: '`SameSite`指令有三个可能的值：`None`、`Strict`或`Lax`。这里以粗体显示每个示例：'
 - en: '[PRE1]'
+  id: totrans-34
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: When the `SameSite` directive is `None`, the browser will unconditionally echo
     the session ID cookie back to the server it came from, even for cross-site requests.
     This option provides no security; it enables all forms of CSRF.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 当`SameSite`指令为`None`时，浏览器将无条件地将会话ID cookie回送到它来自的服务器，即使是跨站点请求也是如此。这个选项不提供安全性；它使所有形式的CSRF都成为可能。
 - en: When the `SameSite` directive is `Strict`, the browser will send the session
     ID cookie only for same-site requests. For example, suppose admin.alice.com had
     used `Strict` when setting Alice’s session ID cookie. This wouldn’t have stopped
     Alice from visiting win-iphone.mallory.com, but it would have excluded Alice’s
     session ID from the forged request. Without a session ID, the request wouldn’t
     have been associated with a user, causing the site to reject it.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 当`SameSite`指令为`Strict`时，浏览器只会为同站点请求发送会话ID cookie。例如，假设 admin.alice.com 在设置Alice的会话ID
+    cookie时使用了`Strict`。这不会阻止Alice访问win-iphone.mallory.com，但会排除Alice的会话ID在伪造请求中。没有会话ID，请求将不会与用户关联，导致网站拒绝它。
 - en: Why doesn’t every website set the session ID cookie with `Strict`? The `Strict`
     option provides security at the expense of functionality. Without a session ID
     cookie, the server has no way of identifying who an intentional cross-site request
     is coming from. The user must therefore authenticate every time they return to
     the site from an external source. This is unsuitable for a social media site and
     ideal for an online banking system.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 为什么不是每个网站都使用`Strict`设置会话 ID cookie？`Strict`选项在保障安全性的同时会牺牲功能性。没有会话 ID cookie，服务器无法识别有意的跨站点请求来源。因此，用户每次从外部来源返回网站时都必须进行身份验证。这对于社交媒体网站来说不太合适，但对于在线银行系统来说是理想的。
 - en: Note `None` and `Strict` represent opposite ends of the risk spectrum. The `None`
     option provides no security; the `Strict` option provides the most security.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，`None`和`Strict`代表风险范围的两个相反的极端。`None`选项不提供安全性；`Strict`选项提供最高的安全性。
 - en: There is a reasonable sweet spot between `None` and `Strict`. When the `SameSite`
     directive is `Lax`, the browser sends the session ID cookie for all same-site
     requests, as well as cross-site top-level navigational requests using a safe HTTP
@@ -189,111 +275,161 @@
     will be omitted from all other cross-site requests as though the `SameSite` directive
     is `Strict`. This option is inappropriate for an online banking system but suitable
     for a social media site.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 在`None`和`Strict`之间存在一个合理的平衡点。当`SameSite`指令为`Lax`时，浏览器会为所有同站点请求以及使用安全的 HTTP 方法（如
+    GET）的跨站点顶级导航请求发送会话 ID cookie。换句话说，用户每次通过点击电子邮件中的链接返回网站时都不必重新登录。会话 ID cookie 将在所有其他跨站点请求中被省略，就好像`SameSite`指令是`Strict`一样。这个选项对于在线银行系统来说不合适，但对于社交媒体网站来说是合适的。
 - en: 'The `SESSION_COOKIE_SAMESITE` setting configures the `SameSite` directive for
     the session ID `Set-Cookie` header. Django 3.1 accepts the following four values
     for this setting:'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: '`SESSION_COOKIE_SAMESITE`设置配置了会话 ID `Set-Cookie` 头的`SameSite`指令。Django 3.1
+    接受此设置的以下四个值：'
 - en: '`"None"`'
+  id: totrans-41
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`"None"`'
 - en: '`"Strict"`'
+  id: totrans-42
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`"Strict"`'
 - en: '`"Lax"`'
+  id: totrans-43
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`"Lax"`'
 - en: '`False`'
+  id: totrans-44
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`False`'
 - en: The first three options are straightforward. The `"None"`, `"Strict"`, and `"Lax"`
     options configure Django to send the session ID with a `SameSite` directive of
     `None`, `Strict` or `Lax`, respectively. `"Lax"` is the default value.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 前三个选项很简单。`"None"`、`"Strict"`和`"Lax"`选项分别配置 Django 发送具有`None`、`Strict`或`Lax`的`SameSite`指令的会话
+    ID。`"Lax"`是默认值。
 - en: WARNING I highly discourage setting `SESSION_COOKIE_SAMESITE` to `False`, especially
     if you support older browsers. This option makes your site less secure and less
     interoperable.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：我强烈反对将`SESSION_COOKIE_SAMESITE`设置为`False`，特别是如果您支持较旧的浏览器。这个选项会使您的网站安全性降低，互操作性降低。
 - en: 'Assigning `False` to `SESSION_COOKIE_SAMESITE` will omit the `SameSite` directive
     entirely. When the `SameSite` directive is absent, the browser will fall back
     to its default behavior. This will cause a website to behave inconsistently for
     the following two reasons:'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 将`False`分配给`SESSION_COOKIE_SAMESITE`将完全省略`SameSite`指令。当`SameSite`指令不存在时，浏览器将回退到其默认行为。这将导致网站因以下两个原因而行为不一致：
 - en: The default `SameSite` behavior varies from browser to browser.
+  id: totrans-48
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 默认的`SameSite`行为因浏览器而异。
 - en: At the time of this writing, browsers are migrating from a default of `None`
     to `Lax`.
+  id: totrans-49
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在撰写本文时，浏览器正在从默认的`None`迁移到`Lax`。
 - en: Browsers originally used `None` as the default `SameSite` value. Starting with
     Chrome, most of them have switched to `Lax` for the sake of security.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 浏览器最初将`None`用作默认的`SameSite`值。从 Chrome 开始，它们中的大多数都已切换到`Lax`以确保安全性。
 - en: Browsers, Django, and many other web frameworks default to `Lax` because this
     option represents a practical trade-off between security and functionality. For
     instance, `Lax` excludes the session ID from a form-driven POST request while
     including it for a navigational GET request. This works only if your GET request
     handlers follow state-management conventions.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 浏览器、Django 和许多其他 Web 框架默认为`Lax`，因为这个选项在安全性和功能性之间提供了一个实际的权衡。例如，`Lax`在表单驱动的 POST
+    请求中排除了会话 ID，但在导航 GET 请求中包含了它。这只有在您的 GET 请求处理程序遵循状态管理惯例时才有效。
 - en: 16.3 State-management conventions
+  id: totrans-52
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 16.3 状态管理惯例
 - en: 'It is a common misconception that GET requests are immune to CSRF. In reality,
     CSRF immunity is actually a consequence of the `request` method and the implementation
     of the request handler. Specifically, safe HTTP methods should not change server
     state. The HTTP specification ([https://tools.ietf.org/html/rfc7231](https://tools.ietf.org/html/rfc7231))
     identifies four safe methods:'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个常见的误解是GET请求免疫CSRF。实际上，CSRF免疫实际上是请求方法和请求处理程序实现的结果。具体来说，安全的HTTP方法不应更改服务器状态。HTTP规范（[https://tools.ietf.org/html/rfc7231](https://tools.ietf.org/html/rfc7231)）识别了四种安全方法：
 - en: Of the request methods defined by this specification, the GET, HEAD, OPTIONS,
     and TRACE methods are defined to be safe.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据本规范定义的请求方法中，GET、HEAD、OPTIONS和TRACE方法被定义为安全的。
 - en: 'All state changes are conventionally reserved for unsafe HTTP methods such
     as POST, PUT, PATCH, and DELETE. Conversely, safe methods are intended to be read-only:'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有状态更改通常都保留给不安全的HTTP方法，如POST、PUT、PATCH和DELETE。相反，安全方法意味着只读：
 - en: Request methods are considered “safe” if their defined semantics are essentially
     read-only; i.e., the client does not request, and does not expect, any state change
     on the origin server as a result of applying a safe method to a target resource.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果定义的语义本质上是只读的，则请求方法被认为是“安全的”；即，客户端不会请求，并且不期望对原始服务器应用安全方法以更改目标资源的状态。
 - en: Unfortunately, safe methods are often confused with idempotent methods. *An
     idempotent method* is safely repeatable, not necessarily safe. From the HTTP specification
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 不幸的是，安全方法经常与幂等方法混淆。*一个幂等方法*是可以安全重复的，但不一定是安全的。来自HTTP规范
 - en: A request method is considered “idempotent” if the intended effect on the server
     of multiple identical requests with that method is the same as the effect for
     a single such request. Of the request methods defined by this specification, PUT,
     DELETE, and safe request methods are idempotent.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果使用该方法进行多个相同请求，其对服务器的预期效果与对单个此类请求的效果相同，则请求方法被认为是“幂等的”。根据本规范定义的请求方法中，PUT、DELETE和安全请求方法是幂等的。
 - en: All safe methods are idempotent, but PUT and DELETE are both idempotent and
     unsafe. It is therefore a mistake to assume idempotent methods are immune to CSRF,
     even when implemented correctly. Figure 16.2 illustrates the difference between
     safe methods and idempotent methods.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有安全方法都是幂等的，但PUT和DELETE都是幂等且不安全的。因此，假设幂等方法免受CSRF的影响是错误的，即使实现正确也是如此。图16.2说明了安全方法和幂等方法之间的区别。
 - en: '![CH16_F02_Byrne](Images/CH16_F02_Byrne.png)'
+  id: totrans-60
   prefs: []
   type: TYPE_IMG
+  zh: '![CH16_F02_Byrne](Images/CH16_F02_Byrne.png)'
 - en: Figure 16.2 The difference between safe methods and idempotent methods
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 图16.2 安全方法和幂等方法之间的区别
 - en: 'Improper state management isn’t just ugly; it will actually leave your site
     vulnerable to attack. Why? In addition to programmers and security standards,
     these conventions are also recognized by browser vendors. For instance, suppose
@@ -301,200 +437,298 @@
     Mallory’s hidden form so she replaces it with the following link. Alice clicks
     the link, sending a GET request with her session ID cookie to admin.alice.com.
     If the /group-membership/ handler accepts GET requests, Mallory still wins:'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 不正确的状态管理不仅仅是丑陋的；它实际上会使您的站点容易受到攻击。为什么？除了程序员和安全标准外，这些约定还得到了浏览器供应商的认可。例如，假设admin.alice.com为Alice的会话ID设置了`SameSite`为`Lax`。这使Mallory的隐藏表单失效，因此她将其替换为以下链接。Alice点击链接，将带有她的会话ID
+    cookie的GET请求发送到admin.alice.com。如果/group-membership/处理程序接受GET请求，Mallory仍然获胜：
 - en: '[PRE2]'
+  id: totrans-63
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: ❶ URL of the forged request
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 伪造请求的URL
 - en: ❷ Request parameters
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 请求参数
 - en: These conventions are even reinforced by web frameworks such as Django as well.
     For example, by default every Django project is equipped with a handful of CSRF
     checks. These checks, which I discuss in later sections, are intentionally suspended
     for safe methods. Once again, proper state management isn’t just a cosmetic design
     feature; it is a matter of security. The next section examines a few ways to encourage
     proper state management.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些约定甚至由Web框架如Django加强。例如，默认情况下，每个Django项目都配备了一些CSRF检查。这些检查，我将在后面的章节中讨论，故意针对安全方法暂停。再次强调，正确的状态管理不仅仅是一种外观设计特征；这是安全性问题。下一节将探讨鼓励正确状态管理的几种方法。
 - en: 16.3.1 HTTP method validation
+  id: totrans-67
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 16.3.1 HTTP方法验证
 - en: Safe method request handlers shouldn’t change state. This is easier said than
     done if you’re working with function-based views. By default, a function-based
     view will handle any request method. This means a function intended for POST requests
     may still be invoked by GET requests.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 安全的方法请求处理程序不应更改状态。如果你正在使用基于函数的视图，这更容易说而不易做。默认情况下，基于函数的视图将处理任何请求方法。这意味着一个用于POST请求的函数可能仍然会被GET请求调用。
 - en: 'The next block of code illustrates a function-based view. The author defensively
     validates the `request` method, but notice how many lines of code this takes.
     Consider how error prone this is:'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的代码块展示了一个基于函数的视图。作者在防御性地验证了`request`方法，但请注意这需要多少行代码。考虑一下这有多容易出错：
 - en: '[PRE3]'
+  id: totrans-70
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: ❶ Programmatically validates the request method
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 以编程方式验证请求方法
 - en: 'Conversely, class-based views map HTTP methods to class methods. There is no
     need to programmatically inspect the `request` method. Django does this for you.
     Mistakes are less likely to happen and more likely to be caught:'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 相反，基于类的视图将HTTP方法映射到类方法。无需以编程方式检查`request`方法。Django会为您完成这项工作。错误发生的可能性较小，而且更可能被捕获：
 - en: '[PRE4]'
+  id: totrans-73
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: ❶ Explicitly declares the request method
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 明确声明请求方法
 - en: 'Why would anyone *validate* the `request` method in a function when they can
     *declare* it in a class? If you’re working on a large legacy codebase, it may
     be unrealistic to refactor every function-based view to a class-based view. Django
     supports this scenario with a few method validation utilities. The `require_http_methods`
     decorator, shown here in bold font, restricts which methods a view function supports:'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 为什么有人在函数中*验证*`request`方法，而不是在类中*声明*它？如果你正在处理一个庞大的遗留代码库，将每个基于函数的视图重构为基于类的视图可能是不现实的。Django通过一些方法验证实用程序来支持这种情况。在这里以粗体显示的`require_http_methods`装饰器限制了视图函数支持的方法：
 - en: '[PRE5]'
+  id: totrans-76
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: Table 16.2 lists three other built-in decorators that wrap `require_http_methods`.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 表16.2列出了另外三个内置装饰器，用于包装`require_http_methods`。
 - en: Table 16.2 Request method validation decorators
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 表16.2 请求方法验证装饰器
 - en: '| Decorator | Equivalent |'
+  id: totrans-79
   prefs: []
   type: TYPE_TB
+  zh: '| 装饰器 | 等效 |'
 - en: '| @require_safe | @require_http_methods([''GET'', ''HEAD'']) |'
+  id: totrans-80
   prefs: []
   type: TYPE_TB
+  zh: '| @require_safe | @require_http_methods([''GET'', ''HEAD'']) |'
 - en: '| @require_POST | @require_http_methods([''POST'']) |'
+  id: totrans-81
   prefs: []
   type: TYPE_TB
+  zh: '| @require_POST | @require_http_methods([''POST'']) |'
 - en: '| @require_GET | @require_http_methods([''GET'']) |'
+  id: totrans-82
   prefs: []
   type: TYPE_TB
+  zh: '| @require_GET | @require_http_methods([''GET'']) |'
 - en: CSRF resistance is an application of defense in depth. In the next section,
     I’ll extend this concept to a couple of HTTP headers. Along the way, I’ll introduce
     you to Django’s built-in CSRF checks.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: CSRF抵抗是深度防御的一种应用。在下一节中，我将将这个概念扩展到一对HTTP头。在此过程中，我将介绍Django内置的CSRF检查。
 - en: 16.4 Referer header validation
+  id: totrans-84
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 16.4 Referer头验证
 - en: For any given request, it is typically useful to the server if it can determine
     where the client obtained the URL. This information is often used to improve security,
     analyze web traffic, and optimize caching. The browser communicates this information
     to the server with a `Referer` request header.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于任何给定的请求，如果服务器能够确定客户端获取URL的位置，则通常是有用的。这些信息通常用于提高安全性，分析Web流量和优化缓存。浏览器通过`Referer`请求头将此信息传递给服务器。
 - en: The name of this header was accidentally misspelled in the HTTP specification;
     the entire industry intentionally maintains the misspelling for the sake of backward
     compatibility. The value of this header is the URL of the referring resource.
     For example, Charlie’s browser sets the `Referer` header to `https:/./search.alice.com`
     when navigating from search.alice.com to social.bob.com.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个头的名称在HTTP规范中被意外地拼错了；整个行业都有意维持这个拼错以保持向后兼容性。这个头的值是引用资源的URL。例如，Charlie的浏览器在从search.alice.com导航到social.bob.com时将`Referer`头设置为`https:/./search.alice.com`。
 - en: Secure sites resist CSRF by validating the `Referer` header. For example, suppose
     a site receives a forged POST request with a `Referer` header set to `https:/./win-iphone.mallory.com`.
     The server detects the attack by simply comparing its domain to the domain of
     the `Referer` header. Finally, it shields itself by rejecting the forged request.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 安全站点通过验证`Referer`头来抵御CSRF。例如，假设一个站点收到一个伪造的POST请求，其`Referer`头设置为`https:/./win-iphone.mallory.com`。服务器通过简单地比较其域和`Referer`头的域来检测攻击。最后，它通过拒绝伪造的请求来保护自己。
 - en: Django performs this check automatically, but on rare occasions you may want
     to relax it for a specific referrer. This is useful if your organization needs
     to send unsafe same-site requests between subdomains. The `CSRF_TRUSTED_ORIGINS`
     setting accommodates this use case by relaxing `Referer` header validation for
     one or more referrers.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: Django 会自动执行此检查，但在极少数情况下，您可能希望针对特定引用者放宽此检查。如果您的组织需要在子域之间发送不安全的同站点请求，则此功能非常有用。`CSRF_TRUSTED_ORIGINS`
+    设置通过放宽对一个或多个引用者的 `Referer` 头验证来适应此用例。
 - en: 'Suppose Alice configures admin.alice.com to accept POST requests from bank.alice.com
     with the following code. Notice that the referrer in this list does not include
     the protocol; HTTPS is assumed. This is because `Referer` header validation, as
     well as Django’s other built-in CSRF checks, applies to only unsafe HTTPS requests:'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设 Alice 配置 admin.alice.com 以接受来自 bank.alice.com 的 POST 请求，并使用以下代码。注意，此列表中的引用者不包括协议；假定为
+    HTTPS。这是因为 `Referer` 头验证以及 Django 的其他内置 CSRF 检查仅适用于不安全的 HTTPS 请求：
 - en: '[PRE6]'
+  id: totrans-90
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: This functionality carries risk. For example, if Mallory compromises bank.alice.com,
     she can use it to launch a CSRF attack against admin.alice.com. A forged request
     in this scenario would contain a valid `Referer` header. In other words, this
     feature builds a one-way bridge between the attack surfaces of these two systems.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 此功能存在风险。例如，如果 Mallory 损坏了 bank.alice.com，她可以使用它对 admin.alice.com 发动 CSRF 攻击。在这种情况下，伪造的请求将包含一个有效的
+    `Referer` 头部。换句话说，此功能在这两个系统的攻击面之间建立了一个单向桥梁。
 - en: In this section, you learned how servers build a defense layer out of the `Referer`
     header. From the user’s perspective, this solution is unfortunately less than
     perfect because it raises privacy concerns for public sites. For example, Bob
     may not want Alice to know which site he was at before visiting bank.alice.com.
     The next section discusses a response header designed to alleviate this problem.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，您了解了服务器如何利用 `Referer` 头构建防御层。从用户的角度来看，这个解决方案不够完美，因为它引发了对公共网站隐私的关注。例如，Bob
+    可能不希望 Alice 知道他在访问 bank.alice.com 之前访问了哪个网站。下一节将讨论一个响应头，旨在缓解这个问题。
 - en: 16.4.1 Referrer-Policy response header
+  id: totrans-93
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 16.4.1 Referrer-Policy 响应头部
 - en: The `Referrer-Policy` response header gives the browser a hint for how and when
     to send the `Referer` request header. Unlike the `Referer` header, the `Referrer-Policy`
     header is spelled correctly.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Referrer-Policy` 响应头部为浏览器提供了有关何时以及如何发送 `Referer` 请求头的提示。与 `Referer` 头不同，`Referrer-Policy`
+    头的拼写是正确的。'
 - en: This header accommodates eight policies. Table 16.3 describes what each of them
     communicates to a browser. Do not bother committing each policy to memory; some
     are fairly complicated. The important takeaway is that some policies, such as
     `no-referrer` and `same-origin`, omit the referrer address for cross-site HTTPS
     requests. Django’s CSRF checks identify these requests as attacks.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 此头部支持八种策略。表 16.3 描述了每种策略向浏览器传达的信息。不要费心记住每个策略；有些相当复杂。重要的是，某些策略，如 `no-referrer`
+    和 `same-origin`，在跨站点 HTTPS 请求中省略了引用地址。Django 的 CSRF 检查将这些请求识别为攻击。
 - en: Table 16.3 Policy definitions for the Referrer-Policy header
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 16.3 Referrer-Policy 头部的策略定义
 - en: '| Policy | Description |'
+  id: totrans-97
   prefs: []
   type: TYPE_TB
+  zh: '| Policy | 描述 |'
 - en: '| no-referrer | Unconditionally omit the Referer header. |'
+  id: totrans-98
   prefs: []
   type: TYPE_TB
+  zh: '| no-referrer | 无条件省略 Referer 头部。 |'
 - en: '| origin | Send only the referrer origin. This includes the protocol, domain,
     and port. The path and query string are not included. |'
+  id: totrans-99
   prefs: []
   type: TYPE_TB
+  zh: '| origin | 仅发送引用来源。这包括协议、域名和端口。不包括路径和查询字符串。 |'
 - en: '| same-origin | Send the referrer address for same-site requests and nothing
     for cross-site requests. |'
+  id: totrans-100
   prefs: []
   type: TYPE_TB
+  zh: '| same-origin | 对于同站点请求发送引用地址，对于跨站点请求不发送任何内容。 |'
 - en: '| origin-when-cross-origin | Send the referrer address for same-site requests
     but send only the referrer origin for cross-site requests. |'
+  id: totrans-101
   prefs: []
   type: TYPE_TB
+  zh: '| origin-when-cross-origin | 对于同站点请求发送引用地址，但对于跨站点请求仅发送引用来源。 |'
 - en: '| strict-origin | Send nothing if the protocol is downgraded from HTTPS to
     HTTP; otherwise, send the referrer origin. |'
+  id: totrans-102
   prefs: []
   type: TYPE_TB
+  zh: '| strict-origin | 如果协议从 HTTPS 降级为 HTTP，则不发送任何内容；否则，发送引用来源。 |'
 - en: '| no-referrer-when-downgrade | Send nothing if the protocol is downgraded;
     otherwise, send the referrer address. |'
+  id: totrans-103
   prefs: []
   type: TYPE_TB
+  zh: '| no-referrer-when-downgrade | 如果协议被降级，则不发送任何内容；否则，发送引用地址。 |'
 - en: '| strict-origin-when-cross-origin | Send the referrer address for same-origin
     requests. For cross-origin requests, send nothing if the protocol is downgraded
     and send the referrer origin if the protocol is preserved. |'
+  id: totrans-104
   prefs: []
   type: TYPE_TB
+  zh: '| strict-origin-when-cross-origin | 对于同源请求发送引用地址。对于跨源请求，如果协议被降级，则不发送任何内容，如果协议被保留，则发送引用来源。
+    |'
 - en: '| unsafe-url | Unconditionally send the referrer address for every request.
     |'
+  id: totrans-105
   prefs: []
   type: TYPE_TB
+  zh: '| unsafe-url | 无条件地发送每个请求的引用地址。 |'
 - en: The `SECURE_REFERRER_POLICY` setting configures the `Referrer-Policy` header.
     It defaults to `same-origin`.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: '`SECURE_REFERRER_POLICY`设置配置`Referrer-Policy`头。默认为`same-origin`。'
 - en: Which policy should you choose? Look at it this way. The extreme ends of the
     risk spectrum are represented by `no-referrer` and `unsafe-url`. The `no-referrer`
     option maximizes user privacy, but every inbound cross-site request will resemble
@@ -503,88 +737,128 @@
     carry private information. This happens even if the request is over HTTP but the
     referring resource was retrieved over HTTPS. Generally, you should avoid the extremes;
     the best policy for your site is almost always somewhere in the middle.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 你应该选择哪种策略？从这个角度来看。风险范围的极端端点由`no-referrer`和`unsafe-url`表示。 `no-referrer`选项最大化了用户隐私，但每个入站跨站点请求都会像一次攻击一样。另一方面，`unsafe-url`选项是不安全的，因为它泄露了整个URL，包括域、路径和查询字符串，所有这些都可能携带私人信息。即使请求是通过HTTP进行的，但引用资源是通过HTTPS检索的，这也会发生。通常情况下，你应该避免极端情况；对于你的网站来说，最佳策略几乎总是在中间某处。
 - en: In the next section, I’ll continue with CSRF tokens, another one of Django’s
     built-in CSRF checks. Like `Referer` header validation, Django applies this layer
     of defense only to unsafe HTTPS requests. This is one more reason to follow proper
     state-management conventions and use TLS.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一节中，我将继续讨论CSRF令牌，这是Django内置的CSRF检查之一。与`Referer`头验证一样，Django仅将此防御层应用于不安全的HTTPS请求。这是遵循适当的状态管理惯例并使用TLS的另一个原因。
 - en: 16.5 CSRF tokens
+  id: totrans-109
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 16.5 CSRF令牌
 - en: 'CSRF tokens are Django’s last layer of defense. Secure sites use CSRF tokens
     to identify intentional unsafe same-site requests from ordinary users like Alice
     and Bob. This strategy revolves around a two-step process:'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: CSRF令牌是Django的最后一道防线。安全的站点使用CSRF令牌来识别像Alice和Bob这样的普通用户的故意不安全的同站点请求。这个策略围绕着一个两步骤的过程展开：
 - en: The server generates a token and sends it to the browser.
+  id: totrans-111
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 服务器生成一个令牌并发送到浏览器。
 - en: The browser echoes back the token in ways the attacker cannot forge.
+  id: totrans-112
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 浏览器以攻击者无法伪造的方式回显令牌。
 - en: 'The server initiates the first portion of this strategy by generating a token
     and sending it to the browser as a cookie:'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器通过生成一个令牌并将其作为cookie发送到浏览器来启动这个策略的第一部分：
 - en: '[PRE7]'
+  id: totrans-114
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: 'Like the session ID cookie, the CSRF token cookie is configured by a handful
     of settings. The `CSRF_COOKIE_SECURE` setting corresponds to the `Secure` directive.
     In chapter 7, you learned that the `Secure` directive prohibits the browser from
     sending the cookie back to the server over HTTP:'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 与会话ID cookie一样，CSRF令牌cookie由一些设置配置。`CSRF_COOKIE_SECURE`设置对应于`Secure`指令。在第7章中，你学到了`Secure`指令禁止浏览器将cookie通过HTTP发送回服务器：
 - en: '[PRE8]'
+  id: totrans-116
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: WARNING `CSRF_COOKIE_SECURE` defaults to `False`, omitting the `Secure` directive.
     This means the CSRF token can be sent over HTTP, where it may be intercepted by
     a network eavesdropper. You should change this to `True`.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 `CSRF_COOKIE_SECURE`默认为`False`，省略了`Secure`指令。这意味着CSRF令牌可以通过HTTP发送，在那里可能被网络窃听者截获。你应该将其更改为`True`。
 - en: The details of Django’s CSRF token strategy depend on whether or not the browser
     sends a POST request. I describe both scenarios in the next two sections.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: Django的CSRF令牌策略的详细信息取决于浏览器是否发送了POST请求。我在接下来的两节中描述了两种情况。
 - en: 16.5.1 POST requests
+  id: totrans-119
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 16.5.1 POST请求
 - en: 'When the server receives a POST request, it expects to find the CSRF token
     in two places: a cookie and a request parameter. The browser obviously takes care
     of the cookie. The request parameter, on the other hand, is your responsibility.'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 当服务器接收到一个POST请求时，它期望在两个地方找到CSRF令牌：一个cookie和一个请求参数。浏览器显然会处理cookie。另一方面，请求参数是你的责任。
 - en: 'Django makes this easy when it comes to old-school HTML forms. You have already
     seen several examples of this in earlier chapters. For instance, in chapter 10,
     Alice used a form, shown here again, to send Bob a message. Notice that the form
     contains Django’s built-in `csrf_token` tag, shown in bold font:'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 当涉及到老式的HTML表单时，Django会让这变得很容易。你在之前的章节中已经看到了几个例子。例如，在第10章中，Alice使用了一个表单，再次显示在这里，给Bob发送了一条消息。注意表单包含了Django的内置`csrf_token`标记，以粗体字显示：
 - en: '[PRE9]'
+  id: totrans-122
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: ❶ This tag renders the CSRF token as a hidden input field.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 这个标记将CSRF令牌呈现为一个隐藏的输入字段。
 - en: 'The template engine converts the `csrf_token` tag into the following HTML input
     field:'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 模板引擎将`csrf_token`标记转换为以下HTML输入字段：
 - en: '[PRE10]'
+  id: totrans-125
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: After the request arrives, Django extracts the token from the cookie and the
     parameter. The request is accepted only if the cookie and the parameter match.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 请求到达后，Django 从 cookie 和参数中提取令牌。只有当 cookie 和参数匹配时，请求才会被接受。
 - en: How can this stop a forged request from win-iphone.mallory.com? Mallory can
     easily embed her own token in a form hosted from her site, but the forged request
     will not contain a matching cookie. This is because the `SameSite` directive for
@@ -592,123 +866,187 @@
     will therefore omit the cookie for unsafe cross-site requests. Furthermore, Mallory’s
     site simply has no way to modify the directive because the cookie doesn’t belong
     to her domain.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 这如何阻止来自 win-iphone.mallory.com 的伪造请求呢？Mallory 可以轻松地在她的网站上嵌入自己的令牌，但是伪造的请求不会包含匹配的
+    cookie。这是因为 CSRF 令牌 cookie 的 `SameSite` 指令是 `Lax`。正如你在前面的章节中学到的那样，浏览器因此会在不安全的跨站点请求中省略
+    cookie。此外，Mallory 的网站根本无法修改该指令，因为 cookie 不属于她的域。
 - en: 'If you’re sending POST requests via JavaScript, you must programmatically emulate
     the `csrf_token` tag behavior. To do this, you must first obtain the CSRF token.
     The following JavaScript accomplishes this by extracting the CSRF token from the
     `csrftoken` cookie:'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你通过 JavaScript 发送 POST 请求，你必须程序化地模拟 `csrf_token` 标签的行为。为此，你必须首先获取 CSRF 令牌。下面的
+    JavaScript 通过从 `csrftoken` cookie 中提取 CSRF 令牌来实现这一点：
 - en: '[PRE11]'
+  id: totrans-129
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: 'Next, the token must then be sent back to the server as a POST parameter, shown
     here in bold font:'
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，令牌必须以 POST 参数的形式发送回服务器，如粗体字所示：
 - en: '[PRE12]'
+  id: totrans-131
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: ❶ Sends the CSRF token as a POST parameter
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 将 CSRF 令牌作为 POST 参数发送
 - en: ❷ Handles the response
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 处理响应
 - en: POST is only one of many unsafe request methods; Django has a different set
     of expectations for the others.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: POST 只是许多不安全请求方法之一；Django 对其他请求方法有不同的期望。
 - en: 16.5.2 Other unsafe request methods
+  id: totrans-135
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 16.5.2 其他不安全的请求方法
 - en: 'If Django receives a PUT, PATCH, or DELETE request, it expects to find the
     CSRF token in two places: a cookie and a custom request header named `X-CSRFToken`.
     As with POST requests, a little extra work is required.'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果 Django 收到 PUT、PATCH 或 DELETE 请求，它期望在两个地方找到 CSRF 令牌：一个是 cookie，另一个是名为 `X-CSRFToken`
+    的自定义请求头。与 POST 请求一样，需要额外的工作。
 - en: 'The following JavaScript demonstrates this approach from the browser’s perspective.
     This code extracts the CSRF token from the cookie and programmatically copies
     it to a custom request header, shown in bold font:'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的 JavaScript 代码展示了这种方法从浏览器的角度来看。这段代码从 cookie 中提取 CSRF 令牌，并将其程序化地复制到一个自定义请求头中，如粗体所示：
 - en: '[PRE13]'
+  id: totrans-138
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: ❶ Uses an unsafe request method
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 使用了一个不安全的请求方法
 - en: ❷ Adds CSRF token with a custom header
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 使用自定义头添加 CSRF 令牌
 - en: Django extracts the token from the cookie and the header after it receives a
     non-POST unsafe request. If the cookie and the header do not match, the request
     is rejected.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: Django 在收到非 POST 不安全请求后，从 cookie 和请求头中提取令牌。如果 cookie 和请求头不匹配，则请求会被拒绝。
 - en: This approach doesn't play nicely with certain configuration options. For example,
     the `CSRF_COOKIE_HTTPONLY` setting configures the `HttpOnly` directive for the
     CSRF token cookie. In a previous chapter, you learned that the `HttpOnly` directive
     hides a cookie from client-side JavaScript. Assigning this setting to `True` will
     consequently break the previous code example.
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种方法与某些配置选项不兼容。例如，`CSRF_COOKIE_HTTPONLY` 设置为为 CSRF 令牌 cookie 配置 `HttpOnly` 指令。在之前的章节中，你了解到
+    `HttpOnly` 指令会将 cookie 隐藏在客户端 JavaScript 中。将此设置为 `True` 将会导致前面的代码示例出现错误。
 - en: 'Note Why does `CSRF_COOKIE_HTTPONLY` default to `False` while `SESSION _COOKIE_HTTPONLY`
     defaults to `True`? Or, why does Django omit `HttpOnly` for CSRF tokens while
     using it for session IDs? By the time an attacker is in a position to access a
     cookie, you no longer have to worry about CSRF. The site is already experiencing
     a much bigger problem: an active XSS attack.'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意：为什么 `CSRF_COOKIE_HTTPONLY` 默认为 `False`，而 `SESSION_COOKIE_HTTPONLY` 默认为 `True`？或者，为什么
+    Django 在会话 ID 中使用 `HttpOnly`，而在 CSRF 令牌中却省略了它？当攻击者有能力访问 cookie 时，你不再需要担心 CSRF。网站已经遇到了一个更严重的问题：主动的
+    XSS 攻击。
 - en: The previous code example will also break if Django is configured to store the
     CSRF token in the user’s session instead of a cookie. This alternative is configured
     by setting `CSRF_USE_SESSIONS` to `True`. If you choose this option, or if you
     choose to use `HttpOnly`, you will have to extract the token from the document
     in some way if your templates need to send unsafe non-POST requests.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 前面的代码示例如果 Django 被配置为将 CSRF 令牌存储在用户会话中而不是 cookie 中，也会失败。通过将 `CSRF_USE_SESSIONS`
+    设置为 `True` 来配置这种替代方案。如果你选择了这个选项，或者选择使用 `HttpOnly`，那么如果你的模板需要发送不安全的非 POST 请求，你将不得不以某种方式从文档中提取令牌。
 - en: WARNING Regardless of the request method, it is important to avoid sending the
     CSRF token to another website. If you are embedding the token in an HTML form,
     or if you are adding it to an AJAX request header, always make certain the cookie
     is being sent back to where it came from. Failing to do this will expose the CSRF
     token to another system, where it could be used against you.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 无论请求方法如何，都很重要避免将 CSRF 令牌发送到另一个网站。如果你将令牌嵌入到 HTML 表单中，或者将其添加到 AJAX 请求头中，始终确保
+    cookie 被发送回到它来自哪里。如果不这样做，将会使 CSRF 令牌暴露给另一个系统，从而可能被用来攻击你。
 - en: CSRF demands layers of defense in the same way XSS does. Secure systems compose
     these layers out of request headers, response headers, cookies, tokens, and proper
     state management. In the next chapter, I continue with cross-origin resource sharing,
     a topic that is often conflated with CSRF.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: CSRF 需要像 XSS 一样的防御层。安全系统通过请求头、响应头、cookie、令牌和适当的状态管理构建这些层。在下一章中，我将继续介绍跨域资源共享，这是一个经常与
+    CSRF 混淆的主题。
 - en: Summary
+  id: totrans-147
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 摘要
 - en: A secure site can differentiate an intentional request from a forged request.
+  id: totrans-148
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个安全的站点可以区分意图请求和伪造请求。
 - en: '`None` and `Strict` occupy opposite ends of the `SameSite` risk spectrum.'
+  id: totrans-149
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`None` 和 `Strict` 处于 `SameSite` 风险谱的相反极端。'
 - en: '`Lax` is a reasonable trade-off, between the risk of `None` and `Strict`.'
+  id: totrans-150
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Lax` 是一个合理的折中方案，处于 `None` 和 `Strict` 之间的风险之间。'
 - en: 'Other programmers, standards bodies, browser vendors, and web frameworks all
     agree: follow proper state management conventions.'
+  id: totrans-151
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 其他程序员、标准机构、浏览器供应商和 Web 框架都同意：遵循适当的状态管理约定。
 - en: Don’t validate a request method in a function when you can declare it in a class.
+  id: totrans-152
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 当你可以在类中声明请求方法时，不要在函数中验证请求方法。
 - en: Simple `Referer` header validation and complex token validation are both effective
     forms of CSRF resistance.
+  id: totrans-153
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 简单的 `Referer` 头验证和复杂的令牌验证都是有效的 CSRF 抵抗形式。

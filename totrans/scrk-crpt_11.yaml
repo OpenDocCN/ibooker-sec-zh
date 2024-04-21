@@ -3,35 +3,42 @@
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: '**11** 块密码'
 - en: This chapter covers
   id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: The DES and AES encryption standards
   id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: DES和AES加密标准
 - en: Ciphers based on matrix multiplication
   id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 基于矩阵乘法的密码
 - en: Involutory ciphers, where encryption and decryption are identical
   id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**对称密码**，其中加密和解密是相同的'
 - en: Ripple ciphers
   id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**涟漪密码**'
 - en: Block chaining
   id: totrans-6
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**块链**'
 - en: We have already seen several ciphers that operate on text that has been divided
     into blocks of characters. Some operate on small blocks of just 2 or 3 characters,
     such as Playfair, Two Square, Three Square and Four Square. Some operate on longer
@@ -42,6 +49,8 @@
   id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经看到了几种对文本进行分块处理的密码。一些操作于仅由2或3个字符组成的小块，例如Playfair、Two Square、Three Square和Four
+    Square。一些操作于更长的块，但每次只更改2或3个字符，例如bifid、trifid或FR-Actionated Morse。这些密码在每个块的一部分上进行局部操作。明文中的一个字符的变化通常最多会改变2或3个密文字符。
 - en: This chapter deals with much stronger types of block ciphers. In these ciphers,
     changing even a single bit of the plaintext, or a single bit of the key, will
     change roughly half of the bits of the ciphertext, and nearly all of the bytes
@@ -51,16 +60,19 @@
   id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涉及更强大类型的块密码。在这些密码中，即使改变明文的一个比特，或者密钥的一个比特，也会改变大约一半的密文比特，以及几乎所有的密文字节。这表明密码是高度非线性的。这些密码仅适用于计算机使用，通常配有专用硬件来加速加密。
 - en: Most of the remainder of this book is concerned with computer ciphers and methods.
     If you are not concerned about computer methods, simply skip those sections.
   id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书的大部分其余内容都与计算机密码和方法有关。如果您不关心计算机方法，只需跳过这些部分。
 - en: 11.1 Substitution-permutation network
   id: totrans-10
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '**11.1** 替代-置换网络'
 - en: Many block ciphers take the form of a *substitution-permutation network* (SPN).
     This idea was first described by Horst Feistel of IBM in 1971\. Encipherment consists
     of several rounds, each of which may consist of one or more substitution steps
@@ -69,6 +81,7 @@
   id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 许多块密码采用*替代-置换网络*（SPN）的形式。这个想法首次由IBM的Horst Feistel于1971年描述。加密由几轮组成，每轮可能包括一个或多个替代步骤和/或一个或多个置换步骤。通常有一个主键来控制整体操作。
 - en: The most common choices for the substitution step are (1) simple substitution,
     (2) exclusive-ORing part of the block with part of the key, or (3) polyalphabetic
     substitution under the control of a key. The key may consist of bits taken from
@@ -81,6 +94,7 @@
   id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 替代步骤的最常见选择是（1）简单替代，（2）用密钥的一部分与块的一部分进行异或，或者（3）在密钥的控制下进行多表替代。密钥可以由主密钥和/或未被替代的块的部分的位组成。例如，块中的奇数字节可以用作对偶数字节进行加密的密钥，反之亦然。一种稍微复杂的替代形式是从密钥中获取一些比特，将它们与块中相同数量的比特进行异或，并将结果用作替换块的另一部分的多表密钥。
 - en: The substitution alphabets are usually chosen beforehand and never change. These
     are called *S-boxes*. They may be simple substitutions, or they may be polyalphabetic
     substitutions, so the S-box is the computer equivalent of a tableau. They commonly
@@ -91,6 +105,7 @@
   id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 替代字母表通常是预先选择的，永远不会改变。这些被称为*S-boxes*。它们可能是简单的替代，也可能是多表替代，因此S-box是计算机的等价物。它们通常需要4到8个关键位来选择表格的行，并以相同数量的位作为输入和输出。通常会有一些复杂的数学运算用于构建替代字母表。特别是，这些字母表被设计为非线性的，这在第12.3节中有详细说明。
 - en: The permutations for each round are also usually predetermined and unchanging.
     The permutations may operate on units that are single bits, 4-bit groups or 8-bit
     bytes. In most block ciphers there are no keys for the permutations; they are
@@ -98,6 +113,7 @@
   id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 每一轮的置换通常是预先确定且不变的。置换可以操作单个比特、4 位组或 8 位字节。在大多数分组密码中，置换没有密钥；它们是硬编码在软件中或硬连到加密芯片中的。
 - en: The earliest of the modern block ciphers was *Lucifer*, designed by Horst Feistel
     of IBM. The name was changed several times before Feistel settled on Lucifer because
     he wanted a name that embodied the diabolic nature of the design. Feistel also
@@ -108,6 +124,9 @@
   id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 现代分组密码中最早的是*Lucifer*，由 IBM 的 Horst Feistel 设计。在 Feistel 最终确定 Lucifer 之前，名称已经多次更改，因为他想要一个体现设计的邪恶本质的名称。Feistel
+    还反复改变了 Lucifer 的设计，从最初的在 128 位块上工作的 48 位密钥到在 128 位块上工作的 128 位密钥。您可以在 [https://derekbruff.org/blogs/fywscrypto/tag/lucifer](https://derekbruff.org/blogs/fywscrypto/tag/lucifer)
+    (访问时间：2022 年 5 月) 上阅读有关 Lucifer 的更多信息。
 - en: Here is a diagram of a miniature substitution-permutation network cipher. This
     cipher takes a 16-bit plaintext and produces a 16-bit ciphertext. It has 4 substitution
     rounds and 3 transposition rounds. The substitutions and transpositions are fixed;
@@ -119,27 +138,35 @@
   id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个微型置换-置换网络密码的图示。此密码接受 16 位明文并产生 16 位密文。它有 4 轮替换和 3 轮换位。替换和换位是固定的；它们内置到硬件中。使用了
+    4 种不同的替换，分别是 S[1]、S[2]、S[3] 和 S[4]。每个替换需要 4 个输入比特加上一个密钥，通常是 4、6 或 8 位，因此如果所有密钥都是独立的，则密码可能具有
+    64、96 或 128 位密钥。每一轮的换位都不同。
 - en: '![11-unnumb-1](../Images/11-unnumb-1.png)'
   id: totrans-17
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-1](../Images/11-unnumb-1.png)'
 - en: This mini network cipher is rated Three, because it is equivalent to a bigram
     substitution, but it can be scaled up from 16 bits to 64 bits with 6 substitution
     rounds, rated Eight, or 128 bits with 8 substitution rounds, rated Ten.
   id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个微型网络密码被评为三级，因为它相当于一个双字母替换，但它可以通过 6 轮替换从 16 位扩展到 64 位，评为八级，或者通过 8 轮替换从 16 位扩展到
+    128 位，评为十级。
 - en: The design of the final version of Lucifer led directly to the *Data Encryption
     Standard* (DES) which was formally adopted by the National Bureau of Standards
     (NBS) in 1977\. Therefore, let’s jump directly to it.
   id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 最终版本的 Lucifer 设计直接导致了*数据加密标准* (DES)，该标准于 1977 年正式由国家标准局 (NBS) 采纳。因此，让我们直接进入它。
 - en: 11.2 Data Encryption Standard (DES)
   id: totrans-20
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 11.2 数据加密标准 (DES)
 - en: The DES was developed at IBM in 1976 by trimming down the then-current version
     of Lucifer. That version used 128-bit keys and worked on 128-bit blocks of the
     message. The block size was reduced to 64 bits, which can be justified because
@@ -150,12 +177,17 @@
   id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: DES 是 1976 年在 IBM 开发的，通过削减当时的 Lucifer 版本实现。该版本使用了 128 位密钥，并且在消息的 128 位块上工作。块大小缩小为
+    64 位，这是可以接受的，因为这降低了硬件成本。IBM 想要使用 64 位密钥，但 NSA 坚持进一步减少密钥，降至 56 位，理由薄弱，声称额外的 8 位可以用作校验和。普遍认为，实际原因是
+    NSA 能够解决 56 位 DES，但无法解决 64 位 DES。
 - en: IBM originally planned to make DES a 6-round cipher. When the NSA told IBM that
     it could crack the 6-round version, IBM jumped straight to 16 rounds, the same
     number of rounds that Feistel had used in his final version of Lucifer.
   id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: IBM 最初计划将 DES 设计为 6 轮密码。当 NSA 告诉 IBM 它可以破解 6 轮版本时，IBM 直接跳到 16 轮，与 Feistel 在他的
+    Lucifer 最终版本中使用的轮数相同。
 - en: A new feature of DES, not found in any version of Lucifer, is a bit transposition
     before the first and after the last substitution steps. These are 8×8 columnar
     transpositions in which the order of the columns and the order of the rows are
@@ -166,6 +198,7 @@
   id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: DES的一个新特性，在任何Lucifer版本中都找不到，就是在第一个和最后一个替换步骤之前进行位转置。这些是8×8列转置，其中列的顺序和行的顺序都被改变。对于初始置换，块的64位从左到右写入网格中。列按相反顺序读出，即8、7、6、5、4、3、2、1。行按顺序读出，即2、4、6、8、1、3、5、7。最终置换是其逆置。
 - en: These transpositions have no cryptographic value. They add nothing to the strength
     of DES. They were added because the NSA had told IBM that the encryption should
     be fast when done in hardware, but slow to simulate in software. The idea was
@@ -176,6 +209,7 @@
   id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些置换对加密的价值是没有的。它们并没有增加DES的强度。它们之所以被添加，是因为NSA告诉IBM，硬件加密应该很快，但在软件中模拟时应该很慢。其想法是通过软件尝试所有可能的密钥来使Emily破解密码更加耗时，即通过穷举法尝试破解密码。IBM相信，置换位会使任何软件实现非常慢。IBM可能设想了一种逐位提取比特并通过掩码进行位移的过程，然后将其移动到位。
 - en: This turned out to be all wrong. First, enemies wishing to crack DES could simply
     purchase the encryption chips through proxies. Second, for some legitimate applications
     DES needed to be embedded in software, so the software had to be fast. Third,
@@ -184,6 +218,7 @@
   id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果证明这完全是错误的。首先，希望破解DES的敌人可以简单地通过代理购买加密芯片。其次，对于一些合法的应用程序，DES需要嵌入软件中，因此软件必须快速。第三，位置换可以快速完成，而不必提取单个位或进行位移。我将在第11.2.3节中展示如何做到这一点。
 - en: Between the initial and final transpositions, DES has 16 substitution rounds.
     The 64-bit block is split into two 32-bit halves. In each round the right half
     serves to encipher the left half. The right half is first expanded from 32 bits
@@ -197,6 +232,7 @@
   id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 在初始和最终置换之间，DES有16个替换轮。64位块分为两个32位的半块。在每一轮中，右半部分用于加密左半部分。首先，将右半部分从32位扩展到48位，如下所示。将32位视为八个4位组。这些组中的每个都通过附加前面和后面的位（来自相邻的组）从4位扩展到6位。例如，第三组将由第9到12位组成。这个4位组将通过在左边附加第8位和在右边附加第13位来从4位扩展到六位。换句话说，6位组将是位8、9、10、11、12、13。八个这样的6位组形成一个48位块。
 - en: This 48-bit block is then exclusive-ORed with 48 bits taken from the 56-bit
     key. Which 48 bits are used for each round is determined by a *key schedule*,
     which is basically shifting the full 56-bit key a few positions after each round.
@@ -207,10 +243,12 @@
   id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后，将此48位块与从56位密钥中取出的48位进行异或。确定每一轮使用哪48位由一个*密钥调度*确定，基本上是在每一轮后将完整的56位密钥向左或向右移动几个位置。然后，得到的八个6位组被输入到八个固定的S盒中，即替换。每个S盒给出一个4位结果，因此八个4位结果组成一个32位块。然后将此块与整个64位块的左半部分进行异或。
 - en: Historic aside
   id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 历史小插曲
 - en: IBM did not design DES to have a key schedule. The original idea was to cycle
     the 64-bit key by 4 bit positions after each of the 16 rounds. That left the key
     in its original position, ready for enciphering the next block. IBM was forced
@@ -220,6 +258,8 @@
   id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: IBM 并未设计 DES 以具有密钥调度。最初的想法是在每个 16 轮后将 64 位密钥循环移位 4 位位置。这样留下了密钥在其原始位置，准备加密下一个块。当
+    NSA 要求 IBM 将密钥大小减小到 56 位时，IBM 被迫引入了密钥调度。四位移位不再起作用。当然，IBM 将密钥调度称为“功能”。
 - en: Another way to look at each S-box is to picture it as a 4×16 tableau. Like a
     Belaso or Vigenère tableau, each row is a substitution table for 4-bit groups.
     The two extra bits that were appended to the 4-bit groups are used to select which
@@ -227,6 +267,8 @@
   id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 查看每个 S-box 的另一种方法是将其想象为一个 4×16 的表格。像 Belaso 或 Vigenère 表格一样，每行都是 4 位组的替换表。附加到
+    4 位组的两个额外位用于选择表格的 4 行中的哪一行。
 - en: Each S-box was carefully designed so that there would be as little correlation
     as possible between the 6 input bits and the 4 output bits. The NSA had found
     a top-secret way of designing the S-boxes to give the lowest possible correlation.
@@ -236,16 +278,20 @@
   id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个 S-box 都经过精心设计，以尽可能减少 6 个输入位和 4 个输出位之间的相关性。NSA 发现了一种最低相关性的设计 S-box 的绝密方法。由于
+    DES 如此重要，NSA 决定与 DES 的 IBM 设计者分享这个秘密。然而，在检查 IBM 设计后，NSA 发现 IBM 也发现了这种方法，并在其设计中使用了它。
 - en: After each round, except the last, the left and right halves of the 64-bit block
     are swapped.
   id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 每轮结束后，除了最后一轮外，64 位块的左半部分和右半部分被交换。
 - en: 11.2.1 Double DES
   id: totrans-33
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.2.1 Double DES
 - en: It was understood from the outset that a 56-bit key was too small for strong
     security. Only 4 months after DES was adopted, Electronic Frontier Foundation
     built a $250,000 special-purpose computer called Deep Crack that solved a DES
@@ -253,6 +299,8 @@
   id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 从一开始就明白，56 位密钥对于强大的安全性来说太小了。仅在 DES 被采纳后的 4 个月，电子前沿基金会构建了一台名为 Deep Crack 的 25
+    万美元的专用计算机，仅用了 56 小时就解密了一条 DES 消息。
 - en: The first proposed solution to this apparent weakness was to encipher a message
     twice with DES using two different keys. This idea was rejected because it was
     theoretically possible to mount a meet-in-the-middle attack that would crack DES.
@@ -264,6 +312,8 @@
   id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 对这种明显的弱点的第一个提出的解决方案是使用两个不同的密钥两次使用 DES 加密消息。这个想法被拒绝了，因为从理论上讲可以发动一种中间相遇攻击来破解 DES。也就是说，你从明文向前工作，从密文向后工作，并在中间相遇。你通过获取已知明文的密文块来执行此操作。你使用所有
+    2^(56) 可能的密钥加密明文，然后使用所有 2^(56) 可能的密钥解密密文。您比较这些结果，无论您在哪里找到匹配项，您都有可能的密钥对。
 - en: This attack was only theoretical. You would need to store 2 sets of 2^(56) solutions,
     meaning 2^(60) bytes, to make all of the comparisons. No computer in the 1970s
     approached that level of storage. Further, you would expect about 2^(48) matches.
@@ -274,11 +324,15 @@
   id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种攻击仅仅是理论性的。您需要存储 2 组 2^(56) 解决方案，即 2^(60) 字节，以进行所有比较。1970 年代的计算机都没有达到那个存储水平。此外，您预计将获得约
+    2^(48) 个匹配项。所有这些都需要被检查。这是一个艰巨的任务。但是 IBM 和 NSA 希望 DES 能够持续 20 到 30 年，并且有可能在这段时间内这种攻击变得实用。可能会使用
+    Double DES，但从未被接受为标准。
 - en: 11.2.2 Triple DES
   id: totrans-37
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.2.2 Triple DES
 - en: '*Triple DES*, or *3DES*, was another attempt to compensate for the small 56-bit
     key size of DES. It consists of taking a 64-bit block and encrypting it with one
     DES key, decrypting it with a second DES key, then encrypting it with a third
@@ -287,6 +341,8 @@
   id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: '*三重 DES*，或 *3DES*，是另一种补偿 DES 小 56 位密钥尺寸的尝试。它包括将一个 64 位块加密一个 DES 密钥，用第二个 DES
+    密钥解密，然后用第三个 DES 密钥加密。显然，这比普通 DES 花费的时间多 3 倍。它没有被广泛使用，因为这使它变得很慢。'
 - en: There is a much faster way of increasing the security of DES. Simply exclusive-OR
     the 64-bit block with a 64-bit key before the DES step, and with a different 64-bit
     key after the DES step. There would be 3 independent keys, the two 64-bit exclusive-OR
@@ -295,6 +351,8 @@
   id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 提高 DES 安全性的更快方法是使用一个 64 位密钥在 DES 步骤之前对 64 位块进行异或操作，并在 DES 步骤之后使用另一个 64 位密钥进行异或操作。将有
+    3 个独立的密钥，两个 64 位异或密钥和 56 位 DES 密钥，总共 184 位。这种方法只比单个 DES 加密多花一点时间。
 - en: Even if the second exclusive-OR key could be determined by looking at the waveforms,
     this is still far stronger than single DES. You can eliminate the danger of the
     waveforms undoing the exclusive-OR by performing keyed simple substitutions before
@@ -302,11 +360,13 @@
   id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 即使第二个异或密钥可以通过查看波形来确定，这仍然比单个 DES 更强大。你可以通过在 DES 步骤之前和之后执行键控简单的替换来消除波形撤销异或的危险。
 - en: '*11.2.3 Fast bit transposition'
   id: totrans-41
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '*11.2.3 快速位换位'
 - en: DES starts and ends with a bit transposition. The naive way of doing this would
     be to unpack the bits one by one, shift them into the desired position, and OR
     them into place. There is a much faster method, invented independently by me and
@@ -316,10 +376,13 @@
   id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: DES 的起始和结束都涉及位换位。这样做的朴素方式是逐个解压位，将它们移动到期望的位置，然后将它们 OR 到位。有一种更快的方法，大约在 1975 年，由我和
+    IBM 纽约约克镇研究中心的 David Stevenson 独立发明。我将用一个 32 位块的换位来演示这种技术。假设明文，以位形式表示，是
 - en: '![11-unnumb-2](../Images/11-unnumb-2.png)'
   id: totrans-43
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-2](../Images/11-unnumb-2.png)'
 - en: where each Latin or Greek letter represents the value of one bit, that is, it
     can be either 0 or 1\. Let’s see how this can be transposed so that a moves to
     the third position, b moves to the sixth position, c moves to the ninth position,
@@ -327,6 +390,7 @@
   id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中每个拉丁字母或希腊字母代表一个比特的值，即它可以是 0 或 1。让我们看看如何进行转置，使得 a 移动到第三个位置，b 移动到第六个位置，c 移动到第九个位置，依此类推。
 - en: 'The transposition can be accomplished by using 4 special tables, each with
     256 entries. Each entry is a 32-bit block or computer word. The first table shows
     the transposed positions of the 8 bits in the first byte of the 32-bit block,
@@ -334,37 +398,46 @@
   id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过使用 4 个特殊表，每个表都有 256 个条目，可以实现转位。每个条目都是一个 32 位块或计算机字。第一个表显示了 32 位块的第一个字节中 8
+    位的转置位置，如下所示：
 - en: '![11-unnumb-3](../Images/11-unnumb-3.png)'
   id: totrans-46
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-3](../Images/11-unnumb-3.png)'
 - en: 'The second table shows the positions of the 8 bits in the second byte of the
     32-bit block:'
   id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二个表显示了 32 位块的第二个字节中 8 位的位置：
 - en: '![11-unnumb-4](../Images/11-unnumb-4.png)'
   id: totrans-48
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-4](../Images/11-unnumb-4.png)'
 - en: 'The third table shows the positions of the 8 bits in the third byte of the
     32-bit block:'
   id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三个表显示了 32 位块的第三个字节中 8 位的位置：
 - en: '![11-unnumb-5](../Images/11-unnumb-5.png)'
   id: totrans-50
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-5](../Images/11-unnumb-5.png)'
 - en: 'The fourth table shows the positions of the 8 bits in the fourth byte of the
     32-bit block:'
   id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 第四个表显示了 32 位块的第四个字节中 8 位的位置：
 - en: '![11-unnumb-6](../Images/11-unnumb-6.png)'
   id: totrans-52
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-6](../Images/11-unnumb-6.png)'
 - en: 'The dots are there to make it easy for you to see where the 32 bits are placed.
     They represent zeros in the computer word. The transposition can now be accomplished
     by looking up the 4 bytes in these special tables and ORing the four resulting
@@ -372,10 +445,12 @@
   id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 点的存在使你能够轻松看到 32 位的放置位置。它们代表计算机字中的零。现在可以通过查找这些特殊表中的 4 个字节并将四个结果 32 位块进行 OR 运算来实现转置，就像这样：
 - en: '![11-unnumb-7](../Images/11-unnumb-7.png)'
   id: totrans-54
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-7](../Images/11-unnumb-7.png)'
 - en: 'This requires no shifts and no masking. The entire 32-bit transposition uses
     only 4 table look-ups and 3 OR operations. One use of this technique is to flip
     an 8×8 block of bits. This can be done using 8 tables of 256 entries, or just
@@ -384,19 +459,23 @@
   id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 这不需要移位和掩码。整个32位的置换只使用了4个表查找和3个OR操作。这种技术的一个用途是翻转一个8×8位的块。这可以使用8个256个条目的表，或者只是一个单表来完成，将位移动到每个字节内的正确位置，就像这样：
 - en: '![11-unnumb-8](../Images/11-unnumb-8.png)'
   id: totrans-56
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-8](../Images/11-unnumb-8.png)'
 - en: '******'
   id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: '******'
 - en: 11.2.4 Short blocks
   id: totrans-58
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.2.4 短块
 - en: An issue that comes up with DES, and other block ciphers, is what to do with
     short blocks. With DES, all of the blocks must have exactly 8 characters. Suppose
     your message has 803 characters, 100 blocks of 8 characters plus 3 over. How do
@@ -404,6 +483,7 @@
   id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 在DES和其他块密码中遇到的一个问题是如何处理短块。对于DES，所有的块必须恰好有8个字符。假设您的消息有803个字符，即100个8个字符的块加上3个多余的字符。你如何处理那最后的3个字符？
 - en: The traditional solution is to pad the last block with nulls. With paper-and-pencil
     cryptography, some favorite techniques were to append XXXXX or NULLS as the last
     5 characters. Unfortunately, this gives Emily 5 letters of known plaintext. Some
@@ -415,6 +495,7 @@
   id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 传统的解决方案是用空值填充最后一个块。使用纸和笔密码学时，一些常用的技术是在最后5个字符附加XXXXX或NULLS。不幸的是，这给了Emily 5个已知明文字母。对于手动密码的一些更好的解决方案是使用标记，比如XX或JQ，然后将剩余的填充字符随机选择，比如XXESV，或者简单地使用任意组合的低频字符进行填充，比如ZPGWV。解密取决于Riva能否识别真实消息的结束和填充的开始。
 - en: 'In the computer, there are two issues that padding must address. First, Riva
     must be able to tell where the message ends, or, equivalently, how many bytes
     of padding there are. Second, Sandra wants to give Emily as little known plaintext
@@ -423,16 +504,19 @@
   id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 在计算机中，填充必须解决两个问题。首先，Riva必须能够确定消息的结束位置，或者等效地说，填充有多少字节。其次，Sandra希望尽可能少地给出已知明文。一些提议的方案在这两个方面都失败了。例如，有一种方案建议在消息的末尾填充以下内容之一：
 - en: '![11-unnumb-9](../Images/11-unnumb-9.png)'
   id: totrans-62
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-9](../Images/11-unnumb-9.png)'
 - en: This can give Emily up to 31 bytes of known plaintext when the block size is
     32\. In a general file the last block could be a full block ending in 01, or even
     02 02, which could be mistaken for padding.
   id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 当块大小为32时，这可能会给出高达31个字节的已知明文给Emily。在一般文件中，最后一个块可以是以01结尾的完整块，甚至是02 02，这可能会被误认为是填充。
 - en: A better solution is to place a length field somewhere in the plaintext file.
     This need not be the number of bytes in the file, which could require a 4-byte
     length field, it can be the number of padding bytes in the last block. For DES
@@ -443,6 +527,7 @@
   id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 更好的解决方案是在明文文件中的某个位置放置一个长度字段。这不必是文件中的字节数，这可能需要一个4字节的长度字段，它可以是最后一个块中填充字节的数量。对于DES，这是一个从0到7的数字，因此只需要3位。长度字段可以放在文件的任何位置。最常见的地方是第一个字节、最后一个字节和最后一个块的第一个字节。填充字节本身可以随机选择。
 - en: To avoid giving Emily even one byte of known plaintext, the length can be coded
     in either the low-order or the high-order bits of the length indicator, and the
     remaining unused bits can be random. This lets the length indicator take any value
@@ -450,6 +535,7 @@
   id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了避免给Emily甚至一个字节的已知明文，长度可以编码为长度指示符的低位或高位比特，并且其余未使用的比特可以是随机的。这样，长度指示符可以取值从0到255。
 - en: By the way, there is no law that you have to pad at the end of the file. If
     you want to pad at the front, at the start of the last block, or in the middle
     of 13th block, go ahead. As long as Sandra and Riva agree, they can do whatever
@@ -531,16 +617,20 @@
   id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 两个矩阵 X 和 Y 的乘积，记作 XY，是通过将 X 的行乘以 Y 的列得到的。让我们详细看看这是如何工作的。矩阵的行是向量，矩阵的列也是向量。长度相同的两个向量可以进行所谓的*内积*乘法，有时也称为*点乘*，因为向量乘法有时用
+    ● 点表示。这个操作将一个向量的元素与第二个向量的对应元素逐个相乘，然后取这些乘积的和。
 - en: Suppose the first vector is [a,b,c,d] and the second vector is [e,f,g,h]. They
     have the same length, 4 elements, so they can be multiplied. Their inner product
     is
   id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设第一个向量是 [a,b,c,d]，第二个向量是 [e,f,g,h]。它们长度相同，都有 4 个元素，因此它们可以相乘。它们的内积是
 - en: '![11-unnumb-9-equation-11-2](../Images/11-unnumb-9-equation-11-2.png)'
   id: totrans-76
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-9-equation-11-2](../Images/11-unnumb-9-equation-11-2.png)'
 - en: Let X and Y be 4×4 matrices, and let P be their product. That is, P = XY. Suppose
     [a,b,c,d] is row i of X and [e,f,g,h] is column j of Y. Their product is denoted
     P[ij]. In other words, the element at row i, column j is the product of row i
@@ -548,20 +638,25 @@
   id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 设 X 和 Y 是 4×4 矩阵，P 是它们的乘积。也就是说，P = XY。假设 [a,b,c,d] 是 X 的第 i 行，[e,f,g,h] 是 Y
+    的第 j 列。它们的乘积记为 P[ij]。换句话说，第 i 行第 j 列的元素是 X 的第 i 行与 Y 的第 j 列的乘积。这可以用下标写成
 - en: '![11-unnumb-9-equation-11-3](../Images/11-unnumb-9-equation-11-3.png)'
   id: totrans-78
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-9-equation-11-3](../Images/11-unnumb-9-equation-11-3.png)'
 - en: A similar expression is used for other matrix sizes. Two matrices of sizes a×b
     and c×d can be multiplied whenever b = c.
   id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于其他矩阵大小也使用了类似的表达式。只要 b = c，大小为 a×b 和 c×d 的两个矩阵就可以相乘。
 - en: 11.4 Matrix multiplication
   id: totrans-80
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 11.4 矩阵乘法
 - en: No, this duplicate section title is not a mistake. There are many other objects
     in mathematics besides numbers that can be added and multiplied. Some examples
     are vectors, matrices, polynomials, quaternions and, more generally, elements
@@ -573,6 +668,9 @@
   id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 不，这个重复的章节标题并不是错误。除了数字之外，数学中还有许多其他可以进行加法和乘法的对象。一些例子包括向量、矩阵、多项式、四元数，以及更一般地，环的元素。甚至可以有矩阵的向量、多项式的矩阵等等。关于环的更多内容请参见第
+    15.6 至 15.8 节。矩阵乘法可以基于这些类型的元素及其乘法和加法规则。过程是相同的。你将 X 的第 i 行与 Y 的第 j 行进行内积，以得到乘积矩阵的第
+    i 行第 j 列的元素。
 - en: Matrix multiplication is not commutative, meaning that you usually get a different
     result when you multiply a given square matrix X by a second square matrix A on
     the left or on the right. AX ≠ XA. These are called *left-multiplication* and
@@ -580,6 +678,7 @@
   id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 矩阵乘法不是交换的，这意味着当你将给定的方阵 X 与第二个方阵 A 左乘或右乘时通常会得到不同的结果。AX ≠ XA。这被称为方阵 X 左乘或右乘 A。
 - en: For AES we are concerned with multiplication and addition of polynomials. We
     all learned how to add and multiply polynomials in high school algebra. People
     who went on to careers in science and engineering probably still remember how
@@ -589,17 +688,21 @@
   id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于 AES，我们关注的是多项式的乘法和加法。我们在高中代数课上学过如何加和乘多项式。继续从事科学和工程职业的人可能仍然记得如何做。多项式也可以被除。这种除法可能会有余数，所以多项式也有与整数相同的模概念。（如果你想复习一下，可以回顾一下第
+    3.6 节。）
 - en: The scalar multiplication used in AES is not integer multiplication, but polynomial
     multiplication modulo another polynomial. This is probably as deep as we can go
     in this book, which is aimed at a general audience.
   id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: AES 中使用的标量乘法不是整数乘法，而是多项式乘法模另一个多项式。这可能是我们在这本面向普通读者的书中所能深入讨论的了。
 - en: 11.5 Advanced Encryption Standard (AES)
   id: totrans-85
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 11.5 高级加密标准（AES）
 - en: 'The *Advanced Encryption Standard* is a newer block cipher that replaced DES
     in 2001\. It was initially called *Rijndael* after its inventors, Belgian cryptographers
     Vincent Rijmen and Joan Daemen. AES originally came in five combinations of 128-bit
@@ -610,6 +713,9 @@
   id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: '*高级加密标准*是一种新的分组密码，于 2001 年取代了 DES。最初被称为 *Rijndael*，以其发明者，比利时密码学家文森特·赖曼和乔安·达门命名。AES
+    最初有五种组合，包括 128 位或 256 位的块，以及 128 位、192 位或 256 位的密钥。然而，美国国家标准与技术研究院（NIST）确定了 128
+    位块大小的标准。轮数取决于密钥大小：128 位密钥为 10 轮，192 位密钥为 12 轮，256 位密钥为 14 轮。'
 - en: Each round uses a round key consisting of 128 bits chosen from the full key
     according to a *key schedule*. Before the first round, the preliminary operation
     AddRoundKey is performed, which is simply exclusive-ORing the block with the round
@@ -618,31 +724,39 @@
   id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 每一轮使用一个由完整密钥中选择的 128 位组成的轮密钥，根据 *密钥调度*。在第一轮之前，执行初步操作 AddRoundKey，简单地将块与轮密钥进行异或运算。接下来的
+    9、11 或 13 轮中的每一轮都包括 4 个操作，SubBytes、ShiftRows、MixColumns 和 AddRoundKey。最后一轮没有 MixColumns
+    步骤。
 - en: 'The 128-bit block is treated as a 4×4 matrix of bytes in what is called *column-major
     order*, which simply means the bytes are written into the matrix down the columns
     rather than across the rows, like this:'
   id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 将 128 位块视为字节的 4×4 矩阵，称为 *列主序*，这意味着字节是按列写入矩阵，而不是按行写入，如下所示：
 - en: '![11-unnumb-9-equation-11-4](../Images/11-unnumb-9-equation-11-4.png)'
   id: totrans-89
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-9-equation-11-4](../Images/11-unnumb-9-equation-11-4.png)'
 - en: The first step in each round is SubBytes. This is a fixed simple substitution
     performed on each byte individually. The substitution was designed to be highly
     non-linear. The linearity property is discussed at length in section 12.3.1.
   id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 每一轮中的第一步是 SubBytes。这是对每个字节分别执行的固定简单替换。替换被设计为高度非线性。线性性质在第 12.3.1 节中详细讨论。
 - en: 'The next step is ShiftRows. This is a transposition in which the rows of the
     matrix are cycled left by 0, 1, 2 and 3 positions, respectively, like this:'
   id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一步是 ShiftRows。这是一种置换，其中矩阵的行分别向左循环移动 0、1、2 和 3 个位置，像这样：
 - en: '![11-unnumb-9-equation-11-5](../Images/11-unnumb-9-equation-11-5.png)'
   id: totrans-92
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-9-equation-11-5](../Images/11-unnumb-9-equation-11-5.png)'
 - en: The third step in each round, MixColumns, is the matrix multiplication. This
     is not ordinary integer matrix multiplication as described in section 11.3\. The
     elements in the matrix are treated as coefficients of a polynomial. The scalar
@@ -652,11 +766,14 @@
   id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 每轮的第三步，MixColumns，是矩阵乘法。这不是普通的整数矩阵乘法，如第 11.3 节所述。矩阵中的元素被视为多项式的系数。标量加法和乘法运算是在另一个多项式上做的多项式运算。所有这些都经过了精心设计，以便可以在硬件中快速执行这些操作。最后一轮省略了
+    MixColumns。
 - en: The final step in each round is AddRoundKey. This is just a bitwise exclusive-OR
     of the block with a part of the key determined by the key schedule.
   id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 每一轮中的最后一步是 AddRoundKey。这只是块与由密钥调度确定的密钥部分进行位异或。
 - en: I find this exclusive-OR at the end to be highly suspicious. I have been told
     by several electrical engineers that the waveforms produced by the exclusive-OR
     of 00 and 11 are distinct from the waveforms produced by the exclusive-OR of 01
@@ -666,6 +783,8 @@
   id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 我发现最后的异或运算非常可疑。几位电气工程师告诉我，00 和 11 的异或产生的波形与 01 和 10 的异或产生的波形是不同的，因此窃听者可以分辨出两位的值。这可能向窃听者显示
+    128 位密钥。在进行高安全性加密时，我尽量避免使用异或运算。
 - en: When I am forced to use exclusive-OR at the end of an encipherment, for example
     when I am implementing a standardized algorithm, I make sure to invert each bit
     of the ciphertext an even number of times. I keep two random bit strings R1 and
@@ -675,6 +794,8 @@
   id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 当我被迫在加密结束时使用异或，例如当我正在实现一个标准化算法时，我确保每个密文位的位都被反转偶数次。我保留两个与块大小相同的随机位串R1和R2，以及它们的异或R3
+    = R1⊕R2。然后我首先将密文与R1进行异或，然后与R2进行异或，最后与R3进行异或。这将使位串恢复到其原始值，希望波形特征被抹去。
 - en: Alternatively, you can use a substitution, rather than an exclusive-OR, to invert
     all the bits of the block. You do this twice, so you use two substitution steps
     in place of the three exclusive-ORs. If you are using AES, I highly recommend
@@ -682,11 +803,13 @@
   id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者，您可以使用替换而不是异或来反转块的所有位。您需要这样做两次，因此您可以使用两个替换步骤来代替三个异或。如果您正在使用AES，我强烈建议添加这个额外的最终步骤。
 - en: 11.6 Fixed vs. keyed substitution
   id: totrans-98
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 11.6 固定替换 vs. 带密钥替换
 - en: Early in this book all of the substitutions used alphabets that were mixed using
     keywords or numeric keys. The ciphers in this chapter, DES and AES, use fixed
     substitutions that can be embedded in hardware S-boxes. Which is better? Which
@@ -694,6 +817,7 @@
   id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本书的早期，所有替换都使用了使用关键字或数字密钥混合的字母表。本章中的密码，DES和AES，使用可以嵌入硬件S盒的固定替换。哪个更好？哪个更强大？
 - en: When you use a fixed substitution, you can use sophisticated mathematics to
     design a substitution that can resist a variety of attacks. For example, if some
     of the output bits have a strong correlation to some of the input bits, that lets
@@ -702,6 +826,8 @@
   id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 当您使用固定替换时，您可以使用复杂的数学来设计一个可以抵抗各种攻击的替换。例如，如果一些输出位与一些输入位有很强的相关性，那么Emily可以使用密码的统计攻击，例如我在第8.2节中对Jefferson
+    Wheel Cypher使用的攻击。
 - en: Unfortunately, a fixed substitution is a sitting target for Emily. She can study
     the substitution for months or years, and possibly find a weakness that the designer
     missed. Carefully crafted substitutions tend to have a mathematical regularity.
@@ -710,6 +836,7 @@
   id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 不幸的是，固定替换对Emily来说是一个易受攻击的目标。她可以研究替换数月甚至数年，并可能发现设计师忽略的弱点。精心设计的替换往往具有数学规律性。替代物被表达为特定的数学函数。这本身可能是一个弱点，因为它为Emily提供了模拟您密码的捷径。
 - en: My preference is to use a substitution that is determined by a key that can
     be changed for every message. Each instance of a keyed substitution may be weaker
     than the fixed substitution, but Emily cannot exploit such a weakness because
@@ -723,6 +850,7 @@
   id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 我更喜欢使用由可以为每条消息更改的密钥确定的替换。每个带有密钥的替换实例可能比固定替换更弱，但Emily无法利用这种弱点，因为她没有替换表供她研究。如果Emily设法获取明文，也许是通过间谍活动，她可能能够恢复替换并了解其弱点，但那时已经太迟了。了解弱点的唯一价值是解密消息并获取明文。如果Emily已经有了明文，那么密钥就不再有价值。这种弱点不会帮助她解密下一条消息，因为该消息将具有不同的密钥，因此如果有任何不同的弱点。
 - en: Any other instance of the substitution, when the alphabet is mixed by the same
     method but using a different key, may not have the same weakness. It may have
     the same type of weakness, such as a correlation between some bits of the block
@@ -731,6 +859,7 @@
   id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 任何其他替换的实例，当字母表通过相同的方法混合但使用不同的密钥时，可能不会有相同的弱点。它可能具有相同类型的弱点，例如块的某些位和/或密钥的某些位与输出的某些位之间的相关性，但这些对于每个实例都是不同的位。
 - en: One argument for using fixed S-boxes is that it allows for synchronous operation
     of the encryption hardware where one message follows another with no gap between.
     Using mixed alphabets could involve pausing while the alphabets get mixed. Using
@@ -742,6 +871,7 @@
   id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用固定的 S 盒的一个论点是，它允许加密硬件的同步操作，其中一个消息紧跟另一个消息，没有间隙。使用混合字母可能需要暂停，而字母被混合。使用混合字母需要一个设置。如果可以并行混合字母，暂停可以被消除或至少减少。也就是说，下一条消息的字母可以在当前消息被加密或解密时被混合。或者，让用户混合字母，并将混合字母包含在长密钥的一部分中。
 - en: If synchronous operation is required, and mixing the alphabets in parallel is
     not feasible, then the fallback technique is to exclusive-OR the block with keys
     the same size as the block, both before and after the DES or AES step. I call
@@ -752,11 +882,14 @@
   id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果需要同步操作，并且并行混合字母不可行，则回退技术是对块进行与块大小相同的密钥进行两次 DES 或 AES 步骤前后的互斥。我称这种方法为*XDESX*或*XAESX*，视情况而定。这些互斥运算非常快速，并且提供了显著的安全性提升。总密钥大小为
+    184 位，比 3DES 大 16 位。我建议最终输出被反转两次以掩盖波形。
 - en: 11.7 Involutory ciphers
   id: totrans-106
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 11.7 反身密码
 - en: '*Involutory cipher* is a fancy-pants way of saying “a cipher that is its own
     inverse.” In other words, enciphering is identical to deciphering. If you encipher
     twice using an involutory cipher (using the same key), you get back the original
@@ -769,31 +902,39 @@
   id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: '*反身密码*是说“一个与自身相反的密码”的花哨说法。换句话说，加密和解密是相同的。如果使用反身密码（使用相同的密钥）进行两次加密，你将得到原始明文。这也被称为*自反*或*自逆*。我们已经见过一些反身密码。使用二进制密钥对明文进行异或运算是反身的（第
+    3.3 节）。Bazeries 类型 4 密码中的逐段反转置换（第 4.6.1 节）是反身的。翻转一个方阵，即将字符从左到右写入方形网格，然后从上到下读取，是反身的。以下是一个
+    3×3 方阵翻转的示例：'
 - en: '![11-unnumb-10](../Images/11-unnumb-10.png)'
   id: totrans-108
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-10](../Images/11-unnumb-10.png)'
 - en: Mathematicians call this operation *transposing* the matrix. Since transposition
     has a different meaning in cryptography, I will call this *flipping* the matrix.
     A fast method for flipping a matrix was described in section 11.2.3.
   id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 数学家称此操作为*转置*矩阵。由于在密码学中转置有不同的含义，我将称之为*翻转*矩阵。一个快速翻转矩阵的方法在第 11.2.3 节中已经描述过。
 - en: If you are building your cipher in hardware, using involutory ciphers can reduce
     the cost and simplify the operation. Your cipher machine does not need to have
     separate encipher and decipher modes.
   id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你正在硬件中构建你的密码，使用反身密码可以降低成本并简化操作。你的密码机不需要单独的加密和解密模式。
 - en: Let’s look at how to construct some types of involutory ciphers.
   id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看如何构造一些类型的反身密码。
 - en: 11.7.1 Involutory substitution
   id: totrans-112
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.7.1 反身替换
 - en: In an involutory substitution, if a letter X changes to a Y, then Y must change
     to X. This means that the letters have to pair off. To construct an involutory
     substitution, first list all of the letters or characters. Choose any letter and
@@ -805,6 +946,8 @@
   id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 在反身替换中，如果字母 X 变为 Y，那么 Y 必须变为 X。这意味着字母必须成对出现。要构造一个反身替换，首先列出所有字母或字符。选择任何一个字母，然后选择它的伙伴。划掉列表中的这些字母。然后选择另一个字母及其伙伴。划掉这些字母。继续这样做，直到大部分字母都成对出现。任何剩余的字母都是它们自己的逆。选择连续的字母可以使用数字密钥，就像
+    SkipMix 一样（第 5.2 节）。
 - en: An involutory substitution can conveniently be represented in two rows. The
     letters in the top row get the substitute directly below, and the letters in the
     bottom row get the substitute directly above. Here is an example formed using
@@ -813,39 +956,47 @@
   id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 可逆替换可以方便地用两行表示。顶部行的字母直接得到下面的替代，底部行的字母直接得到上面的替代。以下是使用关键词WORDGAME和TULIP形成的示例。在这个示例中，R会变成L，而L会变成R。
 - en: '![11-unnumb-11](../Images/11-unnumb-11.png)'
   id: totrans-115
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-11](../Images/11-unnumb-11.png)'
 - en: In other words, the key for this involutory substitution is this 2-row array.
   id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 换句话说，这个可逆替换的密钥是这个2行数组。
 - en: It is not necessary that every letter is paired with a different letter. A few
     letters could remain unchanged by the substitution. These are called *invariants*
     or *fixed points*.
   id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 并非每个字母都必须与不同的字母配对。一些字母可能保持不变。这些被称为*不变量*或*固定点*。
 - en: An involutory bigram substitution can be constructed by the same method.
   id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以通过相同的方法构造可逆的双字母替换。
 - en: 11.7.2 Involutory polyalphabetic substitution
   id: totrans-119
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.7.2 可逆多表代换
 - en: To construct a polyalphabetic cipher that is involutory, simply make every row
     of the tableau an involutory substitution.
   id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 要构造一个可逆的多表密码，只需使表格的每一行都是一个可逆替换。
 - en: 11.7.3 Involutory transposition
   id: totrans-121
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.7.3 可逆置换
 - en: Involutory transpositions are easiest to construct if the message is broken
     into blocks of a fixed size. Let’s assume that. Call the fixed block size B. The
     transposition is involutory if for every letter that moves from position X to
@@ -854,6 +1005,7 @@
   id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果消息被分成固定大小的块，那么构造可逆置换最容易。让我们假设。称固定块大小为B。如果每个从位置X移动到位置Y的字母，位置Y的字母移动到位置X，则置换是可逆的。换句话说，置换将由字母的成对交换组成。
 - en: To construct an involutory transposition, first write the numbers from 1 to
     B in a list. Select any 2 numbers from the list. They are the first pair of positions
     that interchange. Delete those 2 numbers from the list and select another pair
@@ -865,24 +1017,29 @@
   id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 要构造一个可逆置换，首先在列表中写下从1到B的数字。从列表中选择任意2个数字。它们是交换的第一对位置。从列表中删除这2个数字，并从列表中选择另一对数字。这是第二对。从列表中删除它们。继续这样做，直到列表最多只剩下1个数字。如果您选择在置换中有一些固定点，只需更早地停止配对。创建固定点的另一种方法是随机从列表中一次选择2个数字。如果这两个数字相同，那就成为一个固定点。
 - en: One way to represent a general transposition cipher is to list all of the positions
     in the block, and below them show their new positions. For example,
   id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 表示一般置换密码的一种方法是列出块中的所有位置，然后在它们下面显示它们的新位置。例如，
 - en: '![11-unnumb-12](../Images/11-unnumb-12.png)'
   id: totrans-125
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-12](../Images/11-unnumb-12.png)'
 - en: 'This is the best format for computer use. When a person is doing the transposition,
     it may be more convenient to collapse this down to half-width like this:'
   id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是计算机使用的最佳格式。当一个人在进行置换时，将其折叠到半宽可能更方便，就像这样：
 - en: '![11-unnumb-13](../Images/11-unnumb-13.png)'
   id: totrans-127
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-13](../Images/11-unnumb-13.png)'
 - en: This is the same transposition, but in half the space. Either form may be used
     as the key for the transposition. In both cases, the letter in the first position
     moves to 13th place, while the letter in 13th position moves to first place, the
@@ -891,16 +1048,19 @@
   id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是相同的置换，但是在一半的空间中。任何一种形式都可以用作置换的密钥。在这两种情况下，第一个位置的字母移动到第13个位置，而第13个位置的字母移动到第一个位置，第二个位置的字母移动到第7个位置，而第7个位置的字母移动到第二个位置，依此类推。
 - en: '*11.7.4 Involutory block cipher'
   id: totrans-129
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '*11.7.4 可逆块密码'
 - en: Now that we have seen how to construct involutory substitutions and transpositions,
     we are ready to pull those elements together to make an involutory block cipher.
   id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们已经看到如何构造可逆替换和置换，我们准备将这些元素结合在一起制作一个可逆块密码。
 - en: It will help, at this point, to introduce some more notation. Let M be any message,
     either a plaintext or a ciphertext. We will denote applying a cipher C to that
     message as CM. If D is another cipher, then applying D to the text CM would be
@@ -909,6 +1069,8 @@
   id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 此时，引入更多符号会有所帮助。设 M 是任意消息，可以是明文或密文。我们将将密码 C 应用于该消息表示为 CM。如果 D 是另一个密码，则将 D 应用于文本
+    CM 的表示为 DCM。这种表示看起来有点奇怪，因为 DCM 意味着先应用 C，然后是 D，但这很有效。你可以将 DCM 理解为 D(C(M)) 的简写。
 - en: DC is then the cipher formed by enciphering with C and then with D. This new
     cipher is called the *composition* of D and C. Composition is an operation that
     combines two ciphers and forms a new cipher. (Some authors call this the *product*
@@ -916,6 +1078,8 @@
   id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: DC 然后是通过使用 C 和 D 分别进行加密形成的密码。这个新密码被称为 D 和 C 的 *组合*。组合是一种将两个密码结合起来形成新密码的操作。（有些作者称之为
+    C 和 D 的 *乘积*，并用 C◦D 表示。）
 - en: 'For example, Bazeries type 4 (section 4.6.1) combines a substitution with a
     transposition. Composition has one mathematical property that is important for
     forming an involutory cipher: composition is associative. This means that if A,
@@ -926,6 +1090,9 @@
   id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，Bazeries 类型 4（第 4.6.1 节）将替换与转位结合起来。组合具有一个对于形成可逆密码而言很重要的数学属性：组合是结合的。这意味着如果
+    A、B 和 C 是密码，则 (AB)C = A(BC)。由于这个属性，多个密码的组合可以不带括号地写成 ABC 或甚至 ABCDEFGH。在这样的组合中可以插入括号而不改变结果。例如，ABCDEFGH
+    可以写成 A((BC)(DE))F(GH)。
 - en: Let I represent the *identity cipher*, the cipher that transforms every plaintext
     into itself. That is, IM = M for any message M. Let C be any cipher whatsoever.
     Denote its inverse by C'. (C must have an inverse, otherwise messages could not
@@ -933,25 +1100,31 @@
   id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 令 I 代表 *单位密码*，即将每个明文转换为其本身的密码。也就是说，对于任何消息 M，IM = M。设 C 是任意密码。将其逆表示为 C'。（C 必须有一个逆，否则消息就无法阅读。）然后
+    CC' = C'C = I。当 C = C' 时，密码 C 是可逆的。
 - en: Suppose that T is an involutory cipher and C is any cipher. Then the cipher
     CTC' is an involutory cipher. This is because
   id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设 T 是一个可逆密码，C 是任意密码。那么密码 CTC' 就是一个可逆密码。这是因为
 - en: '![11-unnumb-13-equation-11-6](../Images/11-unnumb-13-equation-11-6.png)'
   id: totrans-136
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-13-equation-11-6](../Images/11-unnumb-13-equation-11-6.png)'
 - en: Similarly, if A and B are any ciphers, then BCTC'B' and ABCTC'B'A' are involutory
     ciphers, and so forth.
   id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 类似地，如果 A 和 B 是任意密码，则 BCTC'B' 和 ABCTC'B'A' 都是可逆密码，依此类推。
 - en: 11.7.5 Example, poly triple flip
   id: totrans-138
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '**11.7.5 例子，多重翻转**'
 - en: Let’s look at an example of an involutory block cipher that I call *Poly Triple
     Flip*. This cipher operates on 64-bit blocks, and has the form ABCTC'B'A', where
     A and C are general polyalphabetic ciphers, B is a columnar transposition operating
@@ -959,6 +1132,8 @@
   id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看一个名为 *多重翻转* 的可逆分组密码的示例。这个密码对 64 位分组进行操作，其形式为 ABCTC'B'A'，其中 A 和 C 是一般的多表密码，B
+    是对 64 位进行的列转置，T 是对 64 位方阵进行翻转。
 - en: Ciphers A and C are polyalphabetic ciphers of period 8\. That is, there is a
     separate alphabet for enciphering each row of the block. The tableau for each
     cipher will have 8 rows, which are used in order. There are no keys for selecting
@@ -969,6 +1144,9 @@
   id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 密码 A 和 C 是周期为 8 的多表密码。也就是说，每个分组的每一行都有一个单独的字母表。每个密码的表格都将有 8 行，按顺序使用。没有用于选择表格行的密钥。相反，8
+    个密钥用于混合 8 个字母表。总共，A 和 C 需要 16 个不同的密钥，每个密钥可能是与 SkipMix 算法（第 5.2 节）一起使用的数字序列。我建议这
+    16 个密钥每个包含 3 到 8 个数字，每个数字的范围是 0 到 255。
 - en: Cipher B is a columnar transposition that treats the 64-bit block as a 4×16
     grid, so there are 16! possible permutations of the columns. The 64 bits are written
     into the grid left to right across the rows and read out top to bottom down the
@@ -977,15 +1155,19 @@
   id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: Cipher B 是一种列置换密码，将 64 位块视为 4×16 网格，因此有 16! 种列的排列方式。64 位被写入网格，从左到右横穿行读出，从上到下竖直读出。列的顺序由一个关键字、关键短语或等效的
+    16 位数字字符串确定。
 - en: Poly triple flip is rated Ten.******
   id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: Poly triple flip 被评为 Ten.******
 - en: 11.8 Variable-length substitutions
   id: totrans-143
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 11.8 可变长度替换
 - en: Block ciphers can be built using either fixed-length or variable-length substitutions.
     *VLA* and *VLB* are examples of block ciphers that use variable-length substitution.
     Both the VLA and VLB block ciphers use 128-bit blocks viewed as 4 rows of 32 bits
@@ -995,6 +1177,8 @@
   id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 块密码可以使用固定长度或可变长度替换来构建。*VLA* 和 *VLB* 是使用可变长度替换的块密码的示例。VLA 和 VLB 块密码都使用 128 位块，分别视为每个
+    32 位的 4 行。其思想是在行中使用可变长度替换，然后通过在列中执行 4 位替换来混合块。每个密码的密钥是用于混合标签集和 4 位替换的密钥。
 - en: VLA and VLB use same-length Post tag substitution, as described in section 10.5.1\.
     Thus a 4-bit tag is replaced by a 4-bit substitute, a 5-bit tag is replaced by
     a 5-bit substitute, and so forth. That way, each row in the block remains a constant
@@ -1004,6 +1188,8 @@
   id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: VLA 和 VLB 使用相同长度的后标签替换，如第 10.5.1 节所述。因此，一个 4 位标签被一个 4 位替换所取代，一个 5 位标签被一个 5 位替换所取代，依此类推。这样，块中的每一行保持为恒定的
+    32 位长。每次替换后，新标签被移动到其行的末尾，并且行被左移以保持其在 4 字节边界上。标签应该平均长度至少为 6 位。
 - en: VLA is the simpler version. In each round, you first do the 4-bit substitution
     on the leftmost (high-order) bit of the row. Then you perform one Post tag substitution
     on each row, with the shift. This is repeated for 32 rounds. The entire encipherment
@@ -1012,12 +1198,16 @@
   id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: VLA 是更简单的版本。在每轮中，您首先对行的最左边（高位）进行 4 位替换。然后您对每行执行一次后标签替换，带有位移。这将重复 32 轮。整个加密使用
+    128 个可变长度替换和 32 个固定长度 4 位替换。这个密码评级为 Eight.
 - en: When the average tag length is 6 bits, I suggest that VLB should have 4 rounds,
     each round having 6 substitution steps in row 1, 7 substitution steps in row 2,
     8 substitutions in row 3, and 9 in row 4.
   id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 当平均标签长度为 6 位时，我建议 VLB 应该有 4 轮，每轮在第 1 行有 6 次替换步骤，在第 2 行有 7 次替换步骤，在第 3 行有 8 次替换步骤，在第
+    4 行有 9 次替换步骤。
 - en: The vertical substitutions in the columns should be done after rounds 1, 2 and
     3\. For speed, it is not necessary to perform the column substitutions in every
     column on every round. One reasonable choice would be to substitute in every 3rd
@@ -1026,17 +1216,21 @@
   id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 列中的垂直替换应在第 1、2 和 3 轮之后进行。为了提高速度，不需要在每一列的每一轮都进行列替换。一个合理的选择是例如在第一轮后每 3 列进行一次替换，即在第
+    1,4,7, ... ,31 列，在第 2 轮后在第 2,5,8, ... ,32 列进行替换，在第 3 轮后在第 3,6,9, ... ,30 列进行替换。
 - en: VLB is rated Ten, and is perhaps the fastest cipher with this rating. It requires
     120 variable-length substitutions, with shifts, and 32 vertical 4-bit substitutions,
     so it is slightly faster than VLA.
   id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: VLB 被评为 Ten，可能是具有这个评级的最快密码。它需要 120 个可变长度替换，带有位移，并且 32 个垂直 4 位替换，因此比 VLA 稍快。
 - en: 11.9 Ripple ciphers
   id: totrans-150
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 11.9 波纹密码
 - en: '*Ripple* ciphers, also called *wraparound* ciphers or *end-around* ciphers,
     are block ciphers based on a principle entirely different from the ciphers earlier
     in this chapter. The basic idea is that each 8-bit character in the block is used
@@ -1048,6 +1242,9 @@
   id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Ripple* 密码，也称为 *wraparound* 密码或 *end-around* 密码，是基于本章前面的密码完全不同原理的块密码。其基本思想是，块中的每个
+    8 位字符都用作加密其右侧的下一个字符的密钥。然后再用这个字符来加密下一个字符，依此类推，一直到块的长度结束并在结尾处环绕。也就是说，块中的最后一个字符用作加密第一个字符的密钥。Ripple
+    密码最适合软件实现，因为它们几乎不提供并行操作的机会。'
 - en: There are a wide variety of ripple ciphers. They may have any block length from
     2 up, and the block lengths may vary periodically or randomly. I suggest a minimum
     block length of 5 characters, but you might prefer to start at 8\. For example,
@@ -1057,6 +1254,8 @@
   id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 有各种各样的 Ripple 密码。它们的块长度可以从 2 开始，长度可以周期性地或随机变化。我建议最小的块长度为 5 个字符，但你可能更喜欢从 8 开始。例如，你可以使用链接的数字生成器来选择块长度。当生成器产生数字
+    D 时，你可以使下一个块的长度为 D+5，或者可能是 D+8，甚至是 20-D。
 - en: Blocks may overlap. For example, you could use a fixed block length of 8, with
     blocks starting at positions 1, 6, 11, 16, ... every 5 characters. The last block
     could wrap around to the start of the message. When the message length is 20,
@@ -1064,6 +1263,8 @@
   id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 块可以重叠。例如，你可以使用固定的块长度为 8，块从位置 1、6、11、16、... 每 5 个字符开始。最后一个块可以环绕到消息的开头。当消息长度为
+    20 时，最后一个块可以由字符 16、17、18、19、20、1、2、3 组成。
 - en: Ripple ciphers are purely substitution ciphers; they involve no transposition
     at all. The simplest form of a ripple cipher is to exclusive-OR each successive
     character to the next one, so x[n] gets replaced by x[n-1]⊕x[n]. Then x[n+1] is
@@ -1071,6 +1272,8 @@
   id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: Ripple 密码纯粹是替换密码；它们根本不涉及置换。Ripple 密码的最简单形式是对每个连续的字符进行异或，因此 x[n] 被替换为 x[n-1]⊕x[n]。然后
+    x[n+1] 被替换为 x[n]⊕x[n+1]，依此类推，通过整个块进行波动。
 - en: There are many ways to use the preceding character to encipher the next character.
     A partial list follows. Here A, B and C are simple substitution ciphers and P
     is a general polyalphabetic cipher. A(x), B(x) and C(x) represent the character
@@ -1079,25 +1282,32 @@
   id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 有很多种方法可以利用前一个字符来对下一个字符进行加密。下面是部分列表。这里 A、B 和 C 是简单的替换密码，P 是一般的多表密码。A(x)、B(x)
+    和 C(x) 分别表示用 A、B 和 C 加密的字符 x，而 P(k,x) 表示用密钥 k 选择表格中的行来加密 x。
 - en: '| **xor** | Exclusive-OR | x[n] is replaced by x[n-1]⊕x[n]. |'
   id: totrans-156
   prefs: []
   type: TYPE_TB
+  zh: '| **xor** | 异或 | x[n] 被替换为 x[n-1]⊕x[n]。 |'
 - en: '| **sxor** | Substitute and exclusive-OR | There are three variations, x[n]
     may be replaced by A(x[n-1])⊕x[n], or x[n-1]⊕B(x[n]) or A(x[n-1])⊕B(x[n]). |'
   id: totrans-157
   prefs: []
   type: TYPE_TB
+  zh: '| **sxor** | 替换和异或 | 有三种变体，x[n] 可以被替换为 A(x[n-1])⊕x[n]，或者 x[n-1]⊕B(x[n])，或者
+    A(x[n-1])⊕B(x[n])。 |'
 - en: '| **xors** | Exclusive-OR and substitute | x[n] is replaced by A(x[n-1]⊕x[n]).
     |'
   id: totrans-158
   prefs: []
   type: TYPE_TB
+  zh: '| **xors** | 异或和替换 | x[n] 被替换为 A(x[n-1]⊕x[n])。 |'
 - en: '| **add** | Add | x[n] is replaced by x[n-1]+x[n]. As always, addition is modulo
     256. |'
   id: totrans-159
   prefs: []
   type: TYPE_TB
+  zh: '| **add** | 加法 | x[n] 被替换为 x[n-1]+x[n]。如常，加法为模 256。 |'
 - en: '| **madd** | Multiply and add, also called **linear replacement** | x[n] is
     replaced by px[n-1]+x[n], or x[n-1]+qx[n], or px[n-1]+qx[n], where p may be any
     integer and q may be any odd integer. (If you are using an alphabet whose size
@@ -1105,26 +1315,33 @@
   id: totrans-160
   prefs: []
   type: TYPE_TB
+  zh: '| **madd** | 乘法和添加，也称为 **线性替换** | x[n] 被替换为 px[n-1]+x[n]，或者 x[n-1]+qx[n]，或者
+    px[n-1]+qx[n]，其中 p 可以是任意整数，q 可以是任意奇数。（如果你使用的字母表大小与 256 不同，q 必须与字母表大小互质。） |'
 - en: '| **sadd** | Substitute and add | x[n] is replaced by A(x[n-1])+x[n], or x[n-1]+B(x[n])
     or A(x[n-1])+B(x[n]). |'
   id: totrans-161
   prefs: []
   type: TYPE_TB
+  zh: '| **sadd** | 替换和添加 | x[n] 被替换为 A(x[n-1])+x[n]，或者 x[n-1]+B(x[n]) 或者 A(x[n-1])+B(x[n])。
+    |'
 - en: '| **adds** | Add and substitute | x[n] is replaced by A(x[n-1]+x[n]). |'
   id: totrans-162
   prefs: []
   type: TYPE_TB
+  zh: '| **adds** | 加法和替换 | x[n] 被替换为 A(x[n-1]+x[n])。 |'
 - en: '| **poly** | General polyalphabetic substitution | x[n] is replaced by P(x[n-1],
     x[n]). |'
   id: totrans-163
   prefs: []
   type: TYPE_TB
+  zh: '| **poly** | 通用多表替换 | x[n]被P(x[n-1], x[n])替换。 |'
 - en: Since **xor** or **sxor** may leak information about its operands, I recommend
     using **xors** instead, so that the simple substitution is done after the exclusive-OR
     to mask the waveforms, namely A(x[n-1]⊕x[n]).
   id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于**xor**或**sxor**可能会泄露有关其操作数的信息，我建议改用**xors**，这样在执行异或操作后进行简单替换以掩盖波形，即A(x[n-1]⊕x[n])。
 - en: Notice that **madd** is simply a special case of **sadd**. That is, px[n-1]
     is just a particular choice for A(x[n-1]). The advantage of **madd** is that it
     does not require a preliminary setup phase to mix the substitution alphabet. In
@@ -1134,6 +1351,8 @@
   id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，**madd**只是**sadd**的一个特例。也就是说，px[n-1]只是A(x[n-1])的一个特定选择。**madd**的优点在于它不需要预先设置阶段来混合替换字母表。同样地，请注意P(A(x[n-1]),
+    B(x[n]))只是对表格的行和列进行排列，因此等同于P(x[n-1], x[n])，只是使用了不同的表格。
 - en: The strongest of these ripple methods is **poly**, where the preceding character
     x[n-1] is used as the key to select the row in the tableau used to encipher x[n].
     I call this method a *Key Ripple*. This would require a tableau of 256×256 bytes.
@@ -1146,6 +1365,8 @@
   id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些涟漪方法中最强大的是**poly**，其中前一个字符x[n-1]被用作选择用于加密x[n]的表格中的行的关键。我将这种方法称为*关键涟漪*。这将需要一个256×256字节的表格。如果这太大了，可以通过在使用它作为密钥之前对x[n-1]应用*减少替换*来将x[n-1]减小到更小的范围。例如，x可以被减小为x
+    mod 16，或者为(13x+5) mod 32。适当的减小范围是0到15，0到31和0到63。如果R是减少替换，P是多表替换，那么x[n]将被Q(R(x[n-1]),x[n])替换，其中Q是一个由P的表格顶部16、32或64行组成的减少表的多表密码。
 - en: If you cannot use a polyalphabetic cipher, perhaps because even the reduced
     tableau uses too much space, or because the setup time is too long, the next-best
     choice is to use 3 simple substitutions. Replace x[n] by either A(B(x[n-1])+C(x[n]))
@@ -1155,6 +1376,7 @@
   id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您无法使用多表密码，也许是因为即使减少表格也使用了太多空间，或者因为设置时间太长，那么下一个最佳选择是使用3个简单替换。将x[n]替换为A(B(x[n-1])+C(x[n])或A(B(x[n-1])⊕C(x[n])。这被称为*空间-时间权衡*。这3个简单替换可能比单个多表替换需要更长的时间，但它们将空间需求从65,536字节减少到768字节，减少了98.8%。
 - en: Ripple ciphers are not restricted to using only the preceding character to encipher
     the current character. You can go back several characters if you wish, for example
     replacing x[n] by A(x[n-i]⊕x[n]), where i can be any value less than the block
@@ -1165,6 +1387,7 @@
   id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 涟漪密码不限于仅使用前一个字符来加密当前字符。如果愿意，可以回溯几个字符，例如用A(x[n-i]⊕x[n])替换x[n]，其中i可以是小于块大小的任何值。也可以使用多个先前的字符，例如x[n-2]+x[n-1]+x[n]或更一般地x[n-j]+x[n-k]+x[n]。使用通用多表替换，x[n]可以被P(x[n-4]⊕x[n-2],x[n])替换，或者P(x[n-5],P(x[n-1],x[n]))或其他无限组合。
 - en: As I mentioned, any block size can be used. The substitutions can begin at any
     character in the block, and end at any character in the block, provided that every
     character gets substituted at least once. You may go several times around the
@@ -1177,6 +1400,7 @@
   id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我提到的，可以使用任何块大小。替换可以从块中的任何字符开始，并在块中的任何字符结束，只要每个字符至少被替换一次。如果需要，您可以绕块走几次，从最后一个字符到第一个字符。甚至可以重叠超过2个块，或者使一个块完全位于另一个块或一组块内。块大小、块内的起始位置、要替换的字符数以及与前一个和/或后一个块的重叠可以固定，可以定期变化，也可以随机生成。
 - en: Ripple ciphers can be taken even further. A message could be enciphered using
     several rounds of a ripple cipher. In each round the message could be divided
     into blocks of different sizes so that the block boundaries line up infrequently
@@ -1185,6 +1409,7 @@
   id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 涟漪密码甚至可以进一步发展。一条消息可以使用几轮涟漪密码进行加密。在每一轮中，消息可以被分成不同大小的块，以便块边界很少或从不对齐，并且加密在块中的不同点开始和结束。这会产生马赛克甚至万花筒效果。
 - en: There are too many variations of ripple ciphers to enumerate. The ratings for
     these ciphers can range from Four to Ten. Here are a few examples. The simple
     **xor** ripple using fixed-size blocks with 2 rounds of substitution starting
@@ -1200,11 +1425,13 @@
   id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 涟漪密码的变体太多，无法一一列举。这些密码的评级可以从四到十不等。以下是一些示例。简单的**xor**涟漪使用固定大小的块，进行2轮替换，从块的第一个字节开始，以最后一个字节结束，并且只使用前一个字节作为替换密钥，评级为四。使用不同大小块的**sadd**涟漪密码，从块中的可变位置开始，进行至少3轮替换，以可变位置结束，并且使用前一个字节作为替换密钥，评级为七。使用不同大小块的**poly**涟漪密码，从块中的可变位置开始，进行至少3轮替换，以可变位置结束，并且使用前一个字节加上另一个从块到块变化的字节作为替换密钥，评级为十。马赛克方法比单层方法更强大。
 - en: 11.10 Block chaining
   id: totrans-172
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 11.10 块链接
 - en: Block chaining is a valuable tool that strengthens any block cipher. Block chaining
     means using each block to help encipher the next block. In effect, chaining is
     a ripple cipher operating on blocks rather than on individual characters. The
@@ -1217,15 +1444,18 @@
   id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 块链接是一种增强任何块密码的有价值工具。块链接意味着使用每个块来帮助加密下一个块。实际上，链接是一个在块上操作的涟漪密码，而不是在单个字符上操作。从第N块传递到第N+1块的字节组称为*链向量*。由于消息中的第一个块没有前驱，大多数链接方案使用*初始化向量*（IV）来加密第一个块，就好像它是从某个虚构的前身块的链向量一样。初始化向量可以从加密密钥派生，也可以被视为加密的附加密钥。
 - en: Aside The block chaining used for Bitcoin and other cryptocurrencies is a specialized
     form of the block chaining used in cryptography. Here is where they got the idea.
   id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 旁注：比特币和其他加密货币使用的块链接是密码学中使用的块链接的一种专门形式。这就是他们得到这个想法的地方。
 - en: '![11-unnumb-14](../Images/11-unnumb-14.png)'
   id: totrans-175
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-14](../Images/11-unnumb-14.png)'
 - en: The most common form of chaining is combining the chain vector with the next
     block character by character. The most common method of combining characters is
     exclusive-OR. However, any of the combining methods described in section 11.8
@@ -1233,30 +1463,36 @@
   id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 最常见的链接形式是逐字符将链向量与下一块结合起来。结合字符的最常见方法是独占或。然而，在第 11.8 节中描述的任何结合方法都可以使用。这通常以四种模式之一进行。
 - en: '| **Mode** | **Description** |'
   id: totrans-177
   prefs: []
   type: TYPE_TB
+  zh: '| **模式** | **描述** |'
 - en: '| **PP** | The plaintext of block N is combined with the plaintext of block
     N+1 before enciphering block N+1. |'
   id: totrans-178
   prefs: []
   type: TYPE_TB
+  zh: '| **PP** | 第 N 块的明文在加密第 N+1 块之前与第 N+1 块的明文组合。 |'
 - en: '| **PC** | The plaintext of block N is combined with the ciphertext of block
     N+1 after enciphering block N+1. |'
   id: totrans-179
   prefs: []
   type: TYPE_TB
+  zh: '| **PC** | 第 N 块的明文在加密第 N+1 块之后与第 N+1 块的密文结合。 |'
 - en: '| **CP** | The ciphertext of block N is combined with the plaintext of block
     N+1 before enciphering block N+1. |'
   id: totrans-180
   prefs: []
   type: TYPE_TB
+  zh: '| **CP** | 第 N 块的密文在加密第 N+1 块之前与第 N+1 块的明文组合在一起。 |'
 - en: '| **CC** | The ciphertext of block N is combined with the ciphertext of block
     N+1 after enciphering block N+1. |'
   id: totrans-181
   prefs: []
   type: TYPE_TB
+  zh: '| **CC** | 第 N 块的密文在加密第 N+1 块之后与第 N+1 块的密文结合。 |'
 - en: For the greatest strength, the chaining operation should be cumulative. First
     the chain vector from block N-1 is combined with block N. This result becomes
     the new chain vector, which is combined with block N+1\. Chaining mode **PP**
@@ -1267,6 +1503,9 @@
   id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了最大的强度，链接操作应该是累积的。首先，将第 N-1 块的链向量与第 N 块组合。这个结果成为新的链向量，与第 N+1 块组合。链接模式 **PP**
+    最强，链接模式 **PC** 次之。模式 **CP** 和 **CC** 远远较弱，因为艾米丽可以看到链向量。我建议只有在使用 **xors**、**adds**
+    和 **poly** 这些组合函数时才使用模式 **CP** 和 **CC**。
 - en: Although modes **CC** and **CP** are weaker, there is an advantage to using
     them. In modes **CC** and **CP** it is not necessary to have a separate initialization
     vector. Sandra can use the last block of the plaintext message as the initialization
@@ -1277,15 +1516,19 @@
   id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然 **CC** 和 **CP** 模式较弱，但使用它们有优势。在 **CC** 和 **CP** 模式下，无需单独的初始化向量。桑德拉可以使用明文消息的最后一个块作为初始化向量。瑞娃可以简单地先解密最后一个块。事实上，瑞娃可以解密任何块，而无需解密前一个块。如果密码使用指示符（第
+    14.3 节），则这可能非常有价值。瑞娃会首先解密指示块。
 - en: Let’s look at some stronger ways of chaining blocks.
   id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看一些更强的块链接方式。
 - en: 11.10.1 Polyalphabetic chaining
   id: totrans-185
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.10.1 多表链接
 - en: Exclusive-OR is a weak way of combining block N with block N+1\. A better way
     is **xors**, namely using exclusive-OR first, then using a simple substitution
     on the resulting characters. Far better than that is to use **poly**, a general
@@ -1295,11 +1538,15 @@
   id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 独占或（Exclusive-OR）是一种将第 N 块与第 N+1 块结合的弱方法。一种更好的方法是 **xors**，即首先使用独占或，然后对结果字符进行简单的替换。比那更好的是使用
+    **poly**，一种通用的多表密码。使用链向量中的每个字符作为密钥，选择用于加密第 N+1 块中相应字符的表中的行。可以使用任何 4 种链接模式。模式 PP
+    最强大。
 - en: 11.10.2 Enciphered chaining
   id: totrans-187
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.10.2 加密链接
 - en: The standard modes for chaining use either the plaintext or the ciphertext of
     block N as the chain vector as is, with no modification. It is far stronger to
     apply some encipherment to the chain vector. This can be rudimentary, such as
@@ -1311,11 +1558,14 @@
   id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 链接的标准模式将第 N 块的明文或密文作为链向量使用，不进行修改。将某些加密应用于链向量会更强大。这可以是简单的，如简单的替换或分段反转（第 4.6 节）。如果替换或置换对于每个块都不同，这种简单的方法可能是有效的。钥匙脉冲很适合这个目的（第
+    11.8 节）。用于链向量的加密应具有自己独立的密钥。如果链向量更强加密，模式 **CC** 和 **CP** 将不再是弱项。
 - en: 11.10.3 Lagged chaining
   id: totrans-189
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.10.3 拖延链接
 - en: Chaining is not restricted to the preceding block. Chaining may also utilize
     earlier block(s). Block N may be combined with block N-i, or with multiple previous
     blocks, say block N-i and block N-j. If i > j, this requires an initialization
@@ -1323,17 +1573,21 @@
   id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 链接不仅限于前一个块。链接还可以利用更早的块。块 N 可以与块 N-i 或多个先前的块组合，例如块 N-i 和块 N-j。如果 i > j，则需要 i
+    个块的初始化向量。
 - en: Similarly, the chain vector can straddle several previous blocks. For example,
     the chain vector can come from the last half of block N-2 and the first half of
     block N-1.
   id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 同样，链接向量可以跨越多个先前的块。例如，链接向量可以来自第 N-2 块的后半部分和第 N-1 块的前半部分。
 - en: 11.10.4 Interior taps
   id: totrans-192
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.10.4 内部 *tap*
 - en: One weakness of using either the plaintext or the ciphertext as the chain vector
     is that these are, or may become, known to Emily. One solution is to encipher
     the chain vector, as in section 11.10.2\. A second solution is to take the chain
@@ -1344,6 +1598,8 @@
   id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用明文或密文作为链接向量的一个弱点是，这些内容可能为 Emily 所知。一个解决方案是对链接向量进行加密，如第 11.10.2 节所述。第二个解决方案是从块加密的某个中间轮获取链接向量。这称为
+    *tap*。例如，如果块密码有 10 轮，您可以使用第 5 轮的输出作为链接向量。在开始加密下一个块之前，将此链接向量与下一个块的明文组合。这是模式 **IP**。
 - en: This can be taken a step further. You can use multiple taps, and they can be
     combined with the following block in multiple places, either with the plaintext,
     with the ciphertext or between rounds of the encipherment. Each tap produces a
@@ -1354,11 +1610,14 @@
   id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 这可以进一步发展。您可以使用多个 *tap*，它们可以与以下块的多个位置组合，可以与明文、密文或加密的轮之间组合。每个 *tap* 产生一个单独的链接向量，因此对于
+    N 个 *tap*，您必须有 N 个初始化向量。这些链接向量可以使用相同的密钥加密，或者每个都可以有自己独立的密钥。涟漪密码（第 11.8 节）非常适合加密链接向量。
 - en: 11.10.5 Key chaining
   id: totrans-195
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.10.5 密钥链接
 - en: Normally, chaining is done on the text of each block. However, it is also possible
     to use chaining with the keys. Suppose that you have a block cipher where the
     same key, K, is used for every block. That cipher could be greatly strengthened
@@ -1374,11 +1633,16 @@
   id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常，链接是在每个块的文本上进行的。但是，也可以将链接与密钥一起使用。假设您有一个块密码，其中每个块都使用相同的密钥 K。通过链接，可以极大地增强该密码。您使用
+    K 作为密钥对第一个块进行加密（初始化向量对于密钥链接是可选的）。然后，您可以使用 K●P[1]、K●C[1] 或 K●I[1] 作为密钥对第二个块进行加密，其中
+    ● 表示逐字节执行的某种组合函数，例如 **xors** 或 **adds**。同样，您可以使用 K●P[2]、K●C[2] 或 K●I[2] 作为密钥对第三个块进行加密，依此类推。这给您带来了三种新的链接模式，**PK**、**CK**
+    和 **IK**。可以同时使用密钥链接和块链接，例如 **PK** 与 **IP**。这是一种非常强大的组合。
 - en: 11.10.6 Chaining mode summary
   id: totrans-197
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.10.6 链接模式总结
 - en: 'Together there are 12 possible modes for chaining. The chaining vector may
     be taken from any of three sources: the plaintext, an internal stage or the ciphertext
     of the current block. The chaining vector may be combined with any of four targets:
@@ -1386,6 +1650,7 @@
   id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 总共有 12 种可能的链接模式。链接向量可以来自三个来源之一：明文、内部阶段或当前块的密文。链接向量可以与四个目标之一结合使用：密钥、明文、内部阶段或下一个块的密文。
 - en: Beyond these choices, the chain vector may be taken fresh each time, or it may
     be combined with the chain vector from the previous block. The chain vector may
     be used as is, or it may be enciphered before combining it with the target. The
@@ -1394,11 +1659,13 @@
   id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了这些选择之外，链向量可以每次都新生成，也可以与前一个分组的链向量合并。链向量可以原样使用，也可以在与目标合并之前加密。链接可以作用于连续的分组，也可以滞后。有很多很多选择。
 - en: 11.10.7 Chaining short blocks
   id: totrans-200
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.10.7 链接短分组
 - en: When the last block in the message is short, and you use the overlap method
     (section 11.2.4) for handling short blocks, it is not clear how to chain the overlapped
     block. The solution is to chain from 2 blocks back. If there are N blocks, the
@@ -1406,11 +1673,14 @@
   id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 当消息中的最后一个分组较短，并且您使用重叠方法（11.2.4 节）来处理短分组时，不清楚如何链接重叠的分组。解决方法是从倒数第二个分组开始链接。如果有
+    N 个分组，则从第 N-2 个分组的链接向量用于第 N-1 个分组和第 N 个分组。
 - en: 11.10.8 Chaining variable-length blocks
   id: totrans-202
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.10.8 链接可变长度分组
 - en: One last issue needs to be covered before we leave the topic of block chaining,
     namely variable block sizes. I suggest that the chain vector be kept at a fixed
     length. If the length L of the message block is less than the length of the chain
@@ -1422,10 +1692,14 @@
   id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们离开分组链接主题之前，还有一个问题需要解决，即可变分组大小。我建议链向量保持固定长度。如果消息分组的长度 L 小于链向量的长度，则将链向量的前 L
+    个字节与消息分组结合。替换链向量的这些 L 个字节，保持其余部分不变。例如，如果链向量为 **1234567890**，而分组为 **SAMPLE**，则将
+    **123456** 与 **SAMPLE** 结合。如果结果是 **ZQm”w+**，则分组变为 **ZQm”w+**，链向量变为 **ZQm”w+7890**。
 - en: '![11-unnumb-15](../Images/11-unnumb-15.png)'
   id: totrans-204
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-15](../Images/11-unnumb-15.png)'
 - en: If the chain vector is shorter than the message block, extend the chain vector
     for this block with as many copies of itself as needed. For example, if the chain
     vector is **123456** and the block is **CONVENTION**, combine **1234561234** with
@@ -1434,20 +1708,26 @@
   id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果链接向量短于消息分组，则使用所需数量的自身副本扩展此分组的链接向量。例如，如果链接向量为 **123456**，而分组为 **CONVENTION**，则将
+    **1234561234** 与 **CONVENTION** 结合。如果结果是 **qA&Vm!7^oS**，则分组变为 **qA&Vm!7^oS**，链接向量变为
+    **qA&Vm!**。
 - en: '![11-unnumb-16](../Images/11-unnumb-16.png)'
   id: totrans-206
   prefs: []
   type: TYPE_IMG
+  zh: '![11-unnumb-16](../Images/11-unnumb-16.png)'
 - en: In both cases, the block remains the same length after chaining, and the chain
     vector remains the same length.
   id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 在两种情况下，分组在链接后仍保持相同的长度，链向量也保持相同的长度。
 - en: 11.11 Strengthening a block cipher
   id: totrans-208
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 11.11 加强分组密码
 - en: Once you have a strong block cipher, it can be strengthened further with very
     little extra effort. All that is needed is to encipher the plaintext lightly before
     applying the block cipher, and to encipher the ciphertext lightly after completing
@@ -1462,6 +1742,9 @@
   id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦您拥有了强大的分组密码，就可以通过很少的额外工作进一步加固它。所需的只是在应用分组密码之前轻微地加密明文，并在完成分组密码后轻微地加密密文。我称之为*三明治*技术，额外的步骤称为*预加密*和*后加密*步骤。如果你感觉顽皮，你可以称之为*鲁宾三明治*。所谓“轻微地”，我是指使用简单的一轮一步密码，例如简单替换或密钥置换（7.6
+    节）。例如，您可以在分组密码之前使用简单替换，之后使用密钥置换，或者反之亦然。一种更强大但更快速的选择是将分组的前 8 个字节视为两个 32 位整数，并将每个整数乘以范围在
+    3 到 2^(32)-1 的奇数乘数模 2^(32)。
 - en: Since the block cipher is already strong, the main purpose of these extra steps
     is to increase the total key size in order to foil brute-force attacks and meet-in-the-middle
     attacks. This works best when the precipher and postcipher steps have long keys
@@ -1470,6 +1753,7 @@
   id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于块密码已经足够强大，这些额外步骤的主要目的是增加总键大小，以阻止暴力破解攻击和中间人攻击。这在预密码和后密码步骤具有长键且与块密码键独立的情况下效果最佳。例如，如果预密码或后密码是简单的替代，它可能具有长的SkipMix密钥。
 - en: As a practical example, DES used a small 56-bit key. If you added simple substitution
     precipher and postcipher steps, each with an independent 64-bit mixing key, that
     would bring the total key size to 184 bits. This is stronger than 3DES, and nearly
@@ -1477,6 +1761,7 @@
   id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为一个实际的例子，DES使用了一个小的56位密钥。如果您添加了简单的替换预密码和后密码步骤，每个步骤都有一个独立的64位混合密钥，那么总密钥大小将达到184位。这比3DES更强大，几乎快3倍。
 - en: DES, however, was designed without any setup phase. The precipher can easily
     be done with no setup. Simply exclusive-OR a 64-bit precipher key with the plaintext.
     This increases the total key size from 56 bits to 120 bits. This, alone, is stronger
@@ -1488,6 +1773,7 @@
   id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: DES，然而，是没有任何设置阶段的设计。预密码可以轻松完成，没有设置。只需将一个64位的预密码密钥与明文进行异或运算。这将总键大小从56位增加到120位。这单独就比2DES更强大，更抵抗中间人攻击。后密码步骤有点棘手。我们希望避免使用异或作为最后一步，原因前面已经讨论过，并且我们也不想有设置。这可以通过使用固定的多表密码来实现。也就是说，表格是事先选择并内置到设备或软件中。
 - en: One possibility is to use a 16×16 tableau of 4-bit groups. The 64-bit block
     is treated as sixteen 4-bit groups. Each 4-bit group is enciphered using 4 bits
     of the 64-bit postcipher key. Thus the total key size is again 184 bits. This
@@ -1495,8 +1781,10 @@
   id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个可能性是使用16×16的4位组表。64位块被视为十六个4位组。每个4位组使用64位后密码键的4位进行加密。因此，总键大小再次为184位。这也比3DES更强大，几乎快3倍。
 - en: The reason this works is that DES is itself strong enough so that the only practical
     attack is brute force. Adding an extra 128 bits to the key makes brute force infeasible.
   id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种方法有效的原因是DES本身已经足够强大，以至于唯一实际的攻击是暴力破解。将额外的128位添加到密钥使暴力破解变得不可行。

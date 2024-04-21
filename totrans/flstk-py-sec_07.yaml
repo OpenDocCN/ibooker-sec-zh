@@ -1401,17 +1401,22 @@
   id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: '`SECURE_SSL_HOST` 设置用于覆盖 HTTPS 重定向的主机名。如果此值设置为 `bob.com`，Django 将永久重定向对 http:/./alice.com
+    的请求到 https:/./bob.com 而不是 https:/./alice.com。默认值为 `None`。'
 - en: By now, you’ve learned a lot about how browser and web servers communicate with
     HTTPS; but browsers aren’t the only HTTPS clients. In the next section, you’ll
     see how to use HTTPS when sending requests programmatically in Python.
   id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，你已经学到了很多关于浏览器和 Web 服务器如何通过 HTTPS 通信的知识；但浏览器并不是唯一的 HTTPS 客户端。在下一节中，你将看到如何在
+    Python 中以编程方式发送请求时使用 HTTPS。
 - en: 6.6 TLS and the requests package
   id: totrans-209
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.6 TLS 和 requests 包
 - en: 'The `requests` package is a popular HTTP library for Python. Many Python applications
     use this package to send and receive data between other systems. In this section,
     I cover a few features related to TLS. From within your virtual environment, install
@@ -1419,6 +1424,8 @@
   id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: '`requests` 包是 Python 中流行的 HTTP 库。许多 Python 应用程序使用此包在其他系统之间发送和接收数据。在本节中，我将介绍几个与
+    TLS 相关的功能。在你的虚拟环境中，使用以下命令安装 `requests`：'
 - en: '[PRE18]'
   id: totrans-211
   prefs: []
@@ -1431,6 +1438,8 @@
   id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 当 URL 方案为 HTTPS 时，`requests` 包会自动使用 TLS。下面代码中粗体显示的 `verify` 关键字参数禁用了服务器身份验证。此参数不会禁用
+    TLS；它放宽了 TLS。对话仍然是保密的，但服务器不再被验证：
 - en: '[PRE19]'
   id: totrans-213
   prefs: []
@@ -1442,6 +1451,7 @@
   id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 显然，此功能在生产环境中是不合适的。它在集成测试环境中通常很有用，当系统需要与没有静态主机名的服务器通信时，或者与使用自签名证书的服务器通信时。
 - en: 'TLS authentication is a two-way street: the client can be authenticated in
     addition to the server. A TLS client authenticates itself with a public-key certificate
     and private key, just like a server. The `requests` package supports client authentication
@@ -1452,6 +1462,9 @@
   id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: TLS 身份验证是双向的：除了服务器之外，客户端也可以被验证。TLS 客户端通过公钥证书和私钥进行自身验证，就像服务器一样。`requests` 包支持使用
+    `cert` 关键字参数进行客户端身份验证。下面代码中粗体显示的这个 kwarg 期望一个两部分元组。此元组表示证书和私钥文件的路径。`verify` kwarg
+    不影响客户端身份验证；`cert` kwarg 不影响服务器身份验证：
 - en: '[PRE20]'
   id: totrans-216
   prefs: []
@@ -1462,6 +1475,7 @@
   id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者，`verify` 和 `cert` 关键字参数的功能可以通过 `requests` 的 `Session` 对象的属性来实现，如下所示：
 - en: '[PRE21]'
   id: totrans-218
   prefs: []
@@ -1476,21 +1490,26 @@
   id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: TLS 不仅适用于 HTTP。数据库流量、电子邮件流量、Telnet、轻量级目录访问协议（LDAP）、文件传输协议（FTP）等都可以运行在 TLS 上。这些协议的
+    TLS 客户端具有比浏览器更多的“个性”。这些客户端在能力上差异很大，并且它们的配置更具供应商特定性。本章以超出 HTTP 范围的 TLS 两个用例结束：
 - en: Database connections
   id: totrans-220
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 数据库连接
 - en: Email
   id: totrans-221
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 电子邮件
 - en: 6.7 TLS and database connections
   id: totrans-222
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.7 TLS 和数据库连接
 - en: Applications should ensure that database connections are secured with TLS as
     well. TLS ensures that your application is connecting to the correct database
     and that data being written to and read from the database cannot be intercepted
@@ -1498,6 +1517,7 @@
   id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 应用程序应确保数据库连接也使用 TLS 进行安全连接。TLS 确保你的应用程序连接到正确的数据库，并且从数据库写入和读取的数据不能被网络攻击者拦截。
 - en: Django database connections are managed by the `DATABASES` setting. Each entry
     in this dictionary represents a different database connection. The following listing
     illustrates the default Django `DATABASES` setting. The `ENGINE` key specifies
@@ -1621,6 +1641,8 @@
   id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: 有两种启动到电子邮件服务器的 TLS 连接的方式。RFC 8314 将传统方法描述为“客户端建立明文应用程序会话……随后进行 TLS 握手，可以升级连接。”
+    RFC 8314 推荐“一种在连接开始时立即进行 TLS 协商的替代机制，使用单独的端口。” 推荐的机制称为 *隐式 TLS*。
 - en: The `EMAIL_USE_SSL` and `EMAIL_USE_TLS` settings configure Django to send email
     over TLS. Both settings default to `False`, only one of them can be `True`, and
     neither is intuitive. A reasonable observer would assume `EMAIL_USE_TLS` is preferred
@@ -1630,17 +1652,23 @@
   id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: '`EMAIL_USE_SSL` 和 `EMAIL_USE_TLS` 设置配置 Django 以通过 TLS 发送电子邮件。这两个设置默认为 `False`，只能有一个设置为
+    `True`，而且两者都不直观。合理的观察者会假设 `EMAIL_USE_TLS` 优于 `EMAIL_USE_SSL`。毕竟，TLS 在安全性和性能方面多年来取代了
+    SSL。不幸的是，隐式 TLS 是由 `EMAIL_USE_SSL` 而不是 `EMAIL_USE_TLS` 配置的。'
 - en: Using `EMAIL_USE_TLS` is better than nothing, but you should use `EMAIL_USE
     _SSL` if your email server supports implicit TLS. I have no idea why `EMAIL_USE_SSL`
     wasn’t named `EMAIL_USE_IMPLICIT_TLS`.
   id: totrans-242
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 `EMAIL_USE_TLS` 比什么都不用要好，但是如果您的电子邮件服务器支持隐式 TLS，请使用 `EMAIL_USE_SSL`。我不知道为什么
+    `EMAIL_USE_SSL` 没有命名为 `EMAIL_USE_IMPLICIT_TLS`。
 - en: 6.8.2 Email client authentication
   id: totrans-243
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6.8.2 电子邮件客户端身份验证
 - en: Like the `requests` package, Django’s email API supports TLS client authentication.
     The `EMAIL_SSL_KEYFILE` and `EMAIL_SSL_CERTFILE` settings represent the paths
     of the private key and client certificate. Both options do nothing if `EMAIL_USE_TLS`
@@ -1648,12 +1676,15 @@
   id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: 与 `requests` 包一样，Django 的电子邮件 API 支持 TLS 客户端身份验证。`EMAIL_SSL_KEYFILE` 和 `EMAIL_SSL_CERTFILE`
+    设置代表私钥和客户端证书的路径。如果未启用 `EMAIL_USE_TLS` 或 `EMAIL_USE_SSL`，这两个选项都不起作用，这是预期的。
 - en: Do not assume that every TLS client performs server authentication. At the time
     of this writing, Django unfortunately does not perform server authentication when
     sending email.
   id: totrans-245
   prefs: []
   type: TYPE_NORMAL
+  zh: 不要假设每个 TLS 客户端都执行服务器身份验证。在撰写本文时，不幸的是 Django 在发送电子邮件时不执行服务器身份验证。
 - en: Note As with your database traffic, encrypting email in transit is no substitute
     for encrypting email at rest; always do both. Most vendors encrypt email at rest
     for you automatically. If not, consult the documentation of your email vendor
@@ -1661,11 +1692,13 @@
   id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意：与数据库流量一样，加密传输中的电子邮件不能替代加密静态电子邮件；一定要两者都做。大多数供应商会自动为您加密静态电子邮件。如果没有，请查阅您的电子邮件供应商文档，了解更多关于静态电子邮件加密的信息。
 - en: 6.8.3 SMTP authentication credentials
   id: totrans-247
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6.8.3 SMTP 身份验证凭据
 - en: Unlike `EMAIL_USE_TLS` and `EMAIL_USE_SSL`, the `EMAIL_HOST_USER` and `EMAIL
     _HOST_PASSWORD` settings are intuitive. These settings represent SMTP authentication
     credentials. SMTP makes no attempt to hide these credentials in transit; without
@@ -1674,10 +1707,13 @@
   id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: 与 `EMAIL_USE_TLS` 和 `EMAIL_USE_SSL` 不同，`EMAIL_HOST_USER` 和 `EMAIL _HOST_PASSWORD`
+    设置是直观的。这些设置代表 SMTP 认证凭据。SMTP 在传输过程中不会试图隐藏这些凭据；如果没有 TLS，它们很容易成为网络窃听者的目标。以下代码演示了在以编程方式发送电子邮件时如何覆盖这些设置。
 - en: Listing 6.9 Programmatically sending email in Django
   id: totrans-249
   prefs: []
   type: TYPE_NORMAL
+  zh: 清单 6.9 在 Django 中以编程方式发送电子邮件
 - en: '[PRE24]'
   id: totrans-250
   prefs: []
@@ -1687,18 +1723,22 @@
   id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 发件人电子邮件
 - en: ❷ Recipient list
   id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 收件人列表
 - en: ❸ Overrides EMAIL_HOST_USER
   id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 覆盖 EMAIL_HOST_USER
 - en: ❹ Overrides EMAIL_HOST_PASSWORD
   id: totrans-254
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 覆盖 EMAIL_HOST_PASSWORD
 - en: In this chapter, you learned a lot about TLS, the industry standard for encryption
     in transit. You know how this protocol protects servers and clients. You know
     how to apply TLS to website, database, and email connections. In the next few
@@ -1709,16 +1749,20 @@
   id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，您学到了关于 TLS 的很多知识，这是传输中的加密行业标准。您知道此协议如何保护服务器和客户端。您知道如何将 TLS 应用于网站、数据库和电子邮件连接。在接下来的几章中，您将使用此协议安全地传输诸如
+    HTTP 会话 ID、用户身份验证凭据和 OAuth 令牌等敏感信息。您还将在本章中创建的 Django 应用程序的基础上构建几个安全的工作流程。
 - en: Summary
   id: totrans-256
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 概要
 - en: SSL, TLS, and HTTPS are not synonyms.
   id: totrans-257
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: SSL、TLS 和 HTTPS 不是同义词。
 - en: 'Man-in-the-middle attacks come in two flavors: passive and active.'
   id: totrans-258
   prefs:

@@ -1,66 +1,92 @@
 - en: 7 HTTP session management
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 7 HTTP会话管理
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: Understanding HTTP cookies
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 理解HTTP cookie
 - en: Configuring HTTP sessions in Django
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在Django中配置HTTP会话
 - en: Choosing an HTTP session-state persistence strategy
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 选择一个HTTP会话状态持久化策略
 - en: Preventing remote code-execution attacks and replay attacks
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 防止远程代码执行攻击和重放攻击
 - en: In the previous chapter, you learned about TLS. In this chapter, you’ll build
     on top of that knowledge, literally. You’ll learn how HTTP sessions are implemented
     with cookies. You’ll also learn how to configure HTTP sessions in Django. Along
     the way, I’ll show you how to safely implement session-state persistence. Finally,
     you’ll learn how to identify and resist remote code-execution attacks and replay
     attacks.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 在上一章中，你学习了有关TLS的知识。在本章中，你将在此基础上继续学习。你将了解如何使用cookie实现HTTP会话。你还将学习如何在Django中配置HTTP会话。在此过程中，我将向你展示如何安全地实现会话状态持久化。最后，你将学习如何识别和抵抗远程代码执行攻击和重放攻击。
 - en: 7.1 What are HTTP sessions?
+  id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 7.1 什么是HTTP会话？
 - en: '*HTTP* *sessions* are a necessity for all but the most trivial web applications.
     Web applications use HTTP sessions to isolate the traffic, context, and state
     of each user. This is the basis for every form of online transaction. If you’re
     buying something on Amazon, messaging someone on Facebook, or transferring money
     from your bank, the server must be able to identify you across multiple requests.'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: '*HTTP* *会话* 对于除了最简单的Web应用程序之外的所有应用程序都是必需的。Web应用程序使用HTTP会话来隔离每个用户的流量、上下文和状态。这是每种在线交易的基础。如果你在亚马逊购物，Facebook上与某人通信，或者从银行转账，服务器必须能够在多个请求中识别你。'
 - en: Suppose Alice visits Wikipedia for the first time. Alice’s browser is unfamiliar
     to Wikipedia, so it creates a session. Wikipedia generates and stores an ID for
     this session. This ID is sent to Alice’s browser in an HTTP response. Alice’s
     browser holds on to the session ID, sending it back to Wikipedia in all subsequent
     requests. When Wikipedia receives each request, it uses the inbound session ID
     to identify the session associated with the request.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设Alice第一次访问维基百科。Alice的浏览器对维基百科不熟悉，因此它创建了一个会话。维基百科生成并存储了此会话的ID。该ID在HTTP响应中发送给Alice的浏览器。Alice的浏览器保存会话ID，并在所有后续请求中将其发送回维基百科。当维基百科接收到每个请求时，它使用传入的会话ID来识别与请求相关联的会话。
 - en: Now suppose Wikipedia creates a session for another new visitor, Bob. Like Alice,
     Bob is assigned a unique session ID. His browser stores his session ID and sends
     it back with every subsequent request. Wikipedia can now use the session IDs to
     differentiate between Alice’s traffic and Bob’s traffic. Figure 7.1 illustrates
     this protocol.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在假设维基百科为另一个新访客Bob创建了一个会话。像Alice一样，Bob被分配了一个唯一的会话ID。他的浏览器存储了他的会话ID，并在每个后续请求中发送回来。维基百科现在可以使用会话ID来区分Alice的流量和Bob的流量。图7.1说明了这个协议。
 - en: '![CH07_F01_Byrne](Images/CH07_F01_Byrne.png)'
+  id: totrans-11
   prefs: []
   type: TYPE_IMG
+  zh: '![CH07_F01_Byrne](Images/CH07_F01_Byrne.png)'
 - en: Figure 7.1 Wikipedia manages the sessions of two users, Alice and Bob.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 图7.1 维基百科管理两个用户Alice和Bob的会话。
 - en: It is very important that Alice and Bob’s session IDs remain private. If Eve
     steals a session ID, she can use it to impersonate Alice or Bob. A request from
     Eve, containing Bob’s hijacked session ID, will appear no different from a legitimate
@@ -68,27 +94,34 @@
     to them in this book, hinge upon stealing, or unauthorized control of, session
     IDs. This is why session IDs should be sent and received confidentially over HTTPS
     rather than HTTP.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: Alice和Bob的会话ID保持私密非常重要。如果Eve窃取了会话ID，她可以使用它来冒充Alice或Bob。包含Bob被劫持的会话ID的Eve的请求看起来与Bob的合法请求没有任何区别。许多利用漏洞，其中一些在本书中专门有章节介绍，都依赖于窃取或未经授权控制会话ID。这就是为什么会话ID应该通过HTTPS而不是HTTP进行机密发送和接收。
 - en: You may have noticed that some websites use HTTP to communicate with anonymous
     users, and HTTPS to communicate with authenticated users. Malicious network eavesdroppers
     target these sites by trying to steal the session ID over HTTP, waiting until
     the user logs in, and hijacking the user’s account over HTTPS. This is known as
     *session sniffing*.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能已经注意到一些网站使用HTTP与匿名用户通信，使用HTTPS与经过身份验证的用户通信。恶意网络窃听者通过尝试在HTTP上窃取会话ID，等待用户登录，然后在HTTPS上劫持用户账户来攻击这些网站。这被称为*会话嗅探*。
 - en: 'Django, like many web application frameworks, prevents session sniffing by
     changing the session identifier when a user logs in. To be on the safe side, Django
     does this regardless of whether the protocol was upgraded from HTTP to HTTPS.
     I recommend an additional layer of defense: just use HTTPS for your entire website.'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
 - en: 'Managing HTTP sessions can be a challenge; this chapter covers many solutions.
     Each solution has a different set of security trade-offs, but they all have one
     thing in common: HTTP cookies.'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
 - en: 7.2 HTTP cookies
+  id: totrans-17
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -96,6 +129,7 @@
     can be created by your browser, but typically it is created by the server. The
     server sends the cookie to your browser via a response. The browser echoes back
     the cookie on subsequent requests to the server.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
 - en: 'Websites and browsers communicate session IDs with cookies. When a new user
@@ -104,57 +138,73 @@
     header contains a key-value pair representing the name and value of the cookie.
     By default, a Django session ID is communicated with a cookie named `sessionid`,
     shown here in bold font:'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE0]'
+  id: totrans-20
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'Cookies are echoed back to the server on subsequent requests via the `Cookie`
     request header. This header is a semicolon-delimited list of key-value pairs.
     Each pair represents a cookie. The following example illustrates a few headers
     of a request bound for alice.com. The `Cookie` header, shown in bold, contains
     two cookies:'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE1]'
+  id: totrans-22
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: ❶ Sends two cookies back to alice.com
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
 - en: 'The `Set-Cookie` response header accommodates multiple directives. These directives
     are highly relevant to security when the cookie is a session ID. I cover the `HttpOnly`
     directive in chapter 14\. I cover the `SameSite` directive in chapter 16\. In
     this section, I cover the following three directives:'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
 - en: '`Secure`'
+  id: totrans-25
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '`Domain`'
+  id: totrans-26
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '`Max-Age`'
+  id: totrans-27
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 7.2.1 Secure directive
+  id: totrans-28
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: 'Servers resist MITM attacks by sending the session ID cookie with the `Secure`
     directive. An example response header is shown here with a `Secure` directive
     in bold:'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE2]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: The `Secure` directive prohibits the browser from sending the cookie back to
     the server over HTTP. This ensures that the cookie will be transmitted only over
     HTTPS, preventing a network eavesdropper from intercepting the session ID.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
 - en: The `SESSION_COOKIE_SECURE` setting is a Boolean value that adds or removes
@@ -162,32 +212,40 @@
     you to learn that this setting defaults to `False`. This allows new Django applications
     to immediately support user sessions; it also means the session ID can be intercepted
     by a MITM attack.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
 - en: WARNING You must ensure that `SESSION_COOKIE_SECURE` is set to `True` for all
     production deployments of your system. Django doesn’t do this for you.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
 - en: TIP You must restart Django before changes to the `settings` module take effect.
     To restart Django, press Ctrl-C in your shell to stop the server, and then start
     it again with `gunicorn`.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
 - en: 7.2.2 Domain directive
+  id: totrans-35
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: 'A server uses the `Domain` directive to control which hosts the browser should
     send the session ID to. An example response header is shown here with the `Domain`
     directive in bold:'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE3]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: Suppose alice.com sends a `Set-Cookie` header to a browser with no `Domain`
     directive. With no `Domain` directive, the browser will echo back the cookie to
     alice.com, but not a subdomain such as sub.alice.com.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
 - en: Now suppose alice.com sends a `Set-Cookie` header with a `Domain` directive
@@ -196,6 +254,7 @@
     but it’s less secure. For example, if Mallory hacks sub.alice.com, she is in a
     better position to compromise alice.com because the session IDs from alice.com
     are just being handed to her.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
 - en: 'The `SESSION_COOKIE_DOMAIN` setting configures the `Domain` directive for the
@@ -203,52 +262,65 @@
     string representing a domain name like `alice.com`. This setting defaults to `None`,
     omitting the `Domain` directive from the response header. An example configuration
     setting is shown here:'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE4]'
+  id: totrans-41
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: ❶ Configures the Domain directive from settings.py
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
 - en: 'TIP The `Domain` directive is sometimes confused with the `SameSite` directive.
     To avoid this confusion, remember this contrast: the `Domain` directive relates
     to where a cookie *goes to* ; the `SameSite` directive relates to where a cookie
     *comes from*. I examine the `SameSite` directive in chapter 16.'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
 - en: 7.2.3 Max-Age directive
+  id: totrans-44
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: 'A server sends the `Max-Age` directive to declare an expiration time for the
     cookie. An example response header is shown here with a `Max-Age` directive in
     bold:'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE5]'
+  id: totrans-46
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: Once a cookie expires, the browser will no longer echo it back to the site it
     came from. This behavior probably sounds familiar to you. You may have noticed
     that websites like Gmail don’t force you to log in every time you return. But
     if you haven’t been back for a long time, you’re forced to log in again. Chances
     are, your cookie and HTTP session expired.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
 - en: Choosing the best session length for your site boils down to security versus
     functionality. An extremely long session provides an attacker with an easy target
     when the browser is unattended. An extremely short session, on the other hand,
     forces legitimate users to log back in over and over again.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
 - en: The `SESSION_COOKIE_AGE` setting configures the `Max-Age` directive for the
     session ID `Set-Cookie` header. This setting defaults to 1,209,600 seconds (two
     weeks). This value is reasonable for most systems, but the appropriate value is
     site-specific.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
 - en: 7.2.4 Browser-length sessions
+  id: totrans-50
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -259,14 +331,17 @@
     to close every tab when they are done using a site? Furthermore, the session effectively
     has no expiry when a user doesn’t close their browser tab. Thus, browser-length
     sessions increase risk overall, and you should generally avoid this feature.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
 - en: Browser-length sessions are configured by the `SESSION_EXPIRE_AT_BROWSER_ CLOSE`
     setting. Setting this to `True` will remove the `Max-Age` directive from the session
     ID `Set-Cookie` header. Django disables browser-length sessions by default.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
 - en: 7.2.5 Setting cookies programmatically
+  id: totrans-53
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -274,21 +349,28 @@
     not just the session ID. If you’re programmatically setting cookies, you should
     consider these directives to limit risk. The following code demonstrates how to
     use these directives when setting a custom cookie in Django.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 7.1 Programmatically setting a cookie in Django
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE6]'
+  id: totrans-56
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: ❶ The browser will send this cookie only over HTTPS.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ alice.com and all subdomains will receive this cookie.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
 - en: ❸ After 42 seconds, this cookie will expire.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
 - en: By now, you’ve learned a lot about how servers and HTTP clients use cookies
@@ -296,9 +378,11 @@
     users. In addition, sessions serve as a way to manage state for each user. The
     user’s name, locale, and time zone are common examples of session state. The next
     section covers how to access and persist session state.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
 - en: 7.3 Session-state persistence
+  id: totrans-61
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -307,24 +391,32 @@
     object behaves like a Python dict, storing values by key. Session state is created,
     read, updated, and deleted through this API; these operations are demonstrated
     in the next listing.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 7.2 Django session state access
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE7]'
+  id: totrans-64
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: ❶ Creates a session state entry
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Reads a session state entry
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
 - en: ❸ Updates a session state entry
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
 - en: ❹ Deletes a session state entry
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
 - en: Django automatically manages session-state persistence. Session state is loaded
@@ -332,22 +424,27 @@
     If the session state is modified during the request life cycle, Django serializes
     and persists the modifications when the response is sent. The abstraction layer
     for serialization and deserialization is known as the *session serializer*.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
 - en: 7.3.1 The session serializer
+  id: totrans-70
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: 'Django delegates the serialization and deserialization of session state to
     a configurable component. This component is configured by the `SESSION_SERIALIZER`
     setting. Django natively supports two session serializer components:'
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
 - en: '`JSONSerializer`, the default session serializer'
+  id: totrans-72
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '`PickleSerializer`'
+  id: totrans-73
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -355,218 +452,319 @@
     you to compose session state with basic Python data types such as integers, strings,
     dicts, and lists. The following code uses `JSONSerializer` to serialize and deserialize
     a dict, shown in bold font:'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: '`JSONSerializer` 将会话状态转换为JSON并从JSON转换回来。这种方法允许您将会话状态与基本的Python数据类型（如整数、字符串、字典和列表）组合在一起。以下代码使用
+    `JSONSerializer` 来序列化和反序列化一个字典，如粗体所示：'
 - en: '[PRE8]'
+  id: totrans-75
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: ❶ Serializes a Python dict
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 序列化一个Python字典
 - en: ❷ Serialized JSON
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 序列化的JSON
 - en: ❸ Deserializes JSON
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 反序列化JSON
 - en: ❹ Deserialized Python dict
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 反序列化的Python字典
 - en: '`PickleSerializer` transforms session state to and from byte streams. As the
     name implies, `PickleSerializer` is a wrapper for the Python `pickle` module.
     This approach allows you to store arbitrary Python objects in addition to basic
     Python data types. An application-defined Python object, defined and created in
     bold, is serialized and deserialized by the following code:'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: '`PickleSerializer` 将会话状态转换为字节流并从字节流转换回来。顾名思义，`PickleSerializer` 是Python `pickle`
+    模块的包装器。这种方法允许您存储任意Python对象以及基本的Python数据类型。一个应用���序定义的Python对象，如粗体所示，通过以下代码进行序列化和反序列化： '
 - en: '[PRE9]'
+  id: totrans-81
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: ❶ Serializes an application-defined object
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 序列化一个应用程序定义的对象
 - en: ❷ Serialized byte stream
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 序列化的字节流
 - en: ❸ Deserializes byte stream
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 反序列化字节流
 - en: ❹ Deserialized object
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 反序列化对象
 - en: 'The trade-off between `JSONSerializer` and `PickleSerializer` is security versus
     functionality. `JSONSerializer` is safe, but it cannot serialize arbitrary Python
     objects. `PickleSerializer` performs this functionality but comes with a severe
     risk. The `pickle` module documentation gives us the following warning ([https://docs.python.org/3/library/pickle.html](https://docs.python.org/3/library/pickle.html)):'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: '`JSONSerializer` 和 `PickleSerializer` 之间的权衡是安全性与功能性。`JSONSerializer` 是安全的，但无法序列化任意Python对象。`PickleSerializer`
+    执行此功能，但存在严重风险。`pickle` 模块文档给出了以下警告（[https://docs.python.org/3/library/pickle.html](https://docs.python.org/3/library/pickle.html)）：'
 - en: The pickle module is not secure. Only unpickle data you trust. It is possible
     to construct malicious pickle data which will execute arbitrary code during unpickling.
     Never unpickle data that could have come from an untrusted source, or that could
     have been tampered with.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: pickle模块不安全。只有信任的数据才能反序列化。可能构造恶意pickle数据，在反序列化过程中执行任意代码。永远不要反序列化可能来自不受信任来源或可能被篡改的数据。
 - en: '`PickleSerializer` can be horrifically abused if an attacker is able to modify
     the session state. I cover this form of attack later in this chapter; stay tuned.'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果攻击者能够修改会话状态，`PickleSerializer` 可能会被恶意滥用。我将在本章后面讨论这种形式的攻击；请继续关注。
 - en: 'Django automatically persists serialized session state with a session engine.
     The *session engine* is a configurable abstraction layer for the underlying data
     source. Django ships with these five options, each with its own set of strengths
     and weaknesses:'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: Django会自动使用会话引擎持久化序列化的会话状态。*会话引擎* 是对底层数据源的可配置抽象层。Django提供了这五个选项，每个选项都有其自己的优缺点：
 - en: Simple cache-based sessions
+  id: totrans-90
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 简单基于缓存的会话
 - en: Write-through cache-based sessions
+  id: totrans-91
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 写入缓存的会话
 - en: Database-based sessions, the default option
+  id: totrans-92
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 基于数据库的会话，即默认选项
 - en: File-based sessions
+  id: totrans-93
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 基于文件的会话
 - en: Signed-cookie sessions
+  id: totrans-94
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 签名cookie会话
 - en: 7.3.2 Simple cache-based sessions
+  id: totrans-95
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 7.3.2 简单基于缓存的会话
 - en: '*Simple* *cache-based sessions* allow you to store session state in a cache
     service such as Memcached or Redis. Cache services store data in memory rather
     than on disk. This means you can store and load data from these services very
     quickly, but occasionally the data can be lost. For example, if a cache service
     runs out of free space, it will write new data over the least recently accessed
     old data. If a cache service is restarted, all data is lost.'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: '*简单* *基于缓存的会话* 允许您将会话状态存储在诸如Memcached或Redis之类的缓存服务中。缓存服务将数据存储在内存中而不是在磁盘上。这意味着您可以非常快速地存储和加载数据，但偶尔数据可能会丢失。例如，如果缓存服务的空间用完了，它将覆盖最近访问的旧数据以写入新数据。如果缓存服务重新启动，所有数据都会丢失。'
 - en: The greatest strength of a cache service, speed, complements the typical access
     pattern for session state. Session state is read frequently (on every request).
     By storing session state in memory, an entire site can reduce latency and increase
     throughput while providing a better user experience.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 缓存服务的最大优势，速度，与会话状态的典型访问模式相辅相成。会话状态经常被读取（在每个请求上）。通过将会话状态存储在内存中，整个站点可以减少延迟，增加吞吐量，同时提供更好的用户体验。
 - en: The greatest weakness of a cache service, data loss, does not apply to session
     state to the same degree as other user data. In the worst case scenario, the user
     must log back into the site, re-creating the session. This is undesirable, but
     calling it *data loss* is a stretch. Session state is therefore expendable, and
     the downside is limited.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 缓存服务的最大弱点，数据丢失，并不像其他用户数据那样适用于会话状态。在最坏的情况下，用户必须重新登录网站，重新创建会话。这是不可取的，但称其为*数据丢失*有些牵强。因此，会话状态是可以牺牲的，而且缺点是有限的。
 - en: The most popular and fastest way to store Django session state is to combine
     a simple cache-based session engine with a cache service like Memcached. In the
     `settings` module, assigning `SESSION_ENGINE` to `django.contrib.sessions.backends
     .cache` configures Django for simple cache-based sessions. Django natively supports
     two Memcached cache backend types.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 存储Django会话状态的最流行和最快的方法是将简单基于缓存的会话引擎与Memcached等缓存服务结合使用。在`settings`模块中，将`SESSION_ENGINE`分配给`django.contrib.sessions.backends.cache`会配置Django用于简单基于缓存的会话。Django本地支持两种Memcached缓存后端类型。
 - en: Memcached backends
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: Memcached后端
 - en: '`MemcachedCache` and `PyLibMCCache` are the fastest and most commonly used
     cache backends. The `CACHES` setting configures cache service integration. This
     setting is a dict, representing a collection of individual cache backends. Listing
     7.3 illustrates two ways to configure Django for Memcached integration. The `MemcachedCache`
     option is configured to use a local loopback address; the `PyLibMCCache` option
     is configured to use a UNIX socket.'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: '`MemcachedCache`和`PyLibMCCache`是最快和最常用的缓存后端。`CACHES`设置配置了缓存服务集成。这个设置是一个字典，表示一组单独的缓存后端。第7.3节列举了两种配置Django用于Memcached集成的方法。`MemcachedCache`选项配置为使用本地回环地址；`PyLibMCCache`选项配置为使用UNIX套接字。'
 - en: Listing 7.3 Caching with Memcached
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 第7.3节 使用Memcached进行缓存
 - en: '[PRE10]'
+  id: totrans-103
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: ❶ Local loopback address
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 本地回环地址
 - en: ❷ UNIX socket address
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ UNIX套接字地址
 - en: Local loopback addresses and UNIX sockets are secure because traffic to these
     addresses does not leave the machine. At the time of this writing, TLS functionality
     is unfortunately described as “experimental” on the Memcached wiki.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 本地回环地址和UNIX套接字是安全的，因为到这些地址的流量不会离开机器。在撰写本文时，遗憾的是，Memcached维基上的TLS功能被描述为“实验性”。
 - en: 'Django supports four additional cache backends. These options are either unpopular,
     insecure, or both, so I cover them here briefly:'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: Django支持四种额外的缓存后端。这些选项要么不受欢迎，要么不安全，或者两者兼而有之，因此我在这里简要介绍它们：
 - en: Database backend
+  id: totrans-108
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 数据库后端
 - en: Local memory backend, the default option
+  id: totrans-109
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 本地内存后端，默认选项
 - en: Dummy backend
+  id: totrans-110
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 虚拟后端
 - en: Filesystem backend
+  id: totrans-111
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 文件系统后端
 - en: Database backend
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据库后端
 - en: The `DatabaseCache` option configures Django to use your database as a cache
     backend. Using this option gives you one more reason to send your database traffic
     over TLS. Without a TLS connection, everything you cache, including session IDs,
     is accessible to a network eavesdropper. The next listing illustrates how to configure
     Django to cache with a database backend.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: '`DatabaseCache`选项配置Django使用您的数据库作为缓存后端。使用此选项可以让您有更多理由通过TLS发送数据库流量。没有TLS连接，您缓存的所有内容，包括会话ID，都可以被网络窃听者访问。下一个列表说明了如何配置Django使用数据库后端进行缓存。'
 - en: Listing 7.4 Caching with a database
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 第7.4节 使用数据库进行缓存
 - en: '[PRE11]'
+  id: totrans-115
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: The major trade-off between a cache service and a database is performance versus
     storage capacity. Your database cannot perform as well as a cache service. A database
     persists data to disk; a cache service persists data to memory. On the other hand,
     your cache service will never be able to store as much data as a database. This
     option is valuable in rare situations when the session state is not expendable.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 缓存服务和数据库之间的主要权衡是性能与存储容量之间的关系。您的数据库无法像缓存服务那样运行。数据库将数据持久化到磁盘；缓存服务将数据持久化到内存。另一方面，您的缓存服务永远无法存储与数据库一样多的数据。在会话状态不可牺牲的罕见情况下，这个选项是有价值的。
 - en: Local memory, dummy, and filesystem backends
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 本地内存、虚拟和文件系统后端
 - en: '`LocMemCache` caches data in local memory, where only a ridiculously well-positioned
     attacker could access it. `DummyCache` is the only thing more secure than `LocMemCache`
     because it doesn’t store anything. These options, illustrated by the following
     listing, are very secure but neither of them are useful beyond development or
     testing environments. Django uses `LocMemCache` by default.'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: '`LocMemCache`将数据缓存在本地内存中，只有一个位置极佳的攻击者才能访问。`DummyCache`是比`LocMemCache`更安全的唯一选项，因为它不存储任何内容。这些选项，如下列表所示，非常安全，但在开发或测试环境之外并不实用。Django默认使用`LocMemCache`。'
 - en: Listing 7.5 Caching with local memory, or nothing at all
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE12]'
+  id: totrans-120
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: '`FileBasedCache`, as you may have guessed, is unpopular and insecure. `FileBasedCache`
     users don’t have to worry if their unencrypted data will be sent over the network;
     it is written to the filesystem instead, as shown in the following listing.'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 7.6 Caching with the filesystem
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE13]'
+  id: totrans-123
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: 7.3.3 Write-through cache-based sessions
+  id: totrans-124
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -574,18 +772,22 @@
     a database to manage session state. Under this approach, when Django writes session
     state to the cache service, the operation will also “write through” to the database.
     This means the session state is persistent, at the expense of write performance.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
 - en: When Django needs to read session state, it reads from the cache service first,
     using the database as a last resort. Therefore, you’ll take an occasional performance
     hit on read operations as well.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
 - en: Setting `SESSION_ENGINE` to `django.contrib.sessions.backends.cache _db` enables
     write-through cache-based sessions.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
 - en: 7.3.4 Database-based session engine
+  id: totrans-128
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -593,6 +795,7 @@
     is useful if you’ve chosen to forgo the overhead of integrating your application
     with a cache service. Database-based sessions are configured by setting `SESSION_ENGINE`
     to `django.contrib.sessions.backends.db`. This is the default behavior.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
 - en: 'Django doesn’t automatically clean up abandoned session state. Systems using
@@ -601,12 +804,16 @@
     importantly, it will help you reduce the size of your attack surface if you are
     storing sensitive data in the session. The following command, executed from the
     project root directory, demonstrates how to invoke the `clearsessions` subcommand:'
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE14]'
+  id: totrans-131
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: 7.3.5 File-based session engine
+  id: totrans-132
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -615,9 +822,11 @@
     session state is stored unencrypted. Anyone with read access to the filesystem
     can hijack a session or view session state. Setting `SESSION_ENGINE` to `django.contrib.sessions.backends
     .file` configures Django to store session state in the filesystem.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
 - en: 7.3.6 Cookie-based session engine
+  id: totrans-134
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -626,12 +835,14 @@
     the session; it *is* the session. Instead of storing the session locally, Django
     serializes and sends the whole thing to the browser. Django then deserializes
     the payload when the browser echoes it back on subsequent requests.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
 - en: Before sending the session state to the browser, the cookie-based session engine
     hashes the session state with an HMAC function. (You learned about HMAC functions
     in chapter 3.) The hash value obtained from the HMAC function is paired with the
     session state; Django sends them to the browser together as the session ID cookie.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
 - en: When the browser echoes back the session ID cookie, Django extracts the hash
@@ -640,19 +851,24 @@
     values do not match, Django knows the session state has been tampered with, and
     the request is rejected. If the hash values match, Django trusts the session state.
     Figure 7.2 illustrates this round-trip process.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
 - en: '![CH07_F02_Byrne](Images/CH07_F02_Byrne.png)'
+  id: totrans-138
   prefs: []
   type: TYPE_IMG
 - en: Figure 7.2 Django hashes what it sends and authenticates what it receives.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
 - en: Previously, you learned that HMAC functions require a key. Where does Django
     get the secret key? From the `settings` module.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
 - en: The SECRET_KEY setting
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
 - en: Every generated Django application contains a `SECRET_KEY` setting in the `settings`
@@ -663,6 +879,7 @@
     development or test environments, but in your production environment, it is important
     to retrieve a different value from a location that is more secure than your code
     repository.
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
 - en: WARNING The production value for `SECRET_KEY` should maintain three properties.
@@ -671,31 +888,38 @@
     to a password or a passphrase; nobody should need to remember it. If someone can
     remember this value, the system is less secure. At the end of this chapter, I’ll
     give you an example.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
 - en: 'At first glance, the cookie-based session engine may seem like a decent option.
     Django uses an HMAC function to authenticate and verify the integrity of the session
     state for every request. Unfortunately, this option has many downsides, some of
     which are risky:'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
 - en: Cookie size limitations
+  id: totrans-145
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Unauthorized access to session state
+  id: totrans-146
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Replay attacks
+  id: totrans-147
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Remote code-execution attacks
+  id: totrans-148
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Cookie size limitations
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
 - en: Filesystems and databases are meant to store large amounts of data; cookies
@@ -704,9 +928,11 @@
     HTTP clients are free to support cookies larger than this, but they are not obligated
     to. For this reason, a serialized cookie-based Django session should remain below
     4 KB in size.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
 - en: Unauthorized access to session state
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
 - en: The cookie-based session engine hashes the outbound session state; it does not
@@ -714,6 +940,7 @@
     The session state is therefore readily available to a malicious user via the browser.
     This renders the system vulnerable if the session contains information the user
     should not have access to.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
 - en: Suppose Alice and Eve are both users of social.bob.com, a social media site.
@@ -721,6 +948,7 @@
     she blocks her. Like other social media sites, social.bob.com doesn’t notify Eve
     she has been blocked. Unlike other social media sites, social.bob.com stores this
     information in cookie-based session state.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
 - en: 'Eve uses the following code to see who has blocked her. First, she programmatically
@@ -728,21 +956,28 @@
     in the previous chapter). Next, she extracts, decodes, and deserializes her own
     session state from the session ID cookie. The deserialized session state reveals
     Alice has blocked Eve (in bold font):'
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE15]'
+  id: totrans-155
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: ❶ Eve logs in to Bob’s social media site.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Eve extracts, decodes, and deserializes the session state.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
 - en: ❸ Eve sees Alice has blocked her.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
 - en: Replay attacks
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
 - en: The cookie-based session engine uses an HMAC function to authenticate the inbound
@@ -751,6 +986,7 @@
     the payload. In other words, the browser can’t get away with modifying the session
     ID cookie, but the browser can replay an older version of it. An attacker may
     exploit this limitation with a *replay attack*.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
 - en: Suppose ecommerce.alice.com is configured with a cookie-based session engine.
@@ -763,6 +999,7 @@
     Later, Mallory replays her session state copy on subsequent purchase requests
     to obtain additional unauthorized discounts. Mallory has successfully executed
     a replay attack.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
 - en: A replay attack is any exploit used to undermine a system with the repetition
@@ -770,56 +1007,68 @@
     if it cannot distinguish between replayed input and ordinary input. Distinguishing
     replayed input from ordinary input is difficult because at one point in time,
     replayed input *was* ordinary input.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
 - en: These attacks are not confined to ecommerce systems. Replay attacks have been
     used to forge automated teller machine (ATM) transactions, unlock vehicles, open
     garage doors, and bypass voice-recognition authentication.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
 - en: Remote code-execution attacks
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
 - en: Combining cookie-based sessions with `PickleSerializer` is a slippery slope.
     This combination of configuration settings can be severely exploited by an attacker
     if they have access to the `SECRET_KEY` setting.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
 - en: WARNING Remote code-execution attacks are brutal. Never combine cookie-based
     sessions with `PickleSerializer`; the risk is too great. This combination is unpopular
     for good reasons.
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
 - en: 'Suppose vulnerable.alice.com serializes cookie-based sessions with `PickleSerializer`.
     Mallory, a disgruntled ex-employee of vulnerable.alice.com, remembers the `SECRET
     _KEY`. She executes an attack on vulnerable.alice.com with the following plan:'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
 - en: Write malicious code
+  id: totrans-168
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Hash the malicious code with an HMAC function and the `SECRET_KEY`
+  id: totrans-169
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Send the malicious code and hash value to vulnerable.alice.com as a session
     cookie
+  id: totrans-170
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Sit back and watch as vulnerable.alice.com executes Mallory’s malicious code
+  id: totrans-171
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: First, Mallory writes malicious Python code. Her goal is to trick vulnerable.alice.com
     into executing this code. She installs Django, creates `PickleSerializer`, and
     serializes the malicious code to a binary format.
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
 - en: Next, Mallory hashes the serialized malicious code. She does this the same way
     the server hashes session state, using an HMAC function and the `SECRET_KEY`.
     Mallory now has a valid hash value of the malicious code.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
 - en: Finally, Mallory pairs the serialized malicious code with the hash value, disguising
@@ -830,13 +1079,16 @@
     the session state with `PickleSerializer`, inadvertently executing the malicious
     script. Mallory has successfully carried out a *remote code-execution attack*.
     Figure 7.3 illustrates Mallory’s attack.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
 - en: '![CH07_F03_Byrne](Images/CH07_F03_Byrne.png)'
+  id: totrans-175
   prefs: []
   type: TYPE_IMG
 - en: Figure 7.3 Mallory uses a compromised SECRET_KEY to execute a remote code-execution
     attack.
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
 - en: 'The following example demonstrates how Mallory carries out her remote code-execution
@@ -847,63 +1099,81 @@
     code, just like a cookie-based session engine. Finally, she sends the request
     by using the `requests` package. There is no response to the request; the recipient
     (in bold font) just dies:'
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE16]'
+  id: totrans-178
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: ❶ Pickle calls this method as it deserializes.
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Django kills itself with this line of code.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
 - en: ❸ Django’s signing module serializes and hashes Mallory’s malicious code.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
 - en: ❹ Sends the request
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
 - en: ❺ Receives no response
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
 - en: Setting `SESSION_ENGINE` to `django.contrib.sessions.backends.signed _cookies`
     configures Django to use a cookie-based session engine.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
 - en: Summary
+  id: totrans-185
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: Servers set session IDs on browsers with the `Set-Cookie` response header.
+  id: totrans-186
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Browsers send session IDs to servers with the `Cookie` request header.
+  id: totrans-187
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Use the `Secure`, `Domain`, and `Max-Age` directives to resist online attacks.
+  id: totrans-188
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Django natively supports five ways to store session state.
+  id: totrans-189
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Django natively supports six ways to cache data.
+  id: totrans-190
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Replay attacks can abuse cookie-based sessions.
+  id: totrans-191
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Remote code-execution attacks can abuse pickle serialization.
+  id: totrans-192
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Django uses the `SECRET_KEY` setting for keyed hashing, not encryption.
+  id: totrans-193
   prefs:
   - PREF_UL
   type: TYPE_NORMAL

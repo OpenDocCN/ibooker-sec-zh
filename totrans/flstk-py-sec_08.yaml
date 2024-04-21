@@ -1,12 +1,16 @@
 - en: Part 2 Authentication and authorization
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第二部分 认证与授权
 - en: 'This second part of the book is the most commercially useful. I say this because
     it is loaded with hands-on examples of workflows that most systems need to have:
     registering and authenticating users, managing user sessions, changing and resetting
     passwords, administering permissions and group membership, as well as sharing
     resources. This portion of the book is focused primarily on getting work done,
     securely.'
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书的第二部分是最具商业价值的部分。我这样说是因为它充满了大多数系统需要具备的实用工作流示例：注册和验证用户、管理用户会话、更改和重置密码、管理权限和组成员、以及共享资源。本书的这部分主要关注的是安全地完成工作。

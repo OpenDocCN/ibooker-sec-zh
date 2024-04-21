@@ -1,26 +1,38 @@
 - en: 14 One-time pad
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 14 一次性密码
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: One-time pad ciphers
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一次性密码密码
 - en: The Vernam cipher, which approximates a one-time pad
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 伪一次性密码，它近似于一次性密码
 - en: Diffie-Hellman key exchange
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Diffie-Hellman 密钥交换
 - en: Constructing the large primes needed for Diffie-Hellman and Public Key cryptography
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 构建 Diffie-Hellman 和公钥密码所需的大素数
 - en: The best-known stream cipher is the *One-Time Pad*. Many writers restrict this
     term to mean only a cipher where the plaintext and the key stream are exclusive-ORed
     byte by byte. This is historically inaccurate. The first one-time pad cipher was
@@ -31,8 +43,10 @@
     number to each 5-digit group. His code values were small enough that the sum could
     never exceed 99999\. That is, the codes were all less than 99000\. So the one-time
     pad was originally a decimal system, not a binary system.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 最著名的流密码是*一次性密码*。许多作家将这个术语限制为仅指明文和密钥流逐字节进行异或的密码。这在历史上是不准确的。第一个一次性密码密码是由加利福尼亚州萨克拉门托的银行家弗兰克·米勒于1882年发表的，目的是通过缩短电报消息来节省费用。米勒的电报代码使用5位数字代码组来表示商业电报中常见的单词和短语。为了保密，米勒提出了一个密码，其中包括将3位数字添加到每个5位数字组中。他的代码值足够小，以至于总和永远不会超过99999。也就是说，代码都小于99000。因此，一次性密码最初是一个十进制系统，而不是一个二进制系统。
 - en: The system that gives the one-time pad its name was devised by cryptographer
     Werner Kunze of the German Pers Z S (Signal Intelligence Agency) around 1922\.
     Kunze’s system was based on a standard diplomatic code of 5-digit groups. Like
@@ -43,8 +57,10 @@
     each. The pages of these pads were used one time for enciphering one message and
     then discarded. Hence the name one-time pad. Later developments included the use
     of water-soluble inks and water-soluble paper for rapid disposal.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 赋予一次性密码其名称的系统是由德国 Pers Z S（信号情报机构）的密码学家沃纳·昆策在1922年左右设计的。昆策的系统基于标准的5位数字组外交代码。与米勒的密码类似，昆策的密码将密钥组添加到代码组中。昆策使用了5位数字密钥组，逐位地将其添加到代码组中，而不进行进位。因此，33333+56789将导致89012，而不是90122。昆策将密钥分发在50张纸的本子中，每张纸包含8行，每行包含6个密钥组。这些本子的页面一次用于加密一条消息，然后被丢弃。因此得名一次性密码。后来的发展包括使用水溶墨水和水溶纸进行快速处理。
 - en: Another version of the one-time pad was invented by Leo (Leopold Samuel) Marks,
     a British author and screenwriter (*Peeping Tom*), about 1940\. It was widely
     used by British spies. Marks’s version used letters instead of numbers. The sender
@@ -55,50 +71,70 @@
     in or before 1941, but its details remain classified. Both Shannon and Kotelnikov
     produced mathematical proofs that the one-time pad cannot be broken. It remains
     the only cipher method that has been proved unbreakable.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个版本的一次性密码是由英国作家和编剧（*Peeping Tom*）利奥（利奥波德·塞缪尔）·马克斯于约1940年发明的。它被英国间谍广泛使用。马克斯的版本使用字母而不是数字。发送者将密钥字母加到明文字母模26，以获得密文字母。换句话说，马克斯的一次性密码是一个带有随机密钥的贝拉索密码。麻省理工学院教授克劳德·香农在1940年至1945年之间发明了相同的密码，苏联信息理论家弗拉基米尔·科特尔尼科夫在1941年或之前发明了一个版本，但其细节仍属机密。香农和科特尔尼科夫都提出了一次性密码无法被破解的数学证明。它仍然是唯一被证明无法破解的密码方法。
 - en: Since Miller’s 1882 one-time pad and Kunze’s 1922 one-time pad both used decimal
     addition for their combining functions, and since Marks’s 1940 one-time pad used
     addition modulo 26, it is hardly reasonable for anyone to assert that the one-time
     pad is restricted to combining the key and the plaintext with exclusive-OR. The
     defining features of the one-time pad are
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 自从米勒的1882年一次性密码和昆策的1922年一次性密码都使用十进制加法作为它们的组合函数，以及马克斯的1940年一次性密码使用模26加法，任何人都很难断言��次性密码仅限于使用异或来组合密钥和明文。一次性密码的定义特征是
 - en: The key is at least as long as the message,
+  id: totrans-10
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 关键是至少与消息一样长，
 - en: The key is indistinguishable from true random,
+  id: totrans-11
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 密钥与真随机不可区分，
 - en: Each character or block of the key is combined with one character or equal-sized
     block of the plaintext, and
+  id: totrans-12
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 每个密钥字符或块与一个明文字符或相同大小的明文块组合，并且
 - en: The key is used only one time.
+  id: totrans-13
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 密钥仅使用一次。
 - en: 'Any cipher that meets these 4 criteria is a one-time pad. To prove that the
     one-time pad cannot be broken, however, requires another, stronger condition:'
+  id: totrans-14
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: 任何满足这4个标准的密码都是一次性密码。然而，要证明一次性密码是无法被破解的，需要另一个更强的条件：
 - en: There is an equal probability that any given plaintext character is transformed
     into any given ciphertext character.
+  id: totrans-15
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 任何给定的明文字符转换为任何给定的密文字符的概率相等。
 - en: With that much said, let’s look at a historical cipher, based on the exclusive-OR,
     that is closely related to the one-time pad system.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 说了这么多，让我们看看一个基于异或的历史密码，与一次性密码系统密切相关。
 - en: 14.1 The Vernam cipher
+  id: totrans-17
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 14.1 佛南密码
 - en: By 1918 many diplomatic missions had moved away from having human telegraph
     operators send and receive messages that then needed to be hand-typed. Instead,
     messages were punched into reels of paper tape in a 5-column Baudot code, invented
@@ -109,16 +145,20 @@
     1963 when ASCII code supplanted them.) The important feature is that a human typist
     keyed the message onto a 5-column paper tape from which it could be directly transmitted
     and printed out at the receiving end without any further human involvement.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 到1918年，许多外交任务已经不再由人类电报操作员发送和接收消息，然后需要手动输入。相反，消息被打孔到由法国电报工程师埃米尔·鲍多特于1870年发明的5列鲍多码或由新西兰记者唐纳德·默里于1901年发明的鲍多特-默里码的纸带卷中。（我不会详细介绍这些代码的细节，因为它们在1870年至1950年代之间几次改变，当西联电报公司在1963年停止使用它们时，鲍多特风格的代码完全被废弃了。）重要的特征是一个人类打字员将消息键入到一个5列纸带中，从而可以直接在接收端传输和打印而无需任何进一步的人类参与。
 - en: Like Morse code, neither Baudot code nor Baudot-Murray code offered any secrecy.
     Anyone could read the message directly from the tape. Up to 1918, if secrecy were
     required, the message would have to be enciphered by hand by a human cipher clerk
     before being typed onto the tape, and then printed out and deciphered by hand
     by another clerk at the receiving end. A method was needed to speed up that process.
     Enter Vernam.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 与摩尔斯密码一样，无论是鲍多码还是鲍多特-默里码都没有提供任何保密性。任何人都可以直接从磁带上读取消息。直到1918年，如果需要保密性，消息必须由人工密码员手动加密，然后被输入到磁带上，并由接收端的另一名职员手动解密。需要一种方法来加快这个过程。于是佛南出现了。
 - en: The *Vernam* cipher was developed by Gilbert Sandford Vernam of AT&T Bell Labs
     in 1918 at the request of Joseph O. Mauborgne of the Army Signal Corps. The idea
     was simple and ingenious. A human typist would key the message onto a tape as
@@ -128,36 +168,48 @@
     transmitted characters would be exclusive-ORed with a copy of that tape, which
     deciphered them. Each tape had 1000 random-ish characters so that long messages
     would repeat the key every 1000 characters.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '*佛南*密码由AT&T贝尔实验室的吉尔伯特·桑福德·佛南在1918年应陆军信号部的约瑟夫·O·莫伯格纳之邀开发。这个想法非常简单而巧妙。一个人类打字员会像以前一样将消息键入到磁带上，但实际传输的是字符代码与密钥代码的异或。密钥代码来自一个单独的纸带，其上打有看似随机的字符序列。在接收端，传输字符将与该磁带的副本进行异或运算，从而解密它们。每个磁带有1000个类似随机的字符，以便长消息每1000个字符重复一次密钥。'
 - en: This diagram shows two tapes containing the plaintext and the key, pickups for
     reading the tapes, circuits for exclusive-ORing the key with the plaintext, and
     a hole punch at the receiving end, which may be at a distant location. The hole
     punch could be replaced by a printer or a transmitter, depending on the setup.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 该图显示了两个包含明文和密钥的磁带，用于读取磁带的拾取器，用于将密钥与明文进行异或运算的电路，以及接收端的打孔机，该打孔机可能位于远程位置。打孔机可以根据设置替换为打印机或发送器。
 - en: '![14-unnumb-1](../Images/14-unnumb-1.png)'
+  id: totrans-22
   prefs: []
   type: TYPE_IMG
+  zh: '![14-unnumb-1](../Images/14-unnumb-1.png)'
 - en: This my own diagram, since I could find no picture of the Vernam machine itself,
     presumably because it had been classified.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是我自己的图表，因为我找不到Vernam机器本身的图片，可能是因为它被列为机密。
 - en: I called the key tapes “random-ish” because they were produced by a person tapping
     away at a typewriter-style keyboard, a forerunner of the Friden Flexowriter. The
     result is that the characters near the center of the keyboard were used more often
     than the characters near the corners. Humans are poor at producing random numbers
     or characters. But for 1918, this was a very strong cipher.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 我将密钥带称为“近似随机”，因为它们是由一个人在类似打字机的键盘上敲击而产生的，这是Friden Flexowriter的前身。结果是键盘中心附近的字符比角落附近的字符更经常使用。人类很难产生随机数或字符。但对于1918年来说，这是一个非常强大的密码。
 - en: Many sources mistakenly refer to the Vernam cipher as a one-time pad, probably
     because it was the first cipher to exclusive-OR a message expressed in binary
     with a binary key. However, the Vernam cipher was not a one-time pad because it
     repeated. It had a fixed period of 1000 characters. Besides, the one-time pad
     had been invented by Miller 36 years earlier, and was originally a decimal-based
     system.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 许多来源错误地将Vernam密码称为一次性密码本，可能是因为它是第一个使用二进制消息与二进制密钥进行异或运算的密码。然而，Vernam密码并不是一次性密码本，因为它是重复的。它有一个固定的1000个字符的周期。此外，一次性密码本早在36年前就由米勒发明了，并且最初是一个基于十进制的系统。
 - en: For a busy embassy, there could be 100 or more cipher messages per day. If the
     embassy corresponded with several other embassies, multiple sets of tapes were
     needed. The tapes for Washington-to-Berlin would be separate from the tapes for
@@ -166,8 +218,10 @@
     that is, unenciphered. The clerks would need to keep straight which tapes were
     for which embassy, and which tapes had already been used and needed to be destroyed.
     New tapes had to be supplied continually to each embassy.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于一个繁忙的大使馆，可能每天会有100个或更多的密码消息。如果大使馆与其他几个大使馆通信，就需要多套带子。用于华盛顿到柏林的带子将与用于柏林到华盛顿的交通的带子分开。所有带子都标有6位数的序列号。在发送每个消息之前，带子编号将以明文形式传输，即未加密。办事员们需要区分哪些带子是为哪个大使馆准备的，哪些带子已经使用过需要销毁。新的带子必须不断地提供给每个大使馆。
 - en: Vernam soon devised a second version that used two tapes, both of which were
     exclusive-ORed with the plaintext. One tape had 1000 characters and the other
     tape had 999 characters, making an effective period of 999,000 characters. The
@@ -175,22 +229,30 @@
     at a different point on each tape. If an embassy had, say, 100 tapes, different
     combinations of tapes could be used on different days for as long as the paper
     tapes held up.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: Vernam很快设计了第二个版本，使用了两个带子，两个带子都与明文进行了异或运算。一个带子有1000个字符，另一个带子有999个字符，使有效周期为999,000个字符。同一两个带子可以在整个一天内使用，只需在每个带子上的不同位置开始每个消息即可。如果一个大使馆有，比如，100个带子，那么可以在不同的日子使用不同的带子组合，只要纸带能支持。
 - en: It is easy to see how Vernam’s 2-tape machines could be extended to 3 or 4 tapes.
     So far as I know, this never happened because these tape-based machines were soon
     supplanted by rotor machines (see section 5.10).
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 很容易看出Vernam的2带机器如何扩展到3或4带。就我所知，这从未发生过，因为这些基于带子的机器很快就被转子机取代了（参见第5.10节）。
 - en: 14.2 Key supply
+  id: totrans-29
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 14.2 密钥供应
 - en: The big problem with the one-time pad is supplying enough keys. The paper tape
     method may be adequate for 10 stations, each sending 100 messages a day, but it
     is unworkable for 100 stations, each sending 1000 messages a day.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 一次性密码本的主要问题是提供足够的密钥。纸带方法可能足够用于每天发送100条消息的10个站点，但对于每天发送1000条消息的100个站点来说是行不通的。
 - en: 'Many books and papers on cryptography describe the following conundrum: Sandra
     and Riva decide to exchange messages using a one-time pad. They each have a copy
     of a long random key. They use this key section by section until they use it up.
@@ -199,8 +261,10 @@
     it using a one-time pad, so they need another key of the same length to encrypt
     the new key. Again, Sandra can choose it and send it to Riva, but that key also
     needs to be encrypted. So they need yet another key, ad infinitum.'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 许多关于密码学的书籍和论文描述了以下难题：桑德拉和里瓦决定使用一次性密码交换消息。他们每个人都有一份长随机密钥的副本。他们逐段使用这个密钥，直到用完为止。现在他们需要另一个随机密钥。桑德拉可以选择并发送给里瓦，但需要加密以防艾米莉获取。最安全的方法是使用一次性密码对其进行加密，因此他们需要另一个与之长度相同的密钥来加密新密钥。同样，桑德拉可以选择并发送给里瓦，但该密钥也需要加密。因此，他们需要另一个密钥，无穷尽。
 - en: The solution to this dilemma is two-pronged. First, the random key stream can
     be refreshed using the techniques of section 13.15, such as lagged addition. For
     example, once per day, or whenever the parties decide, a new key can be derived
@@ -209,19 +273,25 @@
     This way, even if Emily recovers any of the message keys, she will be two layers
     away from recovering the base key. The next few sections will describe some methods
     for producing message keys.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个困境的解决方案是双管齐下的。首先，可以使用第13.15节的技术（如滞后加法）刷新随机密钥流。例如，每天一次，或者当各方决定时，可以从基础密钥派生一个新密钥。其次，这些派生的每日密钥不需要直接用作消息密钥。相反，可以从每日密钥构建消息密钥。这样，即使艾米莉恢复了任何消息密钥，她距离恢复基础密钥还有两层。接下来的几节将描述一些生成消息密钥的方法。
 - en: 'Each method is designed to meet two goals: Either (1a) the method must be able
     to generate enough message key material each day that no two message keys overlap,
     or (1b) it must not be feasible for Emily to detect overlapping sections of the
     message keys, and (2) it must not be feasible for Emily to reconstruct sections
     of the derived keys or of the base key.'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 每种方法都旨在实现两个目标：要么（1a）该方法必须能够每天生成足够的消息密钥材料，以便没有两个消息密钥重叠，要么（1b）艾米莉不可能检测到消息密钥的重叠部分，以及（2）艾米莉不可能重建派生密钥或基础密钥的部分。
 - en: 14.2.1 Circulating key
+  id: totrans-34
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.2.1 循环密钥
 - en: The daily key is derived using the technique of section 13.14\. Consecutive
     sections of the daily key are used to generate the message keys, for example by
     lightly encrypting them. A keyed simple substitution is sufficient. I recommend
@@ -232,39 +302,53 @@
     is sent, its key, plus any gap, is moved from the front of the daily key to the
     end of the daily key, and then refreshed using lagged linear addition. Sandra
     and Riva must do this in sync.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 每日密钥是使用第13.14节的技术派生的。每日密钥的连续部分用于生成消息密钥，例如通过轻度加密。一个带有密钥的简单替换就足够了。我建议在连续密钥之间留下随机宽度的间隙，例如1到32字节。当到达每日密钥的末尾时，它会使用滞后线性加法（第13.14.1节）的单次传递来延长以供在消息量较大的日子使用。您可以通过想象每次发送消息时，其密钥加上任何间隙都会从每日密钥的前端移动到每日密钥的末尾，并使用滞后线性加法进行刷新来可视化这一点。桑德拉和里瓦必须同步进行此操作。
 - en: This works well for low message volumes when there is little chance that Sandra
     and Riva will send messages to each other at the same time. For higher message
     volumes, it is better to use two base keys and two daily keys, one for Sandra-to-Riva
     messages and the other for Riva-to-Sandra.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 这在消息量较低且桑德拉和里瓦很少同时发送消息的情况下效果很好。对于更高的消息量，最好使用两个基础密钥和两个每日密钥，一个用于桑德拉到里瓦的消息，另一个用于里瓦到桑德拉的消息。
 - en: 14.2.2 Combined key
+  id: totrans-37
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.2.2 组合密钥
 - en: For each message of length *L*, three segments of length *L* are taken from
     the daily key. Call these segments x, y and z, and call their starting positions
     in the daily key p[x], p[y] and p[z]. If any of these positions is near the end
     of the daily key, that segment may wrap back to the beginning. Each byte of the
     message key is formed by taking a linear combination of the corresponding bytes
     in x, y and z. That is,
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于长度为*L*的每条消息，从每日密钥中取出长度为*L*的三个段。将这些段称为x、y和z，并将它们在每日密钥中的起始位置称为p[x]、p[y]和p[z]。如果这些位置中的任何一个接近每日密钥的末尾，则该段可能回到开头。消息密钥的每个字节都是通过取x、y和z中相应字节的线性组合形成的。也就是说，
 - en: '![14-unnumb-1-equation-14-1](../Images/14-unnumb-1-equation-14-1.png)'
+  id: totrans-39
   prefs: []
   type: TYPE_IMG
+  zh: '![14-unnumb-1-equation-14-1](../Images/14-unnumb-1-equation-14-1.png)'
 - en: where the coefficients a, b, and c may be any odd integers from 1 to 255\. The
     values of the three coefficients a, b and c and the three starting positions p[x],
     p[y] and p[z] must be different for each message. These may be agreed upon beforehand,
     or enciphered and sent with each message.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中系数a、b和c可以是1到255之间的任何奇整数。三个系数a、b和c的值以及三个起始位置p[x]、p[y]和p[z]对于每条消息必须是不同的。这些可以事先商定，或者加密并与每条消息一起发送。
 - en: 14.2.3 Selection key
+  id: totrans-41
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.2.3 选择密钥
 - en: For each message of length L, two non-overlapping segments are taken from randomly
     chosen locations in the daily key. The first segment is the *selector*, s, which
     has length L. The second segment is the *stock*, x, which has length 256\. To
@@ -273,8 +357,11 @@
     the key byte is taken, namely k[n] = x[p]. The key byte k[n] is combined with
     the message byte m[n] using any of the combining functions such as **xors** or
     **adds**.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于长度为L的每条消息，从每日密钥中随机选择两个不重叠的段。第一个段是*选择器*，s，长度为L。第二个段是*库存*，x，长度为256。为了加密消息中的第n个字符m[n]，我们首先从选择器中取出相应的字节p
+    = s[n]。这个p选择了库存中取出密钥字节的位置，即k[n] = x[p]。密钥字节k[n]与消息字节m[n]结合使用任何组合函数，如**异或**或**加法**。
 - en: After the key byte k[n] is used, x[p] is replaced in the stock by (ax[p]+b)
     mod 256\. The coefficients a and b must satisfy the Hull-Dobell conditions (section
     13.4), namely a≡1(mod 4) and b≡1(mod 2). In effect, each of the 256 positions
@@ -284,13 +371,19 @@
     a and b, and choose either the first or second pair according to some fixed pattern.
     Regardless of how many pairs of values are used, they should be different for
     different messages.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 在使用密钥字节k[n]后，x[p]在库存中被替换为(ax[p]+b) mod 256。系数a和b必须满足Hull-Dobell条件（第13.4节），即a≡1(mod
+    4)且b≡1(mod 2)。实际上，库存x中的256个位置中的每一个都成为一个独立的线性同余伪随机数生成器（PRNG）。系数a和b可以对库存中的所有256个位置使用相同的值，也可以不同。一种选择是使用两对不同的a和b值，并根据某种固定模式选择第一对或第二对。无论使用多少对值，对于不同的消息，它们应该是不同的。
 - en: Another scheme for updating the stock is to replace x[p] by (ax[p]+bx[p-1])
     mod 256, where a and b are any odd integers from 1 to 255\. You might also choose
     to replace x[p] by (ax[p]+bx[p-i]) mod 256 where i is any integer from 2 to 255.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一种更新库存的方案是将x[p]替换为(ax[p]+bx[p-1]) mod 256，其中a和b是1到255之间的任何奇整数。您还可以选择将x[p]替换为(ax[p]+bx[p-i])
+    mod 256，其中i是从2到255的任意整数。
 - en: Since there are only 8192 possible values for a and b, and since the value a
     = 1 should be avoided, duplication is inevitable. This is not a problem, however,
     as long as Emily cannot tell which pair of values is used for each message. The
@@ -298,33 +391,43 @@
     have the same values of a and b. One downside of using indicators is that opponents
     may collect several messages with the same indicator, so they know those messages
     have the same key.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于a和b只有8192个可能的值，并且由于应避免值a = 1，因此重复是不可避免的。然而，只要Emily无法确定每条消息使用了哪对值，这就不是问题。重要的是Emily无法累积多条她知道具有相同a和b值的消息。使用指示器的一个缺点是对手可能收集几条具有相同指示器的消息，因此他们知道这些消息具有相同的密钥。
 - en: 14.3 Indicators
+  id: totrans-46
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 14.3 指示器
 - en: In classical cryptography, the same key was often used for a long time, sometimes
     for months or years. In modern times, keys are usually used for a single message.
     With the one-time pad, message keys must be used only once. Otherwise, Emily could
     slide one message against another and use the index of coincidence (section 5.7)
     to detect the overlap.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 在古典密码学中，通常会长时间使用同一把密钥，有时甚至长达几个月或几年。而在现代，密钥通常只用于单个消息。使用一次性密码本时，消息密钥必须只能使用一次。否则，艾米丽可能会将一条消息滑动到另一条消息上，并使用重合指数（第5.7节）来检测重叠。
 - en: For moderate 2-way message traffic Sandra and Riva could use a small book that
     would list the keys to be used according to, say, the time of day and the day
     of the week. A common practice before computers was to number each message. The
     message number could be enciphered and sent with the message. Sandra and Riva
     would use the message number to look up the key in the book.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于适度的双向消息流量，桑德拉和里瓦可以使用一本小书，列出按照例如时间和星期几来使用的密钥。在计算机出现之前的一种常见做法是给每条消息编号。消息编号可以被加密并与消息一起发送。桑德拉和里瓦将使用消息编号在书中查找密钥。
 - en: The key book becomes unworkable when the message traffic becomes higher, or
     when there are many parties exchanging messages. This stays true even when the
     book is replaced by a computer file. One solution to this problem is to use indicators.
     An *indicator* is a piece of information that is sent along with the message that
     the recipient can use to determine the key.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 当消息流量增加或有许多交换消息的参与方时，密钥本就变得不可行。即使将书本替换为计算机文件，情况也是如此。解决这个问题的一个方法是使用指示器。*指示器*是随消息一起发送的信息片段，接收方可以用来确定密钥。
 - en: In the early days, the indicator was just the key itself, hidden inside the
     message. For example, the third group of the message was the key, or the first
     characters of the first 8 groups formed the key. A slightly more sophisticated
@@ -334,8 +437,10 @@
     know the system, she can simply try all of the groups in the message to see if
     one of them is the key. If she finds a few of these keys, then she may be able
     to deduce the pattern.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 在早期，指示器只是密钥本身，隐藏在消息中。例如，消息的第三组是密钥，或者前8组的第一个字符组成了密钥。稍微复杂一点的版本可能是，第二组的中间数字告诉您哪一组是密钥。这些类型的指示器的明显问题是，一旦艾米丽学会了系统，她就可以阅读所有的消息。即使艾米丽不知道这个系统，她也可以简单地尝试消息中的所有组，看看其中是否有一个是密钥。如果她找到了一些这样的密钥，那么她可能就能推断出模式。
 - en: A safer approach is to encrypt the key and use that as the indicator. That is
     what the Germans did during World War II with their Enigma machines. They had
     a special setting, which they changed each day, for encrypting the message key.
@@ -351,25 +456,35 @@
     plaintext, instead. The French Enigma-cracking machine was also called a bombe,
     supposedly named for *bombe glacée*, a frozen dessert with a similar dome shape,
     like Baked Alaska.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 更安全的方法是加密密钥并将其用作指示器。这就是二战期间德国人使用Enigma机器所做的。他们有一个特殊的设置，每天更换一次，用于加密消息密钥。他们首先将Enigma设置为每日设置，并使用该设置加密消息密钥两次。然后他们将机器重置为消息密钥，个别操作员会随机选择，并加密消息。波兰的*Bomba*利用了消息密钥的双重加密来推断这些密钥。（*bomba
+    kryptologiczna*是由波兰首席密码学家玛丽安·雷耶夫斯基于1938年设计的一种用于破解德国Enigma消息的电机械设备。）当德国人意识到这一点时，他们停止了这种做法，波兰人被封锁了；他们不再能读懂Enigma消息。艾伦·图灵预见了这个问题，并设计了他的*Bombe*来处理密码词，或者是可能的明文。法国的Enigma破译机也被称为bombe，据说是以*冻雪糕*（一种类似于圆顶形的冰淇淋，像阿拉斯加烤冰淇淋）命名的。
 - en: Section 14.2 described several methods for generating message keys from the
     daily key. Each of these methods used a small set of parameters to generate each
     message key, such as the coefficients for lagged linear addition, or a location
     within the daily key. These sets of parameters are ideal for use as indicators.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 第14.2节描述了从每日密钥生成消息密钥的几种方法。每种方法都使用一小组参数来生成每个消息密钥，例如滞后线性加法的系数，或者每日密钥中的位置。这些参数集合非常适合用作指示器。
 - en: 14.4 Diffie-Hellman key exchange
+  id: totrans-53
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 14.4 Diffie-Hellman密钥交换
 - en: So much for classical methods. Let’s talk about a more modern method. *Diffie-Hellman
     key exchange* was invented in 1976 by Martin Hellman, a professor at Stanford
     University, and Bailey Whitfield Diffie, his research assistant, later of Sun
     Microsystems. The underlying concept of Public-Key cryptography was invented in
     1974 by Ralph Merkle, then an undergrad at UC Berkeley.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 关于传统方法就说这么多。让我们谈谈一个更现代的方法。*Diffie-Hellman密钥交换*是由斯坦福大学教授马丁·赫尔曼和他的研究助理贝利·惠特菲尔德·迪菲于1976年发明的，后者后来成为Sun
+    Microsystems的员工。公钥密码学的基本概念是由加州大学伯克利分校本科生拉尔夫·默克尔于1974年发明的。
 - en: The essential feature of Diffie-Hellman key exchange is that Sandra and Riva
     can establish a secure encryption key even if Emily intercepts all of the messages
     they exchange. To set up the exchange, Sandra and Riva must agree on a large prime,
@@ -377,8 +492,10 @@
     w and send them to Riva. P and w can be sent in clear. Recall from section 13.3
     that it is easy to find primitive roots. For most primes at least one of 2, 3,
     5 or 7 is a primitive root.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: Diffie-Hellman密钥交换的关键特点是，即使Emily拦截了他们交换的所有消息，Sandra和Riva也可以建立一个安全的加密密钥。为了设置交换，Sandra和Riva必须就一个大素数P和该素数的一个原根w达成一致。或者，Sandra可以简单地选择P和w并将它们发送给Riva。P和w可以明文发送。回想一下第13.3节，找到原根是很容易的。对于大多数素数，2、3、5或7中至少有一个是原根。
 - en: Sandra chooses a secret exponent s and computes x = w^s mod P. She sends the
     value x to Riva, but keeps the value of s to herself. Riva chooses a secret exponent
     r and computes y = w^r mod P. She sends the value y to Sandra, but keeps the value
@@ -387,14 +504,20 @@
     and Riva have computed the same value, which they can use as an encryption key,
     or which they can split into several encryption keys. An efficient way of performing
     the exponentiations is described in section 13.3.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: Sandra选择一个秘密指数s，并计算x = w^s mod P。她将数值x发送给Riva，但保留s的数值。Riva选择一个秘密指数r，并计算y = w^r
+    mod P。她将数值y发送给Sandra，但保留r的数值。现在Sandra可以计算y^s mod P，即w^(rs) mod P，而Riva可以计算x^r
+    mod P，即w^(sr) mod P。由于w^(rs) = w^(sr)，Sandra和Riva计算出相同的数值，他们可以将其用作加密密钥，或者将其分割成几个加密密钥。在第13.3节中描述了执行指数运算的有效方法。
 - en: Some authors (and Wikipedia) describe Diffie-Hellman key exchange as a public
     key method. They talk about combining Sandra’s and Riva’s public keys and their
     private keys. This is not true. There are no public keys involved in Diffie-Hellman.
     Even if you consider the exponents r and s to be keys, they are both secret keys.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 一些作者（以及维基百科）将Diffie-Hellman密钥交换描述为一种公钥方法。他们谈论结合Sandra和Riva的公钥及其私钥。这是不正确的。Diffie-Hellman中没有涉及公钥。即使将指数r和s视为密钥，它们也都是秘密密钥。
 - en: Suppose Emily has intercepted all of the messages between Sandra and Riva. Then
     Emily knows P, w, x and y, that is, w^s mod P and w^r mod P, but she does not
     know s, r or w^(rs) mod P. Determining w^(rs) mod P is called the *Diffie-Hellman
@@ -407,8 +530,11 @@
     allow for P to be up to 1234 decimal digits, which is 4096 bits. The exponents
     r and s can be much smaller. Expert recommendations range from 40 decimal digits
     up to 150 decimal digits.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设Emily拦截了Sandra和Riva之间的所有消息。那么Emily知道P、w、x和y，即w^s mod P和w^r mod P，但她不知道s、r或w^(rs)
+    mod P。确定w^(rs) mod P被称为*Diffie-Hellman问题*。目前尚不清楚这是否与确定r和s相同，但它们被认为是同样困难的问题。在给定P、w和x或y的情况下确定s和r被称为*离散对数问题*。这被认为是一个非常困难的问题。当P、r和s足够大时，这个问题被认为是计算上不可行的。专家们对P必须有多大存在分歧，但常见的建议是300和600位十进制数字。一些实现允许P达到1234位十进制数字，即4096位。指数r和s可以小得多。专家建议范围从40位十进制数字到150位十进制数字。
 - en: An algorithm called the *Silver-Pohlig-Hellman* algorithm, for Roland Silver,
     Stephen Pohlig and Martin Hellman, makes it easy to solve the discrete logarithm
     problem when P-1 has only small factors. The algorithm lets you solve for each
@@ -422,12 +548,18 @@
     is highly likely that Q+1 also has a large prime factor, simply by chance, just
     because Q is so large. Numbers that have only small factors are called *smooth
     numbers*. They become very rare as the numbers get large.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个名为*Silver-Pohlig-Hellman*算法，以Roland Silver、Stephen Pohlig和Martin Hellman命名，使得在P-1只有小因子时解决离散对数问题变得容易。该算法让你可以分别解决每个小因子。因此，Sandra必须确保P是一个*安全*素数，即P-1至少有一个大因子，比如q
+    > 10^(35)。理想情况下，Sandra应选择P为形式为2Q+1的素数，其中Q也是素数。对应的素数Q被称为Sophie Germain素数，以法国数论家玛丽-索菲·杰尔曼（Marie-Sophie
+    Germain）命名，她还研究过声学和弹性学。如果Q-1和Q+1都有大素因子，那就更强大了。在下一节中，我们将明确构造Q，使得Q-1有一个大素因子。很可能Q+1也有一个大素因子，仅仅是因为Q太大了。只有小因子的数字被称为*光滑数*。随着数字变大，它们变得非常罕见。
 - en: '*14.4.1 Constructing large primes, old'
+  id: totrans-60
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: '*14.4.1 构造大素数，旧版'
 - en: The conventional method for constructing large primes, which you can find on
     many websites, begins by randomly choosing an odd number N of the desired size,
     and then testing whether N is prime. First you try a few hundred small primes.
@@ -442,8 +574,12 @@
     2^hd. If you find such a value g, then N passes the test, and b is called a *witness*
     for the primality of N. If no such g is found, then you know for certain that
     N is not prime, so you must start again with a new value for N.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 构建大素数的传统方法通常可以在许多网站上找到，它首先通过随机选择所需大小的奇数N，然后测试N是否为素数。首先尝试几百个小素数。如果N可被其中任何一个整除，则N不是素数。重新选择。这种初步测试非常值得，因为它非常快速。接下来，通过应用概率素性测试来测试N是否为素数。最常见的测试是由加里·米勒和迈克尔·O·拉宾发明的*Miller-Rabin*测试。让N-1
+    = 2^hd，其中d是奇数。也就是说，2^h是能够整除N-1的最大2的幂。第一步是在范围2到N-2中选择一个基数b，并测试b^d≡1(mod N)是否成立。如果成立，则N通过测试。如果不成立，则查看b^(2d)≡-1(mod
+    N)是否成立，或者b^(4d)≡-1(mod N)，依此类推。只要指数2^gd仍然小于2^hd，就一直继续。如果找到这样一个值g，则N通过了测试，b被称为N的*见证者*。如果找不到这样的g，则可以确定N不是素数，因此必须重新选择N的值。
 - en: If N passes, there is still a 1/4 probability that N is composite. If you want
     to push the probability that N is not prime down to 1 in 2^(128), you will need
     64 Miller-Rabin tests, each with a different base, b. Unfortunately, this is still
@@ -455,8 +591,10 @@
     so passing 64 Miller-Rabin tests, and also finding that N is not divisible by
     any of the first few hundred primes, makes it overwhelmingly probable that N is
     a prime.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果N通过了测试，仍然有1/4的概率N是合数。如果你想将N不是素数的概率降低到2^(128)的倒数1，你将需要64次Miller-Rabin测试，每次都使用不同的底数b。不幸的是，这仍然不能保证。Miller-Rabin测试错误地将卡迈克尔数认定为素数。这些数字不是素数，但每个底数b都是证明数的见证者。这些数字是由伊利诺伊大学的罗伯特·卡迈克尔于1910年发现的。前几个卡迈克尔数是561、1105、1729、2465、2821、6601、8911、10585、15841、29341和41041。卡迈克尔数倾向于有小的素数因子，因此通过64次Miller-Rabin测试，并且还发现N不可被前几百个素数中的任何一个整除，使得N是素数的可能性非常大。
 - en: This is a good method for finding primes of a particular size, but it does not
     guarantee that N is a safe prime, and it is much slower than the method of this
     section. If S is the size of the primes you need, the number of trials you need
@@ -465,20 +603,28 @@
     divisions. Using the method I present in this section can save you hours or even
     weeks of computer time, depending on what kind of computer you are using and how
     large the primes need to be.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一种寻找特定大小素数的好方法，但不能保证N是一个安全素数，并且比本节方法要慢得多。如果S是您需要的素数的大小，那么您需要找到一个素数的尝试次数大约是ln(S)。因此，对于一个500位数的素数，您需要大约ln(10^(500))或者大约1151次尝试，每次尝试需要64次Miller-Rabin测试和数百次试除。使用我在本节中提出的方法可以节省您几个小时甚至几个星期的计算机时间，这取决于您使用的计算机类型以及所需的素数的大小。
 - en: 14.4.2 Constructing large primes, new
+  id: totrans-64
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.4.2 构建大素数，新的
 - en: One way you could attempt to find a large prime is to start with any large integer
     N, then try 2N+1, 2N+3, 2N+5, ... testing each one until you hit a prime. A small
     improvement on this is to test 6N+1, 6N+5, 6N+7, 6N+11, 6N+13, ... . That eliminates
     all the multiples of 2 and 3 from the testing. You can also try 30N+1, 30N+7,
     30N+11, 30N+13, ... to eliminate the multiples of 2, 3 and 5, and similarly for
     2×3×5×7 = 210, and so forth.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以尝试找到一个大质数的一种方式是从任何大整数 N 开始，然后尝试 2N+1, 2N+3, 2N+5, ... 测试每个直到找到一个质数为止。对此的一种小改进是测试
+    6N+1, 6N+5, 6N+7, 6N+11, 6N+13, ... 。这样可以从测试中消除所有 2 和 3 的倍数。你也可以尝试 30N+1, 30N+7,
+    30N+11, 30N+13, ... 来消除 2、3 和 5 的倍数，类似的方法还有 2×3×5×7 = 210，以此类推。
 - en: There are a variety of ways to test whether a given integer N is a prime. The
     simplest method is trial division. To test if N is a prime, try dividing N by
     each of the primes up to √N. If any of these primes evenly divides N, then N is
@@ -486,8 +632,11 @@
     possibly 10^(14), but for larger N, trial division is too time-consuming. Most
     other prime tests are merely probabilistic tests that can tell you that the number
     is *probably* a prime.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 测试一个给定的整数 N 是否为质数有多种方法。最简单的方法是试除法。要测试 N 是否为质数，尝试将 N 每个小于等于 √N 的质数整除。如果其中任何一个质数能整除
+    N，则 N 是合数，否则 N 是质数。试除法适用于约 N = 10^(12)，可能是 10^(14)，但对于更大的 N，试除法耗时太长。大多数其他的质数测试只是概率测试，告诉你这个数*可能*是质数。
 - en: 'There is one test that tells you with certainty that a number is prime: an
     integer N > 1 is prime if it has a primitive root. Recall from section 13.3 that
     r is a primitive root of N if r^(N-1) mod N = 1, and r^((N-1)/p) mod N ≠ 1 for
@@ -497,27 +646,38 @@
     test* for short. It was invented by French mathematician Edouard Lucas in 1876,
     the same Edouard Lucas who coined the term *Fibonacci number* (section 3.4). Lucas
     died in 1891 from a tragic soup accident.'
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 有一种测试可以确定一个数字是质数：如果一个大于 1 的整数 N 有一个原根，那么它就是质数。回顾第 13.3 节，如果 r^(N-1) mod N =
+    1，并且 r^((N-1)/p) mod N ≠ 1 对于任何能整除 N-1 的质数 p 都成立，那么 r 是 N 的原根。要测试 N 是否为质数，你只需要对于
+    N-1 的每个不同的质因数 p，分别计算 r^x mod N，其中 x = N-1 和 x = (N-1)/p。让我们称这种方法为*原根质数测试*，或者简称为*根测试*。这种方法是由法国数学家爱德华·卢卡斯在
+    1876 年发明的，同样是那个创造了*斐波那契数*（第 3.4 节）这个术语的爱德华·卢卡斯。卢卡斯于 1891 年因一场悲剧性的汤事故去世。
 - en: It is sufficient to try 2, 3, 5, 7, 11 and 13 as possible primitive roots. If
     N has any primitive roots, it is very probable that at least one of these 6 values
     will be a primitive root. If none of these values is a primitive root, don’t waste
     time trying other values. It is more efficient to move on to the next candidate
     for a prime.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 只需尝试 2、3、5、7、11 和 13 作为可能的原根即可。如果 N 有原根，那么至少这 6 个值中的一个很可能是原根。如果这些值中没有一个是原根，请不要浪费时间尝试其他值。更高效的方法是转到下一个质数的候选项。
 - en: The problem with Lucas’s root test is that you need to factor N-1, and if N
     has 300 or more digits, then factoring N-1 is effectively impossible, at least
     without a quantum computer. That’s why you don’t see this test mentioned in many
     books or websites that discuss prime testing.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: Lucas 的根测试的问题在于你需要分解 N-1，如果 N 有 300 个或更多的数字，那么分解 N-1 实际上是不可能的，至少在没有量子计算机的情况下是不可能的。这就是为什么你在许多讨论质数测试的书籍或网站中不会看到这个测试被提及的原因。
 - en: There is a way around this hurdle. Remember that your goal is not to find a
     general way to test for primes. Your goal is to obtain just one large prime to
     use as the modulus for Diffie-Hellman key exchange. So, instead of *finding* that
     prime, you can *construct* the prime.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 有一种方法可以避开这个障碍。记住，你的目标不是找到一般的质数测试方法。你的目标是获得一个大质数来用作 Diffie-Hellman 密钥交换的模数。所以，与其*找到*那个质数，你可以*构造*出这个质数。
 - en: The trick is to choose N-1 with known factors. For example, you could choose
     N-1 to have the form 2^n so N would have the form 2^n+1\. The only prime factor
     of N-1 would be 2\. To find primes of the form 2^n+1 you only need to find a number
@@ -528,29 +688,45 @@
     have spent thousands of hours of computer time searching. These 5 primes are called
     Fermat primes for French mathematician Pierre de Fermat, famed for his margin
     note about the equation a^n+b^n = c^n.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 关键是选择具有已知因子的 N-1。例如，你可以选择 N-1 具有 2^n 的形式，因此 N 将具有 2^n+1 的形式。N-1 的唯一质因数将是 2。要找到形式为
+    2^n+1 的素数，你只需要找到一个数字 b，使得 b^(N-1) mod N = 1，且 b^((N-1)/2) mod N ≠ 1。我建议你尝试 b =
+    2、3、5、7、11 和 13。如果这些都不是原根，那么跳过 N = 2^n+1，看看 N = 2^(n+1)+1 是否为素数。这个搜索将获得你素数 3、5、17、257
+    和 65537。尽管人们花费了数千小时的计算机时间搜索，但目前尚不清楚是否还有其他素数。这 5 个素数被称为费马素数，以法国数学家皮埃尔·德·费马特命名，因为他著名的边注是关于方程
+    a^n+b^n = c^n。
 - en: Outline
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 概述
 - en: 'Before I get into the details, let me outline the general method for constructing
     a large prime, P. The method must accomplish three things:'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我详细介绍之前，让我概述一下构造一个大素数 P 的一般方法。该方法必须完成三件事：
 - en: P-1 must have a large prime factor so that P is safe,
+  id: totrans-74
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: P-1 必须具有一个大的素数因子，以便 P 是安全的，
 - en: Each candidate P should have a high probability of being prime so that you need
     to do as few prime tests as possible, and
+  id: totrans-75
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 每个候选的 P 应该具有较高的素数概率，以便你需要尽可能少的质数测试，
 - en: P-1 should have few distinct prime factors so that each prime test is as fast
     as possible.
+  id: totrans-76
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: P-1 应该具有较少的不同质因数，以便每个质数测试尽可能快速。
 - en: Any search for a large prime will involve testing hundreds or even thousands
     of candidates. Let’s call the expected number of tests E. The approach here will
     be to make each candidate for P-1 the product cK of two numbers. The coefficient
@@ -559,36 +735,52 @@
     or the product of powers of at most 2 primes, p^aq^b, where at least one of p
     and q is a large prime. Let’s look at how to choose the coefficients first, and
     then at how to choose the kernel.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于寻找大素数的任何搜索都将涉及测试数百甚至数千个候选者。让我们称预期测试次数为 E。这里的方法是使 P-1 的每个候选者成为两个数的乘积 cK。系数
+    c 将通过一系列相对较小的数字进行步进，通常与 E 相当。核 K 将是一个大素数、两个大素数的乘积或者最多 2 个质数的乘积的幂，p^aq^b，其中至少有一个是大素数。让我们先看看如何选择系数，然后再看如何选择核心。
 - en: Coefficients
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 系数
 - en: The simplest way to choose the coefficients is to step through the primes, one
     at a time. Since the coefficients must be even, you use twice each prime, 2×2,
     2×3, 2×5, 2×7, ... . Let’s call this method *PickPrimes*. PickPrimes minimizes
     the number of distinct prime factors in cK. There are at most 2 distinct prime
     factors in c, and at most 2 distinct prime factors in K. However, PickPrimes does
     little to reduce the number of tests needed.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 最简单的选择系数的方法是逐个遍历质数。由于系数必须是偶数，你需要使用每个质数的两倍，2×2、2×3、2×5、2×7，等等。让我们称这个方法为*PickPrimes*。*PickPrimes*
+    最小化了 cK 中不同质因数的数量。c 中最多有 2 个不同的质因数，在 K 中也最多有 2 个不同的质因数。然而，*PickPrimes* 对减少所需的测试次数几乎没有什么帮助。
 - en: A second way to choose the coefficients is to make them of the form p^aq^b,
     or p^aq^br^c, or similar. Here p, q and r are small primes such as 2, 3 and 5,
     or 2, 5 and 7\. (Later in this section we will see a case where 3 must be omitted.)
     This way, P can never be a multiple of 2, 3 or 5, which significantly increases
     the chance that P will be prime. If you use this method, you may want to precompute
     and sort the list of coefficients.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二种选择系数的方法是使它们具有 p^aq^b 或 p^aq^br^c 的形式，或类似的形式。这里的 p、q 和 r 是小的质数，如 2、3 和 5，或者
+    2、5 和 7。（在本节的后面我们将看到必须省略 3 的情况。）这样，P 就永远不可能是 2、3 或 5 的倍数，这显著增加了 P 是素数的机会。如果你使用这种方法，你可能想要预先计算并排序系数的列表。
 - en: Kernel
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 核心
 - en: The kernel, K, must have at least one large prime factor, R. I suggest that
     R be at least 2^(128), about 3.4×10^(38). If your opponent has a quantum computer,
     make R at least 2^(256) = 1.16×10^(77). So, where do you get these primes? If
     you are willing to settle for 30-digit primes, you can get some online from bigprimes.org.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 内核K必须至少有一个大素数因子R。我建议R至少为2^(128)，约为3.4×10^(38)。如果你的对手拥有量子计算机，请将R至少设为2^(256) =
+    1.16×10^(77)。那么，你从哪里获得这些素数呢？如果你愿意接受30位数的素数，你可以从bigprimes.org网站在线获取一些。
 - en: If you expect to generate many large primes, or very large primes, you can grow
     your own. Prepare ahead of time by building up a table of primes of various sizes.
     Call this table PrimeTab. Be sure to save PrimeTab so whenever you need more primes
@@ -599,19 +791,25 @@
     randomly so that you don’t construct the same primes every time you use this method
     (and so that every reader who uses this method doesn’t generate the same primes).
     At this stage PrimeTab might have about 50 primes.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你期望生成许多大素数，或者非常大的素数，你可以自己生成。提前准备，建立一个各种大小素数的表。将此表命名为PrimeTab。一定要保存PrimeTab，这样每当你需要更多素数时，就不必重复此过程。你可以从小于100的25个素数开始你的素数表。你可能能够背诵这些，所以只需将它们输入程序中。接下来，如果你愿意，你可以使用试除法生成一些3到12位数的素数，比如每个尺寸2或3个素数。我建议你随机进行，这样每次使用此方法时都不会构造相同的素数（以及每个使用此方法的读者都不会生成相同的素数）。在这个阶段，PrimeTab可能有大约50个素数。
 - en: Constructing R (Small step method)
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 构建R（小步骤方法）
 - en: Now let’s start trying to construct R, the large prime factor of Q-1\. You can
     build up to R in small steps by finding primes that are each a little bigger than
     the last prime, or you can jump there in one leap. If you expect to generate many
     large primes, build in small steps so that PrimeTab will have lots of entries
     for use later. To illustrate both techniques, let’s construct R in small steps,
     and construct Q in a giant leap.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们开始尝试构造R，即Q-1的大素数因子。你可以通过找到每个比上一个素数稍大一点的素数来逐步构建R，也可以一次跳跃到那里。如果你期望生成许多大素数，请分步构建，以便PrimeTab后面可以有很多条目供以后使用。为了说明这两种技术，让我们以小步骤构造R，并以一次巨大的飞跃构造Q。
 - en: Suppose that PrimeTab contains k primes, p[1] < p[2] < p[3] < ... < p[k]. To
     construct the next prime, start by choosing any two primes from the table, say
     p[i] and p[j]. Let r be the product p[i]p[j]. If r < p[k], you might want to use
@@ -622,11 +820,17 @@
     2r+1 is not a prime, try 4r+1, 6r+1, 10r+1, ... using the PickPrimes method to
     choose the coefficients. When the numbers start to get over 20 digits, finding
     a prime may take 50 or more trials per prime.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设PrimeTab包含k个素数，p[1] < p[2] < p[3] < ... < p[k]。要构造下一个素数，首先从表中选择任意两个素数，比如p[i]和p[j]。让r为乘积p[i]p[j]。如果r
+    < p[k]，你可能希望选择更大的i或j，以免生成太多小素数。当然，你需要一些小素数，所以我建议当p[i]p[j] < p[k]^(2/3)时选择更大的i或j。首先，使用Lucas测试来确定R
+    = 2r+1是否为素数。这很容易，因为你知道R-1的唯一素因子是2、p[i]和p[j]。如果2r+1不是素数，请尝试4r+1、6r+1、10r+1等，使用PickPrimes方法选择系数。当数字开始超过20位数时，找到一个素数可能需要每个素数50次或更多的尝试。
 - en: Reducing the number of tests
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 减少测试次数
 - en: When the numbers get very large, you can save time by checking whether each
     candidate nr+1 is divisible by many small primes before you search for a primitive
     root. For example, you could verify that nr+1 is not divisible by any of the first
@@ -635,44 +839,61 @@
     mod p[i], where r may have several hundred digits, you compute (nx[i]+1) mod p[i],
     where x[i] has only 1 to 3 digits. That is, you do the trial divisions (r mod
     p[i]) only once instead of once for each value of n. Let’s call this method *PrimeCheck*.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 当数字变得非常大时，你可以通过检查每个候选数nr+1是否可被许多小素数整除来节省时间，然后再寻找一个原根。例如，你可以验证nr+1是否不能被前100个素数中的任何一个整除。你可以通过提前计算x[i]
+    = r mod p[i]来使这个测试更快，其中i是前100个素数。然后，不是计算(nr+1) mod p[i]，其中r可能有几百位数，而是计算(nx[i]+1)
+    mod p[i]，其中x[i]只有1到3位数。也就是说，你只需进行一次试除（r mod p[i]），而不是对每个n值都进行一次。我们称这种方法为*PrimeCheck*。
 - en: PrimeCheck works because the candidate primes are chosen in sequence. You cannot
     do this with the conventional method for finding large primes, because the candidate
     primes are chosen at random. That makes the trial division by small primes much
     faster for this method, and since it is faster you can use more small primes,
     say 300 instead of 100, and thereby reduce the number of trials needed.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: '**PrimeCheck**之所以有效是因为候选素数是按顺序选择的。你无法用传统方法找到大素数，因为候选素数是随机选择的。这使得对小素数的试除对这种方法更快，而且由于速度更快，你可以使用更多的小素数，比如300个而不是100个，从而减少所需的试验次数。'
 - en: As before, if none among 2, 3, 5, 7, 11 or 13 is a primitive root of nr+1, skip
     that candidate and try the next value of n, until you find the next prime. Since
     this method uses only 6 tests per candidate, and the conventional method uses
     64 tests, this method is more than 10 times as fast. Add each prime you find to
     PrimeTab.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 如前所述，如果2、3、5、7、11或13中没有一个是nr+1的原根，则跳过该候选数，并尝试下一个n值，直到找到下一个素数。由于这种方法每个候选数只使用6次测试，而传统方法使用64次测试，因此这种方法的速度是传统方法的10倍以上。将找到的每个素数添加到**PrimeTab**中。
 - en: Constructing P and Q (Giant leap method)
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 构建P和Q（巨大飞跃方法）
 - en: Suppose your goal is to find a 300-digit Sophie Germain prime. Continue growing
     PrimeTab until it has at least one large prime, say R > 2^(128). Now you are ready
     to generate your 300-digit prime using a giant leap. Start by choosing a target
     T of the desired size, say T = 10^(300). It is possible to make P arbitrarily
     close to the target value, but that is not needed for Diffie-Hellman key exchange.
     T will simply be a desired minimum size.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设你的目标是找到一个300位的**Sophie Germain**素数。继续扩展**PrimeTab**，直到它至少有一个大素数，比如R > 2^(128)。现在你已经准备好使用巨大的飞跃来生成你的300位素数。首先选择一个所需大小的目标T，比如T
+    = 10^(300)。可以使P任意接近目标值，但这对Diffie-Hellman密钥交换并不需要。T只是一个所需的最小尺寸。
 - en: 'The next step is to find Q. Recall that Q must meet three requirements: Q must
     be prime, Q-1 must be a multiple of the large prime R, and P = 2Q+1 must also
     be prime. The strategy to find Q is to start with some seed number t whose prime
     divisors are all known and try 2t+1, 4t+1, 6t+1, 10t+1, ... using PickPrimes.'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一步是找到Q。记住Q必须满足三个要求：Q必须是素数，Q-1必须是大素数R的倍数，且P = 2Q+1也必须是素数。找到Q的策略是从一些所有质因数都已知的种子数t开始，然后使用**PickPrimes**尝试2t+1、4t+1、6t+1、10t+1等。
 - en: WARNING If you make t a multiple of 3, then Q will have the form 3x+1\. That
     makes P = 2Q+1 = 6x+3 a multiple of 3\. Making t a multiple of 3 means P can never
     be prime.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：如果你让t成为3的倍数，那么Q将具有3x+1的形式。这意味着P = 2Q+1 = 6x+3将是3的倍数。让t成为3的倍数意味着P永远不可能是素数。
 - en: Since T is the minimum value for P, and Q is about P/2, then t should be about
     T/2\. To construct t, begin with the largest prime in PrimeTab, namely R. Take
     the largest power of R that is less than T/2, say R^r. For example, if T is 10^(300),
@@ -685,8 +906,12 @@
     you can make S' the square or cube of a prime. Suppose the latter. In this example
     S is about 5×10^(19). The square root of this is about 7,071,067,812\. The next
     higher prime is U = 7,071,067,851\. So t will be R⁷U².
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于T是P的最小值，而Q约为P/2，因此t应约为T/2。要构造t，从PrimeTab中最大的素数R开始。取小于T/2的最大R的幂，称为R^r。例如，如果T为10^(300)，而R约为10^(40)，那么T/2约为5×10^(299)，所以r为7。这意味着R^r约为10^(280)。直接从10^(40)跳到10^(280)是巨大的飞跃。这个R^r远远低于5×10^(299)，所以设定t
+    = R⁷S，其中S约为5×10^(19)。当S < 10^(12)时，您可以使用试除法找到大于S的下一个素数。如果这是S'，那么t就是R⁷S'。当S > 10^(12)时，您可以将S'设置为PrimeTab中的一个素数和您必须选择的小于10^(12)的素数的乘积，或者您可以将S'设置为素数的平方或立方。假设后者。在这个例子中，S约为5×10^(19)。它的平方根约为7,071,067,812。下一个更高的素数是U
+    = 7,071,067,851。因此，t将是R⁷U²。
 - en: Now that you have constructed t, and you know all of its prime factors, you
     can begin the search for Q, by testing 2t+1, 4t+1, 6t+1, 10t+1, ... using the
     root test. A number N chosen at random has a probability of about 1/ln(N) of being
@@ -695,8 +920,11 @@
     for P to be prime, which also has a probability of about 1/690\. This means it
     will take about 690² = 476100 tries to find Q = nt+1 and P = 2Q+1, which are both
     prime. That’s a lot of tests.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在你已经构建了t，并且知道了它的所有素数因子，你可以开始搜索Q，通过使用根测试测试2t+1、4t+1、6t+1、10t+1等。随机选择的数字N成为素数的概率约为1/ln(N)。当N的数量级为10^(300)时，ln(N)约为690。这意味着大约需要690次尝试才能找到nt+1形式的素数。P也必须是素数，这也有约为1/690的概率。这意味着大约需要690²
+    = 476100次尝试才能找到Q = nt+1和P = 2Q+1，它们都是素数。这是很多次测试。
 - en: These tests are time-consuming, so any technique to cut down on the number of
     tests is valuable. In this case we can use a natural extension of PrimeCheck.
     For each prime p[i], calculate x[i] = t mod p[i] as before. For each value of
@@ -704,11 +932,16 @@
     of p[i], and also check whether 2(nx[i]+1)+1, which is 2nx[i]+3, is divisible
     by p[i] to verify that P is not a multiple of p[i]. This way you get double value
     from the x[i] list.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些测试非常耗时，因此任何减少测试次数的技术都是宝贵的。在这种情况下，我们可以使用PrimeCheck的自然扩展。对于每个素数p[i]，像之前一样计算x[i]
+    = t mod p[i]。对于每个n值，检查nx[i]+1是否能被p[i]整除，以验证Q不是p[i]的倍数，并且还要检查2(nx[i]+1)+1，即2nx[i]+3是否能被p[i]整除，以验证P不是p[i]的倍数。这样你就可以从x[i]列表中获得双倍价值。
 - en: Secret primes
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 秘密素数
 - en: For some ciphers you may need to use a secret prime, known only to yourself
     and your legitimate correspondents. You can still use the methods of this section
     to construct your prime, however, you need to make certain that any opponent cannot
@@ -718,23 +951,35 @@
     100 initial primes in PrimeTab. (2) Use the small step method for constructing
     P, Q and R, preferably using at least 100 additional steps beyond the initial
     primes.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于一些密码，您可能需要使用一个只有您自己和您的合法通信者知道的秘密素数。您仍然可以使用本节的方法构造您的素数，但是，您需要确保任何对手都无法按照相同的步骤发现您的素数。我建议两项预防措施。（1）当您初始化PrimeTab时，不要选择3到12位数字大小的2或3个素数，而是随机选择3到14位数字大小的5到10个素数。目标是在PrimeTab中至少有100个初始素数。（2）使用构造P、Q和R的小步方法，最好在初始素数之外使用至少100个额外步骤。
 - en: Exact size
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 精确大小
 - en: The giant leap method for constructing primes can easily be modified to find
     primes of a precise size. Here is an example. Suppose you need a prime between
     10^(300) and 1.1×10^(300). Choose r slightly larger than 10^(300)/2000000, that
     is, 5×10^(294). Use PickPrimes, but start your primes at 1000000, that is, 1000003,
     1000033, 1000037, 1000039, ... . Use PrimeCheck to reduce the number of tests.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 构建质数的巨大飞跃方法可以轻松修改为找到精确大小的质数。这是一个例子。假设您需要在 10^(300) 和 1.1×10^(300) 之间的质数。选择比
+    10^(300)/2000000 稍大的 r，即 5×10^(294)。使用 PickPrimes，但从 1000000 开始您的质数，即 1000003、1000033、1000037、1000039，依此类推。使用
+    PrimeCheck 来减少测试次数。
 - en: There are about 6700 primes between 1,000,000 and 1,100,000, and about 1 out
     of every 690 numbers between 10^(300) and 1.1×10^(300) is prime, so it is a near
     certainty that you will find a prime of the required size. The probability can
     be easily calculated. The odds that any given number in the desired range is not
     prime is 689/690\. The odds that all 6700 chosen numbers are not prime is (689/690)^(6700),
     or .00006\. So the chance of success is 99.994%.******
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 1,000,000 和 1,100,000 之间大约有 6700 个质数，在 10^(300) 和 1.1×10^(300) 之间的每 690 个数字中，大约有
+    1 个是质数，因此几乎可以肯定您会找到所需大小的质数。概率可以很容易地计算出来。在所需范围内的任何给定数字不是质数的几率是 689/690。所有 6700
+    个选择的数字都不是质数的几率是 (689/690)^(6700)，或者是 0.00006。因此成功的机会是 99.994%。

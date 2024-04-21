@@ -1405,6 +1405,9 @@
   id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: GenX 生成器只是 Gen5 生成器的扩展版本。它使用四个生产生成器 G1、G2、G4 和 G8，以及一个选择生成器 SEL。SEL 的高阶 4 位用于选择
+    2 到 4 个生产生成器的某种组合。所选的生产生成器运行一个周期，它们的输出相加模 2^(31) 以产生一个和 G。G 的高阶 10 位与下一个 10 位的
+    G 进行异或运算以产生 10 位输出。10 位输出被分为一个 8 位密钥字节 k[n] 和一个 2 位控制位 c[n]。
 - en: The GenX cipher combines the key byte k[n] with the message byte x[n] according
     to the control c[n] using a well-mixed keyed substitution, S. The control bits
     c[n] determine which combining function is used for each plaintext byte. One possible
@@ -1412,21 +1415,27 @@
   id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: GenX 密码器将密钥字节 k[n] 与消息字节 x[n] 根据控制位 c[n] 使用混合的键控替换 S 进行组合。控制位 c[n] 决定了每个明文字节使用哪种组合函数。解释这
+    2 个控制位的一种可能方式是
 - en: '![13-unnumb-1-equation-13-10](../Images/13-unnumb-1-equation-13-10.png)'
   id: totrans-143
   prefs: []
   type: TYPE_IMG
+  zh: '![13-unnumb-1-equation-13-10](../Images/13-unnumb-1-equation-13-10.png)'
 - en: All sums are modulo 256\. Cipher GenX is rated Ten. The keys for this cipher
     are the five 31-bit seeds for G1, G2, G4, G8 and SEL plus the key for mixing the
     substitution S, for example a SkipMix key.
   id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有的和都是模256。Cipher GenX 被评为十。该密码的密钥是用于 G1、G2、G4、G8 和 SEL 的五个 31 位种子以及用于混合替换 S
+    的密钥，例如 SkipMix 密钥。
 - en: 13.14 True random numbers
   id: totrans-145
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 13.14 真随机数
 - en: All of the techniques for generating random numbers that have been discussed
     so far in this chapter produce pseudorandom numbers. Every book I have ever seen
     that discusses random numbers repeats the belief that it is impossible to produce
@@ -1436,12 +1445,14 @@
   id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有在本章讨论过的生成随机数的技术都产生伪随机数。我看过的每一本讨论随机数的书都重复着这样的观念，即使用软件产生真正的随机数是不可能的。这是因为他们将自己限制在了一种太狭窄的可能方法范围内。在本节中，我将介绍一种使用软件批量生成真正随机数的可行方法。
 - en: All the methods in the literature for producing true random numbers depend on
     physical phenomena like cosmic rays, thermal noise, vibration, nuclear decay,
     and so forth. These methods are much too slow for cryptographic purposes.
   id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 文献中所有用于生成真正随机数的方法都依赖于诸如宇宙射线、热噪声、振动、核衰变等物理现象。这些方法对于加密目的来说太慢了。
 - en: Instead, you can produce true random numbers by a 3-step process. (1) Build
     up a large body of true random numbers taken from nature. (2) Make their probability
     distribution uniform. (3) Generate the random numbers by selecting and combining
@@ -1450,6 +1461,7 @@
   id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 相反，你可以通过一个 3 步过程产生真正的随机数。 (1) 从自然界中获取大量真正的随机数。 (2) 使它们的概率分布均匀。 (3) 通过从这个语料库中选择和组合数字来生成随机数。接下来的几节将详细介绍如何完成这些步骤。
 - en: Nature is full of randomness. The shape, coloration and position of every leaf
     on every plant and tree on earth is random. They are the result of winds and breezes,
     sunlight filtering through the foliage, nutrients flowing up from the roots, raindrops
@@ -1461,6 +1473,7 @@
   id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 自然界充满了随机性。地球上每一棵植物和树上每片叶子的形状、颜色和位置都是随机的。它们是风和微风、阳光透过叶片、从根部流上的养分、打在叶片上的雨滴和冰雹、咬过叶片的昆虫、鸟类、松鼠、地面震动以及许多其他因素的结果。每一个海洋上的波浪、每一个沙漠中的植物和岩石、每一条河流上的涟漪、每朵云、每一个海滩上的贝壳在大小、形状、颜色、位置、方向甚至速度上都是随机的。
 - en: Some of this randomness can be captured simply by photographing these locales.
     You don’t even need to leave home. Just take a handful of popcorn and drop it
     on a patterned surface. You can also use your own photos of people you know and

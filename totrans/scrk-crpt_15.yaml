@@ -1,51 +1,75 @@
 - en: 15 Matrix methods
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 15 矩阵方法
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: Ciphers using multiplication by a matrix of integers, or a matrix of ring elements
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用整数矩阵乘法或环元素矩阵的加密
 - en: Ciphers using multiplication by large and small integers
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用大整数和小整数的加密
 - en: Solving linear congruences
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 解线性同余方程
 - en: Constructing rings and invertible matrices
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 构造环和可逆矩阵
 - en: Matrices are a tool well-suited for cryptography because they can encipher arbitrarily
     large blocks of text in one operation. Typically, each block in the message is
     treated as a vector of bytes, meaning integers modulo 256.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 矩阵是一种非常适合用于密码学的工具，因为它们可以在一次操作中对任意大的文本块进行加密。通常，消息中的每个块都被视为字节向量，意味着模256的整数。
 - en: '![15-unnumb-1](../Images/15-unnumb-1.png)'
+  id: totrans-7
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-1](../Images/15-unnumb-1.png)'
 - en: When Sandra uses a matrix to encipher a message, Riva must use the inverse of
     that matrix to decipher the message. Let’s begin the discussion of matrix methods
     with a technique for inverting a matrix.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 当桑德拉使用矩阵来加密消息时，瑞娃必须使用该矩阵的逆矩阵来解密消息。让我们从讨论矩阵方法的技术开始，这是一种求逆矩阵的技巧。
 - en: 15.1 Inverting a matrix
+  id: totrans-9
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.1 求逆矩阵
 - en: There are several ways of solving a matrix equation such as C = AP when there
     is known plaintext. Since Emily knows P and C, but does not know A, she can solve
     the equation for A by right-multiplying it by P' to get CP' = APP' = A. So Emily
     needs to invert P. Riva does the opposite. She knows A, but does not know P, so
     she needs to invert A. Left-multiplying the equation by A', she gets A'C = A'AP
     = P.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 有几种解决矩阵方程（比如 C = AP）的方法，例如已知明文的情况下。由于艾米丽知道 P 和 C，但不知道 A，她可以通过右乘 P' 来解方程得到 CP'
+    = APP' = A。因此，艾米丽需要求 P 的逆。瑞娃则相反。她知道 A，但不知道 P，因此她需要求 A 的逆。将方程左乘以 A'，她得到 A'C = A'AP
+    = P。
 - en: The method illustrated here has the advantage of obtaining the inverse matrix
     directly, without the intermediate step of back-substitution, which is required
     for other methods. The method is to place the given matrix side by side with the
@@ -54,13 +78,17 @@
     applied across each row of the double matrix, so as the left half changes from
     the original matrix to an identity matrix, the right half changes from an identity
     matrix to the inverse of the original.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里展示的方法有一个优点，即直接获得逆矩阵，而无需倒推的中间步骤，这是其他方法所必需的。该方法是将给定的矩阵与单位矩阵放在一个 n×2n 的双宽矩阵中。左侧通过*初等行变换*仅减少到单位矩阵。这些行操作应用于双矩阵的每一行，因此随着左半部分从原始矩阵变为单位矩阵，右半部分从单位矩阵变为原始矩阵的逆。
 - en: The elementary row operations are (1) multiplying a row by an invertible constant,
     (2) swapping two rows, and (3) subtracting a multiple of one row from another
     row.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 初等行变换包括（1）将一行乘以可逆常数，（2）交换两行，和（3）从另一行减去一个行的倍数。
 - en: The algorithm turns the elements of the original matrix into the elements of
     the identity matrix one by one starting in the upper-left corner, then working
     down the left column. Then it does the same for the second column, and so forth.
@@ -71,8 +99,12 @@
     this happens to Emily, she will need n more characters of known plaintext. This
     will give her an (n+1)×n matrix. When she applies this algorithm, the inverse
     matrix is in the upper-right n×n portion of the double-wide matrix.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 该算法逐个将原始矩阵的元素转换为单位矩阵的元素，从左上角开始，然后向下处理左列。然后它对第二列执行相同的操作，依此类推。如果算法在任何时候被卡住，意味着活动列中的所有元素都是2的倍数，或者它们都是13的倍数，则该矩阵是不可逆的。如果这种情况发生在桑德拉身上，她需要尝试不同的矩阵
+    A。通常，只需在底部行的某个元素上加1即可。如果这种情况发生在艾米丽身上，她将需要更多的已知明文字符。这将给她一个（n+1）×n 矩阵。当她应用这个算法时，逆矩阵位于双宽矩阵的右上
+    n×n 部分。
 - en: Here is a 3×3 example. This matrix works on the 26-letter English alphabet,
     so the matrix elements are integers modulo 26\. There are no fractions and no
     negative numbers involved. Since this is done modulo 26, each element that is
@@ -80,87 +112,132 @@
     lets us turn the first nonzero element in each row into a 1, which makes it easy
     to decide which multiple of a row to subtract from any other row. The original
     matrix is
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个 3×3 的例子。此矩阵适用于 26 个字母的英文字母表，因此矩阵元素是模 26 的整数。没有涉及到分数和负数。由于这是模 26 进行的，每个不是
+    2 的倍数且不是 13 的倍数的元素都有一个乘法逆元。这使得我们可以将每行的第一个非零元素变成 1，这样可以轻松地决定从任何其他行中减去哪个行的倍数。原始矩阵是
 - en: '![15-unnumb-1-equation-15-1](../Images/15-unnumb-1-equation-15-1.png)'
+  id: totrans-15
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-1-equation-15-1](../Images/15-unnumb-1-equation-15-1.png)'
 - en: This gets expanded to double-wide format by appending a 3×3 identity matrix
     on the right.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过在右侧附加一个 3×3 的单位矩阵来将其扩展为双宽格式。
 - en: '![15-unnumb-1-equation-15-2](../Images/15-unnumb-1-equation-15-2.png)'
+  id: totrans-17
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-1-equation-15-2](../Images/15-unnumb-1-equation-15-2.png)'
 - en: You are immediately in trouble because none of the first elements in any row
     is invertible. I did this deliberately in order to show a very useful trick. The
     first element in row 1 is a multiple of 13, but not a multiple of 2\. The first
     element in row 2 is a multiple of 2, but not a multiple of 13\. If you simply
     add row 2 to row 1, then the first element becomes 19, which is a multiple of
     neither 2 nor 13, hence it is invertible. Problem solved.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 你立即陷入了困境，因为任何行的第一个元素都不是可逆的。我是故意这样做的，以展示一个非常有用的技巧。第一行的第一个元素是 13 的倍数，但不是 2 的倍数。第二行的第一个元素是
+    2 的倍数，但不是 13 的倍数。如果你简单地将第二行加到第一行，那么第一个元素就变成了 19，既不是 2 的倍数也不是 13 的倍数，因此它是可逆的。问题解决了。
 - en: '![15-unnumb-1-equation-15-3](../Images/15-unnumb-1-equation-15-3.png)'
+  id: totrans-19
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-1-equation-15-3](../Images/15-unnumb-1-equation-15-3.png)'
 - en: The multiplicative inverse of 19 is 11 modulo 26 because 19×11 = 209≡1 (mod
     26). You multiply row 1 by 11 to turn the first element in the matrix into a 1.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 19 的乘法逆元是 11 模 26，因为 19×11 = 209≡1 (mod 26)。你把第一行乘以 11，将矩阵的第一个元素变成 1。
 - en: '![15-unnumb-1-equation-15-4](../Images/15-unnumb-1-equation-15-4.png)'
+  id: totrans-21
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-1-equation-15-4](../Images/15-unnumb-1-equation-15-4.png)'
 - en: Now you can finish column 1 by subtracting 6 times the top row from row 2, and
     subtracting 10 times the top row from row 3\. This will set the first element
     in rows 2 and 3 to zero.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，你可以通过从第二行减去顶部行的 6 倍，并从第三行减去顶部行的 10 倍来完成第一列。这将把第二行和第三行的第一个元素设为零。
 - en: '![15-unnumb-1-equation-15-5](../Images/15-unnumb-1-equation-15-5.png)'
+  id: totrans-23
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-1-equation-15-5](../Images/15-unnumb-1-equation-15-5.png)'
 - en: Time to work on the second row. The first nonzero element on row 2 is 9\. The
     multiplicative inverse of 9 is 3 because 9×3 = 27≡1 (mod 26). You multiply row
     2 by 3 to turn the first element in the row to a 1.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 是时候处理第二行了。第二行上第一个非零元素是 9。9 的乘法逆元是 3，因为 9×3 = 27≡1 (mod 26)。你把第二行乘以 3，将行的第一个元素变成
+    1。
 - en: '![15-unnumb-1-equation-15-6](../Images/15-unnumb-1-equation-15-6.png)'
+  id: totrans-25
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-1-equation-15-6](../Images/15-unnumb-1-equation-15-6.png)'
 - en: This lets you finish column 2 by subtracting row 2 from row 1, and subtracting
     25 times row 2 from row 3\. Notice how the left side of the double-wide matrix
     is gradually turning into the identity matrix.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 这让你通过从第一行减去第二行，并从第三行减去 25 倍的第二行来完成第二列。注意，双宽矩阵的左侧逐渐变成单位矩阵。
 - en: '![15-unnumb-1-equation-15-7](../Images/15-unnumb-1-equation-15-7.png)'
+  id: totrans-27
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-1-equation-15-7](../Images/15-unnumb-1-equation-15-7.png)'
 - en: Almost done. The first nonzero on row 3 is 21\. The multiplicative inverse of
     21 is 5, so you multiply the bottom row of the matrix by 5.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 差不多了。第三行上第一个非零元素是 21。21 的乘法逆元是 5，所以你把矩阵的底行乘以 5。
 - en: '![15-unnumb-1-equation-15-8](../Images/15-unnumb-1-equation-15-8.png)'
+  id: totrans-29
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-1-equation-15-8](../Images/15-unnumb-1-equation-15-8.png)'
 - en: Now you can finish the third column by subtracting 9 times row 3 from row 1,
     and subtracting 19 times row 3 from row 2.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，你可以通过从第三行减去第一行的 9 倍，从第二行减去第一行的 19 倍，完成第三列。
 - en: '![15-unnumb-1-equation-15-9](../Images/15-unnumb-1-equation-15-9.png)'
+  id: totrans-31
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-1-equation-15-9](../Images/15-unnumb-1-equation-15-9.png)'
 - en: Done. The left half of the double-wide matrix now holds the identity matrix,
     and the right half is the inverse of the original matrix. You can check this by
     multiplying the original matrix by the inverse. The result should be the identity
     matrix—and it is.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 完成了。双宽矩阵的左半部分现在保存着单位矩阵，右半部分是原始矩阵的逆矩阵。你可以通过将原始矩阵乘以逆矩阵来检查这一点。结果应该是单位矩阵——而确实如此。
 - en: '![15-unnumb-1-equation-15-10](../Images/15-unnumb-1-equation-15-10.png)'
+  id: totrans-33
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-1-equation-15-10](../Images/15-unnumb-1-equation-15-10.png)'
 - en: 15.2 Transposition matrix
+  id: totrans-34
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.2 转置矩阵
 - en: Let’s begin with a very simple matrix method, namely the *transposition matrix*,
     which is equivalent to the *permutation matrix* in mathematics. This is a square
     matrix that has exactly one 1 in each row and each column. All the other matrix
@@ -168,27 +245,37 @@
     by treating the block as a row matrix of size 1×10 and multiplying it on the right
     by a transposition matrix of size 10×10\. The result will be a 1×10 matrix with
     the letters transposed.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们从一个非常简单的矩阵方法开始，即*转置矩阵*，它在数学上等价于*置换矩阵*。这是一个方阵，每行和每列都恰好有一个1。所有其他矩阵元素都是0。如果你想要转置一个由10个字母组成的块，你可以将该块视为一个大小为1×10的行矩阵，并将其乘以一个大小为10×10的转置矩阵。结果将是一个1×10的矩阵，字母被转置了。
 - en: To move a letter from position 2 in the block to position 5, you would set the
     element on row 2 in column 5 to 1\. Here is an example of a 4×4 transposition
     matrix that changes the message block ABCD to BADC.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 要将一个字母从块中的第2位置移到第5位置，你需要将第2行第5列的元素设置为1。下面是一个4×4的转置矩阵的示例，它将消息块ABCD更改为BADC。
 - en: '![15-unnumb-1-equation-15-11](../Images/15-unnumb-1-equation-15-11.png)'
+  id: totrans-37
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-1-equation-15-11](../Images/15-unnumb-1-equation-15-11.png)'
 - en: Transposition matrices by themselves are not particularly practical, but if
     you have a matrix M that performs a substitution on a block, and a transposition
     matrix T, you can combine them into a single step by using the matrix MT in place
     of M. That way, you get both the substitution and the transposition in a single
     operation.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 单独使用转置矩阵并不特别实用，但是如果你有一个矩阵M对一个块进行替换，并且一个转置矩阵T，你可以通过使用矩阵MT替换M来将它们合并为单个步骤。这样，你就可以在单个操作中获得替换和转置。
 - en: 15.3 The Hill cipher
+  id: totrans-39
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.3 希尔密码
 - en: The earliest cipher based on matrices is the *Hill cipher*, invented in 1929
     by Lester S. Hill of Hunter College and published in the *American Mathematical
     Monthly*. A similar cipher had been invented in 1924 by then-teenaged Jack Levine,
@@ -198,8 +285,10 @@
     is where Kendell Foster Crossen, also mentioned in section 4.4, published many
     of his stories. Levine spent his entire career trying to knock down Hill’s cipher
     and promote his own.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于矩阵的最早的密码是*希尔密码*，由亨特学院的莱斯特·希尔于1929年发明，并发表在*美国数学月刊*上。类似的密码在1924年由当时还是十几岁的杰克·莱文发明，在1926年发表在*弗林周刊*上，一本通俗侦探杂志。*弗林周刊*的密码专栏由M·E·奥哈弗负责，他发明了分数化的摩尔斯密码（第4.4节）。巧合的是，*弗林周刊*是肯德尔·福斯特·克劳森（也在第4.4节提到）发表许多故事的地方。莱文一生致力于推翻希尔的密码并推广自己的密码。
 - en: Hill’s cipher operates on the 26-letter alphabet, with the letters numbered
     from 0 to 25 in some scrambled order. That is, you perform a simple substitution
     before the matrix operation. You take the plaintext letters in blocks of 3\. These
@@ -208,8 +297,11 @@
     vector, C. In matrix notation this is written as C = AP + B, using addition and
     multiplication modulo 26\. Finally, you convert the numbers back into letters
     using the same letter-to-number correspondence.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 希尔密码操作的是26个字母的字母表，字母按某种乱序编号为0到25。也就是说，在矩阵运算之前进行简单的替换。你将明文字母分成3个一组。这形成了一个列向量，即一个3×1矩阵，P。你将这个列向量在左边乘以一个3×3矩阵A，然后加上一个列向量B，得到密文向量C。在矩阵表示中，这被写成C
+    = AP + B，使用模26的加法和乘法。最后，你将数字转换回字母，使用相同的字母到数字的对应关系。
 - en: Unfortunately, many authors restrict the term *Hill cipher* to mean a weak,
     watered-down version of this cipher. To avoid ambiguity, let’s number the several
     versions of the Hill cipher. Hill-0 is the weakest version. You use the standard
@@ -220,8 +312,12 @@
     one mixed alphabet to convert the letters to numbers, but you use a different
     mixed alphabet to convert the numbers back to letters. This is comparable to the
     conjugated matrix bifid cipher in section 9.6.1.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 不幸的是，许多作者将 *Hill 密码* 限制为该密码的一个弱化、削弱的版本。为了避免歧义，让我们对 Hill 密码的几个版本进行编号。Hill-0 是最弱的版本。您使用标准英语字母表，没有混合，并省略
+    B 向量，以便 C = AP。Hill-1 稍微强大一些。您仍然使用未混合的字母表，但 B 向量不为零。Hill-2 是 Hill 最初提出的版本。您使用混合字母表和非零的
+    B 向量。Hill3 是一个更强大的版本，您在其中使用一个混合字母表将字母转换为数字，但您使用另一个混合字母表将数字转换回字母。这类似于第 9.6.1 节中的共轭矩阵双重密码。
 - en: Hill’s cipher, Hill-2, as originally published, was basically a secret method
     cipher. The conversion of letters to numbers and both matrices A and B were fixed.
     There was no key. Anyone who knew the method could read the messages as easily
@@ -229,8 +325,11 @@
     cipher ignore the mixed alphabet and concentrate solely on the matrix operations.
     This would be legitimate if a fixed conversion from letters to numbers were used,
     because the known mixing of the alphabet could be stripped off.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: Hill 密码，即 Hill-2，如最初发布的那样，基本上是一种秘密方法密码。字母转换为数字以及矩阵 A 和 B 都是固定的。没有密钥。任何知道这种方法的人都可以像预期的接收者一样轻松阅读消息。大多数最近的书籍和网站讨论
+    Hill 密码时忽略了混合字母表，并集中于矩阵运算。如果使用了固定的字母到数字的转换，这是合法的，因为可以去掉已知的字母表混合。
 - en: Let’s first look at case Hill-0, where A is an unknown n×n matrix, and the vector
     B is 0, so C = AP. This is plain old matrix multiplication, which we saw in section
     11.3\. Riva can decipher the message by multiplying the ciphertext by the *inverse
@@ -240,15 +339,24 @@
     multiplication, that is, 1×N = N×1 = N for every number N. With matrices, this
     translates to IA = AI = A for every square matrix A. Emily can also decipher the
     message if she can determine A'.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们首先看一下 Hill-0 情况，其中 A 是一个未知的 n×n 矩阵，向量 B 是 0，所以 C = AP。这就是普通的矩阵乘法，我们在第 11.3
+    节中见过。Riva 可以通过将密文乘以矩阵 A 的*逆矩阵* A' 来解密消息。逆矩阵具有这样的性质，即 A'A = AA' = I，其中 I 是*单位矩阵*。在矩阵
+    I 中，每个对角元素为 1，每个其他元素为 0。单位矩阵类似于普通乘法中的数字 1，即对于每个数字 N，1×N = N×1 = N。对于矩阵，这意味着 IA
+    = AI = A 对于每个方阵 A。如果 Emily 能确定 A'，她也可以解密消息。
 - en: This B = 0 version of the Hill cipher is vulnerable to a known-plaintext attack.
     If Emily has n² characters of known plaintext, she can form them into an n×n matrix.
     Call this matrix P, and call the corresponding ciphertext matrix C. Then C = AP,
     where C, A and P are all n×n matrices of integers modulo 26\. There are several
     ways to solve this matrix equation. One way is shown in section 15.1.1.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个 B = 0 版本的 Hill 密码容易受到已知明文攻击的影响。如果 Emily 有 n² 个已知明文字符，她可以将它们组成一个 n×n 矩阵。将此矩阵称为
+    P，并将相应的密文矩阵称为 C。那么 C = AP，其中 C、A 和 P 都是模 26 的 n×n 整数矩阵。有几种方法可以解决这个矩阵方程。一种方法如 15.1.1
+    节所示。
 - en: 'If the additive vector B is not all-zero, then Emily just needs n more characters
     of known plaintext, and she can eliminate B from the equation. The extra known
     plaintext characters can form a column vector P[2], and the corresponding ciphertext
@@ -259,11 +367,16 @@
     vector from each of the elements on the top row of the matrix, subtracting the
     second element of the vector from each of the elements on the second row of the
     matrix, and so forth.'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果加法向量B不全为零，则艾米莉只需要更多已知明文的字符，她就可以从方程中消除B。额外的已知明文字符可以形成一个列向量P[2]，相应的密文字符可以形成一个列向量C[2]。这些向量可以像这样从方程中减去：(C-C[2])
+    = A(P-P[2])。这与C = AP具有相同的形式，并且通过相同的方式解决，即通过求逆矩阵P-P[2]。通过从n×1列向量中减去n×n矩阵，可以将n×1列向量从矩阵中减去，方法是从向量的第一个元素中减去矩阵顶行的每个元素，从向量的第二个元素中减去矩阵第二行的每个元素，依此类推。
 - en: '![15-unnumb-1-equation-15-12](../Images/15-unnumb-1-equation-15-12.png)'
+  id: totrans-47
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-1-equation-15-12](../Images/15-unnumb-1-equation-15-12.png)'
 - en: Suppose that you have no known plaintext. It is still possible to solve the
     Hill-0 variation. Let’s continue assuming a secret 3×3 multiplicative matrix,
     C = AP. Multiplying by A', the inverse of A, gives P = A'C. In each block of the
@@ -271,8 +384,11 @@
     of A. That is only 26³ = 17,576 possibilities, so it’s easy to try them all. Each
     combination for the top row will determine the letters in positions 1, 4, 7, .
     . . in the plaintext. For each such combination, count the letter frequencies.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设你没有已知的明文。仍然可以解决Hill-0变体。继续假设一个秘密的3×3乘法矩阵，C = AP。乘以A'，A的逆矩阵，得到P = A'C。在消息的每个块中，块的第一个明文字符仅取决于A的顶行。这只有26³
+    = 17,576种可能性，所以很容易尝试它们。每个顶行的组合将确定明文中位置1、4、7等位置的字母。对于每个这样的组合，统计字母频率。
 - en: You can compare those letter frequencies to standard English letter frequencies
     using the tall peaks method described in section 5.9.1\. Take those combinations
     that have the best match, say the top 1%, or top 175 combinations. Do the same
@@ -284,16 +400,21 @@
     block, the combination for row 2 gives you the second letter in each block, and
     the combination for row 3 gives you the third letter in each block, so you have
     every letter.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以使用第5.9.1节中描述的高峰方法将这些字母频率与标准英语字母频率进行比较。选择那些匹配度最高的组合，比如前1%，或者前175个组合。对于每个块的第二和第三个明文字母，使用逆矩阵A'的第二和第三行。这为每个3行提供了175个可能的组合。现在你可以尝试这些组合的组合，以获得整个消息的可能重构。只需尝试175³
+    = 5.36×10⁶种组合。第1行的组合给出每个块的第一个字母，第2行的组合给出每个块的第二个字母，第3行的组合给出每个块的第三个字母，因此你拥有每个字母。
 - en: You can now use trigram frequencies to determine the most plausible plaintext.
     Use all of the trigrams, not just the 3-letter blocks, but the trigrams spanning
     blocks as well. This is the same process we used in section 5.10 and section 8.2,
     so I won’t repeat all of the details here. If this fails to produce a satisfactory
     result, go back to the start and take the top 2%, or top 350 combinations for
     each letter.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在你可以使用三字母组频率确定最有可能的明文。使用所有的三字母组，不仅仅是3个字母的块，还有跨块的三字母组。这与我们在第5.10节和第8.2节中使用的过程相同，所以我不会在这里重复所有细节。如果这无法产生令人满意的结果，请回到起点，并为每个字母选择前2%或前350个组合。
 - en: The Hill cipher Hill-1 with a secret 3×3 multiplicative matrix and a secret
     3×1 additive matrix, but with an unmixed alphabet, is rated Three. With a key-mixed
     substitution both before and after the matrix operations it is rated Five. It
@@ -307,18 +428,24 @@
     using a third keyed non-linear substitution. The two multiplier matrices may be
     fixed, but the 3 keys for mixing the alphabets and the 2 additive column vectors
     should be changed for every message. Call this cipher *DoubleHill*.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: Hill密码Hill-1使用一个秘密的3×3乘法矩阵和一个秘密的3×1加法矩阵，但使用未混合的字母表，被评为三级。在矩阵操作之前和之后都进行密钥混合替换后，被评为五级。它可以被解密为一般的三字母替换密码。对于更大的矩阵，评级会增加。为了达到十级评级，矩阵必须至少为8×8，并且Hill-3矩阵操作必须应用两次。以下是步骤。（1）使用一个键入的非线性替换将消息转换为数字形式。（2）将每个块乘以矩阵并添加列向量。（3）对数字进行第二次非线性替换。（4）将每个块乘以第二个矩阵并添加第二个列向量。（5）使用第三个键入的非线性替换将结果转换回字母。两个乘法矩阵可以固定，但用于混合字母表的3个密钥和2个加法列向量应该在每条消息中更改。将此密码称为*DoubleHill*。
 - en: 15.4 Hill cipher, computer versions
+  id: totrans-52
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.4 Hill密码，计算机版本
 - en: Hill’s cipher was too complex for cipher clerks to do by hand. Hill also created
     a mechanical device for performing the encryption and decryption. This was done
     to satisfy the patent laws of the time, which allowed patenting a machine but
     not a mathematical algorithm. Still, the cipher saw very little use in practice.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: Hill密码对密码员来说太复杂，无法手工完成。Hill还创建了一个机械设备用于进行加密和解密。这是为了满足当时的专利法，允许对机器进行专利保护，但不允许对数学算法进行专利保护。然而，这种密码在实践中几乎没有被使用。
 - en: Today, in the computer age, the Hill cipher has become practical again. Matrix
     multiplication is child’s play for a computer. Instead of 3×3 matrices it is easy
     to use 10×10 matrices. Instead of 9 characters of known plaintext, Emily needs
@@ -327,8 +454,10 @@
     a secret 10×10 matrix using the standard alphabet is rated Six. The Hill cipher
     using a secret 10×10 matrix, with key-mixed substitutions both before and after
     the matrix multiplication, is rated Eight.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 如今，在计算机时代，Hill密码再次变得实用。对于计算机来说，矩阵乘法是小菜一碟。使用10×10矩阵比3×3矩阵更容易。对于已知明文攻击，艾米莉需要100个字符而不是9个字符。这几乎是不可能的，除非通过间谍活动或在战场上截获消息。使用标准字母表的秘密10×10矩阵的Hill密码评级为六级。使用秘密10×10矩阵的Hill密码，在矩阵乘法之前和之后进行密钥混合替换，被评为八级。
 - en: You can further strengthen the Hill cipher by having several matrices and choosing
     the matrix for each block either periodically or randomly. The matrices and plaintext
     blocks may vary in size. Since matrix multiplication is not commutative, you almost
@@ -338,8 +467,10 @@
     you can get a more secure cipher by alternating sides, either periodically or
     randomly. Variable matrices, variable block sizes and variable sides. You can
     take your pick or mix ’em up.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过使用多个矩阵并选择每个块的矩阵，可以进一步加强Hill密码，可以周期性或随机选择矩阵。矩阵和明文块的大小可能不同。由于矩阵乘法不是可交换的，当你在左边或右边乘以一个矩阵时，你几乎总是得到不同的结果。当你在左边乘以一个矩阵时，每个明文块必须被视为一个列向量，但当你在右边乘以一个矩阵时，它必须被视为一个行向量。这表明通过交替使用不同的方向，可以获得更安全的密码，可以周期性或随机地交替。可变矩阵，可变块大小和可变方向。你可以自行选择或混合使用。
 - en: You can also combine transposition with the Hill cipher, however, not every
     transposition will improve the security. Suppose that you are using the Hill-0
     or Hill-1 variant, and after the matrix multiplication you transpose the letters
@@ -350,8 +481,11 @@
     known plaintext, and she will never know that there was a transposition. If you
     wish to use transposition with Hill-0 or Hill-1, you must swap letters among different
     blocks, or you must swap different letters in different blocks.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 你也可以将置换与希尔密码结合起来，但并不是每种置换都能提高安全性。假设你正在使用希尔-0或希尔-1变种，并且在矩阵乘法之后转置每个区块中的字母。这与使用具有不同矩阵乘数的希尔密码是一样的。让T代表转置。在对Hill-1进行加密后应用T会得到C
+    = T(AP+B) = (TA)P+(TB)。你所做的一切就是使用TA代替A，TB代替B。Emily可以使用已知明文来解密密码，并且她永远不会知道有置换存在。如果你想在希尔-0或希尔-1中使用置换，你必须在不同的区块之间交换字母，或者在不同的区块中交换不同的字母。
 - en: Surprisingly, the situation is exactly the same when you use Hill-2 or Hill-3\.
     This is because simple substitution and transposition commute. If S is any simple
     substitution, T is any transposition, and M is any message, then S(T(M)) = T(S(M)),
@@ -359,8 +493,11 @@
     if you are going to add a transposition step, you must swap letters among different
     blocks, or you must swap different letters in different blocks, either periodically
     or pseudorandomly.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 令人惊讶的是，当你使用希尔-2或希尔-3时情况完全相同。这是因为简单的替换和置换是可交换的。如果S是任何简单的替换，T是任何置换，M是任何消息，那么S(T(M))
+    = T(S(M))，因此ST = TS。因此，无论你使用哪种希尔密码变种，如果你要添加一个置换步骤，你必须在不同的区块之间交换字母，或者在不同的区块中交换不同的字母，要么周期性地要么伪随机地。
 - en: Another idea is to multiply the message by matrices on both sides. As mentioned
     earlier, a block of text must be treated as a column vector when you multiply
     it on the left by a matrix, but as a row vector when you multiply it on the right.
@@ -371,14 +508,19 @@
     9 terms, each involving one plaintext letter and the product of 2 matrix elements.
     So the coefficients of the plaintext letters are quadratic. Of the 81 possible
     quadratic coefficients, 27 appear in these expressions.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一个想法是在两侧都用矩阵乘以消息。正如前面提到的，当你将文本块左乘以矩阵时，它必须被视为列向量，但当你将其右乘以矩阵时，它必须被视为行向量。假设你正在使用3×3矩阵，加法矩阵B
+    = 0。通过单侧矩阵乘法，每个密文字符的表达式都有3项，每项都涉及一个明文字母和一个矩阵元素。通过双侧矩阵乘法，每个密文字符的表达式有9项，每项都涉及一个明文字母和2个矩阵元素的乘积。因此，明文字母的系数是二次的。在81个可能的二次系数中，有27个出现在这些表达式中。
 - en: For the Hill-0 and Hill-1 cases Emily can still use known plaintext to solve
     these equations. There is an easy way and a hard way. The hard way is to use 18
     characters of known plaintext to solve the 18 quadratic equations for the 18 unknown
     elements in the two 3×3 matrices. Good luck with that!
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于希尔-0和希尔-1情况，Emily仍然可以使用已知明文来解决这些方程。有一种简单的方法和一种困难的方法。困难的方法是使用18个已知明文字符来解决两个3×3矩阵中18个未知元素的18个二次方程。祝你好运！
 - en: The easy way is to treat each of the 27 quadratic coefficients as a separate
     variable. This changes the equations from quadratic in 18 variables to linear
     in 27 variables. Ignore how the 27 variables are formed from the 18 matrix elements,
@@ -389,31 +531,41 @@
     STOCKHOLM. Since the occurrences of STOCKHOLM likely begin in different positions
     in the 3-letter blocks, 3 different messages can give her 27 known letter placements.
     She can easily solve the 27 linear equations to get the 27 coefficients.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 用简单的方法，将27个二次系数视为单独的变量。这将把方程从18个变量的二次方程转变为27个变量的线性方程。忽略27个变量是如何从18个矩阵元素中形成的，只需将它们视为不可分割的单元。由于现在有27个未知数，艾米莉需要27个已知字母而不是18个。虽然不太可能，但有可能，尤其是如果她拦截了多条使用相同密钥的消息。例如，假设艾米莉知道每条从瑞典发出的消息都以单词STOCKHOLM结尾。由于STOCKHOLM的出现可能在3个字母块中的不同位置开始，3条不同的消息可以给她27个已知字母的位置。她可以轻松解决这27个线性方程以获得27个系数。
 - en: From there it is easy to solve the 27 single-term quadratic equations to find
     the 18 matrix elements—but why bother? The relationships between the plaintext
     letters and the ciphertext letters are all in terms of the 27 quadratic coefficients.
     There is no benefit for Emily to know how those coefficients were produced.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 从那里，解决27个一次项二次方程以找到18个矩阵元素很容易——但为什么要麻烦呢？明文字母和密文字母之间的关系都是以27个二次系数为基础的。对于艾米莉来说，知道这些系数是如何产生的并没有好处。
 - en: The case for Hill-1 is essentially the same as Hill-0\. There are 36 unknowns,
     so Emily will need 36 characters of known plaintext. Otherwise, the solution process
     is the same. There is no comparable process for Hill-2 and Hill-3\. These are
     best solved as trigram substitution ciphers.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: Hill-1的情况与Hill-0基本相同。有36个未知数，所以艾米莉需要36个已知明文字符。否则，解决过程是相同的。Hill-2和Hill-3没有可比的过程。最好将它们解决为三字母替换密码。
 - en: You can get even greater strength from two-sided matrix multiplication by using
     different-sized matrices on each side, and by aligning the matrices differently
     on each side. Here are two examples of these techniques. In the first example,
     the left-side multiplications are by 3×3 matrices, while the right-side multiplications
     are by 4×4 matrices. Since the 3×3 matrices butt heads with the 4×4 matrices,
     as shown, let’s call this the *Butthead configuration*.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过在每一侧使用不同大小的矩阵，并在每一侧以不同方式对齐矩阵，可以从双面矩阵乘法中获得更大的强度。以下是这些技术的两个示例。在第一个示例中，左侧乘法是由3×3矩阵进行的，而右侧乘法是由4×4矩阵进行的。由于3×3矩阵与4×4矩阵对头，如图所示，让我们称之为*Butthead配置*。
 - en: '![15-unnumb-2](../Images/15-unnumb-2.png)'
+  id: totrans-64
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-2](../Images/15-unnumb-2.png)'
 - en: This gives you an effective block size of 12 characters. Since each right-side
     4×4 matrix spans two left-side 3×3 matrices, each ciphertext character depends
     on 6 plaintext characters, rather than 4\. With this configuration, producing
@@ -422,151 +574,207 @@
     cipher is rated Six. If the mixed alphabets and the matrices are both secret,
     it is rated Eight. The rating increases to Ten if the matrices are 6×6 and 7×7
     or larger. Of course, whatever matrix sizes Sandra uses should be mutually prime.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 这给出了一个有效的块大小为12个字符。由于每个右侧的4×4矩阵跨越两个左侧的3×3矩阵，每个密文字符依赖于6个明文字符，而不是4个。在这种配置下，生成每个密文字符只需7次乘法，因此这种方法非常快速。当混合字母表是秘密的，但矩阵是已知的时，Butthead密码被评为六。如果混合字母表和矩阵都是秘密的，则被评为八。如果矩阵是6×6和7×7或更大，则评级提高到十。当然，桑德拉使用的矩阵大小应该是互质的。
 - en: The *Brick Wall* is another recommended configuration for 2-sided matrix multiplication.
     Here the matrices are all of the same size, but they are offset by half their
     width, just like the bricks in a wall. This diagram illustrates the method.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: '*砖墙*是另一种推荐的双面矩阵乘法配置。在这里，所有矩阵都是相同大小，但它们的偏移量为宽度的一半，就像墙上的砖块一样。这张图解说明了这种方法。'
 - en: '![15-unnumb-3](../Images/15-unnumb-3.png)'
+  id: totrans-67
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-3](../Images/15-unnumb-3.png)'
 - en: Notice that the boundaries of the matrices never line up. This configuration
     has no block structure, or, equivalently, you could say that the entire message
     is a single block. Since each of the 4×4 right-side matrices spans two left-side
     4×4 matrices, each ciphertext letter depends on 8 plaintext letters. This is sufficient
     for high-security work.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意到矩阵的边界从未对齐。这种配置没有块结构，或者等效地说，整个消息是一个单一的块。由于每个4×4右侧矩阵跨越两个左侧4×4矩阵，每个密文字母取决于8个明文字母。这对于高安全性工作是足够的。
 - en: If you actually used 2×2 matrices for the first and last blocks, that would
     leave those blocks weak and vulnerable. It also requires you to have 1×1 and 3×3
     matrices to handle uneven message lengths. It is better to use 4×4 matrices throughout.
     The next two diagrams show how this can be done for a message of length 13\. The
     first diagram shows the placement of the left-side matrices, with the last 4×4
     matrix flush with the right end of the message.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您实际上使用2×2矩阵来处理第一个和最后一个块，那将使这些块变得薄弱和容易受攻击。这还要求您使用1×1和3×3矩阵来处理不均匀的消息长度。最好始终使用4×4矩阵。接下来的两个图示展示了如何对长度为13的消息执行此操作。第一个图示显示了左侧矩阵的放置，最后一个4×4矩阵与消息的右端齐平。
 - en: '![15-unnumb-4](../Images/15-unnumb-4.png)'
+  id: totrans-70
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-4](../Images/15-unnumb-4.png)'
 - en: The next diagram shows the placement of the right-side matrices, offset by 2
     characters. The first and last 4×4 right-side matrices are flush with the ends
     of the message.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一个图示显示了右侧矩阵的放置，偏移了2个字符。第一个和最后一个4×4右侧矩阵与消息的末端齐平。
 - en: '![15-unnumb-5](../Images/15-unnumb-5.png)'
+  id: totrans-72
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-5](../Images/15-unnumb-5.png)'
 - en: This method of positioning the last matrix makes the last left-side matrix and
     the last right-side matrix align. This can be avoided by wrapping around to the
     start of the message, like this.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 将最后一个矩阵定位在最后一个左侧矩阵和最后一个右侧矩阵对齐。可以通过将其环绕到消息的开头来避免这种情况，就像这样。
 - en: '![15-unnumb-6](../Images/15-unnumb-6.png)'
+  id: totrans-74
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-6](../Images/15-unnumb-6.png)'
 - en: When you have a key-mixed simple substitution before the left-side matrix multiplication,
     with another after the right-side matrix multiplication, and you use secret matrices
     of size 6×6 or larger, the brick wall cipher is rated Ten.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 当您在左侧矩阵乘法之前使用了混合密钥简单替换，并在右侧矩阵乘法之后使用了另一个，同时使用了大小为6×6或更大的秘密矩阵时，砖墙密码评级为十。
 - en: Since it takes some effort to invert the matrices, it may be preferable to use
     fixed matrices for both left- and right-side multiplication. Using fixed matrices
     weakens the cipher, but you can compensate by adding a third simple substitution
     between the two matrix multiplication steps. The matrices may be of any even size,
     6×6 or larger. By comparison to the Hill cipher, let’s call this the *Everest
     cipher*. The Everest cipher is rated Ten.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于反转矩阵需要一些努力，因此最好使用固定矩阵进行左侧和右侧乘法。使用固定矩阵会削弱密码，但您可以通过在两个矩阵乘法步骤之间添加第三个简单替换来进行补偿。矩阵可以是任何偶数大小，如6×6或更大。与希尔密码相比，让我们称之为*珠穆朗玛峰密码*。珠穆朗玛峰密码评级为十。
 - en: 15.5 Large integer multiplication
+  id: totrans-77
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.5 大整数乘法
 - en: 'Large integer multiplication is similar to matrix multiplication in one important
     sense: in matrix multiplication each element of the product is the sum of products
     of two elements, one from each matrix. In large integer multiplication each digit
     of the product is the sum of products of two digits, one from each large integer.
     Anyway, that’s my rationale for putting this topic in the matrix chapter.'
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 大整数乘法在一个重要方面类似于矩阵乘法：在矩阵乘法中，产品的每个元素是两个矩阵中的一个元素的乘积之和。在大整数乘法中，产品的每个数字是两个大整数中的一个数字的乘积之和。无论如何，这是我将这个主题放在矩阵章节中的理由。
 - en: A 128-bit block can be viewed as 16 bytes, or as 16 base-256 digits of a 128-bit
     integer. If you multiply two such base-256 integers, that involves 256 products
     and 256 additions (including the carries). It’s a lot faster if the language you
     use allows you to multiply two 32-bit unsigned integers to get a 64-bit unsigned
     product. Then you need only 16 multiplications and 16 additions. If the language
     allows multiplication of 64-bit integers with 128-bit products, it’s even simpler.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个128位块可以看作是16个字节，或者是128位整数的16个基于256的数字。如果您将两个这样的基于256的整数相乘，那就涉及256个乘积和256个加法（包括进位）。如果您使用的语言允许您将两个32位无符号整数相乘以获得64位无符号乘积，那么您只需要16次乘法和16次加法。如果语言允许64位整数与128位乘积相乘，那就更简单了。
 - en: There are faster methods for multiplying very large numbers, such as Karatsuba
     and Toom-Cook, but the benefits of these methods for multiplying 128-bit numbers,
     or even 256-bit numbers, are too small to make these worthwhile for present purposes,
     so I will not get into the mechanics of large integer multiplication. Some computer
     languages handle the mechanics automatically, so the user need never become involved.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 有更快的方法可以乘以非常大的数字，比如Karatsuba和Toom-Cook，但是对于乘以128位数字，甚至256位数字，这些方法的好处太小，不值得为了当前目的而使用，所以我不会介绍大整数乘法的机制。一些计算机语言会自动处理这些机制，因此用户永远不需要介入。
 - en: That said, consider a cipher, *Mult128*, where the message is taken in 128-bit
     blocks, and each block is multiplied by a secret 128-bit integer M modulo 2^(128).
     In other words, only the low-order half of the 256-bit product is used, and the
     high-order half is discarded. This means that some of the intermediate products
     in the multiplication need not be calculated because they contribute only to the
     high-order end of the product.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 话虽如此，考虑一个密码，*Mult128*，其中消息以128位块为单位，每个块都乘以一个秘密的128位整数M，对2^(128)取模。换句话说，只使用256位乘积的低阶半部分，高阶半部分被丢弃。这意味着乘法中的一些中间产品不需要计算，因为它们只对乘积的高阶端有贡献。
 - en: Riva can read the message by multiplying the ciphertext by the multiplicative
     inverse M' of M modulo 2^(128). This inverse exists whenever M is odd. Let’s see
     how to find a multiplicative inverse.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 利瓦可以通过将密文乘以M对2^(128)取模的乘法逆元M'来读取消息。当M为奇数时，这个逆元存在。让我们看看如何找到乘法逆元。
 - en: 15.5.1 Multiplying and dividing congruences
+  id: totrans-83
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.5.1 乘法和除法同余
 - en: I promised early in this book that I would present all the necessary math as
     it was needed. This is one of those sections. The method for calculating multiplicative
     inverses involves multiplying linear congruences. Before I show how that is done,
     let’s look at an example to see why this is an issue. (I used part of this example
     in section 3.6\. You might wish to reread that section before proceeding.)
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 我在本书的早期承诺过，我会根据需要逐步呈现所有必要的数学内容。这是其中之一。计算乘法逆元的方法涉及乘以线性同余式。在我展示如何做到这一点之前，让我们看一个示例来了解为什么这是一个问题。(我在第3.6节中使用了这个示例的部分内容。您可能希望在继续之前重新阅读该节。)
 - en: 'Not all congruences have the same strength. Some congruences are strong, and
     have a unique solution. Some congruences are weak, and have many solutions. The
     stronger the congruence, the more information it gives. Consider these congruences,
     listed from strongest to weakest:'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 并不是所有的同余式都具有相同的强度。一些同余式很强，有唯一的解。一些同余式很弱，有许多解。同余式越强，提供的信息越多。考虑这些同余式，从最强到最弱排列：
 - en: '![15-unnumb-7](../Images/15-unnumb-7.png)'
+  id: totrans-86
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-7](../Images/15-unnumb-7.png)'
 - en: The reason for this disparity is that in all but the first of these congruences,
     ax≡b (mod n), the parameters a, b and n have a common factor. In 10x≡8 (mod 12),
     the parameters 10, 8 and 12 have the common factor 2, and the congruence has 2
     solutions. In 9x≡3 (mod 12), the parameters 9, 3 and 12 have the common factor
     3, and the congruence has 3 solutions. And so forth. The larger the common factor,
     the more solutions, and the weaker the congruence.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种不均衡的原因是，在除了这些同余式中的第一个以外的所有同余式中，ax≡b (mod n)，参数a、b和n有一个公因数。在10x≡8 (mod 12)中，参数10、8和12有公因数2，同余式有2个解。在9x≡3
+    (mod 12)中，参数9、3和12有公因数3，同余式有3个解。等等。公因数越大，解越多，同余式越弱。
 - en: When a, b and n have a common divisor d, you can divide the congruence through
     by d. For example, 9x≡3 (mod 12) has a common factor of 3\. Dividing through by
     3 gives 3x≡1 (mod 4). You can solve that by sight. The solution is x≡3 (mod 4).
     That checks out, since 3×3 = 9≡1 (mod 4). To translate this result back to (mod
     12), the first solution is 3 (mod 12), and you get the other two solutions by
     adding 12/3 = 4 and then adding 4 again, namely 7 (mod 12) and 11 (mod 12).
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 当a、b和n有一个公因数d时，你可以将同余式除以d。例如，9x≡3 (mod 12)有一个公因数3\. 除以3得到3x≡1 (mod 4)。你可以直观地解决这个问题。解是x≡3
+    (mod 4)。检查一下，因为3×3 = 9≡1 (mod 4)。将这个结果转换回(mod 12)，第一个解是3 (mod 12)，然后通过添加12/3 =
+    4再次添加4，得到另外两个解，即7 (mod 12) 和 11 (mod 12)。
 - en: To recap, if a, b and n have a common divisor d, then there are d distinct solutions.
     The first solution is the solution to a/d≡b/d (mod n/d), and the other solutions
     are spaced apart by n/d.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 总结一下，如果a、b和n有一个公因数d，那么就有d个不同的解。第一个解是满足a/d≡b/d (mod n/d)的解，其他解相距n/d。
 - en: Let’s look at two other situations. Suppose, again, that ax≡b (mod n) and that
     a and n have a common divisor that does not divide b, for example 3x≡7 (mod 30).
     Then the congruence has no solution. Suppose, instead, that a and b have a common
     divisor d that does not divide n. Then you can divide a and b by d. For example,
     if 10x≡25 (mod 37), then 2x≡5 (mod 37). This can be solved in your head by adding
     37 to 5, making 2x≡42 (mod 37). Dividing by 2 gives x≡21 (mod 37).
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看另外两种情况。再假设ax≡b (mod n)，并且a和n有一个不整除b的公约数，例如3x≡7 (mod 30)。那么这个同余方程没有解。相反，假设a和b有一个不整除n的公约数d。那么你可以将a和b除以d。例如，如果10x≡25
+    (mod 37)，那么2x≡5 (mod 37)。这可以通过在头脑中将37加到5上来解决，得到2x≡42 (mod 37)。除以2得到x≡21 (mod 37)。
 - en: Just as you can divide a and b by a constant, you can also multiply a and b
     by a constant, m. That m must not have a common factor with n. In other words,
     m must be invertible modulo n. Otherwise you will make the congruence weaker and
@@ -574,8 +782,11 @@
     weak congruence with 3 solutions. If you multiply a and b by 2, the congruence
     becomes 18x≡6 (mod 12), which is equivalent to 6x≡6 (mod 12), which has 6 solutions.
     The weak congruence has become even weaker.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 就像你可以将a和b除以一个常数一样，你也可以将a和b乘以一个常数m。这个m不能与n有公因数。换句话说，m必须在模n下可逆。否则，你会使同余方程变弱并丢失信息。例如，假设给定9x≡3
+    (mod 12)。这是一个有3个解的弱同余方程。如果你将a和b乘以2，同余方程变为18x≡6 (mod 12)，等价于6x≡6 (mod 12)，有6个解。这个弱同余方程变得更弱。
 - en: You can also add and subtract congruences that have the same modulus. Suppose
     ax≡b (mod n) and cx≡d (mod n). These can be added to get (a+c)x≡b+d (mod n), or
     subtracted to get (a-c)x≡b-d (mod n). This can be used to strengthen a set of
@@ -584,12 +795,19 @@
     them, you get 17x≡7 (mod 12), which reduces to 5x≡7 (mod 12), which has the unique
     solution x≡11 (mod 12). Even smarter, if you subtract the two congruences, that
     gives (9-8)x≡(3-4) (mod 12), which gets you directly to x≡11 (mod 12).
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 你也可以相加和相减具有相同模数的同余方程。假设ax≡b (mod n)和cx≡d (mod n)。这些可以相加得到(a+c)x≡b+d (mod n)，或相减得到(a-c)x≡b-d
+    (mod n)。这可以用来加强一组弱同余方程。例如，假设你有9x≡3 (mod 12)和8x≡4 (mod 12)。第一个同余方程有3个解，第二个有4个解。如果你将它们相加，得到17x≡7
+    (mod 12)，化简为5x≡7 (mod 12)，有唯一解x≡11 (mod 12)。更聪明的是，如果你将两个同余方程相减，得到(9-8)x≡(3-4)
+    (mod 12)，直接得到x≡11 (mod 12)。
 - en: '*15.6 Solving a linear congruence'
+  id: totrans-93
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '*15.6 解线性同余方程'
 - en: Now that you know how to safely manipulate congruences without losing strength,
     we can tackle the problem of how to solve a linear congruence ax≡b (mod m), where
     a, b and m are given constants, and x is the unknown value we are trying to find.
@@ -600,76 +818,112 @@
     right method to use when the modulus is small, or when the modulus has several
     different small prime factors. It is definitely the right method when the factorization
     is unknown and there is a likelihood of small factors.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在你知道如何安全地操作同余方程而不失强度，我们可以解决如何解线性同余方程ax≡b (mod m)，其中a、b和m是给定常数，x是我们试图找到的未知值。特殊情况下当b
+    = 1时，x是a对模m的乘法逆元。大多数教科书只提到一种叫做*扩展欧几里德算法*的技术。（欧几里德算法通常被归功于雅典的忒亚泰特，他比欧几里德早生活大约一个世纪。）那是一个非常好的方法。当模数较小或者模数有几个不同的小质因数时，可能是正确的方法。当因数分解未知且存在小因数的可能性时，这绝对是正确的方法。
 - en: In cryptography, however, there are only two common cases where we need to calculate
     the multiplicative inverse, when the modulus is a prime, and when the modulus
     is a power of 2\. This section will describe a simpler, more direct method.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，在密码学中，只有两种常见情况需要计算乘法逆元，当模数是质数时，以及当模数是2的幂时。本节将描述一种更简单、更直接的方法。
 - en: 15.6.1 Reducing a congruence
+  id: totrans-96
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.6.1 简化同余方程
 - en: The basic method for solving a congruence ax≡b (mod m) is to repeatedly reduce
     the coefficient of x. The simplest method is *ResM*. It multiplies the congruence
     by an integer n that is just large enough to make the coefficient of x at least
     as large as the modulus. That is a(n-1) < m ≤ an. You can determine the value
     of n just by dividing m/a and rounding up, so 2.0000 stays as 2, but 2.0001 would
     become 3\. When the coefficient is reduced modulo m, the result is a smaller coefficient.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 解决同余式ax≡b (mod m)的基本方法是反复减少x的系数。最简单的方法是*ResM*。它将同余式乘以一个整数n，使得x的系数至少与模数一样大。即a(n-1)
+    < m ≤ an。你可以通过将m/a四舍五入确定n的值，所以2.0000保持为2，但2.0001会变成3。当系数对m取模时，结果是一个较小的系数。
 - en: 'Let’s begin with a simple example of ResM just to get the basic idea, and to
     make it easier to follow the discussion later, when things start getting complicated.
     Take the congruence 38x≡55 (mod 101). We know 101/38 = 2.658, so we multiply the
     congruence by 3 and then reduce it modulo 101, like this:'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们从一个简单的ResM示例开始，只是为了获得基本概念，并且在后面讨论变得复杂时更容易跟上。取同余式38x≡55 (mod 101)。我们知道101/38
+    = 2.658，所以我们将同余式乘以3，然后对101取模，就像这样：
 - en: '![15-unnumb-8](../Images/15-unnumb-8.png)'
+  id: totrans-99
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-8](../Images/15-unnumb-8.png)'
 - en: 'Notice that the coefficient of x was reduced from 38 to 13\. This can be reduced
     again. We have 101/13 = 7.769, so we multiply the congruence by 8, like this:'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，x的系数从38减少到13。这可以再次减少。我们有101/13 = 7.769，所以我们将同余式乘以8，就像这样：
 - en: '![15-unnumb-9](../Images/15-unnumb-9.png)'
+  id: totrans-101
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-9](../Images/15-unnumb-9.png)'
 - en: 'We’re almost there. 101/3 = 33.667, so multiply that last congruence by 34,
     and the coefficient of x is reduced to 1:'
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们快到了。101/3 = 33.667，所以将最后的同余式乘以34，x的系数就减少到1：
 - en: '![15-unnumb-10](../Images/15-unnumb-10.png)'
+  id: totrans-103
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-10](../Images/15-unnumb-10.png)'
 - en: We can check this result by plugging x = 36 back into the original congruence,
     38x≡55 (mod 101). Replacing x by 36 gives 38×36≡55 (mod 101), which is 1368≡55
     (mod 101), which is true. The correct answer is x≡36 (mod 101).
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以通过将x = 36代入原同余式38x≡55 (mod 101)来检查这个结果。将x替换为36得到38×36≡55 (mod 101)，即1368≡55
+    (mod 101)，这是正确的。正确答案是x≡36 (mod 101)。
 - en: 15.6.2 Half-and-Half Rule
+  id: totrans-105
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.6.2 一半一半法则
 - en: Let’s look at a small improvement. We can call it the *Half-and-Half Rule*.
     About half the time, the fractional part of m/a is less than 1/2, and half the
     time it is more than 1/2\. Let q = m/a. Then half the time qa is closer to m,
     and half the time (q+1)a is closer to m.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看一个小的改进。我们可以称之为*一半一半法则*。大约一半时间，m/a的小数部分小于1/2，另一半时间大于1/2。设q = m/a。那么一半时间qa更接近m，另一半时间(q+1)a更接近m。
 - en: A numeric example may help to make this clearer. Let m be 101, and let a be
     40\. Then q = 101/40 = 2.525\. The fraction .525 is more than 1/2\. If you take
     40×2 the result is 80, which is 21 less than 101\. If you take 40×3 the result
     is 120, which is 19 more than 101\. So 40×3 is closer to 101 than 40×2\. Thus
     n = 3 is the best multiplier.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个数值示例可能有助于更清楚地理解这一点。让m为101，让a为40。那么q = 101/40 = 2.525。分数.525大于1/2。如果你取40×2，结果是80，比101少21。如果你取40×3，结果是120，比101多19。所以40×3比40×2更接近101。因此n
+    = 3是最佳乘数。
 - en: Suppose, instead, a is 41\. Then m/a = 101/41 = 2.463\. This time the fraction
     .463 is less than 1/2\. If you take 41×2 the result is 82, which is 19 less than
     101\. If you take 41×3 the result is 123, which is 22 more than 101\. So 41×2
     is closer to 101 than 41×3\. Thus n = 2 is the best multiplier.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设，相反，a是41。那么m/a = 101/41 = 2.463。这次分数.463小于1/2。如果你取41×2，结果是82，比101少19。如果你取41×3，结果是123，比101多22。所以41×2比41×3更接近101。因此n
+    = 2是最佳乘数。
 - en: To recap, when the fractional part of q = m/a is less than 1/2, na is closer
     to m if we round q down, but when the fractional part of m/a is more than 1/2,
     na is closer to m if we round q up. Using the floor and ceil notation (section
@@ -678,49 +932,77 @@
     than m, so you reduce the congruence by subtracting multiples of m, as we did
     at the beginning of this section. When n = ⌊q⌋, na is smaller than m, so you reduce
     the congruence by subtracting it from multiples of m.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 总结一下，当q = m/a的小数部分小于1/2时，如果我们向下取整q，na更接近m，但当m/a的小数部分大于1/2时，如果我们向上取整q，na更接近m。使用floor和ceil符号（第13.3节），如果frac(q)
+    < 1/2，选择n = ⌊q⌋，但如果frac(q) > 1/2，选择n = ⌈q⌉。听起来很容易，但有一个复杂之处。当n = ⌈q⌉时，na大于m，所以你通过减去m的倍数来减少同余式，就像我们在本节开头所做的那样。当n
+    = ⌊q⌋时，na小于m，所以你通过从m的倍数中减去它来减少同余式。
 - en: Start with
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 从这里开始
 - en: '![15-unnumb-33](../Images/15-unnumb-33.png)'
+  id: totrans-111
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-33](../Images/15-unnumb-33.png)'
 - en: Since 101/41 = 2.463, multiply the congruence by 2, giving
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于101/41 = 2.463，将同余式乘以2，得到
 - en: '![15-unnumb-34](../Images/15-unnumb-34.png)'
+  id: totrans-113
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-34](../Images/15-unnumb-34.png)'
 - en: Subtract this from multiples of 101, namely
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 从101的倍数中减去这个数，即
 - en: '![15-unnumb-35](../Images/15-unnumb-35.png)'
+  id: totrans-115
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-35](../Images/15-unnumb-35.png)'
 - en: Since 101-82 = 19 and 202-180 = 22, you get
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于101-82 = 19并且202-180 = 22，因此得到
 - en: '![15-unnumb-36](../Images/15-unnumb-36.png)'
+  id: totrans-117
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-36](../Images/15-unnumb-36.png)'
 - en: To illustrate how much of an improvement this makes, let’s solve a congruence
     with and without the Half-and-Half Rule, side by side.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了说明这种改进有多大，让我们分别使用半分法和非半分法解一个同余式。
 - en: '![15-unnumb-11](../Images/15-unnumb-11.png)'
+  id: totrans-119
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-11](../Images/15-unnumb-11.png)'
 - en: Without the Half-and-Half Rule the reduction takes 8 steps. With the Half-and-Half
     Rule the reduction takes 4 steps. The ratio varies for different coefficients
     and moduli, but 8:4 is reasonably typical. ResM using the Half-and-Half Rule can
     be called *ResMH*.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果不使用半分法，则减少需要8步。使用半分法减少只需4步。对于不同的系数和模数，比例会有所不同，但8:4是相当典型的。使用半分法的ResM可以称为*ResMH*。
 - en: 15.6.3 Laddering
+  id: totrans-121
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.6.3 阶梯法
 - en: When the integers are very large, this is still a bit slow, because we are multiplying
     and dividing large numbers. The *laddering technique* can be used to avoid this.
     It uses two congruences for each step. Instead of multiplying the coefficient
@@ -729,32 +1011,51 @@
     to make it close in value to the preceding coefficient. This requires an extra
     congruence to get the process started. For this purpose we use the congruence
     mx≡m (mod m), which is equivalent to 0x≡0 (mod m).
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 当整数非常大时，这仍然有点慢，因为我们要乘以和除以大数。可以使用*阶梯技术*来避免这种情况。它对每个步骤使用两个同余式。阶梯技术不是将x的系数乘以越来越大的数字使其接近模数的值，而是在每个同余式中将系数乘以一个小数使其接近前一个系数的值。这需要一个额外的同余式来启动该过程。为此，我们使用同余式mx≡m(mod
+    m)，它等价于0x≡0(mod m)。
 - en: 'Let’s look at an example using larger numbers:'
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看一个使用更大数字的例子：
 - en: '![15-unnumb-12](../Images/15-unnumb-12.png)'
+  id: totrans-124
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-12](../Images/15-unnumb-12.png)'
 - en: Since 28338689/6114257 is about 4.635, multiply by 5 and subtract to get
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于28338689/6114257约为4.635，乘以5并减去得到
 - en: '![15-unnumb-13](../Images/15-unnumb-13.png)'
+  id: totrans-126
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-13](../Images/15-unnumb-13.png)'
 - en: Here 6114257/2232596 is about 2.739, so multiply by 3 and subtract to get
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这里，6114257/2232596约为2.739，所以乘以3并减去得到
 - en: '![15-unnumb-14](../Images/15-unnumb-14.png)'
+  id: totrans-128
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-14](../Images/15-unnumb-14.png)'
 - en: Continue this way to get, successively,
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 继续这样做，依次得到
 - en: '![15-unnumb-15](../Images/15-unnumb-15.png)'
+  id: totrans-130
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-15](../Images/15-unnumb-15.png)'
 - en: Each of these examples used a prime modulus. The situation gets more complicated
     when the modulus is composite. I will not cover all of these complexities here.
     The case that is of most importance for cryptography is when the modulus is a
@@ -763,12 +1064,16 @@
     integer, you always round toward the odd integer. For example, 3.14 would be rounded
     to 3, and 3.99 would also be rounded to 3\. ResMH using laddering can be called
     *ResMHL*.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个例子都使用了一个素数模数。当模数是复合数时，情况变得更加复杂。我不会在这里覆盖所有这些复杂性。对于密码学最重要的情况是模数为2的幂，例如2^(32)或2^(128)。在这种情况下，您在每个阶段选择的乘数必须是奇数。因此，不要将乘数四舍五入到最接近的整数，而是始终向奇整数四舍五入。例如，3.14将四舍五入为3，3.99也将四舍五入为3。使用阶梯技术的ResMH可以称为*ResMHL*。
 - en: 15.6.4 Continued fractions
+  id: totrans-132
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.6.4 连分数
 - en: Once you have two or more linear congruences, you can reduce the coefficient
     of x far more quickly by using a technique called *continued fractions*. A continued
     fraction is a way of closely approximating a decimal number by a fraction. Consider
@@ -776,66 +1081,100 @@
     R is about 1/7.3643\. This can also be written as 1/7+.3643\. Notice that the
     plus sign + is in the denominator of the fraction. This indicates that the addition
     is done in the denominator, as opposed to adding the two fractions 1/7+.3643.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦有两个或更多的线性同余式，您可以使用一种称为*连分数*的技术更快地减少x的系数。连分数是一种通过分数紧密逼近十进制数的方法。考虑十进制数R = .13579。R在1/7和1/8之间。更准确地说，R约为1/7.3643。这也可以写成1/7+.3643。注意加号+在分数的分母中。这表示加法在分母中完成，而不是将两个分数1/7+.3643相加。
 - en: 'The fraction .3643 can be approximated as 1/2.745, or 1/2+.745, so R is now
     1/7+1/2+.745\. Here .745 is very close to 3/4, so the approximation can be 1/7+1/2+3/4\.
     To get that back to an ordinary fraction, just work backward:'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 分数.3643可以近似为1/2.745，或者1/2+.745，所以R现在是1/7+1/2+.745。这里.745非常接近3/4，因此近似可以是1/7+1/2+3/4。要将其转换回普通分数，只需向后工作：
 - en: '![15-unnumb-15-equation-15-17](../Images/15-unnumb-15-equation-15-17.png)'
+  id: totrans-135
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-15-equation-15-17](../Images/15-unnumb-15-equation-15-17.png)'
 - en: The fraction 11/81 is .13580, which differs from .13579 by only .00001\. As
     you can see, this method gives excellent approximations.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 分数11/81是.13580，与.13579仅相差.00001。正如你所见，这种方法提供了出色的近似值。
 - en: Let’s try that example from section 15.4.3 again,
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们再试一次来自15.4.3节的例子，
 - en: 6114257x ≡ 90926 (mod 28338689).
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 6114257x ≡ 90926 (mod 28338689).
 - en: For the second congruence, we use the 0 = 0 trick,
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于第二个同余式，我们使用了0 = 0的技巧，
 - en: 28338689x ≡ 28338689 (mod 28338689).
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 28338689x ≡ 28338689 (mod 28338689).
 - en: Here 6114257/28338689 is
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里6114257/28338689是
 - en: '![15-unnumb-15-equation-15-18](../Images/15-unnumb-15-equation-15-18.png)'
+  id: totrans-142
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-15-equation-15-18](../Images/15-unnumb-15-equation-15-18.png)'
 - en: A good rule of thumb to get a close approximation is to stop just before a large
     denominator, in this case 24\. Truncating the continued fraction before 24 gives
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 获得接近的近似值的一个好法则是在大分母之前停止，本例中为24。在24之前截断连分数得到
 - en: '![15-unnumb-15-equation-15-19](../Images/15-unnumb-15-equation-15-19.png)'
+  id: totrans-144
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-15-equation-15-19](../Images/15-unnumb-15-equation-15-19.png)'
 - en: which works out to 241/1117.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 这计算出为241/1117。
 - en: Multiplying the 6114257 congruence by 1117 and the 28338689 congruence by 241
     and subtracting gives
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 将6114257同余式乘以1117和28338689同余式乘以241然后相减得到
 - en: '![15-unnumb-16](../Images/15-unnumb-16.png)'
+  id: totrans-147
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-16](../Images/15-unnumb-16.png)'
 - en: This reduces the coefficient of x from 6114257 to 1020, a factor of 5994\. So
     the continued fraction method uses far fewer steps than other methods. However,
     it is tricky to use because the coefficient from one step may be much larger than
     the next coefficient, for example 6829625069 vs 1020\. You can balance the coefficients
     by alternating between continued fraction steps and half-and-half steps.******
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 这将x的系数从6114257降低到1020，降低了5994倍。因此，继续分数法比其他方法使用的步骤要少得多。然而，使用起来很棘手，因为一步的系数可能比下一步的系数大得多，例如6829625069与1020。你可以通过交替使用连分数步骤和一半步骤来平衡系数。******
 - en: 15.7 Large integer ciphers
+  id: totrans-149
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.7 大整数密码
 - en: There are many ciphers that can be constructed using large integer multiplication.
     Section 15.3 describes the Mult128 cipher, where the message is taken in 128-bit
     blocks. Each block is treated as a 128-bit integer and multiplied by a secret
@@ -846,24 +1185,33 @@
     substitution. Performing a simple substitution before and after the multiplication
     does not fix this weakness. Similarly, the low-order 2 bytes undergo bigram substitution,
     and the low-order 3 bytes undergo trigram substitution. Mult128 is rated Three.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以使用大整数乘法构建许多密码。第15.3节描述了Mult128密码，其中消息以128位块进行。每个块被视为128位整数，并乘以秘密的128位整数M模2^(128)。为了得到良好的混合，乘数的每个字节都应该是非零的。这仍然很脆弱，因为每个密文块的低阶n位仅取决于明文和密钥M的低阶n位。这使得低阶字节的加密变为简单的替换。在乘法之前和之后执行简单的替换不能修复这个弱点。类似地，低阶2字节经历双字母替换，低阶3字节经历三字母替换。Mult128评级为Three。
 - en: A superfast way of fixing the low-order byte problem is to combine the high-order
     byte with the low-order byte, for example by using the **xors** or **adds** combining
     function. That would boost the rating to Five. A better solution would be to combine
     the high-order 8 bytes with the low-order 8 bytes using **xors** or **adds**.
     That boosts the rating to Seven. Here’s an example.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 修复低阶字节问题的超快速方法是将高阶字节与低阶字节组合起来，例如使用**xors**或**adds**组合函数。这将提高评级至Five。一个更好的解决方案是使用**xors**或**adds**将高阶8字节与低阶8字节组合起来。这将评级提高至Seven。这里是一个例子。
 - en: '![15-unnumb-17](../Images/15-unnumb-17.png)'
+  id: totrans-152
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-17](../Images/15-unnumb-17.png)'
 - en: One way to strengthen the cipher would be to permute the 16 bytes, however,
     with sufficient ciphertext Emily could detect which byte position has the least
     variability and therefore must be the permuted low-order byte. *Permuted Mult128*
     is rated Four.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 加强密码的一种方法是对 16 个字节进行置换，然而，有了足够的密文，Emily 可以检测出哪个字节位置的变异最小，因此必须是置换后的低位字节。*Permuted
+    Mult128* 被评为四级。
 - en: A much stronger approach would be to multiply, permute, and multiply again.
     The permutation needs to move the weak low-order bytes into the high-order half
     of the block. Suitable permutations are (1) reversing the order of the bytes,
@@ -871,52 +1219,78 @@
     the low-order and high-order bytes in reverse order. If the bytes are numbered
     from high to low order using the hex digits 0 through F, then these 3 permutations
     can be represented by
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 更强大的方法是进行乘法、置换，然后再进行乘法。置换需要将弱的低位字节移到块的高位半部分。适合的置换有 (1) 颠倒字节的顺序，(2) 交换块的低位和高位半部分，或
+    (3) 以相反顺序交错低位和高位字节。如果使用十六进制数字 0 到 F 对字节进行编号，那么这 3 种置换可以表示为
 - en: '![15-unnumb-18](../Images/15-unnumb-18.png)'
+  id: totrans-155
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-18](../Images/15-unnumb-18.png)'
 - en: 'If your programming language lets you manipulate the block as both 32-bit words
     and single bytes, it may be faster to reverse the order of the 4 words, resulting
     in this permutation:'
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你的编程语言允许你将该块视为 32 位字和单个字节进行操作，那么将 4 个字的顺序颠倒可能会更快，从而得到这种排列：
 - en: '![15-unnumb-19](../Images/15-unnumb-19.png)'
+  id: totrans-157
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-19](../Images/15-unnumb-19.png)'
 - en: This cipher, designated *MPM128*, is rated Seven.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个密码，称为 *MPM128*，被评为七级。
 - en: When you add substitution steps to this process, the strength shoots up. Let
     S[1], S[2], S[3] and S[4] be 4 independent well-mixed keyed substitutions, let
     P be the fixed permutation 5BF4AE39D28C1706, and let M[1], M[2] and M[3] be multiplication
     by 3 secret 128-bit integers. Then the cipher S[1]M[1]PS[2]M[2]S[3]PM[3]S[4],
     called *Tiger*, is rated Ten.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你在这个过程中添加替换步骤时，安全性会提升。让 S[1]、S[2]、S[3] 和 S[4] 成为 4 个独立的混合很好的键入替换，让 P 是固定的置换
+    5BF4AE39D28C1706，让 M[1]、M[2] 和 M[3] 是乘以 3 个秘密的 128 位整数。然后密码 S[1]M[1]PS[2]M[2]S[3]PM[3]S[4]，称为
+    *Tiger*，被评为十级。
 - en: 15.8 Small integer multiplication
+  id: totrans-160
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.8 小整数乘法
 - en: 'A miniature version of Mult128 can be done using ordinary unsigned 32-bit multiplication.
     The 128-bit block is treated as four 32-bit integers. Each of these integers is
     multiplied by a secret 32-bit integer modulo 2^(32). The 4 multipliers must be
     odd to allow for deciphering later. This produces a 32-bit cipher. To get to a
     128-bit cipher, the 4 separate 4-byte products can be treated as a 16-byte block,
     and mixed using this fixed 16-byte key transposition (section 7.6):'
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用普通的无符号 32 位乘法可以完成 Mult128 的迷你版本。128 位块被视为四个 32 位整数。这些整数中的每一个都与一个秘密的 32 位整数进行乘法，取模
+    2^(32)。这 4 个乘数必须是奇数，以便稍后进行解密。这产生了一个 32 位密码。要得到一个 128 位密码，这 4 个单独的 4 字节乘积可以被视为一个
+    16 字节块，并使用这个固定的 16 字节密钥转位混合（见第 7.6 节）：
 - en: '![15-unnumb-20](../Images/15-unnumb-20.png)'
+  id: totrans-162
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-20](../Images/15-unnumb-20.png)'
 - en: This transposition is followed by a second multiplication step, again treating
     the 16-byte block as four 32-bit integers. You may use the same multipliers or
     new multipliers. This is followed by a second transposition, and another round
     of multiplication, so that there are 3 rounds of multiplication and two rounds
     of transposition. This cipher is called Mult32, and is rated Seven. It is much
     faster than any of the Mult128 cipher variants.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个转位后跟着第二个乘法步骤，再次将 16 字节块视为四个 32 位整数。你可以使用相同的乘数或新的乘数。然后是第二个转位，和另一轮乘法，所以有 3 轮乘法和两轮转位。这个密码被称为
+    Mult32，并被评为七级。它比任何 Mult128 密码变体都要快得多。
 - en: Let’s view the 16 bytes of a 128-bit block as a 4×4 matrix of bytes. The 4 bytes
     in any row of this matrix can be treated as a 32-bit integer. Normally the 4 bytes
     of the integer are taken from left to right, with the leftmost byte being the
@@ -926,8 +1300,10 @@
     way, the result is hexadecimal 0A090704\. If we multiply this in the reverse order
     04030201 by the hexadecimal number 01010101 modulo 2^(32) the result is hexadecimal
     0A060301.
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们将128位块的16个字节视为一个4×4字节矩阵。该矩阵的任何一行的4个字节都可以视为32位整数。通常情况下，整数的4个字节从左到右取出，最左边的字节为高位字节。但是，它们也可以按相反的顺序取出，最左边的字节为低位字节。考虑十六进制数01020304。如果我们按照正常方式将其乘以十六进制数01010101对2^(32)取模，结果是十六进制0A090704。如果我们按照相反的顺序将其乘以十六进制数01010101对2^(32)取模，结果是十六进制0A060301。
 - en: In a similar way, we can treat the 4 bytes in any column as a 32-bit integer,
     both in the top-to-bottom order and in the bottom-to-top order. Call the two horizontal
     directions East and West, and the two vertical directions North and South. If
@@ -936,15 +1312,20 @@
     32-bit multipliers. The total key size is 16×31 = 496 bits, not 16×32 = 512, because
     the multipliers must be odd. This cipher, which could be called *Compass*, is
     rated Eight.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 类似地，我们可以将任何列中的4个字节视为32位整数，既按照自上而下的顺序，也按照自下而上的顺序。将两个水平方向称为东和西，两个垂直方向称为北和南。如果我们按照东、北、西、南的顺序将行和列乘以奇数32位整数对2^(32)取模，这将提供彻底的混合。这需要16个单独的32位乘法器。总密钥大小为16×31
+    = 496位，而不是16×32 = 512位，因为乘法器必须是奇数。这种密码，可以称为*Compass*，评为Eight。
 - en: To push the rating up to Ten, add one or more rounds of substitution, for example,
     East, North, Substitute, West, South. Better yet, add multiple substitutions,
     like East, Substitute, North, West, Substitute, South. Call this *CompassS*. Even
     if you use fixed substitutions, if they are highly non-linear, CompassS is rated
     Ten.
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 要将评级提升到Ten，可以添加一个或多个替换轮，例如，东、北、替换、西、南。更好的方法是，添加多个替换，比如东、替换、北、西、替换、南。将其称为*CompassS*。即使使用固定替换，如果它们高度非线性，CompassS也评为Ten。
 - en: A different way to use small integer multiplication is to do *Cyclic Multiplication*.
     Let the bytes in each 32-bit row of the block be numbered 1, 2, 3, 4 from left
     to right, that is, from the high-order byte to the low-order byte. Multiply this
@@ -954,13 +1335,17 @@
     are taken in order 1234, then 2341, 3412, and finally 4123\. This should be done
     for each of the 4 rows of the 4×4 matrix of bytes, for a total of 16 multiplications
     and 12 cyclic shifts.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用小整数乘法的另一种方法是进行*循环乘法*。让块中每个32位行中的字节从左到右依次编号为1、2、3、4，即从高位字节到低位字节。将其乘以奇数模2^(32)。将字节1移动到低位，使顺序变为2、3、4、1。再次乘以奇数模2^(32)。重复两次，使每个字节都占据每个位置一次。即，字节按顺序1234，然后2341，3412，最后4123。对4×4字节矩阵的4行中的每一行都要执行此操作，共进行16次乘法和12次循环移位。
 - en: Then the same operations are done on the columns. Altogether there are 32 multiplications
     and 24 cyclic shifts. This cyclic multiplication cipher is rated Eight. It can
     have up to 32 different 32-bit multipliers for keys.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 接着对列执行相同的操作。总共有32次乘法和24次循环移位。这种循环乘法密码评为Eight。可以有多达32个不同的32位乘法器作为密钥。
 - en: The methods of this section can be combined with the methods of section 15.4
     in a variety of ways. Here is just one example, which I will call *Mat36*. Take
     the message in blocks of 36 characters that are treated as nine 32-bit integers.
@@ -970,12 +1355,16 @@
     enciphered. Instead, cycle the entire 36-byte block left by 16 bit positions,
     and then multiply the block on the right by a second secret 3×3 invertible matrix
     of integers. Mat36 is rated Eight.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 这一节的方法可以与第15.4节的方法以多种方式结合使用。这里只是一个例子，我将其称为*Mat36*。将消息按36个字符一组，这些字符被视为九个32位整数。这些整数形成了模2^(32)的3×3整数矩阵。这个矩阵将与一个秘密的3×3可逆整数矩阵相乘。如果你简单地将另一个3×3矩阵乘在右边，那么这9个整数的低位字节将被弱加密。相反，将整个36字节块左移16位，然后将块右边乘以第二个秘密的3×3可逆整数矩阵。Mat36评级为Eight。
 - en: 15.9 Multiplication modulo P
+  id: totrans-170
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.9 模P乘法
 - en: When the multiplication is done modulo 2^n, the low-order bytes are weakly enciphered,
     and we need to jump through hoops to fix that weakness. This problem does not
     occur when the multiplication is done modulo a prime, P. With a large multiplier,
@@ -984,52 +1373,77 @@
     1 < M < P. This lets you safely multiply the values from 0 through P-1 by M modulo
     P, so Riva can decipher these values by multiplying by M', the multiplicative
     inverse of M.
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 当乘法取模2^n时，低位字节会被弱加密，我们需要费点周折来解决这个弱点。当乘法取模一个素数P时，这个问题不会发生。有了一个大的乘数，产品的每一位都取决于明文的每一位。有一个不同的问题。假设你选择了一个素数P
+    < 2^n，以及一个乘数M，其中1 < M < P。这样你就可以安全地将从0到P-1的值乘以M模P，所以Riva可以通过乘以M'，M的乘法逆元，来解密这些值。
 - en: 'However, the plaintext value 0 would be left unchanged, and the plaintext values
     from P through 2^n-1 cannot be multiplied safely because the result would be ambiguous.
     For example, 3 and P+3 would give the same result when multiplied by M modulo
     P, since 3M≡PM+3M(mod P), so Riva could not tell whether the message was 3 or
     P+3\. This means that values from P through 2^n-1 would have to be left unchanged.
     To do this, define the function modp as follows:'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，明文值0将保持不变，而P到2^n-1的明文值不能安全地相乘，因为结果会产生歧义。例如，当通过M模P相乘时，3和P+3将产生相同的结果，因为3M≡PM+3M(mod
+    P)，所以Riva无法确定消息是3还是P+3。这意味着从P到2^n-1的值必须保持不变。为了做到这一点，定义函数modp如下：
 - en: '![15-unnumb-21](../Images/15-unnumb-21.png)'
+  id: totrans-173
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-21](../Images/15-unnumb-21.png)'
 - en: One solution for this problem is for Sandra to exclusive-OR a secret value to
     the plaintext. This suggests a family of *Modulo P ciphers*. Let’s settle on the
     values n = 64, meaning a block size of 8 bytes, the prime modulus P = 2^(64)-59
     = 18446744073709551557 and the multiplier M = 39958679596607489, which is also
     prime.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个问题的一个解决方案是让Sandra对明文进行异或。这建议了一族*Modulo P密码*。让我们确定n = 64，意味着块大小为8字节，素数模数P =
+    2^(64)-59 = 18446744073709551557，乘数M = 39958679596607489，也是素数。
 - en: 'Sandra enciphers a 64-bit plaintext block B by choosing a secret 64-bit constant
     C[1] as the key, and computing x = modp(C[1]⊕B)+C[1]. This is the first cipher
     in the family. Call it *PMod1*. It is rated Five. The second cipher in the family,
     *PMod2*, is two iterations of PMod1, using a second 64-bit constant, C[2]:'
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: Sandra通过选择一个秘密的64位常数C[1]作为密钥，计算x = modp(C[1]⊕B)+C[1]来加密64位明文块B。这是这个系列中的第一个密码。称为*PMod1*。评级为Five。这个系列中的第二个密码*PMod2*是PMod1的两次迭代，使用第二个64位常数C[2]：
 - en: '![15-unnumb-22](../Images/15-unnumb-22.png)'
+  id: totrans-176
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-22](../Images/15-unnumb-22.png)'
 - en: 'PMod2 is rated Seven. The third cipher in the family, *PMod3*, has 3 iterations,
     and is rated Nine:'
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: PMod2评级为Seven。这个系列中的第三个密码*PMod3*有3次迭代，评级为Nine：
 - en: '![15-unnumb-23](../Images/15-unnumb-23.png)'
+  id: totrans-178
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-23](../Images/15-unnumb-23.png)'
 - en: 'The fourth member, *PMod4*, is rated Ten. It has a total key size of 256 bits,
     4 times the block size:'
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 第四个成员*PMod4*评级为Ten。它的总密钥大小为256位，是块大小的4倍：
 - en: '![15-unnumb-24](../Images/15-unnumb-24.png)'
+  id: totrans-180
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-24](../Images/15-unnumb-24.png)'
 - en: Each of the additions is done modulo 2^n, not modulo P.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个加法都是模2^n进行的，而不是模P。
 - en: The four PModX ciphers are all extremely fast because 64-bit addition, multiplication
     and modulo division are all directly supported by most programming languages.
     In some computers they are a single machine instruction. This lets the PModX ciphers
@@ -1037,6 +1451,7 @@
     as DES does. This class of ciphers is ideally suited for software encryption.
     PMod2 is more secure than DES because of the much larger key size, and PMod4 is
     more secure than 3DES.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
 - en: There is a second approach to multiplication modulo P that eliminates the unchanged
@@ -1048,20 +1463,25 @@
     part is that you have to shift each range so that you are only multiplying the
     numbers in the range 1 to P-1 or 1 to Q-1\. You do this by redefining the modp
     function.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
 - en: '![15-unnumb-25](../Images/15-unnumb-25.png)'
+  id: totrans-184
   prefs: []
   type: TYPE_IMG
 - en: With this redefined modp function, the PMod1 through PMod4 ciphers work the
     same as before, and have the same ratings. This diagram shows how the range 0
     to 2^(64)-1 is divided.
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
 - en: '![15-unnumb-26](../Images/15-unnumb-26.png)'
+  id: totrans-186
   prefs: []
   type: TYPE_IMG
 - en: 15.10 Change of base
+  id: totrans-187
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -1069,6 +1489,7 @@
     Changing number bases is a slow operation when the number is very large, so the
     best strategy is to divide the message into blocks and convert each block separately.
     Changing the base blurs the separations between message bytes.
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
 - en: There are two methods for converting numbers from one base to another. You can
@@ -1077,46 +1498,59 @@
     both methods are illustrated here. We will convert the number 1A87 from base 11
     to base 7 using the low-end technique, and then back to base 11 using the high-end
     method.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
 - en: 'With the low-end technique you repeatedly divide the number by the new base.
     Each remainder becomes the next digit of the converted number. Here are the steps
     to convert 1A87:'
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
 - en: 1A87/7 is 312 with remainder **4**.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
 - en: 312/7 is 49 with remainder **5**.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
 - en: 49/7 is 7 with remainder **4**.
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
 - en: 7/7 is **1** with remainder **0**.
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
 - en: So 1A87 in base 11 becomes 10454 in base 7.
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
 - en: 'With the high-end technique you repeatedly multiply the high-end digits by
     the old base and add the next digit. Here are the steps to convert 10454:'
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
 - en: '**1**×7+**0** is 7.'
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
 - en: 7×7+**4** is 49.
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
 - en: 49×7+**5** is 312.
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
 - en: 312×7+**4** is 1A87.
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
 - en: If those numbers don’t look quite right to you, remember that the numbers 7,
     49, 312 and 1A87 are all in base 11.
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
 - en: There are lots of neat ciphers you can make, based on changing bases. For example,
@@ -1127,12 +1561,14 @@
     number to hold the result. You can use any number base from 256 through 362\.
     Remember that if any result has a leading digit 0, that digit is required so that
     Riva can decipher the ciphertext.
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
 - en: If each successive base is a little larger than the previous, the same number
     of digits are required at each stage. The number of digits will increase only
     at the last step when the number is converted back to base 256\. There is no reason
     that the bases need to be prime.
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
 - en: Here is a concept for a block cipher based on base changes. Begin with a secret
@@ -1143,6 +1579,7 @@
     256 < B[1] < B[2] < B[3] < 363\. You will also need 3 keyed transpositions T[1],
     T[2] and T[3] on 16 elements. The elements are integers that can be as large as
     B[3]-1, so they will need more than 1 byte each.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
 - en: 'Block cipher *3Base* consists of the following steps: (1) Substitute S. (2)
@@ -1151,9 +1588,11 @@
     S. (10) Transpose T[3]. (11) Convert to base 256\. (12) Substitute S. The cipher
     block consists of 16 elements up through step 11\. Step 12 expands the block to
     17 bytes. Cipher 3Base is rated Ten.'
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
 - en: '*15.11 Rings'
+  id: totrans-206
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -1166,52 +1605,63 @@
     are elements of a ring, numbers of the form a +b√13, numbers of the form a +b∛7+c∛49,
     and numbers of the form a +b√2+c√3+d√6, where a, b, c and d can be integers, rationals,
     or integers modulo some fixed integer.'
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
 - en: Before we discuss how to use rings in cryptography, let’s lay out the formal
     rules for a ring. Ring addition is denoted by the + sign, a+b, and ring multiplication
     is denoted by juxtaposition, ab.
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
 - en: For all ring elements a and b, a +b and ab are elements of the ring. (Closure)
+  id: totrans-209
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: For all ring elements a, b and c, a +(b+c) = (a +b)+c. (Associative rule for
     addition)
+  id: totrans-210
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: For all ring elements a and b, a +b = b +a. (Commutative rule for addition)
+  id: totrans-211
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: There is a ring element 0 such that 0+a = a +0 = a for all ring elements a.
     (Additive identity)
+  id: totrans-212
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: For every ring element a there is an element -a such that a +(-a) = (-a)+a =
     0\. (Additive inverse)
+  id: totrans-213
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: For all ring elements a, b and c, a(bc) = (ab)c. (Associative rule for multiplication)
+  id: totrans-214
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: For all ring elements a, b and c, a(b +c) = ab +ac, and (a +b)c = ac +bc. (Distributive
     rule)
+  id: totrans-215
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: There is a ring element 1 such that 1a = a1 = a for every element a. (Multiplicative
     identity)
+  id: totrans-216
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The parentheses are usually dropped when adding an additive inverse, so (-a)+b
     becomes -a +b, and a +(-b) becomes a-b.
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
 - en: Notice that ring multiplication need not be commutative. If the ring multiplication
@@ -1221,6 +1671,7 @@
     a', so that aa' = 1, then a is called *invertible*. When working with finite rings,
     it is advisable to try multiplying all possible pairs of elements to determine
     which elements are invertible, and keep a table of the inverses for quick reference.
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
 - en: A simple way to use ring arithmetic for encryption is to combine the ripple
@@ -1230,12 +1681,14 @@
     a and b form a byte that represents a character. For example, the letter X is
     represented in ASCII code as hexadecimal 58, corresponding to the ***R13*** ring
     element 5+8√13.
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
 - en: Two ***R13*** ring elements *a* + *b*√13 and *c* + *d*√13 are added as (*a*
     + *c*) + (*b *+ *d*)√13, and multiplied together as (*ac* + 13*bd*) + (*ad* +
     *bc*)√13, with all addition done modulo 16\. For example, if *x* = 2+3√13 and
     *y* = 4+5√13, then *x*+*y* is 6+8√13 and *xy* is 11+6√13.
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
 - en: For the combined ripple + lagged linear addition cipher, which could be called
@@ -1244,15 +1697,18 @@
     and *j* are small integers such as 2 and 5\. The plaintext could be divided into
     blocks of, say, 16 bytes, but for short messages the cipher could be applied to
     the entire message. Let’s suppose the latter. The encipherment would then be
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
 - en: x[n] = ax[n] + bx[n-2] + cx[n-5] for n = 1,2,3, ...,L.
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
 - en: Here a is an invertible element of ***R13***, b and c are any elements of ***R13***,
     and L is the length of the message. The arithmetic is carried out in the ring.
     You may recognize this as a variant of the **madd** combining function from section
     11.8\. The usual wraparound would be used for enciphering the first few bytes.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
 - en: For a single pass using known fixed lags, lag ripple is rated Two, since there
@@ -1260,15 +1716,18 @@
     before and after the lagged ripple phase, the rating increases to Five. Using
     3 passes, with different coefficients and different lags for each pass, the rating
     goes to Six.
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
 - en: '*Triple Ripple* uses 3 passes with a secret keyed simple substitution before
     each ripple pass and after the last ripple pass. Each pass has different secret
     coefficients and lags. Optionally, you can start the ripple from a different position
     in the message for each pass and wrap around. Triple Ripple is rated Ten.'
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
 - en: 15.12 Matrices over a ring
+  id: totrans-226
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -1279,6 +1738,7 @@
     of any ring. If there are more characters than ring elements, you can use pairs
     or triplets of ring elements, much as pairs of integers 1 to 5 are used in the
     Polybius square (section 9.1) to represent a 25-letter alphabet.
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
 - en: Suppose that you used a matrix over ***R13***, the ring whose elements have
@@ -1290,15 +1750,18 @@
     Therefore such a cipher would still be vulnerable to a known plaintext attack.
     The attack would require at least 256 bytes of plaintext. Probably 16×17 = 272
     bytes would be sufficient.
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
 - en: You, the sender, can easily defeat such an attack by using a keyed simple substitution
     before and after the matrix multiplication. Or, you could construct your own ring,
     a ring unknown to anyone except your legitimate correspondents. As long as you
     can keep your ring secret, nobody can mount any attack against your matrix cipher.
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
 - en: 15.13 Constructing a ring
+  id: totrans-230
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -1309,9 +1772,11 @@
     have two elements, 0 the additive identity, and 1 the multiplicative identity.
     The sums 0+a and a+0 are known for all a. This gives us the top row and left column
     of the addition table.
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
 - en: '![15-unnumb-27](../Images/15-unnumb-27.png)'
+  id: totrans-232
   prefs: []
   type: TYPE_IMG
 - en: Next, start on the second row. The strategy is to take the first sum whose value
@@ -1320,9 +1785,11 @@
     = 3, 3+1 = 4 and 4+1 = 0\. Using the associative rule, you can now fill in the
     upper-left section of the table. For example, you can determine 2+2 because 2+2
     = (1+1)+2 = 1+(1+2) = 1+3 = 4.
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
 - en: '![15-unnumb-28](../Images/15-unnumb-28.png)'
+  id: totrans-234
   prefs: []
   type: TYPE_IMG
 - en: Since 4+1 = 0, it follows that the additive inverse of 1 is 4 and the additive
@@ -1335,6 +1802,7 @@
     7+1 = 5\. That means 5+1+1+1 = 5\. That makes 1+1+1 = 0\. Since we already know
     1+1+1 = 3, that means 3 = 0\. Impossible. This is a dead end. Setting 4+1 = 0
     does not work.
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
 - en: What went wrong? The cycle 1+1+1+1+1 = 0 has 5 terms. The length of any such
@@ -1344,27 +1812,34 @@
     the ring is the integers modulo 8\. If you choose cycle length 2, then addition
     is the same as exclusive-OR. Since the goal was to develop a new ring, that leaves
     cycle length 4\. The addition table must be
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
 - en: '![15-unnumb-29](../Images/15-unnumb-29.png)'
+  id: totrans-237
   prefs: []
   type: TYPE_IMG
 - en: The multiplication table can now be worked out by using the distributive rule.
     For example, 2×2 = 2×(1+1) = 2+2 = 0.
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
 - en: '![15-unnumb-30](../Images/15-unnumb-30.png)'
+  id: totrans-239
   prefs: []
   type: TYPE_IMG
 - en: Let’s call this ring ***R8***. It is a commutative ring, since ab = ba for all
     ring elements a and b. Notice that 1 and 3 are the only elements in ring ***R8***
     that have multiplicative inverses, and that each is its own inverse.
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
 - en: There are two rings that deserve special mention, Gaussian integers and quaternions.
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
 - en: 15.13.1 Gaussian integers
+  id: totrans-242
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1375,18 +1850,23 @@
     used to represent the hexadecimal number ab. For example, the letter X, which
     is 58 in hexadecimal ASCII code, would be represented by the Gaussian integer
     5+8i.'
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
 - en: 'Gaussian integers are added and multiplied like this:'
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
 - en: '![15-unnumb-31](../Images/15-unnumb-31.png)'
+  id: totrans-245
   prefs: []
   type: TYPE_IMG
 - en: where the addition and multiplication are done modulo 16 for cryptographic use.
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
 - en: 15.13.2 Quaternions
+  id: totrans-247
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1396,19 +1876,23 @@
     b, c and d are ordinary numbers, and i, j and k are abstract units. The defining
     relationship for quaternions is i² = j² = k² = ijk = -1\. From this relationship,
     you can derive these rules for multiplication:'
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
 - en: '![15-unnumb-32](../Images/15-unnumb-32.png)'
+  id: totrans-249
   prefs: []
   type: TYPE_IMG
 - en: Quaternion multiplication is not commutative. Quaternions are often used as
     *the* example of a non-commutative ring.
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
 - en: Quaternions are widely used in physics for representing such things as points
     on a spherical surface, and the rotations of solid bodies. They can be adapted
     for cryptographic use by letting a, b, c and d be integers modulo 16 or modulo
     256\. That will let each quaternion represent 2 or 4 characters of a message.
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
 - en: Another way to use quaternions is to let the coefficients a, b, c and d be integers
@@ -1423,6 +1907,7 @@
     left by 16 bit positions after the first multiplication. The same set of character
     codes can be used to convert the product back to standard ASCII characters, but
     it is stronger to use a different set of codes, preferably different-sized codes.
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s call this method *Qmult*. Qmult is rated Ten. To decipher this message,
@@ -1431,9 +1916,11 @@
     Since we are working modulo 2^(32), a²+b²+c²+d² will have a multiplicative inverse
     whenever it is odd, that is, whenever either one or three of the coefficients
     are odd.
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
 - en: 15.14 Finding an invertible matrix
+  id: totrans-254
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -1448,6 +1935,7 @@
     and then trying all possible values for the last element, or, at worst, the last
     two elements. By using the last 1 or 2 elements you can reduce the matrix to the
     bottom two rows and not have to do a full reduction for each trial.
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
 - en: I have chosen not to cover determinants in this book, since I don’t know of
@@ -1455,15 +1943,18 @@
     a matrix is invertible if the value of its determinant is an invertible element
     in the ring. In particular, a matrix over the integers is invertible only if its
     determinant is +1 or -1.
+  id: totrans-256
   prefs: []
   type: TYPE_NORMAL
 - en: 'When the desired matrix is larger, it may not be feasible to *find* an invertible
     matrix. Instead, you need to *construct* an invertible matrix. You begin by constructing
     a set of matrices of the desired size in one of two specific forms: triangular
     and block diagonal. Here are 4×4 examples of the four types of triangular matrices.'
+  id: totrans-257
   prefs: []
   type: TYPE_NORMAL
 - en: '![15-unnumb-32-equation-15-32](../Images/15-unnumb-32-equation-15-32.png)'
+  id: totrans-258
   prefs: []
   type: TYPE_IMG
 - en: An upper triangular matrix has nonzero entries only on or above the main diagonal
@@ -1473,6 +1964,7 @@
     anti-diagonal (lower left to upper right). All other entries are zero. A lower
     anti-triangular matrix has nonzero entries only on or below the anti-diagonal.
     All other entries are zero.
+  id: totrans-259
   prefs: []
   type: TYPE_NORMAL
 - en: A triangular matrix is invertible if all of the entries on the diagonal are
@@ -1481,6 +1973,7 @@
     using the techniques of section 15.1.1\. For upper triangular and lower anti-triangular
     matrices, the reduction process of section 15.1.1 should be carried out from right
     to left.
+  id: totrans-260
   prefs: []
   type: TYPE_NORMAL
 - en: A general invertible matrix can be constructed from these triangular forms by
@@ -1491,19 +1984,23 @@
     four triangular types, and then form their product. If the triangular matrices
     are A, B, C and D, and their inverses are A', B', C' and D', then the inverse
     of the product ABCD is D'C'B'A'.
+  id: totrans-261
   prefs: []
   type: TYPE_NORMAL
 - en: In addition to triangular matrices, block diagonal matrices can be used to construct
     invertible matrices. Here is a 5×5 example of a block diagonal matrix. This matrix
     may be called type 2,3 because it consists of a 2×2 matrix and a 3×3 matrix arranged
     along the diagonal of the 5×5 matrix.
+  id: totrans-262
   prefs: []
   type: TYPE_NORMAL
 - en: '![15-unnumb-32-equation-15-33](../Images/15-unnumb-32-equation-15-33.png)'
+  id: totrans-263
   prefs: []
   type: TYPE_IMG
 - en: When two block diagonal matrices of the same type are multiplied, the result
     is a block diagonal matrix of the same type.
+  id: totrans-264
   prefs: []
   type: TYPE_NORMAL
 - en: The advantage of using a block diagonal matrix is that you can find the inverses
@@ -1513,10 +2010,12 @@
     matrices. You can expand your invertible block diagonal matrix to a full matrix
     by multiplying by block diagonal matrices of other types, or by some invertible
     triangular matrices.
+  id: totrans-265
   prefs: []
   type: TYPE_NORMAL
 - en: Go all out. Construct your invertible block diagonal matrix using the largest
     blocks that you can, and use 4 triangular matrices, one of each kind. Your final
     invertible matrix is the product of all five of these matrices.******
+  id: totrans-266
   prefs: []
   type: TYPE_NORMAL

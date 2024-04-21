@@ -1,126 +1,181 @@
 - en: 5 Substitution ciphers
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 5 替换密码
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章包括
 - en: Simple substitution and polyalphabetic substitution ciphers
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 简单替换和多字母替换密码
 - en: Solving polyalphabetic ciphers using the Kasiski test and the index of coincidence
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用 Kasiski 检测和重合指数解决多字母替换密码
 - en: Autokey and running key ciphers, and methods for solving them
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 自密钥和流动密钥密码以及解决它们的方法
 - en: Simulating rotor-based cipher machines
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 模拟转子密码机
 - en: 'We are now ready to explore the basic tools described in the preceding chapter
     in greater depth. Before I begin describing all the various ciphers, let me explicitly
     state the goals that these ciphers are trying to achieve. The Dutch linguist and
     polymath Auguste Kerckhoffs first expressed these principles in a pair of articles
     in *Journal des Sciences Militaires* in 1883:'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们现在已经准备好更深入地探讨上一章描述的基本工具。在我开始描述所有不同的密码之前，让我明确陈述一下这些密码试图实现的目标。荷兰语言学家和博学家奥古斯特·克尔克霍夫斯（Auguste
+    Kerckhoffs）首次在1883年的《军事科学杂志》上发表了这些原则的一对文章：
 - en: The cipher should be unbreakable in practice, even if not in theory.
+  id: totrans-7
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 即使在理论上不可破解，密码在实践中也应该是无法破解的。
 - en: This should be true even if the enemy learns the system.
+  id: totrans-8
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 即使敌人了解了系统，这也应该成立。
 - en: The key should be easy to remember (without notes) and easy to change.
+  id: totrans-9
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 密钥应该容易记忆（无需笔记）且易于更改。
 - en: It should be possible to transmit the enciphered messages by telegraph.
+  id: totrans-10
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 应该能够通过电报传输加密的消息。
 - en: The apparatus and documents should be easily carried and operated by one person.
+  id: totrans-11
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 仪器和文件应该方便一个人携带和操作。
 - en: The cipher should be easy to use; there should be no complex rules or computations.
+  id: totrans-12
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 密码应该易于使用；不应有复杂的规则或计算。
 - en: Rule 4 might be updated to read “transmit the enciphered messages digitally.”
     Otherwise these precepts remain as valid today as in 1883.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 规则 4 可能会更新为“数字方式传输加密的消息”。否则，这些原则今天仍然像1883年一样有效。
 - en: One corollary of the second principle is that the strength of the cipher should
     reside solely in the key. Kerckhoffs also believed that *only cryptographers are
     qualified to judge the security of a cipher*. Too often the decision of which
     cipher to use is made by government officials who lack cryptographic expertise,
     sometimes with disastrous consequences.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二个原则的一个推论是，密码的强度应该完全取决于密钥。克尔克霍夫斯还相信*只有密码学家有资格评判密码的安全性*。太多时候，选择使用哪种密码的决定是由缺乏密码学专业知识的政府官员做出的，有时会造成灾难性的后果。
 - en: 5.1 Simple substitution
+  id: totrans-15
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 5.1 简单替换
 - en: '*Simple* *substitution*, also called *monoalphabetic substitution*, is the
     familiar type of cipher you see in the puzzle sections of newspapers and magazines.
     In simple substitution, each letter of the alphabet in the message is replaced
     by another letter of the alphabet consistently and uniformly. So, if the letter
     M has been replaced by T in one place, then every M in the message will be replaced
     by T, and every T in the ciphertext will represent an M.'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: '*简单* *替换*，也称为*单字母替换*，是你在报纸和杂志的谜题部分看到的熟悉类型的密码。在简单替换中，消息中的每个字母都被另一个字母一致且均匀地替换。因此，如果字母
+    M 在一个地方被 T 替换，那么消息中的每个 M 都将被 T 替换，而密码文中的每个 T 将表示一个 M。'
 - en: 'Since most people are familiar with the techniques for solving simple substitution
     ciphers, I will merely mention them: letter frequency, initial letter frequency,
     final letter frequency, double letter frequency, letter pair frequency, short
     words, common prefixes and suffixes, distribution of vowels and consonants, pattern
     words, and exploiting the punctuation.'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于大多数人熟悉解决简单替换密码的技巧，我只会简单提一下：字母频率、首字母频率、末字母频率、双字母频率、字母对频率、短单词、常见前缀和后缀、元音和辅音的分布、模式单词以及利用标点符号。
 - en: For the easy cryptograms in newspapers, often all that is needed is to look
     at the short words. If you find AB and CBA the words are probably TO and NOT,
     while AB and BAC are most often OF and FOR. The pattern ABCA is likely THAT, ABCDC
     suggests THERE, and ABCDB could be WHICH. If you search the internet you may be
     able to find lists of pattern words for sale, or websites that will find words
     matching a pattern you supply.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于报纸中的简单密码，通常只需要查看短单词。如果你发现 AB 和 CBA，这些单词可能是 TO 和 NOT，而 AB 和 BAC 最常见是 OF 和 FOR。模式
+    ABCA 很可能是 THAT，ABCDC 暗示着 THERE，而 ABCDB 可能是 WHICH。如果你在互联网上搜索，你可能会找到出售模式单词列表的网站，或者会根据你提供的模式找到匹配的单词的网站。
 - en: For the more difficult cryptograms, with texts like **FOXY PIXY MANX AXED TOXIC
     LUXURY ONYX SPHINX**, a more organized approach is needed.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于更难的密码，像 **FOXY PIXY MANX AXED TOXIC LUXURY ONYX SPHINX** 这样的文本，需要更有组织的方法。
 - en: I demonstrate the procedure using the following sample cryptogram. The language
     is known to be English. The text has 73 letters and 11 words for an average word
     length of 6.64 letters, versus 5.0 letters for normal English. The absence of
     short words of fewer than 5 letters and the absence of pattern words suggests
     that this cryptogram has been deliberately constructed to be difficult.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 我将使用以下样本密码演示该过程。已知语言为英语。文本有 73 个字母和 11 个单词，平均每个单词长度为 6.64 个字母，而正常的英语为 5.0 个字母。缺少少于
+    5 个字母的短单词以及缺少模式单词表明这个密码已经被故意构造得很困难。
 - en: '![5-unnumb-1](../Images/5-unnumb-1.png)'
+  id: totrans-21
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-1](../Images/5-unnumb-1.png)'
 - en: 'The first phase is to identify vowels and consonants. Begin by counting the
     number of occurrences of each letter of the alphabet to get the *frequency count*.
     In the sample cryptogram the letter count for A is 0, for B is 3, for C is 3,
     and so forth. The full frequency count follows:'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一阶段是识别元音和辅音。首先计算每个字母的出现次数以获得*频率计数*。在样本密码中，A 的字母计数为 0，B 为 3，C 为 3，以此类推。完整的频率计数如下：
 - en: '![5-unnumb-2](../Images/5-unnumb-2.png)'
+  id: totrans-23
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-2](../Images/5-unnumb-2.png)'
 - en: Notice that there are only two high-frequency letters here, **L** and **S**,
     with frequencies of 8 and 7\. In normal English text there are 40% vowels. This
     percentage is robust, and usually holds even when the letter frequencies have
     been deliberately manipulated. With 73 letters in the cryptogram there should
     be 29 vowels. That pretty much requires that both **L** and **S** represent vowels,
     unless the frequency has been severely skewed.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意这里只有两个高频字母，**L** 和 **S**，出现的频率分别为 8 和 7。在正常的英文文本中，元音字母占 40%。这个百分比很稳定，即使字母频率被故意操纵也通常保持不变。在这个密码中有
+    73 个字母，应该有 29 个元音。这几乎要求 **L** 和 **S** 都代表元音，除非频率被严重扭曲。
 - en: Next you make a contact chart by listing the letters of the alphabet vertically
     down the center of the page. Each different letter that appears in the cryptogram
     gets its own row. On each row, each letter that appears before the central letter
@@ -129,22 +184,33 @@
     means that in the cryptogram the letter **B** is preceded by **E** and **O** once
     each, and followed by **D**, **W** and **Z** once each. Here is the full contact
     chart for this cryptogram (shown in 3 columns to save space).
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，你需要制作一个联系表格，将字母垂直地列在页面的中心。在密码中出现的每个不同的字母都有自己的行。在每一行上，出现在中心字母之前的每个字母都列在其左侧，而出现在中心字母之后的每个字母都列在其右侧。例如，表格的第一行，**EO
+    B DWZ**，表示在密码中字母 **B** 分别被 **E** 和 **O** 前导一次，分别被 **D**、**W** 和 **Z** 后导一次。以下是这个密码的完整联系表格（为节省空间显示为
+    3 列）。
 - en: '![5-unnumb-3](../Images/5-unnumb-3.png)'
+  id: totrans-26
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-3](../Images/5-unnumb-3.png)'
 - en: The contact chart is used to identify vowels and consonants. In general, vowels
     contact a wide variety of letters on both the left and the right, while consonants
     tend to have a limited number of distinct contacts. From the contact chart we
     can identify 4 probable vowels, **L**, **Q**, **S** and **V**, and 4 probable
     consonants, **E**, **O**, **R** and **U**. Let’s mark these letters **°** for
     vowels and **˟** for consonants and see if the distribution seems plausible.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 联系表格用于识别元音和辅音。一般来说，元音与左右两侧的字母有广泛的联系，而辅音则往往与有限数量的不同字母有联系。从联系表格中我们可以确定 4 个可能的元音，**L**、**Q**、**S**
+    和 **V**，以及 4 个可能的辅音，**E**、**O**、**R** 和 **U**。让我们用 **°** 标记这些元音字母，用 **˟** 标记这些辅音字母，并看看分布是否合理。
 - en: '![5-unnumb-4](../Images/5-unnumb-4.png)'
+  id: totrans-28
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-4](../Images/5-unnumb-4.png)'
 - en: There are 3 long stretches with no vowels, in word 3 **EYXDO**, in word 7 **KIGXG**
     and in word 8 **YIWZ**. This suggests that **I** and/or **X** might be a vowel.
     Both have lots of different contacts, but it is extremely unlikely that **X**
@@ -152,68 +218,95 @@
     a vowel. This is rare in English. The only example I could find is OUIJA. (**SQXMV**
     cannot be AIOLI because of the repeated I.) So, **I** is probably a vowel, and
     **X** is a consonant.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第3个单词**EYXDO**、第7个单词**KIGXG**和第8个单词**YIWZ**中都有3个长的没有元音的字母串。这表明**I**和/或**X**可能是元音。虽然它们都有很多不同的接触点，但**X**代表元音的可能性极小，因为那样的话第11个单词将以3个元音字母开头并以元音结尾。这在英语中很罕见。我找到的唯一例子是OUIJA。（**SQXMV**不能是AIOLI，因为I重复了。）因此，**I**很可能是元音，而**X**是辅音。
 - en: Let’s take a second pass at distinguishing vowels from consonants. In the ciphertext
     there are 5 pairs of tentative vowels, **VL**, **VS**, **VQ**, **QL** and **SQ**.
     Pairs of vowels are not common in English, so it is likely that either **V** or
     **Q** is really a consonant. It is probably not **Q** because then word 10 would
     end with 5 consonants. The only such 6-letter word I know is ANGSTS.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们再次尝试区分元音和辅音。在密码中有5对暂定元音，**VL**、**VS**、**VQ**、**QL**和**SQ**。在英语中，双元音并不常见，因此很可能**V**或**Q**实际上是辅音。很可能不是**Q**，因为那样的话第10个单词将以5个辅音结尾。我知道的唯一这样的6个字母单词是ANGSTS。
 - en: Let’s make **I** a vowel, make **V** and **X** consonants, and see where we
     stand.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们将**I**作为元音，将**V**和**X**作为辅音，看看我们的情况如何。
 - en: '![5-unnumb-5](../Images/5-unnumb-5.png)'
+  id: totrans-32
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-5](../Images/5-unnumb-5.png)'
 - en: This looks right. From word 3 we can now identify **D** as a vowel, and from
     word 11 it is probable that **M** is a vowel. All 6 of the vowels have now been
     found, so every other letter must be a consonant. Here is the complete breakdown
     of consonants and vowels.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 看起来是正确的。从第3个单词中，我们现在可以确定**D**是元音，从第11个单词中，**M**很可能是元音。现在所有6个元音都已找到，所以其他每个字母必须是辅音。以下是辅音和元音的完整分布。
 - en: '![5-unnumb-6](../Images/5-unnumb-6.png)'
+  id: totrans-34
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-6](../Images/5-unnumb-6.png)'
 - en: The second phase is identifying individual letters. The following Letter Contact
     Table shows the contact characteristics for the letters of the English alphabet.
     A different language would have different characteristics. For example, the letters
     M, V and Z are most often both preceded and followed by vowels, while the letter
     N is usually preceded by a vowel, but followed by a consonant. I compiled this
     table using the English language corpus of the Gutenberg Project.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二阶段是识别单个字母。以下字母接触表显示了英语字母的接触特征。不同的语言会有不同的特征。例如，字母M、V和Z通常都是前导和后跟元音，而字母N通常是前导元音，但后跟辅音。我使用古腾堡计划的英语语料库编制了这个表。
 - en: '![5-unnumb-7](../Images/5-unnumb-7.png)'
+  id: totrans-36
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-7](../Images/5-unnumb-7.png)'
 - en: There is one good candidate for plaintext H in the cryptogram, namely ciphertext
     **U**. However, **U** appears twice in the bigram **US** at the end of words,
     so that is unlikely.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 在密码中，有一个很好的H明文候选者，即密文**U**。然而，**U**在以US结尾的双字母组中出现两次，因此这是不太可能的。
 - en: There are two strong candidates for N in the cryptogram, namely ciphertext **E**
     and **O**. Both **E** and **O** represent consonants that are always preceded
     by vowels and followed by consonants. However, **O** is the stronger choice because
     it has higher frequency, and because it precedes two known consonants in the word
     **ZLORUS**. In English 3-consonant combinations often begin with N, such as **NST**
     and **NTH**. It is more likely that **O** represents N. This yields
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 在密码中，有两个强有力的N候选者，即密文**E**和**O**。**E**和**O**都代表总是由元音前导和辅音后跟的辅音。然而，**O**是更强的选择，因为它的频率更高，并且因为它在单词**ZLORUS**中的两个已知辅音之前。在英语中，3个辅音组合通常以N开头，例如**NST**和**NTH**。更有可能**O**代表N。这产生了
 - en: '![5-unnumb-8](../Images/5-unnumb-8.png)'
+  id: totrans-39
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-8](../Images/5-unnumb-8.png)'
 - en: It is now feasible to try to find possible words matching some of these patterns.
     I found 67 words matching **ZLORUS** **˟°N˟˟°**. Of these, 32 ended in E, and
     27 ended in Y. I found 37 words matching **SQXMV** **°°˟°˟** and not containing
     N. Of these, 15 began with Y, but only 1 began with E. It is therefore most likely
     that ciphertext **S** represents plaintext Y. This gives us
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在可以尝试找到符合某些模式的可能单词。我找到了67个符合**ZLORUS** **˟°N˟˟°**的单词。其中32个以E结尾，27个以Y结尾。我找到了37个符合**SQXMV**
+    **°°˟°˟**且不包含N的单词。其中15个以Y开头，但只有1个以E开头。因此，密文**S**最有可能代表明文Y。这给了我们
 - en: '![5-unnumb-9](../Images/5-unnumb-9.png)'
+  id: totrans-41
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-9](../Images/5-unnumb-9.png)'
 - en: The ciphertext words **IVQOR** and **ZLORUS** both contain the bigram **OR**.
     Let’s try to identify that. Knowing that **IVQOR** **°˟°N˟** does not contain
     a Y leaves only 24 likely words. Of these, 12 end in G and 8 end in S, hence ciphertext
@@ -221,122 +314,189 @@
     **˟°N˟˟Y** is now down to 26\. Among these, the fourth letter is G 8 times, T
     6 times, but S only 1 time. The most likely choice for ciphertext **OR** is thus
     plaintext NG. We now have
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 密文单词 **IVQOR** 和 **ZLORUS** 都包含双字母 **OR**。让我们试着识别一下。知道 **IVQOR** **°˟°N˟** 不含有
+    Y，剩下的有可能的单词只有 24 个。其中，有 12 个以 G 结尾，有 8 个以 S 结尾，因此密文 **OR** 可能是 NG 或者 NS。现在，对于
+    **ZLORUS** **˟°N˟˟Y** 的可能明文单词减少到了 26 个。在这些中，第四个字母是 G 的有 8 次，是 T 的有 6 次，但是只有 1
+    次是 S。因此，密文 **OR** 最可能的选择是明文 NG。现在我们有了
 - en: '![5-unnumb-10](../Images/5-unnumb-10.png)'
+  id: totrans-43
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-10](../Images/5-unnumb-10.png)'
 - en: There are 8 possibilities for the first word, **RULEYS**. These contain only
     6 possibilities for the bigram **UL**. For each of these choices, let’s look at
     the possibilities for the word **ZLORUS**.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于第一个单词 **RULEYS** 有 8 种可能性。这些只包含双字母 **UL** 的 6 种可能性。对于这些选择中的每一个，让我们来看看单词 **ZLORUS**
+    的可能性。
 - en: '![5-unnumb-11](../Images/5-unnumb-11.png)'
+  id: totrans-45
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-11](../Images/5-unnumb-11.png)'
 - en: The choice **ZLORUS** = JUNGLY can be ruled out immediately because **KSYIWZ**
     would then have the form **˟Y˟°˟J**. There is no such word in English. This means
     that **RULEYS** represents GRUMPY and **ZLORUS** represents HUNGRY. Filling in
     these new letters gives
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 选择 **ZLORUS** = JUNGLY 可以立即被排除，因为 **KSYIWZ** 将呈现出 **˟Y˟°˟J** 的形式。在英语中没有这样的单词。这意味着
+    **RULEYS** 表示 GRUMPY，**ZLORUS** 表示 HUNGRY。填入这些新字母后得到
 - en: '![5-unnumb-12](../Images/5-unnumb-12.png)'
+  id: totrans-47
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-12](../Images/5-unnumb-12.png)'
 - en: The rest of the letters can be filled in by sight. It is now obvious that the
     second word is PUDGY and the third word is BUMPKIN, which makes the eighth word
     BYPATH, and so forth.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 其余的字母可以凭眼识别填入。现在显然第二个单词是 PUDGY，第三个单词是 BUMPKIN，这使得第八个单词成为 BYPATH，等等。
 - en: The completed cryptogram reads GRUMPY PUDGY BUMPKIN CLUMSILY STUMBLED ALONG
     BACKCOUNTRY BYPATH, HUNGRY UNSHOD YOKEL.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 完成的密码读起来是 GRUMPY PUDGY BUMPKIN CLUMSILY STUMBLED ALONG BACKCOUNTRY BYPATH，HUNGRY
+    UNSHOD YOKEL。
 - en: Simple substitution is rated One. When the letter frequencies and contact frequencies
     have been intentionally distorted, as in this example, the rating can go up to
     Two or possibly Three. This makes a good puzzle, but is useless for general communications.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 简单替换被评为 One。当字母频率和接触频率被故意扭曲时，就像这个例子一样，评级可以达到 Two 或可能 Three。这是一个很好的谜题，但对于一般通信是无用的。
 - en: 5.2 Mixing the alphabet
+  id: totrans-51
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 5.2 混合字母表
 - en: 'Simple substitution requires a mixed alphabet. There are several traditional
     paper-and-pencil methods for this. One way to obtain a mixed alphabet is to use
     a keyword. In the simplest case, you just write the keyword starting at some position,
     and then fill in the rest of the alphabet behind it, wrapping around as needed.
     The remaining letters can be filled in forward or backward. Here are three examples:'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 简单替换需要一个混合字母表。有几种传统的纸笔方法可以做到这一点。获得混合字母表的一种方法是使用一个关键词。在最简单的情况下，您只需从某个位置开始写入关键词，然后在其后填入剩余的字母，根据需要进行环绕。剩余的字母可以向前或向后填写。以下是三个示例：
 - en: '![5-unnumb-13](../Images/5-unnumb-13.png)'
+  id: totrans-53
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-13](../Images/5-unnumb-13.png)'
 - en: 'This method was first used by the Argenti family, who were cipher secretaries
     to several popes and bishops circa 1600\. These alphabets are not well mixed.
     A somewhat better method is to use two keywords, like this:'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种方法最早由 Argenti 家族使用，他们是约 1600 年教皇和主教的密码秘书。这些字母表混合得不太好。一种稍微好一些的方法是使用两个关键词，就像这样：
 - en: '![5-unnumb-14](../Images/5-unnumb-14.png)'
+  id: totrans-55
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-14](../Images/5-unnumb-14.png)'
 - en: Columnar mixing
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 列混合
 - en: Write the alphabet into a block. Write the keyword on the top row, and the rest
     of the alphabet in as many rows as needed. Longer keywords give better mixing.
     Then read the letters out of the block, going down the columns. In this example
     the keyword SAMPLE has been written on the top row. The first column reading downward
     is **SBIRY**, the second column is **ACJTZ**, and so forth. If you like, you can
     alternate reading up and down the columns or use other routes.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 将字母写入一个块中。将关键词写在顶行，其余的字母写在需要的行数中。较长的关键词可以提供更好的混合效果。然后从块中读出字母，沿着列向下读取。在这个例子中，关键词
+    SAMPLE 已经写在顶行。第一列向下读取是 **SBIRY**，第二列是 **ACJTZ**，依此类推。如果愿意，可以交替地沿着列向上和向下读取，或者使用其他路径。
 - en: '![5-unnumb-15](../Images/5-unnumb-15.png)'
+  id: totrans-58
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-15](../Images/5-unnumb-15.png)'
 - en: SkipMix
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: SkipMix
 - en: When I was in high school, I invented another method suitable for paper and
     pencil cryptography, which I call *SkipMix*. It uses a string of small numbers
     called *skips* as a key for mixing the alphabet, for example 3, 1, 4\. Begin with
     the standard alphabet. Skip 3 letters and take the next letter, which is D.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我上高中的时候，我发明了另一种适合纸笔密码学的方法，我称之为*SkipMix*。它使用一串称为*跳数*的小数字作为混合字母表的密钥，例如 3, 1,
+    4。从标准字母表开始。跳过 3 个字母并取下一个字母，即为 D。
 - en: '![5-unnumb-16](../Images/5-unnumb-16.png)'
+  id: totrans-61
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-16](../Images/5-unnumb-16.png)'
 - en: Delete that letter, then skip 1 letter and take the next letter, which is F.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 删除该字母，然后跳过 1 个字母并取下一个字母，即为 F。
 - en: '![5-unnumb-17](../Images/5-unnumb-17.png)'
+  id: totrans-63
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-17](../Images/5-unnumb-17.png)'
 - en: Delete that letter, then skip 4 letters and take the next letter, which is K.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 删除该字母，然后跳过 4 个字母并取下一个字母，即为 K。
 - en: '![5-unnumb-18](../Images/5-unnumb-18.png)'
+  id: totrans-65
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-18](../Images/5-unnumb-18.png)'
 - en: Then repeat the 3,1,4 cycle. Skip 3 letters and take the next letter, which
     is O.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后重复 3,1,4 的循环。跳过 3 个字母并取下一个字母，即为 O。
 - en: '![5-unnumb-19](../Images/5-unnumb-19.png)'
+  id: totrans-67
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-19](../Images/5-unnumb-19.png)'
 - en: Continue to repeat the cycle of key numbers until all 26 letters have been chosen.
     The resulting mixed alphabet is
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 继续重复键数的循环，直到选择了所有 26 个字母。生成的混合字母表是
 - en: '![5-unnumb-20](../Images/5-unnumb-20.png)'
+  id: totrans-69
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-20](../Images/5-unnumb-20.png)'
 - en: SkipMix can be used with a keyword. Suppose the keyword is SAMPLE. Replace each
     letter by its position in the alphabet, in this case 19,1,13,16,12,5\. Optionally,
     replace any 2-digit number by its individual digits, in this case 1,9,1,1,3,1,6,1,2,5\.
     Use this string of skips as the mixing key. Note that 0 is a valid value to use.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: SkipMix 可以与关键词一起使用。假设关键词是 SAMPLE。将每个字母替换为它在字母表中的位置，即 19,1,13,16,12,5。可选地，将任何
+    2 位数替换为其各位数字，即 1,9,1,1,3,1,6,1,2,5。使用这串跳数作为混合密钥。注意，0 是一个有效的值。
 - en: SkipMix is well-suited for computer use. In this case the alphabet is the 256
     different 8-bit character codes. The skips can be any integers from 0 to 255\.
     The numeric key still can be derived from a keyword. The advantage of using a
@@ -349,20 +509,31 @@
     7 and 39, inclusive. For example, the ASCII codes for the keyword SAMPLE multiplied
     by 17 modulo 256 are 131, 81, 29, 80, 12 and 149\. This covers a range of 149-12
     = 137, much wider than the original range of 83-65 = 18.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: SkipMix 非常适合计算机使用。在这种情况下，字母表是 256 个不同的 8 位字符代码。跳数可以是从 0 到 255 的任何整数。数字密钥仍然可以由关键词派生而来。使用关键词而不仅仅是一串整数的优点是人们更容易记住和准确输入。再次假设关键词是
+    SAMPLE。这些字母在 ASCII 码中的数值等价于 83, 65, 77, 80, 76 和 69。这些值落在从 65 到 90 的窄范围内，这导致混合程度较低。为了将字母代码分散到更广泛的范围内，它们可以乘以某个常数值模
+    256。乘数可以是介于 7 到 39 之间的任何奇数。例如，关键词 SAMPLE 的 ASCII 码乘以 17 模 256 的结果是 131, 81, 29,
+    80, 12 和 149。这覆盖了一个范围为 149-12 = 137 的范围，远比原始范围 83-65 = 18 要宽。
 - en: There are still only 26 possible values for the skips. One way to obtain a larger
     set of values is to multiply adjacent numbers modulo 256\. The sequence of skips
     would then be 83×65, 65×77, 77×80, 80×76, 76×69 and 69×83, all taken modulo 256\.
     So 83×65 = 5395≡19 (mod 256). The numeric key becomes 19, 141, 16, 192, 124, 95,
     covering a range of 192-16 = 176.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 跳数仍然只有 26 个可能的值。获得更大的值集合的一种方法是将相邻的数字进行模 256 的乘法。然后，跳数序列为 83×65, 65×77, 77×80,
+    80×76, 76×69 和 69×83，全部取模 256。因此，83×65 = 5395≡19 (mod 256)。数字密钥变为 19, 141, 16,
+    192, 124, 95，覆盖了范围 192-16 = 176。
 - en: Another way to produce a larger set of values for the skips is to multiply the
     first letter of the keyword by 7, the second letter by 9, the third letter by
     11, and so forth, with all multiplications done modulo 256.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 产生更大的跳数集合的另一种方法是将关键词的第一个字母乘以 7，第二个字母乘以 9，第三个字母乘以 11，依此类推，所有乘法都在模 256 下进行。
 - en: Since the conversion of the keyword into the numeric key would be done by the
     computer, not the human operator, an arbitrarily complex calculation could be
     used. I recommend a quadratic function rather than a linear function to make it
@@ -370,116 +541,159 @@
     messages. For example, if N[i] are the terms of the numeric key, and K[i] are
     the numeric values of the characters in the keyword, then a suitable function
     might be
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于将关键词转换为数字密钥将由计算机而不是人类操作员完成，因此可以使用任意复杂的计算。我建议使用二次函数而不是线性函数，以使对手在获得一些消息的明文后更难推断关键词。例如，如果N[i]是数字密钥的项，K[i]是关键词中字符的数字值，则一个合适的函数可能是
 - en: '![5-unnumb-20-equation-5](../Images/5-unnumb-20-equation-5.png)'
+  id: totrans-75
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-20-equation-5](../Images/5-unnumb-20-equation-5.png)'
 - en: where the subscripts wrap around when they exceed the length of the keyword.
     For example, if the keyword had 10 characters, then K[11] would wrap around to
     K[1], K[12] would wrap around to K[2], and so forth.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 当下标超过关键词的长度时会循环。例如，如果关键词有10个字符，则K[11]会循环到K[1]，K[12]会循环到K[2]，依此类推。
 - en: '*****The function K[i]K[i+1]+K[i+2]K[i+3] would not be as strong. If the length
     of the keyword was L, then there would be only L distinct quadratic terms. Emily
     could treat these as L variables and solve the set of L linear equations to find
     the values of the L products K[1]K[2], K[2]K[3], K[3]K[4], ... K[L]K[1]. It is
     then easy to find the values of the individual K[i].******'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: '*****函数K[i]K[i+1]+K[i+2]K[i+3]的强度不会那么强。如果关键词的长度为L，则只会有L个不同的二次项。艾米莉可以将这些视为L个变量，并解出一组L个线性方程以找到L个乘积K[1]K[2]，K[2]K[3]，K[3]K[4]，...
+    K[L]K[1]的值。然后很容易找到各个K[i]的值。******'
 - en: Throughout this book I show alphabets mixed with simple keywords so that you
     can see at a glance how they are formed, for example, the alphabet
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本书中，我展示了字母表与简单关键词混合在一起，这样您可以一目了然地看到它们是如何形成的，例如，字母表
 - en: '**SAMPLEBCDFGHIJKNOQRTUVWXYZ**'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: '**样本BCDFGHIJKNOQRTUVWXYZ**'
 - en: This is very weak. *Do not do this in practice.* I have done it here to aid
     the reader. Since you do not wish to aid your opponent, always use well-mixed
     alphabets using columnar mixing, SkipMix or some other strong mixing function.
     See section 12.3.8 for other methods.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 这非常薄弱。*实践中不要这样做*。我在这里这样做是为了帮助读者。由于您不希望帮助您的对手，始终使用混合良好的字母表，使用列混合、SkipMix或其他强大的混合功能。有关其他方法，请参见第12.3.8节。
 - en: 5.3 Nomenclators
+  id: totrans-81
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 5.3 代号书
 - en: From the 15th through the 18th century, the King of substitution ciphers was
     the *Nomenclator*, used by kings, popes, diplomats and spies alike. Each nomenclator
     had a list of hundreds, sometimes thousands, of items, single letters, numbers,
     bigrams, syllables, words and names, providing up to 25 substitutes for each.
     Nomenclators are more like codes than like ciphers, so they fall outside the scope
     of this book.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 从15世纪到18世纪，替代密码的国王是*代号书*，被国王、教皇、外交官和间谍们广泛使用。每个代号书都有数百甚至数千个项目的列表，单个字母、数字、双字母、音节、单词和名称，为每个提供多达25个替代品。代号书更像是代码而不是密码，因此不在本书的范围之内。
 - en: 5.4 Polyalphabetic substitution
+  id: totrans-83
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 5.4 多字母替换
 - en: The techniques for solving simple substitutions involve letter frequencies and
     letter contacts. If you want to design a cipher to defeat this type of attack,
     a good place to start is by disrupting the letter frequencies and letter contacts.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 解决简单替换的技术涉及字母频率和字母接触。如果要设计一个密码来抵御这种攻击，一个好的起点是破坏字母频率和字母接触。
 - en: Suppose that instead of using the same alphabet for enciphering every letter
     you use two different alphabets. Use the first alphabet to encipher the letters
     in odd-numbered positions, and use the second alphabet to encipher the letters
     in even-numbered positions. That is, the first alphabet will encipher the first,
     third, fifth, ... letters in the message, while the second alphabet is used to
     encipher the second, fourth, sixth, ... letters.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设不是使用相同的字母表对每个字母进行加密，而是使用两个不同的字母表。使用第一个字母表对奇数位置的字母进行加密，并使用第二个字母表对偶数位置的字母进行加密。也就是说，第一个字母表将加密消息中的第一个、第三、第五...个字母，而第二个字母表用于加密第二、第四、第六...个字母。
 - en: The frequencies of the ciphertext letters now come half from the first alphabet,
     half from the second alphabet. They are the average of the two sets of frequencies.
     A ciphertext letter will have high frequency only when it represents high-frequency
     letters in both alphabets. For example, ciphertext **K** could represent E in
     the first alphabet and A in the second alphabet so its frequency would be halfway
     between the frequency of E and the frequency of A in normal text.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，密文字母的频率一半来自第一个字母表，一半来自第二个字母表。它们是两组频率的平均值。一个密文字母只有在它同时代表两个字母表中的高频字母时才会有高频率。例如，密文**K**可能代表第一个字母表中的E，代表第二个字母表中的A，因此其频率将介于正常文本中E的频率和A的频率之间。
 - en: Conversely, a ciphertext letter will have low frequency only when it represents
     low-frequency letters in both alphabets, say K in the first alphabet and V in
     the second alphabet. So the ciphertext will have fewer high-frequency letters
     and fewer low-frequency letters than normal text. If you made a bar graph, or
     *histogram*, of the letter frequencies, the peaks would be lower and the valleys
     would be shallower. So using two alphabets tends to flatten the frequency counts.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 相反，密文中的一个字母只有在它同时代表两个字母表中的低频字母时才会有低频率，比如第一个字母表中的K和第二个字母表中的V。因此，密文中的高频字母和低频字母会比正常文本少。如果你制作一个字母频率的柱状图，或者*直方图*，峰值会更低，谷值会更浅。因此，使用两个字母表会使频率计数变得更平坦。
 - en: The same happens with contact frequencies. Any common bigram such as TH will
     start at an odd position in the message about half the time, and at an even position
     about half the time. Half the time the T is enciphered with the first alphabet
     and the H is enciphered with the second alphabet, and half the time it is vice
     versa. So the contact frequencies also get flattened.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 联系频率也会发生同样的情况。任何常见的二字母组合，比如TH，大约一半时间会在消息中的奇数位置开始，另一半时间会在偶数位置开始。一半时间，T会与第一个字母表一起加密，而H会与第二个字母表一起加密，另一半时间则相反。因此，联系频率也会变得更平坦。
 - en: The more alphabets that are used, the flatter the frequencies become. In practice,
     from roughly the US Civil War until World War I using about 20 alphabets was typical.
     There is a statistical test that measures the flatness of the letter frequencies
     and uses that to estimate the number of alphabets, but it is not very accurate,
     particularly with more than 10 alphabets. Better methods are described in sections
     5.6 and 5.7.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用的字母表越多，频率就变得越平坦。实际上，从大约美国内战到第一次世界大战期间，使用大约20个字母表是很典型的。有一个统计测试可以测量字母频率的平坦度，并使用它来估计字母表的数量，但它不太准确，特别是对于超过10个字母表的情况。更好的方法在5.6和5.7节中描述。
 - en: Let’s look at the historical development of polyalphabetic ciphers. Early forms
     of polyalphabetic ciphers were developed by Leon Battista Alberti in 1467 and
     by Johannes Trithemius in 1499 (but not published until 1606). Polyalphabetic
     ciphers begin to take their modern form with the publication of *La cifra del
     Sig. Giovan Battista Belaso* in 1553.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们来看看多表密码的历史发展。多表密码的早期形式由利昂·巴蒂斯塔·阿尔贝蒂（Leon Battista Alberti）于1467年和约翰内斯·特里西米乌斯（Johannes
+    Trithemius）于1499年开发（但直到1606年才发表）。多表密码在1553年出版的*La cifra del Sig. Giovan Battista
+    Belaso*一书中开始采用现代形式。
 - en: 5.5 The Belaso cipher
+  id: totrans-91
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 5.5 **贝拉索密码**
 - en: 'The *Belaso Cipher*, invented by Giovan Battista Belaso in 1553, used 26 different
     alphabets, each of which was simply the standard alphabet shifted a number of
     places. The 26 cipher alphabets can be displayed as a tableau, where each horizontal
     row contains one shifted alphabet, like this:'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 由乔凡·巴蒂斯塔·贝拉索（Giovan Battista Belaso）于1553年发明的*贝拉索密码*使用了26个不同的字母表，每个字母表只是标准字母表移位了一定数量的位置。这26个密码字母表可以显示为一个表格，其中每个水平行包含一个移位后的字母表，就像这样：
 - en: '![5-unnumb-22](../Images/5-unnumb-22.png)'
+  id: totrans-93
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-22](../Images/5-unnumb-22.png)'
 - en: 'The first letter on each row identifies the alphabet, so the top row is the
     A alphabet, the second row is the B alphabet, and so forth. Belaso was the first
     to use a key to select which alphabet to use for which letter in the message.
@@ -490,69 +704,96 @@
     the tableau, and replace the plaintext letter by the ciphertext letter directly
     below it in the selected row. Here is how the plaintext letter S would be enciphered
     by the key letter C:'
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 每行的第一个字母标识字母表，所以顶行是A字母表，第二行是B字母表，依此类推。Belaso是第一个使用密钥选择消息中哪个字母使用哪个字母表的人。（相比之下，Argenti家族使用关键字来混合字母表。）Belaso会水平书写消息。在明文字母的上方，他会重复写入所需次数的密钥。要加密一个字母，他会在表格的顶行找到该字母，使用密钥字母选择表格的行，并将明文字母替换为所选行中直接位于它下面的密文字母。以下是如何使用密钥字母C对明文字母S进行加密的示例：
 - en: '![5-unnumb-23](../Images/5-unnumb-23.png)'
+  id: totrans-95
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-23](../Images/5-unnumb-23.png)'
 - en: We find the letter S on the top row of the tableau. Its key is C, so it is enciphered
     using the third row of the tableau. On the third row, directly below S, we find
     the letter U. So S gets replaced by **U**.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们在表格的顶行找到了字母S。它的密钥是C，因此使用表格的第三行进行加密。在第三行，直接在S下面，我们找到了字母U。所以S被替换为**U**。
 - en: To encipher the word SAMPLE with the key CAB using the previous tableau, S is
     replaced by **U**.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用前述表格，使用密钥CAB对单词SAMPLE进行加密，S被替换为**U**。
 - en: '![5-unnumb-24](../Images/5-unnumb-24.png)'
+  id: totrans-98
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-24](../Images/5-unnumb-24.png)'
 - en: The next letter in the message is A with the key A, so A is enciphered with
     the top row. It is enciphered as **A**. The M of SAMPLE has the key B. It gets
     enciphered using the second row and becomes **N**, and so forth. The resulting
     ciphertext is **UANRLF**.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 消息中的下一个字母是A，使用A作为密钥，所以A使用顶行进行加密。它被加密成**A**。样本中的M使用密钥B，它使用第二行加密，变成了**N**，依此类推。最终的密文是**UANRLF**。
 - en: Instead of using a tableau, the encipherment can be done using a *St. Cyr slide*,
     named for the French Saint-Cyr military academy. The slide is shown here in the
     M position.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 与使用表格不同，可以使用*St. Cyr slide*进行加密，该幻灯片以法国圣西尔军校命名。幻灯片在M位置显示。
 - en: '![5-unnumb-25](../Images/5-unnumb-25.png)'
+  id: totrans-101
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-25](../Images/5-unnumb-25.png)'
 - en: You can make your own slide from wood, cardboard or plastic. The top double-width
     row is fixed in place, while the single-width bottom row slides. Rubber bands
     can hold it taut and in the correct position. Either or both of the alphabets
     can be mixed.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以用木头、硬纸板或塑料制作自己的幻灯片。顶部的双宽行固定在原位，而单宽底行滑动。橡皮筋可以使其保持紧绷并处于正确位置。两个字母表中的一个或两个都可以混合。
 - en: The Belaso cipher is *symmetric* because enciphering a letter X with a key K
     is exactly the same as enciphering the letter K with the key X. Ciphers based
     on adding the key to the plaintext or exclusive-ORing the key and the plaintext
     tend to be symmetric in this sense.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: Belaso密码是*对称*的，因为使用密钥K加密字母X与使用密钥X加密字母K完全相同。基于将密钥添加到明文或使用异或运算密钥和明文的密码在这个意义上倾向于是对称的。
 - en: For reasons beyond my ken, the Belaso cipher is now known as the *Vigenère*
     *Cipher*, and the cipher invented by Blaise de Vigenère, which is described in
     section 5.8.2, is now called an *Autokey* cipher. To give credit where due, I
     will continue to call the cipher invented by Belaso using the standard alphabet
     the Belaso cipher. With a mixed alphabet I will call it the Vigenère cipher. I
     will call the autokey cipher invented by Vigenère the *Vigenère Autokey*.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于我无法理解的原因，Belaso密码现在被称为*Vigenère* *Cipher*，而由Blaise de Vigenère发明的密码，描述在5.8.2节中，现在称为*Autokey*密码。为了给予应有的认可，我将继续称由Belaso发明，使用标准字母表的密码为Belaso密码。使用混合字母表的密码我将称之为Vigenère密码。我将由Vigenère发明的自密钥密码称为*Vigenère
+    Autokey*。
 - en: Attributing the Belaso cipher to Vigenère is an example of Stigler’s law of
     eponymy, for Stephen M. Stigler, that no important scientific discovery is named
     for its discoverer. Some cryptographic examples are the Playfair cipher, invented
     by Charles Wheatstone, and Morse code, invented by Alfred Vail. Stigler’s law
     itself was proposed by Robert K. Merton, who named it the *Matthew Effect* for
     St. Matthew.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 将Belaso密码归因于维吉尼亚密码是斯蒂格勒命名法则的一个例子，斯蒂芬·M·斯蒂格勒认为，没有重要的科学发现是以其发现者命名的。一些密码学的例子包括由查尔斯·韦斯顿发明的Playfair密码和由阿尔弗雷德·维尔发明的摩尔斯电码。斯蒂格勒法则本身是由罗伯特·K·默顿提出的，他将其命名为*马太效应*，以纪念圣马太。
 - en: 5.6 The Kasiski method
+  id: totrans-106
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 5.6 卡西斯基方法
 - en: For over 300 years the Belaso cipher was considered unbreakable. The French
     called it *Le Chiffre Indéchiffrable*, the *Undecipherable Cipher*. The turning
     point came in 1863 when Major Friedrich W. Kasiski, a Prussian infantry officer,
@@ -562,8 +803,10 @@
     not publish it. Ole Immanuel Franksen of the Technical University of Denmark,
     who has written extensively about Babbage and his Difference Engine, wrote a book,
     *Mr. Babbage’s Secret*, which makes this claim.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 300多年来，Belaso密码被认为是无法破解的。法国人称之为*Le Chiffre Indéchiffrable*，即*无法破译的密码*。转折点出现在1863年，当时普鲁士步兵军官弗里德里希·W·卡西斯基少校出版了一本详细介绍如何确定多表密码周期的书。这就是现在所称的*卡西斯基方法*或*卡西斯基测试*。有证据表明查尔斯·巴贝奇可能在1846年使用了这种方法，但没有公开发表。丹麦技术大学的奥勒·伊曼纽尔·弗兰克森，他对巴贝奇及其差分机写了大量文章，写了一本名为*巴贝奇先生的秘密*的书，提出了这一说法。
 - en: The idea is to look for repeated letter sequences in the ciphertext. Some of
     these sequences may occur by accident, especially bigrams, but most of the repeated
     sequences will result from the same letters in the plaintext being enciphered
@@ -573,65 +816,90 @@
     the key length. Distance is measured from the first character of one occurrence
     to the first character of the other occurrence. Consider this cipher fragment
     using the keyword EXAMPLE.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个想法是在密文中寻找重复的字母序列。一些序列可能是偶然发生的，尤其是双字母组，但大多数重复序列将是由明文中相同字母被密钥的相同部分加密产生的。重复序列越长，发生偶然性的概率就越低。如果同一密钥部分用于加密两个重复的字母序列，那么它们之间的距离必须是密钥长度的倍数。距离是从一个出现的第一个字符到另一个出现的第一个字符的距离。考虑使用关键词EXAMPLE的密码片段。
 - en: '![5-unnumb-26](../Images/5-unnumb-26.png)'
+  id: totrans-109
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-26](../Images/5-unnumb-26.png)'
 - en: The ciphertext trigram **PTR** occurs 3 times, at positions 5, 12 and 33\. All
     three occurrences result from plaintext AIN enciphered with key characters PLE.
     That is, they result from the same plaintext trigram enciphered with the same
     part of the key.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 密文三字母组**PTR**出现了3次，分别在位置5、12和33。所有这三次出现都是由明文AIN用密钥字符PLE加密产生的。也就是说，它们都是由相同的明文三字母组用密钥的相同部分加密产生的。
 - en: The plaintext trigram AIN, which starts at position 21, produces a different
     ciphertext trigram, **EMK**, because it is enciphered by a different part of the
     key, namely EEX. Likewise, the plaintext trigram THE, which occurs at positions
     1 and 29, and the plaintext trigram INS, which occurs at positions 8 and 13, do
     not produce repeated ciphertext trigrams because they are enciphered with different
     parts of the key.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 明文三字母组AIN，从位置21开始，产生了不同的密文三字母组**EMK**，因为它是由不同部分的密钥EEX加密的。同样，明文三字母组THE，在位置1和29出现，以及明文三字母组INS，在位置8和13出现，不会产生重复的密文三字母组，因为它们是用密钥的不同部分加密的。
 - en: In this fragment, the distances between the repeated trigrams are 12-5 = 7,
     33-5 = 28 and 33-12 = 21\. These distances, 7, 21 and 28, are all multiples of
     7, which is the length of the keyword EXAMPLE. Kasiski showed how these repetitions
     can be exploited to reveal the period of the encipherment.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这个片段中，重复的三字母组之间的距离为12-5 = 7，33-5 = 28和33-12 = 21。这些距离，7、21和28，都是7的倍数，而7是关键词EXAMPLE的长度。卡西斯基展示了如何利用这些重复来揭示加密的周期。
 - en: Let’s look at another example, a cryptogram.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看另一个例子，一个密码。
 - en: '![5-unnumb-27](../Images/5-unnumb-27.png)'
+  id: totrans-114
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-27](../Images/5-unnumb-27.png)'
 - en: This is a Belaso encipherment of a text in normal English. Searching for repeated
     letter sequences, we find **EK** at positions 10, 64 and 90, **RYR** at positions
     17 and 53, and so forth. The full list of repeated letter sequences is
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一段普通英语文本的贝拉索加密。在搜索重复的字母序列时，我们发现**EK**位于位置10、64和90，**RYR**位于位置17和53，等等。重复字母序列的完整列表是：
 - en: '![5-unnumb-28](../Images/5-unnumb-28.png)'
+  id: totrans-116
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-28](../Images/5-unnumb-28.png)'
 - en: We immediately notice two repeated tetragrams, **YHCI** and **YXYR**. Repeated
     tetragrams almost never occur accidentally. The distance between the two occurrences
     of **YHCI** is 79-43 = 36, and the distance between the two occurrences of **YXYR**
     is 69-57 = 12\. The distances 12 and 36 suggest a key length of 4, 6 or 12\. We
     can narrow that down by looking at some of the other repeated sequences.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们立即注意到两个重复的四元组**YHCI**和**YXYR**。重复的四元组几乎不会出现偶然。两个**YHCI**出现之间的距离是79-43 = 36，而两个**YXYR**出现之间的距离是69-57
+    = 12。距离12和36暗示着密钥长度为4、6或12。我们可以通过查看一些其他重复序列来缩小范围。
 - en: '**RYR** has a distance of 36, and **ZHZ** has a distance of 6\. The other repeated
     trigrams **HCI** and **XYR** are just parts of the two repeated tetragrams **YHCI**
     and **YXYR**, so they yield no additional information. The most likely period
     for this cryptogram is 6.'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: '**RYR**的距离为36，**ZHZ**的距离为6。另外两个重复的三元组**HCI**和**XYR**只是两个重复的四元组**YHCI**和**YXYR**的一部分，所以它们不提供额外的信息。这个密码的最可能周期是6。'
 - en: Okay, that was a bit too easy. Let’s look at what happens in harder cases. One
     method recommended in other books is to take all of the distances between repeated
     sequences, and find all of their factors. The most frequent factor, they claim,
     will be the period. For example, if the distance is 36, then the factors are 1,
     2, 3, 4\. 6, 9, 12, 18 and 36\. This could mislead you in several ways.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 好吧，这太容易了。让我们看看在更困难的情况下会发生什么。其他书籍推荐的一种方法是取所有重复序列之间的距离，并找出它们的所有因数。他们声称，最频繁的因子将是周期。例如，如果距离是36，那么因子是1、2、3、4、6、9、12、18和36。这可能会以几种方式误导你。
 - en: '*First*, you might falsely conclude that the period is twice its actual value.
     This is because about half of the distances will be even just by chance. Half
     of the valid distances, those caused by repeated sequences of plaintext, will
@@ -640,15 +908,19 @@
     half of the accidental repeated ciphertext sequences will have even distances.
     There can be lots of even distances simply by chance. Similarly, 1/3 of the distances
     will be multiples of 3 by chance.'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: '*首先*，你可能会错误地得出周期是其实际值的两倍。这是因为大约一半的距离仅仅是偶然的。有效距离的一半，即由重复的明文序列引起的距离，将是周期的偶数倍。对于某些消息来说，这些周期的偶数倍将超过那些周期的奇数倍的距离。同样，一半的偶然重复的密文序列将有偶数的距离。可能会出现许多偶然的距离。同样，1/3的距离会偶然成为3的倍数。'
 - en: When you count the number of divisors of the distances, you should reduce the
     number of times the factor 2 occurs by 1/2, reduce the number of times the factor
     3 occurs by 1/3, and so forth. That will give you a more accurate comparison.
     For example, if a distance of 3 occurs 6 times, reduce that by 1/3 to 4 times,
     because 2 of the 6 occurrences are likely to be pure chance.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你计算距离的因数数量时，你应该将因子2出现的次数减少1/2，将因子3出现的次数减少1/3，依此类推。这样会给你一个更准确的比较。例如，如果距离3出现了6次，那么将其减少1/3到4次，因为这6次中有2次很可能是纯粹的偶然。
 - en: '*Second*, when a repeated sequence occurs multiple times, the distances between
     pairs of these repeats may be misleading. If there are N repeats, then the number
     of pairs is N(N-1)/2\. In the example ciphertext there are 4 occurrences of **YR**,
@@ -658,20 +930,26 @@
     appears 5 times, and that 3 of those repeats are due to the same plaintext. There
     will be 10 distances, of which only 3 result from the repeated plaintext, while
     the other 7 are spurious.'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: '*第二*，当重复的序列出现多次时，这些重复之间的距离可能会误导人。如果有N个重复，则对这些重复的成对数量为N(N-1)/2。在示例密文中，有4个**YR**的出现，因此有6对，即4×3/2对。因此，有6个成对的距离，54-18
+    = 36，59-18 = 41，71-18 = 53，59-54 = 5，71-54 = 17和71-59 = 12。这些中的哪一个，如果有的话，是周期的倍数？假设密文**XYZ**出现了5次，其中有3次重复是由相同的明文造成的。将会有10个距离，其中只有3个是由重复的明文造成的，而其他7个是虚假的。'
 - en: You don’t want to throw out the valid repeats just because you cannot distinguish
     them from the accidental repeats. Here is what you can do. Suppose that you have
     a candidate for the period. For example, suppose you suspect that the period is
     6\. Reduce the locations where the repeated sequence occurs modulo 6\. (Remember
     modular arithmetic? If not, look at section 3.5 again.)
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s try the *modulo method*. Look at the 4 occurrences of **YR** again, and
     reduce their positions modulo 5, modulo 6 and modulo 7 to see what happens.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
 - en: '![5-unnumb-29](../Images/5-unnumb-29.png)'
+  id: totrans-125
   prefs: []
   type: TYPE_IMG
 - en: All 4 residues modulo 7 are different. If the period is 7, then all of the repeats
@@ -681,19 +959,23 @@
     2 different repeated bigrams in the plaintext, one bigram at positions 18 and
     54 in the plaintext, with a distance of 36, and the other bigram at positions
     59 and 71 in the plaintext, with a distance of 12.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
 - en: How did that happen? Look back at the list of repeated sequences. You can see
     that the bigram **YR** occurs in the repeated trigram **RYR** and in the repeated
     tetragram **YXYR**. Each of these contributed one repetition.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s look at a second method for determining the period of a polyalphabetic
     cipher. If the evidence from the repeated sequences is inconclusive, it is good
     to have a backup plan.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
 - en: 5.7 Index of Coincidence
+  id: totrans-129
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -707,9 +989,11 @@
     plaintext ON THE FIRST DAY OF SPRING A YOUNG MANS FANCY TURNED TO BASEBALL with
     a Belaso cipher using the keys MARS and VENUS, respectively. The two equal letters
     are highlighted. (It is accidental that both pairs of equal letters are F.)
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
 - en: '![5-unnumb-30](../Images/5-unnumb-30.png)'
+  id: totrans-131
   prefs: []
   type: TYPE_IMG
 - en: Now imagine two messages enciphered by the same key. Each pair of corresponding
@@ -721,16 +1005,24 @@
     depending on which letter frequency table you use. The chance of two corresponding
     ciphertext letters being equal when the same key is used is roughly 1/15, which
     is 73% higher than the 1/26 chance when the keys are different.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在想象一下两条消息被同一个密钥加密。每对相应的字母都被相同的密钥字符加密，所以如果明文字母相同，那么密文字母也将相同。A 的频率约为 0.08，所以明文字母都是
+    A 的概率为 0.08²，约为 0.0064。它们都是 B 的概率约为 0.015² = 0.000225，依此类推通过字母表。所有 26 个字母的总和约为
+    0.0645 到 0.0675，约为 1/15，取决于你使用的字母频率表。当使用相同密钥时，两个相应的密码文字母相等的机会大约是 1/15，比不同密钥时的
+    1/26 机会高出约 73%。
 - en: This fact can be exploited to determine the key length for a polyalphabetic
     cipher. Let’s number the characters in the ciphertext C[1], C[2], C[3], ... and
     let the length of the key be L. We can compare the characters in the ciphertext
     with those same characters shifted by some number of positions, say S positions.
     That is, we compare C[1] with C[1+S], C[2] with C[2+S], C[3] with C[3+S] and so
     forth.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个事实可以被利用来确定多表密码的密钥长度。让我们给密文中的字符编号为 C[1]、C[2]、C[3]，...，并且让密钥的长度为 L。我们可以将密文中的字符与同一字符移动了一定数量的位置后的字符进行比较，比如移动了
+    S 个位置。也就是说，我们将 C[1] 与 C[1+S]、C[2] 与 C[2+S]、C[3] 与 C[3+S] 进行比较，依此类推。
 - en: When the shift S is a multiple of L, then C[i] is enciphered with the same alphabet
     as C[i+S] for every position i, so the chance that two corresponding ciphertext
     characters are equal is 1/15\. If the shift is not a multiple of L, then corresponding
@@ -739,19 +1031,26 @@
     when S = L, S = 2L, and so forth. Trying several different shifts should make
     this pattern clear. The shifts producing the most matches will usually be multiples
     of the period.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 当移位 S 是 L 的倍数时，对于每个位置 i，C[i] 就会被与 C[i+S] 相同的字母表进行加密，因此两个相应的密码文字符相等的机会是 1/15。如果移位不是
+    L 的倍数，则相应的字符将不会被相同的字母表进行加密，它们相等的机会只有 1/26。当 S = L，S = 2L 时，相等字符的数量应该最多。尝试几种不同的移位应该能够清晰地显示这种模式。产生最多匹配的移位通常会是周期的倍数。
 - en: Trying many different shifts sounds like a job for a computer, but it actually
     can be done by hand without too much effort. Write the cryptogram onto two long
     strips of paper. Then just slide one strip against the other and count the number
     of equal characters for each shift. You need to space the letters evenly so they
     align correctly. This is easily managed by using graph paper, or by holding a
     ruler next to each strip while you write the letters.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 尝试许多不同的移位听起来像是计算机的工作，但实际上可以手动完成而不需要太多的努力。将密码文写在两张长条纸上。然后将一条纸滑动到另一条上，并计算每次移位时相等字符的数量。你需要均匀地间隔字母以便正确对齐。这很容易通过使用格子纸或者在写字时在每条纸旁边放置尺子来实现。
 - en: '![5-unnumb-31](../Images/5-unnumb-31.png)'
+  id: totrans-136
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-31](../Images/5-unnumb-31.png)'
 - en: The Index of Coincidence has another use that has proved of immense value for
     cryptanalysts. It can detect when two messages have been enciphered using the
     same key. Imagine that Emily is using a machine cipher that produces a polyalphabetic
@@ -761,19 +1060,26 @@
     segment of this long key. Sliding each message against the others, and employing
     both Index of Coincidence and repeated ciphertext sequences, you can detect sections
     of different messages that have been enciphered by the same part of the key.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 相关性指数还有另一种用途，对于密码分析师来说非常有价值。它可以检测出两条消息是否使用相同的密钥进行了加密。想象一下，艾米莉正在使用一个机器密码，它生成一个具有非常长周期的多表密码，比如说
+    100,000。作为对比，德国军队在第二次世界大战中使用的恩尼格玛机的周期是 26×25×26 = 16,900。假设你有数千条拦截到的消息。每条消息都使用了这个长密钥的一部分进行了加密。将每条消息与其他消息进行比较，并使用相关性指数和重复的密码文序列，你可以检测出被同一密钥部分加密的不同消息段落。
 - en: When you have found enough of these overlapping segments of the key you can
     begin splicing the segments together to get longer segments. Once enough messages
     are found that are enciphered with the same key segment you can begin to solve
     the messages by the usual means, letter frequency, contact frequency, identifying
     common words, and so forth.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你找到足够多重叠的密钥片段时，你可以开始将这些片段拼接在一起，以获得更长的片段。一旦找到足够多使用相同密钥片段加密的消息，你就可以开始通过通常的方法解读这些消息，比如字母频率、字母组合频率、识别常见词等。
 - en: 5.8 Index of Coincidence, again
+  id: totrans-139
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 5.8 再次关于巧合指数
 - en: There is another method for estimating the period of a polyalphabetic cipher,
     also called the Index of Coincidence, and also due to William F. Friedman. This
     method calculates the probability that two letters are equal when there are 2
@@ -784,8 +1090,11 @@
     1, 2 or even 3\. When the period is more than 10, the method is useless. This
     method is not much better than random guessing, so it is not worthwhile to explain
     the details.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 还有另一种估算多表密码周期的方法，也称为巧合指数，同样由威廉·F·弗里德曼提出。这种方法计算了当有 2 个字母表、3 个字母表等时，两个字母相等的概率。这些概率提前计算并保存在表中。其思想是计算给定消息的相同统计数据，并将该数字与表格进行比较。最接近的匹配应该是密码的周期。在实践中，这种方法通常很接近，但通常会偏离
+    1、2 或 3。当周期超过 10 时，该方法无效。这种方法不比随机猜测好多少，因此没有必要解释细节。
 - en: The Belaso and Vigenère ciphers continued to be widely used through the 1880s.
     As the knowledge of the Kasiski method began to spread, their use diminished,
     and they largely disappeared after the Index of Coincidence was published. Still,
@@ -796,183 +1105,264 @@
     a cipher they would make up. These were so badly mangled, that I had to create
     a webpage *mastersoftware.biz/vigenere.htm* to make sure that the ciphers were
     done correctly.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: Belaso 和 Vigenère 密码在 1880 年代仍然被广泛使用。随着 Kasiski 方法的知名度逐渐增加，它们的使用减少了，并且在巧合指数发布后基本消失了。然而，直到今天，它仍然是最受欢迎的业余密码之一。有好几次，当我告诉人们我正在写一本关于密码学的书时，他们会告诉我他们知道一种无法破解的密码。这总是指
+    Belaso 密码，他们称之为 Vigenère。然后我不得不证明它是可以被破解的，通过解读他们编造的密码。这些密码被搞得一团糟，以至于我不得不创建一个网页
+    *mastersoftware.biz/vigenere.htm* 来确保密码的正确性。
 - en: 5.9 Solving a polyalphabetic cipher
+  id: totrans-142
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 5.9 解密多表密码
 - en: Once you have found the period using either the Kasiski method or the Index
     of Coincidence, the next step is to solve the individual alphabets. Let’s look
     at the easiest case first, the Belaso cipher.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦你使用 Kasiski 方法或巧合指数法找到周期，下一步就是解读各个字母。首先让我们看一下最简单的情况，即 Belaso 密码。
 - en: 5.9.1 Solving a Belaso cipher
+  id: totrans-144
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5.9.1 解密 Belaso 密码
 - en: With the Belaso cipher all of the substitution alphabets are simply the standard
     alphabet shifted by some amount. Determine the amount and you have solved the
     cipher. The first step is to separate the characters that have been enciphered
     with each letter of the key. Let’s look again at the example from section 5.5\.
     Since we have determined that the period is 6, let’s write the ciphertext in groups
     of 6.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 Belaso 密码，所有替换字母表都只是标准字母表按一定数量的位移。确定这个数量，你就解开了密码。第一步是将使用每个密钥字母加密的字符分开。让我们再次看一下第
+    5.5 节中的示例。由于我们已经确定周期是 6，让我们将密文写成 6 个一组。
 - en: '![5-unnumb-32](../Images/5-unnumb-32.png)'
+  id: totrans-146
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-32](../Images/5-unnumb-32.png)'
 - en: The first letter in each of these groups has been enciphered with the first
     letter of the key, the second letter in each group by the second letter of the
     key, and so forth. If we wrote the ciphertext vertically in 6 columns, like this
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些组中的每个字母的第一个字母都已经用密钥的第一个字母加密，每个组中的第二个字母都由密钥的第二个字母加密，依此类推。如果我们将密文垂直地写在 6 列中，就像这样
 - en: '![5-unnumb-33](../Images/5-unnumb-33.png)'
+  id: totrans-148
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-33](../Images/5-unnumb-33.png)'
 - en: then the first column of letters would be enciphered with the first letter of
     the key, the second column of letters would be enciphered with the second key
     letter, and so on.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 那么第一列字母将用密钥的第一个字母加密，第二列字母将用第二个密钥字母加密，依此类推。
 - en: Consider each letter column separately. Each column will have normal English
     letter frequencies, but shifted according to its key letter. If we can determine
     the shifts, then we have solved the cipher. I will describe two methods, one for
     hand solution and one for computer solution. Let’s look at the paper-and-pencil
     method first.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 分别考虑每个字母列。每列都将具有正常的英文字母频率，但根据其密钥字母进行了偏移。如果我们能够确定偏移量，那么我们就解密了密码。我将描述两种方法，一种是手工解决方案，一种是计算机解决方案。我们先看看纸和铅笔的方法。
 - en: For each column, we can make a frequency count. That will give us 26 numbers.
     For paper-and-pencil solving, it is better to display the frequencies as a histogram
     (bar graph). The histogram for the first column of the ciphertext would be
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于每一列，我们可以进行频率统计。这将给我们 26 个数字。对于纸和铅笔解决方案，最好将频率显示为直方图（条形图）。密文的第一列直方图将是
 - en: '![5-unnumb-34](../Images/5-unnumb-34.png)'
+  id: totrans-152
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-34](../Images/5-unnumb-34.png)'
 - en: With only 18 letters this is rather sparse, but it is enough. Let’s compare
     this to a histogram of standard English letter frequencies, shown next, and try
     to figure out the shift.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 只有 18 个字母，这相当稀疏，但已足够。让我们将其与标准英文字母频率的直方图进行比较，接下来显示，并尝试找出偏移量。
 - en: '![5-unnumb-35](../Images/5-unnumb-35.png)'
+  id: totrans-154
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-35](../Images/5-unnumb-35.png)'
 - en: Some of the visual characteristics of this frequency distribution are (1) E
     is by far the tallest peak; (2) there are three peaks evenly spaced 4 columns
     apart, namely A,E,I, where I has the companion H; (3) there is a double peak at
     N,O; and (4) there is a triple peak at R,S,T.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个频率分布的一些视觉特征是（1）E 是远远最高的峰值；（2）有三个均匀间隔为 4 列的峰，即 A，E，I，其中 I 有伴随 H；（3）在 N，O 有双峰；（4）在
+    R，S，T 有三重峰。
 - en: Let’s try to match this histogram to the ciphertext histogram. We start by looking
     for a tall peak that could represent E. There are two tall peaks, **R** and **Y**,
     corresponding to key letters N and U. That is, if E is enciphered by N the result
     is **R**, and if E is enciphered by U the result is **Y**.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们尝试将这个直方图与密文直方图匹配。我们首先寻找一个可能代表 E 的高峰。有两个高峰，**R** 和 **Y**，分别对应密钥字母 N 和 U。也就是说，如果
+    E 被 N 加密，则结果是 **R**，如果 E 被 U 加密，则结果是 **Y**。
 - en: Next, let’s look for 3 peaks 4 spaces apart. There are two candidates, **G,K,O**
     and **N,R,V**, corresponding to key letters G and N. How about a double peak?
     Likely candidates are **N,O** and **Y,Z**, corresponding to key letters A and
     L. What about a triple peak? There is only one choice, the triple peak at **X,Y,Z**.
     This corresponds to the key letter G.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，让我们寻找间隔为 4 个空格的 3 个峰。有两个候选者，**G,K,O** 和 **N,R,V**，分别对应密钥字母 G 和 N。双峰呢？可能的候选者是
+    **N,O** 和 **Y,Z**，分别对应密钥字母 A 和 L。三重峰呢？只有一个选择，**X,Y,Z** 的三重峰。这对应于密钥字母 G。
 - en: The most likely key for the first column is G, which produces the **A,E,I**
     peaks and the **R,S,T** triple peak. The second most likely key is N, which gives
     E as the most frequent letter, and the **N,O** double peak.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一列最可能的密钥是 G，它产生**A,E,I**峰和**R,S,T**三重峰。第二可能的密钥是 N，它使得 E 成为最常见的字母，并且有**N,O**双峰。
 - en: Let’s turn our attention to the second column of the ciphertext. The letter
     frequency histogram is
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们把注意力转向密文的第二列。字母频率直方图是
 - en: '![5-unnumb-36](../Images/5-unnumb-36.png)'
+  id: totrans-160
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-36](../Images/5-unnumb-36.png)'
 - en: This time the ciphertext letter S catches our attention. If S represents plaintext
     E, then the key must be O. Let’s check this out by comparing the ciphertext histogram
     against the shifted alphabet.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 这次密文字母 S 引起了我们的注意。如果 S 代表明文 E，则密钥必须是 O。让我们通过比较密文直方图和偏移字母表来检查这一点。
 - en: '![5-unnumb-37](../Images/5-unnumb-37.png)'
+  id: totrans-162
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-37](../Images/5-unnumb-37.png)'
 - en: You can see that all of the high-frequency letters in the ciphertext, namely
     **C**, **G**, **H** and **S**, correspond to high-frequency plaintext letters,
     namely O, S, T and E, respectively. This is an excellent fit, and the second key
     letter is very probably O. The keyword starts GO.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以看到密文中所有高频字母，即 **C**，**G**，**H** 和 **S**，分别对应于高频明文字母，即 O，S，T 和 E。这是一个很好的匹配，第二个密钥字母很可能是
+    O。关键词以 GO 开始。
 - en: The other 4 key letters are determined in the same way. The keyword is GOVERN,
     and the plaintext is THE LEGISLATURE SHALL BE DIVIDED INTO TWO CHAMBERS THE UPPER
     CALLED THE SENATE AND THE LOWER IS THE HOUSE OF REPRESENTATIVES.
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 另外4个关键字母的确定方式相同。关键词是GOVERN，明文是THE LEGISLATURE SHALL BE DIVIDED INTO TWO CHAMBERS
+    THE UPPER CALLED THE SENATE AND THE LOWER IS THE HOUSE OF REPRESENTATIVES。
 - en: 'That is the hand method: make the frequency distribution visual by using histograms
     and then match the distributions by eye. For computer solution we need a numerical
     method for eyeballing the distributions to find a match. The standard method found
     in every book that discusses polyalphabetic ciphers is to use the correlation
     coefficient, specifically the Pearson product-moment correlation coefficient,
     named for Karl Pearson, a founder of modern statistics.'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是手动方法：通过使用直方图使频率分布可视化，然后通过目视匹配分布。对于计算机解决方案，我们需要一种数值方法来目测分布以找到匹配项。在每本讨论多字母密码的书籍中都可以找到的标准方法是使用相关系数，具体来说是Pearson积差相关系数，以Karl
+    Pearson，现代统计学的创始人命名。
 - en: If you know statistics, this will be familiar to you. You no doubt already have
     a statistics package with this function ready-made. Use it in good health. For
     everyone else, I will show you a method that is both simpler and faster—and exactly
     as accurate.
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你懂统计学，这会很熟悉。毫无疑问，你已经有一个带有此功能的统计软件包。好好使用它。对于其他人，我将向你展示一种更简单、更快速——而且准确无误的方法。
 - en: When we match up two frequency distributions by eye, we are trying to match
     the tallest peaks in one histogram with the tallest peaks in the other histogram.
     If we multiply their heights, we are trying to get the biggest product. If you
     go down the alphabet and add the 26 products, then the sum will be highest when
     the tall peaks line up with one another, and lowest when the highest peaks line
     up with the lowest valleys.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 当我们通过目视将两个频率分布进行匹配时，我们试图将一个直方图中最高的峰与另一个直方图中最高的峰进行匹配。如果我们将它们的高度相乘，我们试图获得最大的乘积。如果你沿着字母表向下走，并添加26个乘积，那么当高峰与另一个高峰对齐时，总和将最高，当最高峰与最低谷对齐时，总和将最低。
 - en: That’s the idea. Try each of the 26 possible shifts. Line up the letter frequencies
     of the ciphertext with the shifted frequencies for standard English, and add up
     the 26 products. The highest sum will indicate the most likely shift. This tells
     you the most likely key letter. The second-highest sum is the second most likely
     shift, and so forth. I call this technique the *Tall Peaks* method.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是想法。尝试26种可能的移位。将密文的字母频率与标准英语的移位频率对齐，并加总26个乘积。最高总和将指示最有可能的移位。这告诉你最可能的关键字母。第二高的总和是第二可能的移位，依此类推。我称这种技术为*Tall
+    Peaks*方法。
 - en: The Belaso cipher is rated Two.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: Belaso密码评级为Two。
 - en: 5.9.2 Solving a Vigenère cipher
+  id: totrans-170
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5.9.2 解密Vigenère密码
 - en: About 30 years after Belaso, Blaise de Vigenère made two improvements over the
     Belaso cipher. The first was to add guides along the outside of the tableau. This
     had the effect of producing a mixed alphabet without the work of mixing the tableau.
     Here is an example, using the keyphrase FIRST LOVE in the horizontal guides, and
     the keyword YOUTH in the vertical guides. You will find the second improvement,
     autokey, in section 5.10.
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 在Belaso之后大约30年，Blaise de Vigenère对Belaso密码进行了两项改进。第一个是在表格的外部添加指南。这样做的效果是产生了一个混合字母表，而不需要混合表格。以下是一个示例，使用水平指南中的关键词FIRST
+    LOVE，以及垂直指南中的关键词YOUTH。第二项改进，自动关键字，请参阅第5.10节。
 - en: '![5-unnumb-38](../Images/5-unnumb-38.png)'
+  id: totrans-172
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-38](../Images/5-unnumb-38.png)'
 - en: To encipher the letter B using the key letter U, find the key letter U in the
     *key guide* to the left or right of the row, and the plaintext letter B in the
     *letter guide* at the top or bottom of the column. The ciphertext letter is the
     letter in the U row and B column, namely **M**. To decipher, use the key letter
     to find the row, find the ciphertext letter on that row, and take the plaintext
     from the letter guide at the top or bottom.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 要使用关键字U加密字母B，找到左边或右边的行中的关键字U，在列的顶部或底部的字母指南中找到明文字母B。密文字母是U行和B列中的字母，即**M**。要解密，使用关键字找到行，找到该行上的密文字母，并从顶部或底部的字母指南中获取明文。
 - en: If you are enciphering by hand, I suggest drawing horizontal and vertical rules
     every 4 or 5 rows and columns. Or, use a clear plastic L-square to find the intersections
     accurately.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你是手动加密，我建议每4或5行和列绘制水平和垂直规则。或者，使用透明的塑料L型工具精确找到交点。
 - en: Here is a sample message enciphered using this form of Vigenère cipher. It has
     a period of 5.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
 - en: '![5-unnumb-39](../Images/5-unnumb-39.png)'
+  id: totrans-176
   prefs: []
   type: TYPE_IMG
 - en: This cipher has a serious weakness. Since each row in the tableau is the standard
@@ -981,6 +1371,7 @@
     cannot usefully compare the cipher alphabets to the standard alphabet because
     they are in mixed order, however, you can determine the shifts by comparing the
     cipher alphabets to one another, either by eye or by using the Tall Peaks method.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
 - en: The following figure shows the histograms for the 5 cipher alphabets, shifted
@@ -991,16 +1382,20 @@
     column. In the third column, M in the third alphabet and T in the fifth alphabet
     represent the same plaintext letter. Replace all of these by C, and so forth.
     The ciphertext letters in the 26th column would all be replaced by Z.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
 - en: '![5-unnumb-40](../Images/5-unnumb-40.png)'
+  id: totrans-179
   prefs: []
   type: TYPE_IMG
 - en: This converts the ciphertext into a simple substitution which can now be solved
     using the methods of section 5.1\. The Vigenère cipher is rated Two.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
 - en: 5.9.3 Solving a general polyalphabetic cipher
+  id: totrans-181
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1012,14 +1407,17 @@
     column. That will make it difficult for an opponent who has obtained a ciphertext
     and its corresponding plaintext to determine the key. Here is a partial example
     of a 100-row tableau:'
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
 - en: '![5-unnumb-41](../Images/5-unnumb-41.png)'
+  id: totrans-183
   prefs: []
   type: TYPE_IMG
 - en: This tableau would be used with a numeric key where 2 decimal digits would be
     used to select the row for enciphering. A 20-digit key would produce a polyalphabetic
     cipher whose period is 10.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
 - en: Solving a general polyalphabetic cipher is very like solving a monoalphabetic
@@ -1028,12 +1426,15 @@
     wrapping around from the rightmost column to the first column, as needed. There
     will be fewer occurrences of each letter in one column, so you need to make inferences
     from less data. This takes a lot of inspired guessing, which comes from experience.
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s begin with this polyalphabetic ciphertext.
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
 - en: '![5-unnumb-42](../Images/5-unnumb-42.png)'
+  id: totrans-187
   prefs: []
   type: TYPE_IMG
 - en: A quick examination of this ciphertext shows two long repeated sequences, **YSUZONSOO**
@@ -1041,6 +1442,7 @@
     the distance between the two occurrences is a multiple of 5, confirming that the
     period is 5\. These long repeats probably represent common words or phrases, or
     words specific to the subject of the message.
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
 - en: The contact charts for each of the 5 key letters follow. To make it easier to
@@ -1048,19 +1450,23 @@
     its alphabet number. So **C1** would mean the ciphertext letter **C** in alphabet
     1 (that is, enciphered with the first letter of the key), **H3** would mean ciphertext
     letter **H** in alphabet 3 (using the third letter of the key), and so forth.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
 - en: Recall that letters with many different contacts on both sides tend to be vowels,
     while letters with fewer distinct contacts tend to be consonants.
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
 - en: '![5-unnumb-43](../Images/5-unnumb-43.png)'
+  id: totrans-191
   prefs: []
   type: TYPE_IMG
 - en: Based on these contacts we can tentatively identify as vowels **G2**, **K2**,
     **O2**, **P2**, **H3**, **K5** and as consonants **R1**, **Z1**, **K3**, **N3**,
     **D4**, **S4**, **O5**, **U5**. Based on its high frequency, **S4** probably represents
     plaintext T.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
 - en: You proceed exactly as you did for simple substitution. You update the contact
@@ -1068,14 +1474,17 @@
     and you also write the ciphertext with the vowels and consonants marked. You use
     this to refine and repair the vowel/consonant identifications, and to identify
     individual letters.
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
 - en: I will not repeat all the steps taken in section 5.1\. It is the same logic,
     but the incremental steps are smaller and more numerous, with more back-tracking.
     The general polyalphabetic cipher is rated Three.
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
 - en: 5.10 Autokey
+  id: totrans-195
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -1083,6 +1492,7 @@
     to the Belaso cipher. The first improvement was placing the guides around the
     edges of the tableau to produce a mixed alphabet. The second improvement was the
     *autokey*.
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
 - en: The autokey uses the plaintext of the message as a key to encipher the rest
@@ -1093,6 +1503,7 @@
     N would also produce an **A**, so the intended recipient would have to figure
     out which was meant. Even with an odd-sized alphabet, the Cardano autokey merely
     produces a simple substitution.
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
 - en: Vigenère improved upon the Cardano method by using a lag. Vigenère used a 1-letter
@@ -1102,27 +1513,37 @@
     of letters, then that group of plaintext letters is used to encipher the second
     group, and so on. This example uses the key SAMPLE with the Belaso tableau, that
     is, unmixed alphabets.
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: Vigenère通过使用滞后改进了Cardano方法。Vigenère使用一个字母密钥来加密第一个字母，使用第一个明文字母来加密第二个字母，使用第二个明文字母来加密第三个字母，依此类推。在现代实践中，使用关键词来加密第一组字母，然后使用该组明文字母来加密第二组字母，依此类推。这个例子使用了关键词SAMPLE和Belaso表，即未混合的字母表。
 - en: '![5-unnumb-44](../Images/5-unnumb-44.png)'
+  id: totrans-199
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-44](../Images/5-unnumb-44.png)'
 - en: 'With unmixed alphabets, decryption is straightforward. The Index of Coincidence
     described in section 5.7 can be used to determine the length of the keyword. The
     index is often dramatically higher when the ciphertext is offset by a multiple
     of the key length, like this:'
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用未混合的字母表，解密是直接的。在第5.7节中描述的重合指数可以用来确定关键词的长度。当密文偏移了密钥长度的倍数时，指数通常会显著增加，就像这样：
 - en: '![5-unnumb-45](../Images/5-unnumb-45.png)'
+  id: totrans-201
   prefs: []
   type: TYPE_IMG
+  zh: '![5-unnumb-45](../Images/5-unnumb-45.png)'
 - en: Suppose you have found that the keyword has 6 letters. Try each letter of the
     alphabet for the first letter of the key. Start with A. Since the first ciphertext
     letter is L, the first plaintext letter must also be L. This will also be the
     key for the 7th letter of the message. Since the 7th ciphertext letter is X, the
     7th plaintext letter would have to be M.
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设你已经发现关键词有6个字母。尝试字母表中的每个字母作为密钥的第一个字母。从A开始。由于第一个密文字母是L，第一个明文字母也必须是L。这也将是消息第7个字母的密钥。由于第7个密文字母是X，第7个明文字母必须是M。
 - en: Proceeding this way, each guess for the first key letter gives you the corresponding
     1st, 7th, 13th, 19th, 25th and 31st characters of the plaintext. That is, it gives
     you every 6th plaintext letter. There are 26 sets of letters, one for each possible
@@ -1130,8 +1551,10 @@
     some will be implausible. Repeat this for the second key letter. Each guess for
     the second key letter gives you the corresponding 2nd, 8th, 14th, 20th, 26th and
     32nd plaintext letters.
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 按照这种方式进行，对于第一个密钥字母的每个猜测都会给出明文的第1、7、13、19、25和31个字符。也就是说，它会给出每6个明文字母。有26组字母，每个可能的密钥字母对应一组。这些6个字母的一些组会有正常的英文字母频率，一些则不太可能。对第二个密钥字母重复这个过程。对于第二个密钥字母的每个猜测都会给出明文的第2、8、14、20、26和32个字符。
 - en: Now, take the 5 most probable choices for letters 1, 7, 13, ... and pair them
     up with the 5 most probable choices for letters 2, 8, 14, ... . This will give
     you 25 sets of bigrams. Some of these will be highly likely, some will be implausible.
@@ -1140,23 +1563,31 @@
     most reasonable of these and pair them up with the 5 best choices for the fourth
     key letter. By this point some plaintext words will start to appear, and the correct
     choice of key letters will become obvious.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，取出第1、7、13等5个字母的最有可能的选择，并将它们与第2、8、14等5个字母的最有可能的选择配对。这将给出25组双字母组合。其中一些可能性很高，一些则不太可能。取出其中最合理的10组，并将它们与第三个密钥字母的5个最可能的选择配对。这将给出50组三字母组合。选择其中最合理的10组，并将它们与第四个密钥字母的5个最佳选择配对。到这一步，一些明文单词将开始出现，正确的密钥字母选择将变得明显。
 - en: If you are doing this by computer, skip the bigrams. Simply try all 26³ combinations
     for the first 3 key letters and go straight for the trigrams. Then repeat this
     for the second 3 key letters, that is, key letters 2, 3 and 4\. The most likely
     choices for the first 3 key letters and the second 3 key letters will overlap.
     The same will happen with the third and fourth sets of key letters. This will
     rapidly narrow in on the correct keyword.
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你是通过计算机进行这个过程，请跳过双字母组合。直接尝试前3个密钥字母的所有26³种组合，然后直接进入三字母组合。然后对第2、3和4个密钥字母重复这个过程。前3个密钥字母和后3个密钥字母的最可能选择会有重叠。第三组和第四组密钥字母也会发生同样的情况。这将迅速缩小到正确的关键词。
 - en: Vigenère autokey using standard alphabets is rated Three.
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用标准字母表的Vigenère自动密钥被评为Three。
 - en: 5.11 Running key
+  id: totrans-207
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 5.11 运行密钥
 - en: Running key is similar to autokey, but instead of a short keyword or keyphrase,
     running key uses a *keytext* that may be as long as the message itself. Running
     key has never been widely used in practice because it requires both parties to
@@ -1167,6 +1598,7 @@
     a keytext from a printed book that both parties have, although they must carry
     the book with them. This is not a problem for computer communication, because
     a computer can store thousands of books.
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
 - en: Again, assuming the Belaso tableau with the standard English alphabet, running
@@ -1177,6 +1609,7 @@
     English word, like THE or AND, or it might be a word related to the suspected
     subject matter. For example, if the message pertains to trade negotiations, then
     likely words might be TARIFF, SHIPPING, REPRESENTATIVE, BARGAINING, and similar.
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
 - en: The idea is to try the probable word in all possible positions in the message.
@@ -1186,6 +1619,7 @@
     more confident you can be that it is correct. Once you have found a word, you
     try to guess the letters, then the words that precede or follow it in the text
     to widen the breach.
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
 - en: There is a second technique, one which is suitable for computer solution. This
@@ -1195,6 +1629,7 @@
     A given the event B is denoted P(A|B). If AB denotes the event “A and B,” then
     the conditional probability of A given B is P(A|B) = P(AB)/P(B). That means P(AB)
     = P(A|B)P(B).
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
 - en: An example may help to clarify this. If you are throwing two standard dice,
@@ -1205,6 +1640,7 @@
     if you throw a 12 the first throw has to be 6\. Using the notation for conditional
     probability, P(A|B) = P(AB)/P(B) = (1/36)/(1/6) = 1/6\. So the conditional probability
     of throwing 12 when the first throw is 6 is 1/6.
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s use conditional probability to solve a running key cipher. The tools that
@@ -1212,6 +1648,7 @@
     can be compiled by counting the letters, bigrams and trigrams in a large body
     of text. You can find many such bodies at the Project Gutenberg website, [www.gutenberg.org](http://www.gutenberg.org).
     Select the plaintext option. You can also find some tabulations on the internet.
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
 - en: You will need to assign a probability for every possible bigram and trigram,
@@ -1224,6 +1661,7 @@
     to the greater of P(A)P(BC)/3 and P(AB)P(C)/3\. These artificial probabilities
     mean that the total probabilities for all bigrams and all trigrams are greater
     than 1\. Mathematically this is nonsense, but it has no practical effect.
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
 - en: Now that we have the necessary tools, we can tackle a running key cipher. Choose
@@ -1240,18 +1678,22 @@
     which is the probability of the trigram KLM divided by the probability of the
     bigram KL. The probability of the tetragram is thus estimated as P(JKL)P(KLM|KL).
     This is done for both the key tetragram and the plaintext tetragram ABCD.
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
 - en: Estimate the probability of this placement by multiplying the probabilities
     of the key tetragram and the plaintext tetragram. Again, keep the top 10,000 and
     toss out the rest. Keep going until the solution becomes obvious. This can all
     be done by computer, without any human supervision.
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
 - en: Vigenère running key using standard alphabets is rated Four.
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
 - en: '*5.12 Simulated rotor machines'
+  id: totrans-218
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -1261,6 +1703,7 @@
     plaintext or ciphertext characters. At least 70 different types of machines were
     produced from about 1915 until after World War II. There are several websites
     that have pictures and descriptions of these machines.
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
 - en: Each machine has one or more rotors, usually 3 to 6, but sometimes as many as
@@ -1268,9 +1711,11 @@
     some of the rotors turn so that a different substitution is used for the next
     letter. Various systems of gears, lugs, cams, levers and pawls make the rotors
     turn in unpredictable ways. That is, unpredictable for your opponent.
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
 - en: '![5-unnumb-46](../Images/5-unnumb-46.png)'
+  id: totrans-221
   prefs: []
   type: TYPE_IMG
 - en: It is easier to describe the rotor machines if we replace the letters of the
@@ -1282,23 +1727,28 @@
     such as UTF-8 code. In this system A is 65, B is 66, C is 67, through Z, which
     is 90\. Other characters such as lowercase letters, digits and punctuation are
     also replaced by their UTF-8 character codes.
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
 - en: Now that we are dealing with numbers, we can do arithmetic on them, such as
     adding to them and taking residues modulo 26 or 256, as appropriate. If you wish
     to review modular arithmetic, refer back to section 3.6.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
 - en: Cipher machines with as many as 16 rotors have been produced. This is the 10-rotor
     assembly of the Russian-made Fialka machine, which was used by the Warsaw Pact
     nations from 1956 until the 1990s. Photo courtesy of Paul Hudson and licensed
     under CC BY 2.0.
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
 - en: '![5-unnumb-47](../Images/5-unnumb-47.png)'
+  id: totrans-225
   prefs: []
   type: TYPE_IMG
 - en: 5.12.1 Single-rotor machine
+  id: totrans-226
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1309,6 +1759,7 @@
     substitution table, denoted S(N), is the substitute for the Nth letter of the
     alphabet. So S(0) is the substitute for A, S(1) is the substitute for B, and so
     forth.
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
 - en: As the rotors turn, they change position. The position can be represented by
@@ -1319,6 +1770,7 @@
     so on. It is understood that N+P wraps around, so S(26) is the same as S(0), S(27)
     is the same as S(1), and so on. In other words, N+P is really shorthand for (N+P)
     mod 26.
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
 - en: In a mechanical rotor machine, the rotors turn by different amounts after enciphering
@@ -1333,6 +1785,7 @@
     a particular lug is up or down. In a computer simulation we have no such constraints.
     The steps can be any amount from 0 to 25 positions when simulating a mechanical
     rotor, or from 0 to 255 when using 8-bit bytes to represent the characters.
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
 - en: Since we chose a key with 5 steps, this single-rotor machine will repeat after
@@ -1340,9 +1793,11 @@
     and if a+b+c+d+e is a multiple of 13, the machine will repeat after only 10 cycles.
     Obviously one rotor does not give much security. The one-rotor machine cipher
     is rated Three.
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
 - en: 5.12.2 Three-rotor machine
+  id: totrans-231
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1350,6 +1805,7 @@
     has 3 rotors and uses the 8-bit UTF-8 code. Three rotors need 3 substitution tables,
     S[1], S[2] and S[3]. When the rotors are in positions P[1], P[2] and P[3,] the
     Nth letter of the alphabet gets enciphered as S[3](S[2](S[1](N+P[1])+P[2])+P[3]).
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
 - en: 'Each of the 3 substitution tables has its own list of steps: say S[1] has steps
@@ -1359,6 +1815,7 @@
     For example, if i = 10, j = 11 and k = 13, then ijk is 1430, and the period is
     1430×256 = 366,080\. The effect is like having a polyalphabetic cipher whose tableau
     has 366,080 rows, with each row used only once per cycle.'
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
 - en: Suppose the 3 substitution tables and the sequences of steps are known, for
@@ -1366,6 +1823,7 @@
     that Emily needs to try only the 256³ = 1.67×10⁷ initial rotor settings to crack
     each message. This might take a few seconds on a current-day personal computer.
     This is misleading.
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
 - en: Consider two different states of the machine. Both states have the rotors in
@@ -1376,9 +1834,11 @@
     and all possible places in the step sequence for a total of 256³×1430, or 2.40×10^(10)
     cases. This is still feasible using a personal computer, but would take several
     hours, not a few seconds.
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
 - en: With known rotors and known step sequences, this 3-rotor cipher is rated Four.
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
 - en: If the rotors and step sequences are secret, then Emily must fall back on the
@@ -1391,6 +1851,7 @@
     of matchable positions is L-199\. When the combined total, M, of matchable positions
     for all intercepted messages exceeds √2.40×10^(10) = 1.55×10⁵, matching sections
     of text could begin to be detected.
+  id: totrans-237
   prefs: []
   type: TYPE_NORMAL
 - en: This does not seem like much, but the work to detect these overlaps is on the
@@ -1399,9 +1860,11 @@
     vowels from consonants. This will require a mainframe computer and some talented
     cryptanalysts. The 3-rotor machine with unknown rotors and unknown step sequences
     is rated Six.
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
 - en: 5.12.3 Eight-rotor machine
+  id: totrans-239
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1410,6 +1873,7 @@
     of steps for the rotors be 11, 13, 17, 19, 23, 25, 27 and 31, in some order, and
     make the sum of the steps odd for each rotor. The period of this machine is about
     5.69×10^(12).
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
 - en: If this is a hardware device, the internal wiring of the rotors and the sequences
@@ -1419,6 +1883,7 @@
     Since the period is 5.69×10^(12), the total number of states for the machine becomes
     (1.84×10^(19))×(5.69×10^(12)) = 1.05×10^(32). When the rotors and stepping sequences
     cannot be changed, this 8-rotor machine is rated Nine.
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s take this further. Instead of 8 rotors, suppose we have a supply of 16
@@ -1426,6 +1891,7 @@
     There are 5.19×10⁸ such permutations. For each such permutation there are 1.84×10^(19)
     possible initial rotor positions and 5.69×10^(12) positions for the step sequences
     for a total of 5.43×10^(40) states.
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
 - en: Even if Emily somehow knows the substitution tables and the stepping sequences
@@ -1433,12 +1899,14 @@
     machine, even using the largest and fastest supercomputer in the world. (At this
     writing the fastest supercomputer in the world is the Summit computer, capable
     of up to 200 petaflops.) This 8-rotor cipher is rated Ten.
+  id: totrans-243
   prefs: []
   type: TYPE_NORMAL
 - en: If the contents of the substitution tables and the stepping sequences are kept
     secret, or are changed frequently, this rotor cipher with 8 interchangeable rotors
     should remain far beyond the reach of the largest supercomputers for 10, 20, or
     perhaps even 30 years to come.
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
 - en: Since this is a software simulation of a rotor machine, the rotors can be changed
@@ -1448,6 +1916,7 @@
     for each message. An intermediate level of security is to use 7 standard rotors
     from the set of 16, and 1 rotor whose alphabet is generated independently for
     each message. This reduces the setup time by 87%.
+  id: totrans-245
   prefs: []
   type: TYPE_NORMAL
 - en: Even though this cipher has already earned a rating of Ten, you may still wish
@@ -1459,6 +1928,7 @@
     on the character to get the number of positions to advance the first rotor. Except
     for the first character in the message, the first rotor is stepped twice, once
     from its stepping sequence, and once using the feedback from the fourth rotor.
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
 - en: This double-stepping does not affect the encipherment of the current character.
@@ -1466,6 +1936,7 @@
     Double-stepping might be difficult to accomplish with a hardware rotor machine,
     but it can be done easily with the simulated machine since the rotors are simulated
     one at a time.
+  id: totrans-247
   prefs: []
   type: TYPE_NORMAL
 - en: BTW, it might seem like it would be stronger to use the output of the eighth
@@ -1473,10 +1944,12 @@
     character, which would be known to an eavesdropper. The outputs of the two middle
     rotors, that is, the fourth and fifth rotors, are the least accessible to an eavesdropper
     and hence the safest.
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
 - en: This feedback from the fourth rotor makes the simulated 8-rotor machine aperiodic.
     No matter how many messages are sent, Emily can never find two messages with the
     same sequence of rotor settings.******
+  id: totrans-249
   prefs: []
   type: TYPE_NORMAL

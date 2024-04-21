@@ -1,189 +1,275 @@
 - en: Appendix. Answers to exercises
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 附录。练习答案
 - en: Chapter 2
+  id: totrans-1
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 第2章
 - en: '*Can you tell if a hash function provides hiding and binding if used as a commitment
     scheme?*.'
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: '*如果哈希函数用作承诺方案，你能判断它是否提供隐藏和绑定吗？*。'
 - en: A hash function is *hiding* thanks to the pre-image resistance property; that
     is, if your input is random enough so that no one can guess it. To fix that, you
     can generate a random number and hash it with your input, and later, you can reveal
     both your input and the random number to *open* your commitment. A hash function
     is *binding* thanks to the second pre-image resistance property.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个哈希函数 *隐藏* 在于其预像抗性属性；即，如果你的输入足够随机，以至于没有人能够猜测到它。为了解决这个问题，你可以生成一个随机数，并将其与你的输入进行哈希，稍后你可以公开你的输入和随机数来
+    *打开* 你的承诺。哈希函数 *绑定* 在于第二预像抗性属性。
 - en: '*By the way, there is no way this string represents 256 bits (32 bytes), right?
     How is this secure then?*.'
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: '*顺便问一下，这个字符串有没有表示256位（32字节）的方法？这样安全吗？*。'
 - en: We don’t care about collision resistance. We only care about second pre-image
     resistance. Thus, we can truncate the digest to reduce its size.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们不关心碰撞抗性。我们只关心第二预像抗性。因此，我们可以截断摘要以减小其大小。
 - en: '*Can you guess how the Dread Pirate Roberts (the pseudonym of Silk Road’s webmaster)
     managed to obtain a hash that contains the name of the website?*.'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: '*你能猜到 Dread Pirate Roberts（Silk Road 网站管理员的化名）是如何得到包含网站名称的哈希的吗？*。'
 - en: Dread Pirate Roberts created a lot of keys until one ended up hashing to that
     cool base32 representation. Facebook did the same and is accessible from facebookcorewwwi.onion
     ([https://facebook.com/notes/protect-the-graph/making-connections-to-facebook-more-secure/1526085754298237](https://facebook.com/notes/protect-the-graph/making-connections-to-facebook-more-secure/1526085754298237)).
     These are called *vanity addresses*.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: Dread Pirate Roberts 创建了许多密钥，直到其中一个以那个酷炫的 base32 表示形式进行哈希。Facebook 也是这样做的，并且可以从
+    facebookcorewwwi.onion ([https://facebook.com/notes/protect-the-graph/making-connections-to-facebook-more-secure/1526085754298237](https://facebook.com/notes/protect-the-graph/making-connections-to-facebook-more-secure/1526085754298237))
+    访问。这些被称为 *虚荣地址*。
 - en: Chapter 3
+  id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 第3章
 - en: '*Can you figure out how a variable-length counter could possibly allow an attacker
     to forge an authentication tag?*.'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: '*你能想出可变长度计数器可能如何允许攻击者伪造身份认证标签吗？*。'
 - en: By observing the following message, where `||` represents string concatenation,
     `MAC(k,` `"1"` `||` `"1` `is` `my` `favorite` `number")`, an attacker can forge
     a valid authentication tag for the eleventh message, `MAC(k,` `"11"` `|` `"` `is`
     `my` `favorite` `number")`.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过观察以下消息，其中 `||` 表示字符串连接，`MAC(k,` `"1"` `||` `"1` `is` `my` `favorite` `number")`，攻击者可以伪造第十一条消息的有效认证标签，`MAC(k,`
+    `"11"` `|` `"` `is` `my` `favorite` `number")`。
 - en: '*Caution: not all MACs are PRFs. Can you see why?*.'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: '*注意：并非所有的 MAC 都是 PRF。你能明白为什么吗？*。'
 - en: 'Imagine that the following function is a valid MAC and PRF: `MAC(key,` `input)`,
     then is the following function a valid MAC? `NEW_MAC` `=` `MAC(key,` `input)`
     `||` `0x01`? Is it a valid PRF? It is a valid MAC as it prevents forgery, but
     it’s not a valid PRF, as you can easily distinguish the output from a totally
     random string (because the last byte is always set to 1).'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设以下函数是有效的 MAC 和 PRF：`MAC(key,` `input)`，那么以下函数是有效的 MAC 吗？`NEW_MAC` `=` `MAC(key,`
+    `input)` `||` `0x01`？它是有效的 PRF 吗？它是有效的 MAC，因为它防止伪造，但它不是有效的 PRF，因为你可以很容易地区分输出和完全随机的字符串（因为最后一个字节总是设置为
+    1）。
 - en: Chapter 6
+  id: totrans-13
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 第6章
 - en: '*Using the same shared secret with everyone would be very bad; can you see
     why?*.'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: '*如果每个人都使用相同的共享秘密会很糟糕；你能明白为什么吗？*。'
 - en: If I can encrypt messages to you with this shared secret, I can also decrypt
     messages from other people.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果我能用这个共享的秘密给你加密消息，我也可以解密其他人的消息。
 - en: '*Do you see why you can’t use the key exchange output right away?*.'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: '*你知道为什么不能立即使用密钥交换的输出吗？*。'
 - en: Remember what you’ve learned in chapter 5 on key exchanges. In (FF)DH, calculations
     happen modulo a large prime number *p*. Let’s take a small prime number as example,
     65,537\. In hexadecimal, our *p* is written as `0x010001`, and in binary, it is
     written as `0000` `0001` `0000` `0000` `0000` `0001`. In binary, notice the zeros
     preceding the first one because we represent our number in bytes (multiple of
     8 bits).
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 记住你在第5章关于密钥交换学到的知识。在 (FF)DH 中，计算是在一个大素数 *p* 的模下进行的。让我们以小素数为例，65,537\. 以十六进制表示，我们的
+    *p* 写为 `0x010001`，而在二进制中，它写为 `0000` `0001` `0000` `0000` `0000` `0001`。在二进制中，注意到第一个
+    1 之前的零，因为我们将我们的数字表示为字节（8位的倍数）。
 - en: If you understand modular arithmetic, you know that numbers modulo this prime
     *p* will never be larger, meaning that the first 7 bits will always be set to
     0\. In addition, the eighth bit will most often be set to 0 rather than 1\. This
     is not *uniformly random*. Ideally, every bit should have the same probability
     of being set to 1 or to 0.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你了解模算术，你会知道对于这个质数*p*的模数永远不会更大，这意味着前7位将始终被设置为0。此外，第八位大多数情况下会设置为0而不是1。这不是*均匀随机*的。理想情况下，每一位都应该有相同的概率被设置为1或0。
 - en: Chapter 7
+  id: totrans-19
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 第 7 章
 - en: '*As you saw in chapter 3, authentication tags produced by MACs must be verified
     in constant time to avoid timing attacks. Do you think we need to do the same
     for verifying signatures?*.'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '*正如你在第3章中所看到的，由MAC产生的认证标签必须以恒定时间验证，以避免时间攻击。你认为我们需要对验证签名做同样的事情吗？*。'
 - en: No. This is because the verification of an authentication tag involves a secret
     key. Verifying a signature only involves a public key and, thus, does not need
     to be verified in constant time.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 不需要。这是因为验证认证标签涉及到一个秘密密钥。验证签名仅涉及公钥，因此不需要以恒定时间验证。
 - en: Chapter 8
+  id: totrans-22
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 第 8 章
 - en: '*Imagine for a minute that mixing different sources of entropy was done by
     simply XORing them together. Can you see how this might fail to be contributory?*.'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '*想象一下，将不同熵源混合在一起的方法只是简单地将它们进行异或。你能看到这可能会导致不可贡献吗？*。'
 - en: A backdoored source of entropy could set its output as the XOR of all the other
     sources of entropy, effectively canceling all entropy to 0.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个带有后门的熵源可以将其输出设置为所有其他熵源的异或，有效地将所有熵取消为0。
 - en: '*Signature schemes like BLS (mentioned in figure 8.5 and in chapter 7) produce
     unique signatures, but this is not true for ECDSA and EdDSA. Do you see why?*.'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: '*BLS等签名方案（见图8.5和第7章中提到）会产生唯一的签名，但对于ECDSA和EdDSA却不成立。你明白为什么吗？*。'
 - en: In ECDSA, the signer can choose different nonces to produce different signatures
     for the same key pair and message. While EdDSA is a signature algorithm that deterministically
     derives the nonce based on the message to be signed, this does not mean that the
     signer cannot use any nonce if they so choose.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 在ECDSA中，签名者可以选择不同的随机数产生相同密钥对和消息的不同签名。而EdDSA是一种签名算法，根据要签名的消息确定地推导出随机数，但这并不意味着签名者不能选择任何随机数。
 - en: Chapter 9
+  id: totrans-27
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 第 9 章
 - en: '*A compromise of the server’s private key at some point in time would be devastating
     as MITM attackers would then be able to decrypt all previously recorded conversations.
     Do you understand how this can happen?*.'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: '*如果服务器的私钥在某个时间点被泄露，那么中间人攻击者随后将能够解密所有先前记录的对话。你明白这是如何发生的吗？*。'
 - en: The attacker would then be able to rewind history and impersonate the server
     at the time the handshake was performed. Indeed, the attacker now has the server’s
     private key. All the other information to perform the key exchange and derive
     the posthandshake symmetric keys is public.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 攻击者随后将能够倒带历史并在握手时模拟服务器。实际上，攻击者现在拥有了服务器的私钥。执行密钥交换和推导握手后对称密钥的所有其他信息都是公开的。
 - en: '*The values `signatureAlgorithm` and `signatureValue` are not contained in
     the actual certificate, `tbsCertificate`. Do you know why?*.'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: '*实际证书`tbsCertificate`中不包含值`signatureAlgorithm`和`signatureValue`。你知道为什么吗？*。'
 - en: 'The Certificate Authority (CA) needs to sign the certificate, which leads to
     a paradox: the signature cannot be part of the signature itself. The CA must,
     thus, append the signature to the certificate. Other standards and protocols might
     use different techniques. For example, you could include the signature as part
     of `tbsCertificate` and pretend that it is made of all 0s when you sign or verify
     the certificate.'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 认证机构（CA）需要签署证书，这导致了一个悖论：签名不能成为签名本身的一部分。因此，CA必须将签名附加到证书上。其他标准和协议可能使用不同的技术。例如，你可以将签名作为`tbsCertificate`的一部分，并在签署或验证证书时假装它由全0组成。
 - en: Chapter 10
+  id: totrans-32
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 第 10 章
 - en: '*Do you know why the email’s content is compressed before it is encrypted and
     not after?*.'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: '*你知道为什么电子邮件的内容在加密之前被压缩而不是之后吗？*。'
 - en: A ciphertext is indistinguishable from a random string according to the definition
     of a cipher. Due to this, compression algorithms are incapable of finding patterns
     to efficiently compress encrypted data. For this reason, compression is always
     applied before encryption.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据密码的定义，密文无法与随机字符串区分开来。因此，压缩算法无法找到有效压缩加密数据的模式。因此，压缩总是在加密之前应用。
 - en: '*Can you think of an unambiguous way of signing a message?*.'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: '*你能想到一种明确的签署消息的方法吗？*。'
 - en: 'One line: authenticate the context. A way to do this is to include both the
     sender and the recipient’s names and their public keys in the signature and then
     encrypt that.'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 一句话：验证上下文。一种方法是在签名中包含发送者和接收者的姓名和他们的公钥，然后对其进行加密。
 - en: Chapter 11
+  id: totrans-37
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 第11章
 - en: '*Sometimes applications attempt to fix the issue of the server learning about
     the user passwords at registration by having the client hash (perhaps with a password
     hash) the password before sending it to the server. Can you determine if this
     really works?*.'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: '*有时应用程序试图通过让客户端在将密码发送到服务器之前进行哈希（也许使用密码哈希）来解决服务器在注册时了解用户密码的问题。你能确定这是否有效吗？*。'
 - en: Client-side hashing alone does not work as the infamous pass-the-hash attack
     showed ([https://en.wikipedia.org/wiki/Pass_the_hash](https://en.wikipedia.org/wiki/Pass_the_hash));
     if the server stores Alice’s hashed password directly, then anyone who steals
@@ -192,13 +278,19 @@
     prevent an active attacker from knowing the original password (although an active
     attacker might be able to disable client-side hashing by updating the code of
     the client application).
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 仅仅使用客户端哈希无法防止像臭名昭著的传递哈希攻击那样的攻击（[https://en.wikipedia.org/wiki/Pass_the_hash](https://en.wikipedia.org/wiki/Pass_the_hash)）；如果服务器直接存储Alice的哈希密码，那么任何窃取它的人也可以将其用作Alice的密码进行身份验证。一些应用程序同时进行客户端哈希和服务器端哈希，这种情况下或许可以防止主动攻击者知道原始密码（尽管主动攻击者可能通过更新客户端应用程序的代码来禁用客户端哈希）。
 - en: '*Imagine a protocol where you have to enter the correct 4-digit PIN to securely
     connect to a device. What are the chances to pick a correct PIN by just guessing?*.'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: '*想象一种协议，你必须输入正确的4位PIN码才能安全连接到设备。仅仅猜测正确的PIN码的机会是多少？*。'
 - en: That’s 1 out of 10,000 chances to correctly guess something. You’d be happy
     if you were playing Lotto with these odds.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一万分之一的机会猜对某件事。如果你在乐透中有这样的几率，你会很高兴的。

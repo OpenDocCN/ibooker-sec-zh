@@ -645,10 +645,13 @@
   id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一方面，密码学是一个经常被讨论隐私问题的领域，使密码学研究成为无政治性。然而，您和我做出的决定可能会对我们的社会产生长远影响。下次设计或实施使用密码学的系统时，请考虑您将使用的威胁模型。您是将自己视为可信方，还是以一种即使您也无法访问用户数据或影响其安全性的方式设计事物？您如何通过密码学赋予用户权力？您加密了什么？前NSA局长迈克尔·海登曾说：“我们根据元数据杀人”
+    ([http://mng .bz/PX19](http://mng.bz/PX19))。
 - en: '![](../Images/16_UN08.jpg)'
   id: totrans-75
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/16_UN08.jpg)'
 - en: 'In 2012, near the coast of Santa Barbara, hundreds of cryptographers gathered
     around Jonathan Zittrain in a dark lecture hall to attend his talk, “The End of
     Crypto” ([https://www.youtube.com/watch?v=3ijjHZHNIbU](https://www.youtube.com/watch?v=3ijjHZHNIbU)).
@@ -659,6 +662,7 @@
   id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 2012年，在圣巴巴拉海岸附近，数百名密码学家聚集在一个黑暗的讲堂里，聆听乔纳森·齐特兰的演讲，“加密的终结” ([https://www.youtube.com/watch?v=3ijjHZHNIbU](https://www.youtube.com/watch?v=3ijjHZHNIbU))。这是世界上最受尊敬的密码学会议Crypto。乔纳森向房间里播放了来自电视剧《权力的游戏》的片段。在视频中，一个阉人瓦里斯向国王之手提利昂提出了一个谜语。这是谜语：
 - en: '*Three great men sit in a room: a king, a priest, and a rich man. Between them
     stands a common sellsword. Each great man bids the sellsword kill the other two.
     Who lives, who dies? Tyrion promptly answers, “Depends on the sellsword,” to which
@@ -667,16 +671,19 @@
   id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: '*三位伟大的人坐在一个房间里：一个国王，一个神父和一个富人。他们之间站着一个普通的雇佣兵。每位伟大的人都让雇佣兵杀死其他两个。谁活着，谁死了？提利昂迅速回答：“取决于雇佣兵”，阉人回答：“如果是剑客统治，为什么我们要假装国王拥有所有权力？”*。'
 - en: Jonathan then stopped the clip and pointed to the audience, yelling at them,
     “You get that you guys are the sellswords, right?”
   id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 乔纳森停止了视频并指向观众，对他们大喊道：“你们明白你们是雇佣兵，对吧？”
 - en: Summary
   id: totrans-79
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 摘要
 - en: Real-world cryptography tends to fail mostly in how it is applied. We already
     know good primitives and good protocols to use in most use cases, which leaves
     their misuse as the source of most bugs.
@@ -684,6 +691,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 真实世界的密码学在应用方面往往失败。我们已经知道在大多数用例中使用的好原语和好协议，这使得它们的误用成为大多数错误的根源。
 - en: A lot of typical use cases are already addressed by cryptographic primitives
     and protocols. Most of the time, all you’ll have to do is find a respected implementation
     that addresses your problem. Make sure to read the manual and to understand in
@@ -692,6 +700,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 大多数典型用例已经通过加密原语和协议解决。大多数情况下，您只需找到一个受人尊敬的实现来解决您的问题。确保阅读手册并了解在什么情况下可以使用原语或协议。
 - en: Real-world protocols are constructed with cryptographic primitives by combining
     them like Lego. When no well-respected protocols address your problem, you’ll
     have to assemble the pieces yourself. This is extremely dangerous as cryptographic
@@ -702,6 +711,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 真实世界的协议是通过像乐高积木一样组合加密原语构建的。当没有受人尊敬的协议解决您的问题时，您将不得不自己组装这些部件。这是极其危险的，因为加密原语有时在特定情况下使用或与其他原语或协议组合时会出现问题。在这些情况下，形式验证是发现问题的绝佳工具，尽管可能难以使用。
 - en: Implementing cryptography is not just difficult; you also have to think about
     hard-to-misuse interfaces (in the sense that good cryptographic code leaves little
     room for the user to shoot themselves in the foot).
@@ -709,6 +719,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 实施加密不仅仅是困难的；您还必须考虑难以误用的接口（好的加密代码留给用户的空间很小，不容易出错）。
 - en: Staying conservative and using tried-and-tested cryptography is a good way to
     avoid issues down the line. Issues stemming from complexity (for example, supporting
     too many cryptographic algorithms) is a big topic in the community, and steering

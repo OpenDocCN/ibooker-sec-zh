@@ -1,35 +1,51 @@
 - en: 8 User authentication
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 8 用户身份验证
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: Registering and activating new user accounts
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 注册和激活新用户账户
 - en: Installing and creating Django apps
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 安装和创建Django应用程序
 - en: Logging into and out of your project
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 登录和退出项目
 - en: Accessing user profile information
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 访问用户个人资料信息
 - en: Testing authentication
+  id: totrans-6
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 测试身份验证
 - en: Authentication and authorization are analogous to users and groups. In this
     chapter, you’ll learn about authentication by creating users; in a later chapter,
     you’ll learn about authorization by creating groups.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 身份验证和授权类似于用户和组。在本章中，你将通过创建用户来学习身份验证；在后面的章节中，你将通过创建组来学习授权。
 - en: Note At the time of this writing, *broken authentication* is number 2 on the
     OWASP Top Ten ([https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)).
     What is the OWASP Top Ten? It’s a reference designed to raise awareness about
@@ -38,78 +54,108 @@
     software security. OWASP promotes the adoption of security standards and best
     practices through open source projects, conferences, and hundreds of local chapters
     worldwide.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 在撰写本文时，*破损的身份验证* 在OWASP十大安全风险中排名第2位（[https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)）。什么是OWASP十大安全风险？它是一个旨在提高人们对网络应用程序面临的最关键安全挑战的认识的参考资料。开放网络应用安全项目（OWASP）是一个致力于提高软件安全性的非营利组织。OWASP通过开源项目、会议和全球数百个地方分会促进安全标准和最佳实践的采纳。
 - en: You’ll begin this chapter by adding a new user-registration workflow to the
     Django project you created previously. Bob uses this workflow to create and activate
     an account for himself. Next, you’ll create an authentication workflow. Bob uses
     this workflow to log in, access his profile information, and log out. HTTP session
     management, from the previous chapter, makes an appearance. Finally, you’ll write
     tests to verify this functionality.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 你将通过向之前创建的Django项目添加一个新的用户注册工作流程来开始本章。Bob 使用这个工作流程为自己创建并激活一个账户。接下来，你将创建一个身份验证工作流程。Bob
+    使用这个工作流程来登录、访问他的个人资料信息和退出。HTTP会话管理，来自上一章，也会出现。最后，你将编写测试来验证这些功能。
 - en: 8.1 User registration
+  id: totrans-10
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 8.1 用户注册
 - en: In this section, you’ll leverage `django-registration`, a Django extension library,
     to create a user-registration workflow. Along the way, you’ll learn about the
     basic building blocks of Django web development. Bob uses your user-registration
     workflow to create and activate an account for himself. This section prepares
     you and Bob for the next section, where you’ll build an authentication workflow
     for him.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，你将利用`django-registration`，一个Django扩展库，来创建一个用户注册工作流程。在此过程中，你将学习Django Web开发的基本构建模块。Bob
+    使用你的用户注册工作流程为自己创建并激活一���账户。这一节为你和Bob准备了下一节，在那里你将为他构建一个身份验证工作流程。
 - en: 'The user-registration workflow is a two-step process; you have probably already
     experienced it:'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 用户注册工作流程是一个两步过程；你可能已经体验过了：
 - en: Bob *creates* his account.
+  id: totrans-13
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: Bob *创建* 了他的账户。
 - en: Bob *activates* his account.
+  id: totrans-14
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: Bob *激活* 了他的账户。
 - en: Bob enters the user-registration workflow with a request for a user-registration
     form. He submits this form with a username, email address, and password. The server
     creates an inactive account, redirects him to a registration confirmation page,
     and sends him an account activation email.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: Bob 通过请求用户注册表单进入用户注册工作流程。他提交这个表单，包括用户名、电子邮件地址和密码。服务器创建一个未激活的账户，将他重定向到注册确认页面，并发送给他一个账户激活的电子邮件。
 - en: Bob can’t log into this account yet because the account has not been activated.
     He must verify his email address in order to activate the account. This prevents
     Mallory from creating an account with Bob’s email address, protecting you and
     Bob; you will know the email address is valid, and Bob won’t receive unsolicited
     email from you.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: Bob 目前无法登录他的账户，因为账户尚未激活。他必须验证他的电子邮件地址以激活账户。这可以防止Mallory使用Bob的电子邮件地址创建账户，保护你和Bob；你将知道电子邮件地址是有效的，而Bob不会收到你的未经请求的电子邮件。
 - en: Bob’s email contains a link he follows to confirm his email address. This link
     takes Bob back to the server, which then activates his account. Figure 8.1 depicts
     this typical workflow.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: Bob 的电子邮件包含一个链接，他点击以确认他的电子邮件地址。这个链接将Bob带回服务器，然后激活他的账户。图8.1描述了这个典型的工作流程。
 - en: '![CH08_F01_Byrne](Images/CH08_F01_Byrne.png)'
+  id: totrans-18
   prefs: []
   type: TYPE_IMG
+  zh: '![CH08_F01_Byrne](Images/CH08_F01_Byrne.png)'
 - en: Figure 8.1 A typical user registration workflow, complete with email confirmation
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 图8.1 典型的用户注册工作流程，包括电子邮件确认
 - en: 'Before you start writing code, I’m going to define a few building blocks of
     Django web development. The workflow you are about to create is composed of three
     building blocks:'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
 - en: Views
+  id: totrans-21
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Models
+  id: totrans-22
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Templates
+  id: totrans-23
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -120,6 +166,7 @@
     Django invokes the view, passing the request object into it. A view is responsible
     for creating and returning a response object. The response object represents the
     outbound HTTP response, carrying data such as the content and response headers.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
 - en: A *model* is an object-relational mapping class. Like views, models are written
@@ -128,19 +175,23 @@
     to a database table. A model class *attribute* is analogous to a database table
     column. A model *object* is analogous to a row in a database table. Views use
     models to create, read, update, and delete database records.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
 - en: A *template* represents the response of a request. Unlike views and models,
     templates are written primarily in HTML and a simple templating syntax. A view
     often uses a template to compose a response from static and dynamic content. Figure
     8.2 depicts the relationships among a view, model, and template.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
 - en: '![CH08_F02_Byrne](Images/CH08_F02_Byrne.png)'
+  id: totrans-27
   prefs: []
   type: TYPE_IMG
 - en: Figure 8.2 A Django application server uses a model-view-template architecture
     to process requests.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
 - en: 'This architecture is commonly referred to as *model-view-template* (*MVT* ).
@@ -150,38 +201,47 @@
     to call a view. An MVT view is roughly equivalent to an MVC controller; an MVC
     view is roughly equivalent to an MVT template. Table 8.1 compares the vocabularies
     of both architectures.'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
 - en: Table 8.1 MVT terminology vs. MVC terminology
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
 - en: '| MVT term | MVC term | Description |'
+  id: totrans-31
   prefs: []
   type: TYPE_TB
 - en: '| Model | Model | Object-relational mapping layer |'
+  id: totrans-32
   prefs: []
   type: TYPE_TB
 - en: '| View | Controller | Request handler responsible for logic and orchestration
     |'
+  id: totrans-33
   prefs: []
   type: TYPE_TB
 - en: '| Template | View | Response content production |'
+  id: totrans-34
   prefs: []
   type: TYPE_TB
 - en: In this book, I use MVT terminology. The user-registration workflow you are
     about to build is composed of views, models, and templates. You do not need to
     author the views or models; this work has already been done for you by the `django-registration`
     extension library.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
 - en: 'You leverage `django-registration` by installing it as a *Django app* in your
     *Django project*. What is the difference between an app and a project? These two
     terms are often confused, understandably:'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
 - en: '*Django project*—This is a collection of configuration files, such as settings.py
     and urls.py, and one or more Django apps. I showed you how to generate a Django
     project in chapter 6 with the django-admin script.'
+  id: totrans-37
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -189,85 +249,112 @@
     is responsible for a discrete set of functionality, such as user registration.
     Multiple projects can make use of the same Django app. A Django app typically
     doesn’t become large enough to be considered an application.'
+  id: totrans-38
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'From within your virtual environment, install `django-registration` with the
     following command:'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE0]'
+  id: totrans-40
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'Next, open your `settings` module and add the following line of code, shown
     in bold. This adds `django-registration` to the `INSTALLED_APPS` setting. This
     setting is a list representing the Django apps of your Django project. Make sure
     not to remove any preexisting apps:'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE1]'
+  id: totrans-42
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: ❶ Installs django-registration library
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
 - en: 'Next, run the following command from the Django project root directory. This
     command performs all database modifications needed to accommodate `django-registration`:'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE2]'
+  id: totrans-45
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: Next, open urls.py in the Django root directory. At the beginning of the file,
     add an import for the `include` function, shown in bold in listing 8.1\. Below
     the import is a list named urlpatterns. Django uses this list to map URLs of inbound
     requests to views. Add the following URL path entry, also shown in bold, to urlpatterns;
     do not remove any preexisting URL path entries.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 8.1 Mapping views to URL paths
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE3]'
+  id: totrans-48
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: ❶ Adds the include import
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Maps django-registration views to URL paths
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
 - en: Adding this line of code maps five URL paths to `django-registration` views.
     Table 8.2 illustrates which URL patterns are mapped to which views.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
 - en: Table 8.2 URL path to user-registration view mappings
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
 - en: '| URL path | django-registration view |'
+  id: totrans-53
   prefs: []
   type: TYPE_TB
 - en: '| /accounts/activate/complete/ | TemplateView |'
+  id: totrans-54
   prefs: []
   type: TYPE_TB
 - en: '| /accounts/activate/<activation_key>/ | ActivationView |'
+  id: totrans-55
   prefs: []
   type: TYPE_TB
 - en: '| /accounts/register/ | RegistrationView |'
+  id: totrans-56
   prefs: []
   type: TYPE_TB
 - en: '| /accounts/register/complete/ | TemplateView |'
+  id: totrans-57
   prefs: []
   type: TYPE_TB
 - en: '| /accounts/register/closed/ | TemplateView |'
+  id: totrans-58
   prefs: []
   type: TYPE_TB
 - en: Three of these URL paths map to `TemplateView` classes. `TemplateView` performs
     no logic and simply renders a template. In the next section, you’ll author these
     templates.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
 - en: 8.1.1 Templates
+  id: totrans-60
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -275,12 +362,15 @@
     engine. A *template engine* converts templates into responses by merging dynamic
     and static content. Figure 8.3 depicts a template engine generating an ordered
     list in HTML.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
 - en: '![CH08_F03_Byrne](Images/CH08_F03_Byrne.png)'
+  id: totrans-62
   prefs: []
   type: TYPE_IMG
 - en: Figure 8.3 A template engine combines static HTML and dynamic content.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
 - en: 'Like every other major Django subsystem, the template engine is configured
@@ -292,93 +382,140 @@
     template files. Add the following entry, also show in bold, to `DIRS`. This tells
     the template engine to look for template files in a directory called templates,
     beneath the project root directory:'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 就像Django的每个其他主要子系统一样，模板引擎在`settings`模块中配置。打开Django根目录中的`settings`模块。在此模块的顶部，添加对`os`模块的导入，如下面代码中所示。在此导入下方，找到`TEMPLATES`设置，一个模板引擎列表。找到第一个且唯一的模板引擎的`DIRS`键。`DIRS`告诉模板引擎在搜索模板文件时要使用哪些目录。将以下条目添加到`DIRS`中，同样显示为粗体，告诉模板引擎在名为templates的目录中查找模板文件，位于项目根目录下方：
 - en: '[PRE4]'
+  id: totrans-65
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: ❶ Imports the os module
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 导入os模块
 - en: ❷ Tells the template engine where to look
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 告诉模板引擎在哪里查找
 - en: 'Beneath the project root directory, create a subdirectory called templates.
     Beneath the templates directory, create a subdirectory called django_registration.
     This is where `django-registration` views expect your templates to be. Your user-registration
     workflow will use the following templates, shown here in the order Bob sees them:'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 在项目根目录下方，创建一个名为templates的子目录。在templates目录下，创建一个名为django_registration的子目录。这是`django-registration`视���期望您的模板存在的地方。您的用户注册工作流程将使用以下模板，按照Bob看到的顺序显示：
 - en: registration_form.html
+  id: totrans-69
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: registration_form.html
 - en: registration_complete.html
+  id: totrans-70
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: registration_complete.html
 - en: activation_email_subject.txt
+  id: totrans-71
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: activation_email_subject.txt
 - en: activation_email_body.txt
+  id: totrans-72
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: activation_email_body.txt
 - en: activation_complete.html
+  id: totrans-73
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: activation_complete.html
 - en: Beneath the django_registration directory, create a file named registration_form.html
     with the code in listing 8.2\. This template renders the first thing Bob sees,
     a new user-registration form. Ignore the `csrf_token` tag; I cover this in chapter
     16\. The `form.as_` `p` variable will render labeled form fields.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 在django_registration目录下，创建一个名为registration_form.html的文件，其中包含列表8.2中的代码。此模板呈现Bob看到的第一件事，一个新的用户注册表单。忽略`csrf_token`标签；我将在第16章中介绍这个。`form.as_`
+    `p`变量将呈现带标签的表单字段。
 - en: Listing 8.2 A new user-registration form
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表8.2 一个新的用户注册表单
 - en: '[PRE5]'
+  id: totrans-76
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: ❶ Necessary, but to be covered in another chapter
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 必要，但将在另一章节中介绍
 - en: ❷ Dynamically rendered as user-registration form fields
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 动态呈现为用户注册表单字段
 - en: 'Next, create a file named registration_complete.html in the same directory
     and add the following HTML to it. This template renders a simple confirmation
     page after Bob successfully registers:'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，在同一目录中创建一个名为registration_complete.html的文件，并将以下HTML添加到其中。此模板在Bob成功注册后呈现一个简单的确认页面：
 - en: '[PRE6]'
+  id: totrans-80
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: 'Create a file named activation_email_subject.txt in the same directory. Add
     the following line of code, which generates the subject line of the account activation
     email. The `site` variable will render as the hostname; for you, this will be
     `localhost`:'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 在同一目录中创建一个名为activation_email_subject.txt的文件。添加以下代码行，生成账户激活邮件的主题行。`site`变量将呈现为主机名；对于您来说，这将是`localhost`：
 - en: '[PRE7]'
+  id: totrans-82
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: 'Next, create a file named activation_email_body.txt in the same directory and
     add this line of code to it. This template represents the body of the account-activation
     email:'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，在同一目录中创建一个名为activation_email_body.txt的文件，并将以下代码行添加到其中。此模板代表账户激活邮件的正文：
 - en: '[PRE8]'
+  id: totrans-84
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 'Finally, create a file named activation_complete.html and add the following
     HTML to it. This is the last thing Bob sees in the workflow:'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，在创建一个名为activation_complete.html的文件，并将以下HTML添加到其中。这是Bob在工作流程中看到的最后一件事：
 - en: '[PRE9]'
+  id: totrans-86
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 'During this workflow, your system is going to send an email to Bob’s email
     address. Setting up an email server in your development environment would be a
     big inconvenience. Furthermore, you don’t actually own Bob’s email address. Open
@@ -386,66 +523,94 @@
     Django to redirect outbound email to your console, providing you with an easy
     way to access the user-registration link without incurring the overhead of running
     a fully functional mail server:'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 在此工作流程中，您的系统将向Bob的电子邮件地址发送一封电子邮件。在开发环境中设置电子邮件服务器将是一个很大的不便。此外，您实际上并不拥有Bob的电子邮件地址。打开设置文件，并添加以下代码以覆盖此行为。这将配置Django将出站电子邮件重定向到您的控制台，为您提供一种轻松访问用户注册链接的方式，而不会产生运行完全功能邮件服务器的开销：
 - en: '[PRE10]'
+  id: totrans-88
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 'Add the following line of code to the `settings` module. This setting represents
     the number of days Bob has to activate his account:'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 将以下代码行添加到`settings`模块中。这个设置代表Bob有多少天时间来激活他的账户：
 - en: '[PRE11]'
+  id: totrans-90
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: Alright, you’re done writing code for the user-registration workflow. Bob will
     now use it to create and activate his account.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 好了，你已经完成了用户注册工作流程的编写。Bob现在将使用它来创建和激活他的账户。
 - en: 8.1.2 Bob registers his account
+  id: totrans-92
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 8.1.2 Bob注册他的账户
 - en: 'Restart your server and point your browser to https:/./localhost:8000/accounts/regis
     ter/. The user-registration form you see contains several required fields: username,
     email, password, and password confirmation. Fill out the form as it appears in
     figure 8.4, give Bob a password, and submit the form.'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 重新启动服务器，并将浏览器指向https:/./localhost:8000/accounts/regis ter/。你看到的用户注册表单包含几个必填字段：用户名、电子邮件、密码和密码确认。按照图8.4中显示的表单填写表单，为Bob设置一个密码，并提交表单。
 - en: '![CH08_F04_Byrne](Images/CH08_F04_Byrne.png)'
+  id: totrans-94
   prefs: []
   type: TYPE_IMG
+  zh: '![CH08_F04_Byrne](Images/CH08_F04_Byrne.png)'
 - en: Figure 8.4 Bob registers an account for himself, submitting a username, his
     email address, and a password.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 图8.4 Bob为自己注册了一个账户，提交了一个用户名、他的电子邮件地址和一个密码。
 - en: Submitting the user-registration form creates an account for Bob. Bob can’t
     log into this account yet because the account is not activated. He must verify
     his email address in order to activate the account. This prevents Mallory from
     creating an account with Bob’s email address; Bob won’t receive unsolicited email,
     and you will know the email address is valid.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 提交用户注册表单为Bob创建了一个账户。Bob目前无法登录这个账户，因为账户尚未激活。他必须验证自己的电子邮件地址以激活账户。这可以防止Mallory使用Bob的电子邮件地址创建账户；Bob不会收到未经请求的电子邮件，而你将知道该电子邮件地址是有效的。
 - en: After account creation, you are redirected to the registration confirmation
     page. This page informs you to check your email. Earlier you configured Django
     to direct outbound email to your console. Look in your console for Bob’s email.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 在创建账户后，你将被重定向到注册确认页面。该页面通知你检查你的电子邮件。之前你配置Django将出站邮件重定向到你的控制台。在你的控制台中查找Bob的电子邮件。
 - en: Locate the account activation URL in Bob’s email. Notice that the URL suffix
     is an activation token. This token isn’t just a random string of characters and
     numbers; it contains a URL-encoded timestamp and a keyed hash value. The server
     creates this token by hashing the username and account creation time with an HMAC
     function. (You learned about HMAC functions in chapter 3.) The key to the HMAC
     function is `SECRET_KEY`. Figure 8.5 illustrates this process.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 在Bob的电子邮件中找到账户激活的URL。注意URL后缀是一个激活令牌。这个令牌不仅仅是一串随机的字符和数字；它包含一个URL编码的时间戳和一个带键的哈希值。服务器通过使用HMAC函数对用户名和账户创建时间进行哈希来创建这个令牌（你在第3章学习过HMAC函数）。HMAC函数的密钥是`SECRET_KEY`。图8.5说明了这个过程。
 - en: '![CH08_F05_Byrne](Images/CH08_F05_Byrne.png)'
+  id: totrans-99
   prefs: []
   type: TYPE_IMG
+  zh: '![CH08_F05_Byrne](Images/CH08_F05_Byrne.png)'
 - en: Figure 8.5 Bob submits a user-registration form and receives an account activation
     email; the account activation token is an application of keyed hashing.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 图8.5 Bob提交用户注册表单并收到账户激活邮件；账户激活令牌是一个带键哈希的应用。
 - en: Copy and paste the account activation email from your console to your browser.
     This delivers the account activation token back to the server. The server now
     extracts the username and timestamp from the URL, and recomputes the hash value.
@@ -453,30 +618,39 @@
     knows the token has been tampered with; account activation then fails. If both
     hash values match, the server knows it is the author of the token; Bob’s account
     is activated.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 从你的控制台复制并粘贴账户激活邮件到你的浏览器。这将把账户激活令牌发送回服务器。服务器现在从URL中提取用户名和时间戳，并重新计算哈希值。如果重新计算的哈希值与传入的哈希值不匹配，服务器就知道令牌已被篡改；账户激活将失败。如果两个哈希值匹配，服务器就知道它是令牌的作者；Bob的账户被激活。
 - en: After activating Bob’s account, you are redirected to a simple confirmation
     page. Bob’s account has been created and activated; you have completed your first
     workflow. In the next section, you’ll create another workflow, giving Bob access
     to his new account.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 激活Bob的账户后，你将被重定向到一个简单的确认页面。Bob的账户已经被创建和激活；你已经完成了你的第一个工作流程。在下一节中，你将创建另一个工作流程，让Bob访问他的新账户。
 - en: 8.2 User authentication
+  id: totrans-103
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 8.2 用户认证
 - en: In this section, you’ll build a second workflow for Bob. This workflow allows
     Bob to prove who he is before accessing sensitive personal information. Bob begins
     this workflow by requesting and submitting a login form. The server redirects
     Bob to a simple profile page. Bob logs out, and the server redirects him back
     to the login form. Figure 8.6 illustrates this workflow.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
 - en: '![CH08_F06_Byrne](Images/CH08_F06_Byrne.png)'
+  id: totrans-105
   prefs: []
   type: TYPE_IMG
 - en: Figure 8.6 In this authentication workflow, Bob logs in, accesses his profile
     information, and logs out.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
 - en: As with the user-registration workflow, the authentication workflow is composed
@@ -485,90 +659,116 @@
     components support common site features such as logging in, logging off, changing
     a password, and resetting a password. In the next section, you’ll leverage two
     built-in Django views.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
 - en: 8.2.1 Built-in Django views
+  id: totrans-108
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: 'To leverage Django’s built-in views, open urls.py in the Django root directory.
     Add the following URL path entry, shown in bold, to urlpatterns; do not remove
     any preexisting URL path entries:'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE12]'
+  id: totrans-110
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: ❶ Maps URL paths to built-in Django views
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
 - en: Adding this line of code maps eight URL paths to built-in views. Table 8.3 illustrates
     which URL patterns are mapped to which view classes. In this chapter, you’ll use
     the first two views, `LoginView` and `LogoutView`. You will use the other views
     in subsequent chapters.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
 - en: Table 8.3 Mapping URL paths to views
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
 - en: '| URL path | Django view |'
+  id: totrans-114
   prefs: []
   type: TYPE_TB
 - en: '| accounts/login/ | LoginView |'
+  id: totrans-115
   prefs: []
   type: TYPE_TB
 - en: '| accounts/logout/ | LogoutView |'
+  id: totrans-116
   prefs: []
   type: TYPE_TB
 - en: '| accounts/password_change/ | PasswordChangeView |'
+  id: totrans-117
   prefs: []
   type: TYPE_TB
 - en: '| accounts/password_change/done/ | PasswordChangeDoneView |'
+  id: totrans-118
   prefs: []
   type: TYPE_TB
 - en: '| accounts/password_reset/ | PasswordResetView |'
+  id: totrans-119
   prefs: []
   type: TYPE_TB
 - en: '| accounts/password_reset/done/ | PasswordResetDoneView |'
+  id: totrans-120
   prefs: []
   type: TYPE_TB
 - en: '| accounts/reset/<uidb64>/<token>/ | PasswordResetConfirmView |'
+  id: totrans-121
   prefs: []
   type: TYPE_TB
 - en: '| accounts/reset/done/ | PasswordResetCompleteView |'
+  id: totrans-122
   prefs: []
   type: TYPE_TB
 - en: Many Django projects make it to production with these views. These views are
     popular for two primary reasons. First, you get to push your code to production
     faster without reinventing the wheel. Second, and more importantly, these components
     protect you and your users by observing best practices.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
 - en: In the next section, you will create and configure your own view. Your view
     will live within a new Django app. This app lets Bob access his personal information.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
 - en: 8.2.2 Creating a Django app
+  id: totrans-125
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: 'Previously, you generated a *Django project*; in this section, you’ll generate
     a *Django app*. Run the following command from the project root directory to create
     a new app. This command generates a Django app in a new directory called profile_info:'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE13]'
+  id: totrans-127
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: Figure 8.7 illustrates the directory structure of the new app. Notice that a
     separate module is generated for app-specific models, tests, and views. In this
     chapter, you’ll modify the `views` and `tests` modules.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
 - en: '![CH08_F07_Byrne](Images/CH08_F07_Byrne.png)'
+  id: totrans-129
   prefs: []
   type: TYPE_IMG
 - en: Figure 8.7 Directory structure of a new Django app
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
 - en: Open the `views` module and add the code in listing 8.3 to it. The `ProfileView`
@@ -578,59 +778,78 @@
     `ProfileView` responds with a 401 status response. This status informs the client
     it is unauthorized to access profile information. If the user is authenticated,
     `ProfileView` responds with the user’s profile information.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 8.3 Adding a view to your app
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE14]'
+  id: totrans-133
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: ❶ Programmatically accesses the user object
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Rejects unauthenticated users
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
 - en: ❸ Renders a response
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
 - en: 'Under the new app directory (not the project root directory), add a new file
     named urls.py with the following content. This file maps URL paths to app-specific
     views:'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE15]'
+  id: totrans-138
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 'In the project root directory (not the app directory), reopen urls.py and add
     a new URL path entry, shown here in bold. This URL path entry will map `ProfileView`
     to /accounts/profile/. Leave all preexisting URL path entries in urlpatterns intact:'
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE16]'
+  id: totrans-140
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: So far, you have reused Django’s built-in views and created one of your own,
     `ProfileView`. Now it’s time to create a template for your view. Beneath the templates
     directory, create a subdirectory called registration. Create and open a file named
     login.html beneath registration. By default, `LoginView` looks here for the login
     form.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
 - en: 'Add the following HTML to login.html; Bob is going to submit his authentication
     credentials with this form. The template expression `{{ form.as_p }}` renders
     a labeled input field for both the username and password. As with the user-registration
     form, ignore the `csrf_token` syntax; this is covered in chapter 16:'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE17]'
+  id: totrans-143
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: ❶ Necessary, but to be covered in another chapter
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Dynamically rendered as username and password form fields
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
 - en: 'Create and open a file named profile.html beneath the templates directory.
@@ -639,36 +858,46 @@
     references the same user model object accessed by `ProfileView`. The last paragraph
     contains a built-in template tag called `url`. This tag will look up and render
     the URL path mapped to `LogoutView`:'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE18]'
+  id: totrans-147
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: ❶ Renders profile information, from the database, through a model object
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Dynamically generates a logout link
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
 - en: Now it’s time to log in as Bob. Before beginning the next section, you should
     do two things. First, ensure that all of your changes are written to disk. Second,
     restart the server.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
 - en: 8.2.3 Bob logs into and out of his account
+  id: totrans-151
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: 'Point your browser to https:/./localhost:8000/accounts/login/ and log in as
     Bob. After a successful login, `LoginView` will send a response to the browser
     containing two important details:'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
 - en: '`Set-Cookie` response header'
+  id: totrans-153
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Status code of 302
+  id: totrans-154
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -676,91 +905,128 @@
     learned about this header in the previous chapter.) Bob’s browser will hold on
     to a local copy of his session ID and send it back to the server on subsequent
     requests.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Set-Cookie`响应头将会将会话ID传递给浏览器。（你在上一章学习了这个头部。）Bob的浏览器将保存一个本地副本的会话ID，并在后续请求中将其发送回服务器。'
 - en: The server redirects the browser to /accounts/profile/ with a status code of
     302\. Redirects like this are a best practice after form submissions. This prevents
     a user from accidentally submitting the same form twice.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器将浏览器重定向到/accounts/profile/，状态码为302。在表单提交后进行重定向是最佳实践。这可以防止用户意外提交相同的表单两次。
 - en: The redirected request is mapped to `ProfileView` in your custom app. `ProfileView`
     uses profile.html to generate a response containing Bob’s profile information
     and a logout link.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 重定向请求在您的自定义应用中映射到`ProfileView`。`ProfileView`使用profile.html生成包含Bob的个人资料信息和注销链接的响应。
 - en: Logging out
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 注销
 - en: 'By default, `LogoutView` renders a generic logout page. To override this behavior,
     open the `settings` module and add the following line of code to it. This configures
     `LogoutView` to redirect the browser to the login page when a user logs out:'
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，`LogoutView`呈现一个通用的注销页面。要覆盖此行为，请打开`settings`模块并添加以下代码行。这将配置`LogoutView`在用户注销时将浏览器重定向到登录页面：
 - en: '[PRE19]'
+  id: totrans-160
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: Restart the server and click the logout link on the profile page. This sends
     a request to /accounts/logout/. Django maps this request to `LogoutView`.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 重新启动服务器并点击个人资料页面上的注销链接。这将发送一个请求到/accounts/logout/。Django将这个请求映射到`LogoutView`。
 - en: Like `LoginView`, `LogoutView` responds with a `Set-Cookie` response header
     and a 302 status code. The `Set-Cookie` header sets the session ID to an empty
     string, invalidating the session. The 302 status code redirects the browser to
     the login page. Bob has now logged into and out of his account, and you are finished
     with your second workflow.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 像`LoginView`一样，`LogoutView`响应一个`Set-Cookie`响应头和一个302状态码。`Set-Cookie`头将会话ID设置为空字符串，使会话无效。302状态码将浏览器重定向到登录页面。Bob现在已经登录和退出了他的账户，您已经完成了第二个工作流程。
 - en: Multifactor authentication
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 多因素身份验证
 - en: 'Passwords, unfortunately, get into the wrong hands sometimes. Many organizations
     consequently require an additional form of authentication, a feature known as
     *multifactor authentication* (*MFA*). You’ve probably already used MFA. MFA-enabled
     accounts are often guarded by a username and password challenge in addition to
     one of the following:'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 不幸的是，密码有时会落入错误的手中。因此，许多组织要求额外的身份验证形式，这个功能被称为*多因素身份验证*（*MFA*）。您可能已经使用过MFA。启用MFA的账户通常除了用户名和密码挑战外还受到以下一种或多种因素的保护：
 - en: A one-time password (OTP)
+  id: totrans-165
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一次性密码（OTP）
 - en: Key fob, access badge, or smart card
+  id: totrans-166
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 钥匙扣，门禁卡或智能卡
 - en: Biometric factors such as fingerprints or facial recognition
+  id: totrans-167
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 生物特征，如指纹或面部识别
 - en: 'At the time of this writing, I unfortunately cannot identify a compelling Python
     MFA library for this book. I hope this changes before the next edition is published.
     I certainly recommend MFA, though, so here is a list of dos and don’ts if you
     choose to adopt it:'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 在撰写本书时，很遗憾我无法找到一个令人信服的Python MFA库。希望在下一版出版之前能有所改变。不过我确实推荐MFA，所以如果你选择采用它，这里是一些该做和不该做的事项清单：
 - en: Resist the urge to build it yourself. This warning is analogous to “Don’t roll
     your own crypto.” Security is complicated, and custom security code is error prone.
+  id: totrans-169
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 抵制自己动手构建的冲动。这个警告类似于“不要自己编写加密算法。”安全是复杂的，自定义安全代码容易出错。
 - en: Avoid sending OTPs via text message or voicemail. This goes for the systems
     you build and the systems you use. Although common, these forms of authentication
     are unsafe because telephone networks are not secure.
+  id: totrans-170
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 避免通过短信或语音邮件发送OTP。这适用于您构建的系统和您使用的系统。尽管很常见，但这些形式的身份验证是不安全的，因为电话网络不安全。
 - en: Avoid asking questions like “What is your mother’s maiden name?” or “Who was
     your best friend in third grade?” Some people call these security questions, but
     I call them insecurity questions. Imagine how easy it is for an attacker to infer
     the answers to these questions by simply locating the victim’s social media account.
+  id: totrans-171
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 避免问类似“你母亲的婚前姓是什么？”或“你三年级时最好的朋友是谁？”这样的问题。有些人称之为安全问题，但我称之为不安全问题。想象一下，攻击者只需找到受害者的社交媒体账户就能轻松推断出这些问题的答案。
 - en: In this section, you wrote code to support the most fundamental features of
     a website. Now it’s time to optimize some of this code.
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，您编写了支持网站最基本功能的代码。现在是时候优化一些这些代码了。
 - en: 8.3 Requiring authentication concisely
+  id: totrans-173
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -769,6 +1035,7 @@
     code or a redirect. Django supports this behavior with a class named `LoginRequiredMixin`.
     When your view inherits from `LoginRequiredMixin`, there is no need to verify
     that the current user is authenticated; `LoginRequiredMixin` does this for you.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
 - en: In the profile_info directory, reopen the views.py file and add `LoginRequiredMixin`
@@ -776,49 +1043,64 @@
     Next, delete any code used to programmatically verify the request; this code is
     now redundant. Your class should look like the one shown here; `LoginRequiredMixin`
     and deleted code are shown in bold font.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 8.4 Prohibiting anonymous access concisely
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE20]'
+  id: totrans-177
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: ❶ Add this import.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Delete this import.
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
 - en: ❸ Add LoginRequiredMixin.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
 - en: ❹ Delete these lines of code.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
 - en: 'The `login_required` decorator is the function-based equivalent of the `LoginRequiredMixin`
     class. The following code illustrates how to prohibit anonymous access to a function-based
     view with the `login_required` decorator:'
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE21]'
+  id: totrans-183
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: ❶ Equivalent to LoginRequiredMixin
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
 - en: Your application now supports user authentication. It has been said that authentication
     makes testing difficult. This may be true in some web application frameworks,
     but in the next section, you’ll learn why Django isn’t one of them.
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
 - en: 8.4 Testing authentication
+  id: totrans-186
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: 'Security and testing have one thing in common: programmers often underestimate
     the importance of both. Typically, neither of these areas receive enough attention
     when a codebase is young. The long-term health of the system then suffers.'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
 - en: Every new feature of a system should be accompanied by tests. Django encourages
@@ -827,6 +1109,7 @@
     is to define tests for a discrete set of functionality. `TestCase` classes are
     composed of test methods. Test methods are designed to maintain the quality of
     your codebase by exercising a single feature and performing assertions.
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
 - en: Authentication is no obstacle for testing. Actual users with real passwords
@@ -836,85 +1119,111 @@
     in this chapter. The `test_authenticated_workflow` method begins by creating a
     user model for Bob. It then logs in as him, visits his profile page, and logs
     him out.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 8.5 Testing user authentication
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE22]'
+  id: totrans-191
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: ❶ Creates a test user account for Bob
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Bob logs in.
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
 - en: ❸ Accesses Bob’s profile page
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
 - en: ❹ Simulates HTTPS
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
 - en: ❺ Verifies the response
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
 - en: ❻ Verifies Bob is logged out
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
 - en: Next, add the `test_prohibit_anonymous_access` method, shown in listing 8.6\.
     This method attempts to anonymously access the profile page. The response is tested
     to ensure that the user is redirected to the login page.
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 8.6 Testing anonymous access restrictions
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE23]'
+  id: totrans-200
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: ❶ Attempts anonymous access
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Verifies the response
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
 - en: 'Run the following command from the project root directory. This executes the
     Django test runner. The test runner automatically finds and executes both tests;
     both of them pass:'
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE24]'
+  id: totrans-204
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: In this chapter, you learned how to build some of the most important features
     of any system. You know how to create and activate accounts; you know how to log
     users into and out of their accounts. In subsequent chapters, you’ll build upon
     this knowledge with topics such as password management, authorization, OAuth 2.0,
     and social login.
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
 - en: Summary
+  id: totrans-206
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: Verify the user’s email address with a two-step user-registration workflow.
+  id: totrans-207
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Views, models, and templates are the building blocks of Django web development.
+  id: totrans-208
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Don’t reinvent the wheel; authenticate users with built-in Django components.
+  id: totrans-209
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Prohibit anonymous access to restricted resources.
+  id: totrans-210
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Authentication is no excuse for untested functionality.
+  id: totrans-211
   prefs:
   - PREF_UL
   type: TYPE_NORMAL

@@ -1,26 +1,38 @@
 - en: 10 Authorization
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 10 授权
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章内容包括
 - en: Creating superusers and permissions
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 创建超级用户和权限
 - en: Managing group membership
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 管理组成员
 - en: Enforcing application-level authorization with Django
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用 Django 强制应用程序级别的授权
 - en: Testing authorization logic
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 测试授权逻辑
 - en: Authentication and authorization have a tendency to be confused with each other.
     *Authentication* relates to who a user is; *authorization* relates to what a user
     can do. Authentication and authorization are often referred to as *authn* and
@@ -28,13 +40,18 @@
     this chapter, I cover authorization, also known as *access control*, as it relates
     to application development. In the next chapter, I continue with OAuth 2, a standardized
     authorization protocol.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 认证和授权往往容易混淆。*认证* 关系到用户是谁；*授权* 关系到用户可以做什么。认证和授权通常分别称为 *authn* 和 *authz*。认证是授权的先决条件。在本章中，我涵盖了与应用程序开发相关的授权，也称为
+    *访问控制*。在下一章中，我将继续介绍 OAuth 2，一种标准化的授权协议。
 - en: Note At the time of this writing, *broken authorization* is number 5 on the
     OWASP Top Ten list of critical security risks ([https://owasp.org/www-project
     -top-ten/](https://owasp.org/www-project-top-ten/)).
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 注：在撰写本文时，*破坏授权*是 OWASP 十大关键安全风险清单上的第五项（[https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)）。
 - en: You’ll begin this chapter by diving into application-level authorization with
     permissions. A *permission* is the most atomic form of authorization. It authorizes
     a person, or a group of people, to do one and only one thing. Next, you’ll create
@@ -42,155 +59,231 @@
     console as Alice, where you’ll manage user and group permissions. Afterward, I’ll
     show you several ways to apply permissions and groups to control who can access
     protected resources.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 你将从应用程序级别的权限授权开始本章。*权限* 是授权的最原子形式。它授权一个人或一组人只能执行一件事情。接下来，你将为 Alice 创建一个超级用户帐户。然后你将以
+    Alice 的身份登录 Django 管理控制台，在那里你将管理用户和组权限。之后，我将向你展示几种应用权限和组来控制谁可以访问受保护的资源。
 - en: 10.1 Application-level authorization
+  id: totrans-9
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 10.1 应用程序级授权
 - en: 'In this section, you’ll create a new Django app called *messaging*. This app
     exposes you to the most basic elements of Django authorization, permissions. To
     create your new messaging app, run the following command in the project root directory.
     This command generates a Django app into a new directory called messaging:'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一部分，你将创建一个名为*messaging*的新 Django 应用程序。该应用程序使你接触到 Django 授权、权限的最基本元素。要创建新的消息应用程序，请在项目根目录中运行以下命令。此命令将在一个名为
+    messaging 的新目录中生成一个 Django 应用程序：
 - en: '[PRE0]'
+  id: totrans-11
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: The directory structure of the generated app is illustrated in figure 10.1\.
     In this exercise, you’ll add a class to the `models` module and modify the database
     a couple of times with a few additions to the `migrations` package.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 生成的应用程序的目录结构如图 10.1 所示。在这个练习中，你将在`models`模块中添加一个类，并通过对`migrations`包进行一些添加来多次修改数据库。
 - en: '![CH10_F01_Byrne](Images/CH10_F01_Byrne.png)'
+  id: totrans-13
   prefs: []
   type: TYPE_IMG
+  zh: '![CH10_F01_Byrne](Images/CH10_F01_Byrne.png)'
 - en: Figure 10.1 Directory structure of a new Django app, messaging
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 10.1 新 Django 应用程序 messaging 的目录结构
 - en: 'Now you need to register your Django app with your Django project. Open the
     `settings` module and locate the `INSTALLED_APPS` list. Add the line you see here
     in bold font. Make sure to leave all other previously installed apps intact:'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在你需要在 Django 项目中注册你的 Django 应用程序。打开`settings`模块，找到`INSTALLED_APPS`列表。添加你在这里看到的加粗字体的行。确保不要改变之前安装的所有其他应用程序：
 - en: '[PRE1]'
+  id: totrans-16
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 'Next, open models.py and put the following model class definition in it. `AuthenticatedMessage`
     represents a message and a hash value with two properties. In chapter 14, Alice
     and Bob are going to use this class to communicate securely:'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，打开 models.py 并将以下模型类定义放入其中。`AuthenticatedMessage`表示一个消息和一个具有两个属性的哈希值。在第
+    14 章中，Alice 和 Bob 将使用此类进行安全通信：
 - en: '[PRE2]'
+  id: totrans-18
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: As in all models, `AuthenticatedMessage` must be mapped to a database table.
     The table is created via Django migrations. (You learned about migrations in the
     previous chapter.) The mapping is handled at runtime by Django’s built-in ORM
     framework.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如所有模型一样，`AuthenticatedMessage`必须映射到一个数据库表。表是通过 Django 迁移创建的。（你在上一章学习过迁移。）映射由
+    Django 内置的 ORM 框架在运行时处理。
 - en: 'Run the following command to generate a migrations script for your model class.
     This command will automatically detect the new model class and create a new migrations
     script, shown in bold font, beneath the migrations directory:'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 运行以下命令为你的模型类生成一个迁移脚本。此命令将自动检测新模型类并在迁移目录下创建一个新的迁移脚本，显示为粗体字体：
 - en: '[PRE3]'
+  id: totrans-21
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: ❶ New migrations script
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 新的迁移脚本
 - en: 'Finally, execute your migrations script by running the following command, shown
     in bold:'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，通过运行以下命令执行你的迁移脚本，显示为粗体：
 - en: '[PRE4]'
+  id: totrans-24
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: Running your migrations script doesn’t just create a new database table; it
     also creates four new permissions behind the scenes. The next section explains
     how and why these permissions exist.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 运行你的迁移脚本不仅会创建一个新的数据库表，还会在后台创建四个新的权限。下一节将解释这些权限存在的方式和原因。
 - en: 10.1.1 Permissions
+  id: totrans-26
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 10.1.1 权限
 - en: 'Django represents permissions with a built-in model known as Permission. The
     Permission model is the most atomic element of Django authorization. Each user
     can be associated with zero to many permissions. Permissions fall into two categories:'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: Django使用内置模型Permission来表示权限。Permission模型是Django授权的最基本元素。每个用户可以关联零到多个权限。权限分为两类：
 - en: Default permissions, created automatically by Django
+  id: totrans-28
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 由Django自动创建的默认权限
 - en: Custom permissions, created by you
+  id: totrans-29
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 由你创建的自定义权限
 - en: 'Django automatically creates four default permissions for each new model. These
     permissions are created behind the scenes when you run migrations. These permissions
     allow a user to create, read, update, and delete a model. Execute the following
     code in a Django shell to observe all four default permissions, shown in bold,
     for the `AuthenticatedMessage` model:'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: Django会自动为每个新模型创建四个默认权限。当运行迁移时，这些权限在后台创建。这些权限允许用户创建、读取、更新和删除模型。在Django shell中执行以下代码，观察`AuthenticatedMessage`模型的所有四个默认权限，显示为粗体：
 - en: '[PRE5]'
+  id: totrans-31
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 'A project usually acquires the need for custom permissions as it grows. You
     declare these permissions by adding an inner `Meta` class to your model. Open
     your `models` module and add the following `Meta` class, shown in bold, to `AuthenticatedMessage`.
     The `permissions` property of the `Meta` class defines two custom permissions.
     These permissions designate which users can send and receive a message:'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 随着项目的发展，通常会需要自定义权限。通过将一个内部`Meta`类添加到你的模型中来声明这些权限。打开你的`models`模块，并向`AuthenticatedMessage`添加以下`Meta`类，显示为粗体，`Meta`类的`permissions`属性定义了两个自定义权限。这些权限指定了哪些用户可以发送和接收消息：
 - en: '[PRE6]'
+  id: totrans-33
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: ❶ Your model class
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 你的模型类
 - en: ❷ Your model Meta class
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 你的模型Meta类
 - en: 'Like default permissions, custom permissions are created automatically during
     migrations. Generate a new migrations script with the following command. As indicated
     by the output in bold font, this command generates a new script beneath the migrations
     directory:'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 与默认权限类似，自定义权限在迁移期间会自动创建。使用以下命令生成一个新的迁移脚本。如粗体字体的输出所示，此命令会在迁移目录下生成一个新的脚本：
 - en: '[PRE7]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: ❶ New migrations script
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 新的迁移脚本
 - en: 'Next, execute your migrations script with the following command:'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，使用以下命令执行你的迁移脚本：
 - en: '[PRE8]'
+  id: totrans-40
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: You have now added one app, one model, one database table, and six permissions
     to your project. In the next section, you’ll create an account for Alice, log
     in as her, and grant these new permissions to Bob.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，你已经向你的项目添加了一个应用、一个模型、一个数据库表和六个权限。在下一节中，你将为Alice创建一个账户，以她的身份登录，并将这些新权限授予Bob。
 - en: 10.1.2 User and group administration
+  id: totrans-42
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 10.1.2 用户和组管理
 - en: In this section, you’ll create a superuser, Alice. A *superuser* is a special
     administrative user with the authority to do everything; these users have all
     permissions. As Alice, you will access Django’s built-in administration console.
     By default, this console is enabled in every generated Django project. A brief
     tour of the administration console will introduce you to how Django implements
     application-level authorization.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，你将创建一个超级用户Alice。*超级用户*是具有执行所有操作权限的特殊管理用户；这些用户拥有所有权限。作为Alice，你将访问Django内置的管理控制台。默认情况下，该控制台在每个生成的Django项目中都是启用的。管理控制台的简要介绍将向你介绍Django如何实现应用级授权。
 - en: The administration console is easier to use and nicer to look at if your Django
     project can serve static content. Django can do this by itself over HTTP, but
     Gunicorn is not designed to do this over HTTPS. This problem is solved easily
@@ -198,28 +291,42 @@
     setup complexity (figure 10.2). The administration console (and the rest of your
     project) will use WhiteNoise to properly serve JavaScript, stylesheets, and images
     to your browser.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您的 Django 项目能够提供静态内容，则管理控制台更易于使用且更好看。Django 可以自行通过 HTTP 完成此操作，但 Gunicorn 不设计通过
+    HTTPS 完成此操作。这个问题很容易通过 WhiteNoise 解决，它是一个专门设计用于有效地提供静态内容并最小化设置复杂性的软件包（如图 10.2 所示）。管理控制台（以及项目的其余部分）将使用
+    WhiteNoise 正确地向您的浏览器提供 JavaScript、样式表和图像。
 - en: '![CH10_F02_Byrne](Images/CH10_F02_Byrne.png)'
+  id: totrans-45
   prefs: []
   type: TYPE_IMG
+  zh: '![CH10_F02_Byrne](Images/CH10_F02_Byrne.png)'
 - en: Figure 10.2 A Django application server delivers static resources with WhiteNoise.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 10.2 一个 Django 应用服务器使用 WhiteNoise 提供静态资源。
 - en: 'Run the following `pipenv` command from within your virtual environment to
     install WhiteNoise:'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 在虚拟环境中运行以下 `pipenv` 命令来安装 WhiteNoise：
 - en: '[PRE9]'
+  id: totrans-48
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: Now you need to activate WhiteNoise in Django via middleware. What is middleware?
     *Middleware* is a lightweight subsystem within Django that sits in the *middle*
     of each inbound request and your views, as well as in the *middle* of your views
     and each outbound response. From this position, middleware applies pre- and post-processing
     logic.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，您需要通过中间件在 Django 中激活 WhiteNoise。什么是中间件？*中间件*是 Django 中的一个轻量级子系统，位于每个入站请求和您的视图之间的*中间*，以及您的视图和每个出站响应之间的*中间*。从这个位置上，中间件应用前后处理逻辑。
 - en: Middleware logic is implemented by a collection of middleware components. Each
     component is a unique little processing hook, responsible for a specific task.
     For example, the built-in `AuthenticationMiddleware` class is responsible for
@@ -227,95 +334,143 @@
     cover in later chapters are responsible for managing security-related response
     headers. The component you are adding in this section, `WhiteNoiseMiddleware`,
     is responsible for serving static resources.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 中间件逻辑由一组中间件组件实现。每个组件都是一个独特的小型处理挂钩，负责执行特定任务。例如，内置的 `AuthenticationMiddleware`
+    类负责将入站 HTTP 会话 ID 映射到用户。我在后面的章节中介绍的一些中间件组件负责管理与安全相关的响应头。在本节中添加的组件 `WhiteNoiseMiddleware`
+    负责提供静态资源。
 - en: 'Like every other Django subsystem, middleware is configured in the `settings`
     module. Open your `settings` module and locate the `MIDDLEWARE` setting. This
     setting is a list of middleware component class names. As shown in bold font in
     the following code, add `WhiteNoiseMiddleware` to `MIDDLEWARE`. Make sure this
     component appears right after `SecurityMiddleware` and ahead of everything else.
     Do not remove any preexisting middleware components:'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 与 Django 的每个其他子系统一样，中间件在 `settings` 模块中进行配置。打开您的 `settings` 模块并找到 `MIDDLEWARE`
+    设置。该设置是一个中间件组件类名称列表。如下代码中加粗显示的那样，将 `WhiteNoiseMiddleware` 添加到 `MIDDLEWARE` 中。确保此组件紧随
+    `SecurityMiddleware` 之后，并位于所有其他内容之前。不要移除任何现有的中间件组件：
 - en: '[PRE10]'
+  id: totrans-52
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: ❶ Ensure that SecurityMiddleware remains first.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 确保 SecurityMiddleware 保持在第一位。
 - en: ❷ Adds WhiteNoise to your project
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 将 WhiteNoise 添加到您的项目中
 - en: WARNING Every generated Django project is initialized with `SecurityMiddleware`
     as the first `MIDDLEWARE` component. `SecurityMiddleware` implements some of the
     previously covered safety features such as `Strict-Transport-Security` response
     headers and HTTPS redirects. These safety features become compromised if you put
     other middleware components in front of `SecurityMiddleware`.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：每个生成的 Django 项目都使用 `SecurityMiddleware` 作为第一个 `MIDDLEWARE` 组件进行初始化。`SecurityMiddleware`
+    实现了一些先前介绍过的安全特性，如 `Strict-Transport-Security` 响应头和 HTTPS 重定向。如果将其他中间件组件放在 `SecurityMiddleware`
+    前面，这些安全特性就会受到影响。
 - en: Restart your server and point your browser to the administration console login
     page at https:/./localhost:8000/admin/. The login page should appear as it does
     in figure 10.3\. If your browser renders the same form without styling, WhiteNoise
     has not been installed. This happens if `MIDDLEWARE` was misconfigured or the
     server has not been restarted. The administration console will still work without
     WhiteNoise; it just won’t look nice.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 重新启动您的服务器，并将浏览器指向 https:/./localhost:8000/admin/ 的管理控制台登录页面。登录页面应该会显示如图 10.3\.
+    所示。如果您的浏览器以没有样式的相同表单呈现，则表示 WhiteNoise 尚未安装。如果 `MIDDLEWARE` 配置错误或服务器未重新启动，则会发生这种情况。管理控制台仍将在没有
+    WhiteNoise 的情况下工作；它只是看起来不太好而已。
 - en: '![CH10_F03_Byrne](Images/CH10_F03_Byrne.png)'
+  id: totrans-57
   prefs: []
   type: TYPE_IMG
+  zh: '![CH10_F03_Byrne](Images/CH10_F03_Byrne.png)'
 - en: Figure 10.3 Django’s administration login page
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 10.3 Django 的管理登录页面
 - en: The administration console login page requires the authentication credentials
     of a user with superuser or staff status; Django doesn’t permit regular end users
     to log in to the administration console.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 管理控制台登录页面需要具有超级用户或工作人员身份的用户的身份验证凭据；Django 不允许常规最终用户登录管理控制台。
 - en: 'From your project root directory, run the following command to create a superuser.
     This command creates a superuser in your database; it will prompt you for the
     password of the new superuser:'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 从项目根目录运行以下命令以创建超级用户。此命令在您的数据库中创建一个超级用户；它将提示您输入新超级用户的密码：
 - en: '[PRE11]'
+  id: totrans-61
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: Log in to the administration console as Alice. As a superuser, you can manage
     groups and users from the administration landing page. Navigate to the new group
     entry form by clicking Add, next to Groups.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为 Alice 登录管理控制台。作为超级用户，您可以从管理登录页面管理组和用户。单击组旁边的添加，导航到新的组输入表单。
 - en: Groups
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 小组
 - en: '*Groups* provide a way to associate a set of permissions with a set of users.
     A group can be associated with zero to many permissions, and with zero to many
     users. Every permission associated with a group is implicitly granted to every
     user of the group.'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: '*组* 提供了一种将一组权限与一组用户关联起来的方法。一个组可以与零到多个权限以及零到多个用户关联。与组关联的每个权限都隐式授予该组的每个用户。'
 - en: The new group entry form, shown in figure 10.4, requires a group name and optional
     permissions. Take a minute to observe the available permissions. Notice that they
     fall into batches of four. Each batch represents the default permissions for a
     database table, controlling who can create, read, update, and delete rows.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 新的组输入表单，如图 10.4 所示，需要组名称和可选权限。请花一分钟观察可用权限。注意它们分成了四组。每个批次代表数据库表的默认权限，控制谁可以创建、读取、更新和删除行。
 - en: '![CH10_F04_Byrne](Images/CH10_F04_Byrne.png)'
+  id: totrans-66
   prefs: []
   type: TYPE_IMG
+  zh: '![CH10_F04_Byrne](Images/CH10_F04_Byrne.png)'
 - en: Figure 10.4 A new group entry form accepts a group name and multiple group permissions.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 10.4 新的组输入表单接受组名称和多个组权限。
 - en: 'Scroll through the available permissions selector and find the permissions
     you created for the messaging app. Unlike the other batches, this one has six
     elements: four default permissions and two custom permissions.'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 浏览可用权限选择器，并找到您为消息应用程序创建的权限。与其他批次不同，这个批次有六个元素：四个默认权限和两个自定义权限。
 - en: Enter `observers` into the Name field. The `observers` group is intended to
     have read-only access to every table. Select every available permission containing
     the text “Can view.” Submit the form by clicking Save.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 在名称字段中输入`observers`。`observers`组旨在对每个表具有只读访问权限。选择包含文本“Can view”的每个可用权限。通过单击保存提交表单。
 - en: After submitting the form, you’ll be taken to a page listing all groups. Navigate
     to a similar page listing all users by clicking Users in the left sidebar. Currently,
     this page lists only Alice and Bob. Navigate to Bob’s user detail page by clicking
@@ -323,51 +478,78 @@
     for groups and permissions. In this section, as shown in figure 10.5, assign Bob
     to the `observers` group and give him all six permissions from the messaging app.
     Scroll to the bottom and click Save.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 提交表单后，您将被带到列出所有组的页面。通过单击左侧边栏中的“用户”导航到列出所有用户的类似页面。当前，此页面仅列出 Alice 和 Bob。通过单击其名称，导航到
+    Bob 的用户详细信息页面。向下滚动用户详细信息页面，直到找到两个相邻的组和权限部分。在此部分中，如图 10.5 所示，将 Bob 分配到`observers`组，并为他赋予消息应用程序的所有六个权限。滚动到底部，然后单击保存。
 - en: '![CH10_F05_Byrne](Images/CH10_F05_Byrne.png)'
+  id: totrans-71
   prefs: []
   type: TYPE_IMG
+  zh: '![CH10_F05_Byrne](Images/CH10_F05_Byrne.png)'
 - en: Figure 10.5 Assigning groups and permissions as an administrator
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 10.5 作为管理员分配组和权限
 - en: Group membership and permissions do not have to be managed manually; alternatively,
     you can do this programmatically. Listing 10.1 demonstrates how to grant and revoke
     permissions through two properties on the `User` model. Group membership is granted
     and revoked through the `groups` property. The `user_permissions` property allows
     permissions to be added or removed from a user.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 小组成员资格和权限不需要手动管理；相反，您可以通过编程方式进行管理。列表 10.1 展示了如何通过`User`模型的两个属性授予和撤销权限。小组成员资格通过`groups`属性授予和撤销。`user_permissions`属性允许向用户添加或删除权限。
 - en: Listing 10.1 Programmatically managing groups and permissions
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 10.1 编程方式管理组和权限
 - en: '[PRE12]'
+  id: totrans-75
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: ❶ Retrieves model entities
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 检索模型实体
 - en: ❷ Adds Bob to a group
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 将 Bob 添加到一个组
 - en: ❸ Adds a permission to Bob
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 为 Bob 添加权限
 - en: ❹ Removes Bob from a group
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 将 Bob 从一个组中移除
 - en: ❺ Removes a permission from Bob
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: ❺ 从 Bob 中移除一个权限
 - en: By now, you know how groups and permissions work. You know what they are, how
     to create them, and how to apply them to users. But what do they look like in
     action? In the next section, you’ll start solving problems with groups and permissions.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，你已经了解了组和权限是如何工作的。你知道它们是什么，如何创建它们，以及如何将它们应用到用户身上。但它们在实际应用中是什么样子呢？在接下来的部分，你将开始使用组和权限来解决问题。
 - en: 10.2 Enforcing authorization
+  id: totrans-82
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 10.2 强制授权
 - en: 'The whole point of authorization is to prevent users from doing things they
     aren’t supposed to do. This applies to actions within a system, such as reading
     sensitive information, and actions outside a system, such as directing flight
@@ -375,118 +557,183 @@
     hard way and the high-level easy way. In this section, I’ll show you the hard
     way first. Afterward, I’ll show you how to test whether your system is enforcing
     authorization correctly.'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 授权的整个目的是防止用户做他们不应该做的事情。这适用于系统内的操作，比如阅读敏感信息，以及系统外的操作，比如指挥飞行交通。在 Django 中有两种实施授权的方式：低级的困难方式和高级的简单方式。在本节中，我将先展示困难的方式。之后，我将向你展示如何测试你的系统是否正确地执行了授权。
 - en: 10.2.1 The low-level hard way
+  id: totrans-84
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 10.2.1 低级的困难方式
 - en: 'The `User` model features several low-level methods designed for programmatic
     permission-checking. The `has_perm` method, shown in the following code, allows
     you to access default and custom permissions alike. In this example, Bob is not
     allowed to create other users but is allowed to receive messages:'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: '`User` 模型提供了几种设计用于程序化权限检查的低级方法。下面的代码展示了 `has_perm` 方法，它允许你访问默认权限和自定义权限。在这个例子中，Bob
+    不被允许创建其他用户，但允许接收消息：'
 - en: '[PRE13]'
+  id: totrans-86
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: ❶ Bob cannot add a user.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ Bob 无法添加用户。
 - en: ❷ Bob can receive messages.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ Bob 可以接收消息。
 - en: 'The `has_perm` method will always return `True` for a superuser:'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于超级用户，`has_perm` 方法将始终返回 `True`：
 - en: '[PRE14]'
+  id: totrans-90
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: ❶ Alice can do anything.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ Alice 可以做任何事情。
 - en: 'The `has_perms` method provides a convenient way to check more than one permission
     at a time:'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: '`has_perms` 方法提供了一种方便的方式来一次检查多个权限：'
 - en: '[PRE15]'
+  id: totrans-93
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: ❶ Bob cannot add users and receive messages.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ Bob 无法添加用户和接收消息。
 - en: ❷ Bob can send and receive messages.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ Bob 可以发送和接收消息。
 - en: 'There is nothing wrong with the low-level API, but you should try to avoid
     it for two reasons:'
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 低级 API 并没有错，但你应该尽量避免使用它，原因有两个：
 - en: Low-level permission checking requires more lines of code than the approach
     I cover later in this section.
+  id: totrans-97
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 低级权限检查需要比我后面介绍的方法更多的代码行。
 - en: 'More importantly, checking permissions this way is error prone. For example,
     if you query this API about a nonexistent permission, it will simply return `False`:'
+  id: totrans-98
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 更重要的是，以这种方式检查权限容易出错。例如，如果你查询这个 API 关于一个不存在的权限，它将简单地返回 `False`：
 - en: '[PRE16]'
+  id: totrans-99
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: 'Here’s another pitfall. Permissions are fetched from the database in bulk and
     cached. This presents a dangerous trade-off. On one hand, `has_perm` and `has_perms`
     do not trigger database trips on every invocation. On the other hand, you have
     to be careful when checking a permission immediately after you apply it to a user.
     The following code snippet demonstrates why. In this example, a permission is
     taken away from Bob. The local permissions state is unfortunately not updated:'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是另一个陷阱。权限是一次从数据库中批量获取并缓存的。这带来了一个危险的折衷。一方面，`has_perm` 和 `has_perms` 在每次调用时不会触发数据库查询。另一方面，当你在将权限应用到用户之后立即检查权限时，你必须小心。下面的代码片段演示了为什么。在这个例子中，一个权限被从
+    Bob 那里拿走了。不幸的是，本地权限状态没有被更新：
 - en: '[PRE17]'
+  id: totrans-101
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: ❶ Bob begins with permission.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ Bob 从权限开始。
 - en: ❷ Bob loses permission.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ Bob 失去了权限。
 - en: ❸ Local copy is invalid.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 本地副本无效。
 - en: 'Continuing with the same example, what happens when the `refresh_from_db` method
     is called on the `User` object? The local permissions state still isn’t updated.
     To obtain a copy of the latest state, a new `User` model must be reloaded from
     the database:'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 继续使用同一个例子，当在 `User` 对象上调用 `refresh_from_db` 方法时会发生什么？本地权限状态仍然没有被更新。为了获取最新状态的副本，必须重新从数据库加载一个新的
+    `User` 模型：
 - en: '[PRE18]'
+  id: totrans-106
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: ❶ Local copy is still invalid.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 本地副本仍然无效。
 - en: ❷ Reloaded model object is valid.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 重新加载的模型对象有效。
 - en: Here’s a third pitfall. Listing 10.2 defines a view. This view performs an authorization
     check before rendering sensitive information. It has two bugs. Can you spot either
     of them?
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是第三个陷阱。列表 10.2 定义了一个视图。这个视图在渲染敏感信息之前执行授权检查。它有两个错误。你能发现其中任何一个吗？
 - en: Listing 10.2 How not to enforce authorization
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 10.2 如何不强制授权
 - en: '[PRE19]'
+  id: totrans-111
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: ❶ Checks permission
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 检查权限
 - en: ❷ Renders sensitive information
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 渲染敏感信息
 - en: 'Where’s the first bug? Like many programming languages, Python has an `assert`
     statement. This statement evaluates a condition, raising an `AssertionError` if
     the condition is `False`. In this example, the condition is a permission check.
@@ -495,24 +742,37 @@
     stands for *optimization*.) As an optimization, the Python interpreter removes
     all `assert` statements. Type the following two commands in your console to see
     for yourself:'
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一个错误在哪里？与许多编程语言一样，Python 有一个 `assert` 语句。该语句评估一个条件，如果条件为 `False`，则会引发一个 `AssertionError`。在这个例子中，条件是一个权限检查。在开发和测试环境中，assert
+    语句非常有用，但是当 Python 使用 `-O` 选项调用时，它们会产生一种虚假的安全感。（此选项代表 *优化*。）作为一种优化，Python 解释器会移除所有
+    `assert` 语句。在控制台中键入以下两个命令，自己看一下：
 - en: '[PRE20]'
+  id: totrans-115
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: ❶ Raises an AssertionError
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 引发 AssertionError
 - en: ❷ Raises nothing
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 不引发任何内容
 - en: WARNING Assert statements are a nice way to debug a program, but they should
     never be used to perform permission checks. In addition to permission checks,
     the `assert` statement should never be used for application logic in general.
     This includes all security checks. The `-O` flag is rarely used in development
     or testing environments; it is often used in production.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 assert 语句是调试程序的一种好方法，但不应用于执行权限检查。除了权限检查之外，assert 语句也不应用于一般应用程序逻辑。这包括所有安全检查。`-O`
+    标志在开发或测试环境中很少使用；它经常在生产中使用。
 - en: Where’s the second bug? Let’s assume the assertion is actually being performed
     in your production environment. As with any error, the server converts `AssertionError`
     into a status code of 500\. As defined by the HTTP specification, this code designates
@@ -520,252 +780,375 @@
     Your server now blocks unauthorized requests but isn’t producing a meaningful
     HTTP status code. A well-intentioned client now receives this code and falsely
     concludes the root problem to be server side.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二个错误在哪里？假设断言实际上是在您的生产环境中执行的。与任何错误一样，服务器会将 `AssertionError` 转换为状态码 500\. 根据
+    HTTP 规范的定义，此代码指定为内部服务器错误（[https://tools.ietf.org/html/rfc7231](https://tools.ietf.org/html/rfc7231)）。您的服务器现在阻止未经授权的请求，但未生成有意义的
+    HTTP 状态码。一个出于善意的客户端现在收到这个代码，并错误地得出根本问题是服务器端的结论。
 - en: The correct status code for an unauthorized request is 403\. A server sends
     a status code of 403 to designate a resource as forbidden. This status code reappears
     twice in this chapter, starting with the next section.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 未经授权的请求的正确状态码是 403\. 服务器发送状态码 403 以指定资源为禁止。此状态码在本章中出现了两次，从下一节开始。
 - en: 10.2.2 The high-level easy way
+  id: totrans-121
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 10.2.2 高级简单方法
 - en: 'Now I’m going to show you the easy way. This approach is cleaner, and you don’t
     have to worry about any of the aforementioned pitfalls. Django ships with several
     built-in mixins and decorators designed for authorization. Working with the following
     high-level tools is much cleaner than working with a bunch of `if` statements:'
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我将向您展示简单的方法。这种方法更清洁，您不必担心任何上述的陷阱。Django 预装了几个专为授权而设计的内置 mixin 和装饰器。使用以下高级工具比使用一堆
+    `if` 语句更清洁：
 - en: '`PermissionRequiredMixin`'
+  id: totrans-123
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`PermissionRequiredMixin`'
 - en: '`@permission_required`'
+  id: totrans-124
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`@permission_required`'
 - en: '`PermissionRequiredMixin` enforces authorization for individual views. This
     class automatically checks the permissions of the user associated with each inbound
     request. You specify which permissions to check with the `permission_required`
     property. This property can be a string representing one permission or an iterable
     of strings representing many permissions.'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: '`PermissionRequiredMixin` 强制执行各个视图的授权。此类自动检查与每个传入请求关联的用户的权限。您可以使用 `permission_required`
+    属性指定要检查的权限。此属性可以是表示一个权限的字符串，也可以是表示多个权限的字符串可迭代对象。'
 - en: The view in listing 10.3 inherits from `PermissionRequiredMixin`, shown in bold
     font. The `permission_required` property, also shown in bold, ensures that the
     user must have permission to view authenticated messages before the request is
     processed.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第 10.3 节的视图中继承自 `PermissionRequiredMixin`，如粗体字所示。`permission_required` 属性，也以粗体字显示，确保在处理请求之前用户必须具有查看经过身份验证的消息的权限。
 - en: Listing 10.3 Authorization with PermissionRequiredMixin
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 PermissionRequiredMixin 中进行授权的第 10.3 节
 - en: '[PRE21]'
+  id: totrans-128
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: ❶ Ensures permissions are checked
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 确保权限已检查
 - en: ❷ Declares which permissions to check
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 声明要检查的权限
 - en: '`PermissionRequiredMixin` responds to anonymous requests by redirecting the
     browser to the login page. As expected, it responds to unauthorized requests with
     a status code of 403.'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: '`PermissionRequiredMixin` 对匿名请求作出响应，将浏览器重定向到登录页面。如预期，对未经授权的请求作出状态码为403的响应。'
 - en: The `@permission_required` decorator is the functional equivalent of `PermissionRequiredMixin`.
     Listing 10.4 demonstrates how the `@permission_ required` decorator, shown in
     bold, enforces authorization for a function-based view. Like the previous example,
     this code ensures that the user must have permission to view authenticated messages
     before processing the request.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: '`@permission_required` 装饰器是 `PermissionRequiredMixin` 的功能等效物。列表10.4演示了 `@permission_
+    required` 装饰器的授权，它显示在粗体中，对基于函数的视图进行了授权。与前一个示例类似，此代码确保用户必须具有权限查看已认证消息才能处理请求。'
 - en: Listing 10.4 Authorization with @permission_required
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 10.4列表使用 @permission_required 进行授权
 - en: '[PRE22]'
+  id: totrans-134
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: ❶ Checks permission before processing request
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 在处理请求之前检查权限
 - en: ❷ Function-based view
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 基于函数的视图
 - en: 'Sometimes you need to guard a resource with logic more complicated than a simple
     permission check. The following pair of built-in utilities are designed to enforce
     authorization with arbitrary Python; they otherwise behave similarly to `PermissionRequiredMixin`
     and the `@permission_required` decorator:'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 有时您需要使用比简单的权限检查更复杂的逻辑来保护资源。以下一对内置实用程序旨在使用任意 Python 强制授权；它们在其他方面的行为类似于 `PermissionRequiredMixin`
+    和 `@permission_required` 装饰器：
 - en: '`UserPassesTestMixin`'
+  id: totrans-138
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`UserPassesTestMixin`'
 - en: '`@user_passes_test`'
+  id: totrans-139
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`@user_passes_test`'
 - en: The `UserPassesTestMixin`, shown in listing 10.5 in bold, guards a view with
     arbitrary logic in Python. This utility calls the `test_func` method for each
     request. The return value of this method determines whether the request is permitted.
     In this example, the user must have a new account or be Alice.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 在粗体显示的列表10.5中，`UserPassesTestMixin` 保护了使用 Python 中任意逻辑的视图。此实用程序为每个请求调用 `test_func`
+    方法。此方法的返回值确定了是否允许该请求。在此示例中，用户必须具有新账户或为 Alice。
 - en: Listing 10.5 Authorization with UserPassesTestMixin
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 10.5列表使用 UserPassesTestMixin 进行授权
 - en: '[PRE23]'
+  id: totrans-142
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: ❶ Arbitrary authorization logic
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 任意授权逻辑
 - en: The `@user_passes_test` decorator, shown in listing 10.6 in bold, is the functional
     equivalent of `UserPassesTestMixin`. Unlike `UserPassesTestMixin`, the `@user
     _passes_test` decorator responds to unauthorized requests with a redirect to the
     login page. In this example, the user must have an email address from alice.com
     or have a first name of `bob`.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 在粗体显示的列表10.6中，`@user_passes_test` 装饰器是 `UserPassesTestMixin` 的功能等效物。与 `UserPassesTestMixin`
+    不同，`@user _passes_test` 装饰器对未经授权的请求作出将浏览器重定向到登录页面的响应。在此示例中，用户必须具有来自 alice.com
+    的电子邮件地址或名为 `bob` 的名字。
 - en: Listing 10.6 Authorization with @user_passes_test
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 10.6列表使用 @user_passes_test 进行授权
 - en: '[PRE24]'
+  id: totrans-146
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: ❶ Arbitrary authorization logic
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 任意授权逻辑
 - en: ❷ Function-based view
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 基于函数的视图
 - en: 10.2.3 Conditional rendering
+  id: totrans-149
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 10.2.3 条件渲染
 - en: 'It is usually undesirable to show a user things they aren’t allowed to do.
     For example, if Bob does not have permission to delete other users, you want to
     avoid misleading him with a Delete Users link or button. The solution is to conditionally
     render the control: you hide it from the user or show it to them in a disabled
     state.'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常，向用户显示他们无权执行的操作是不可取的。例如，如果 Bob 没有权限删除其他用户，您希望避免用一个删除用户的链接或按钮误导他。解决方案是有条件地呈现控件：您将其从用户那里隐藏，或以禁用状态显示给他们。
 - en: 'Authorization-based conditional rendering is built into the default Django
     templating engine. You access the permissions of the current user through the
     `perms` variable. The following template code illustrates how to conditionally
     render a link if the current user is allowed to send messages. The `perms` variable
     is in bold:'
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于授权的条件渲染内置于默认的 Django 模板引擎中。您通过 `perms` 变量访问当前用户的权限。以下模板代码说明了如何在当前用户被允许发送消息时有条件地呈现链接。`perms`
+    变量已用粗体标出：
 - en: '[PRE25]'
+  id: totrans-152
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: 'Alternatively, you can use this technique to render a control as disabled.
     The following control is visible to anyone; it is enabled only for those permitted
     to create new users:'
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者，您可以使用此技术将控件呈现为已禁用状态。以下控件对任何人都可见；仅对被允许创建新用户的人启用：
 - en: '[PRE26]'
+  id: totrans-154
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: WARNING Never let conditional rendering become a false sense of security. It
     will never be a substitute for server-side authorization checks. This applies
     to server-side and client-side conditional rendering.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：永远不要让条件渲染成为一种虚假的安全感。它永远不会取代服务器端的授权检查。这适用于服务器端和客户端的条件渲染。
 - en: Don’t be misled by this functionality. Conditional rendering is a good way to
     improve the user experience, but it isn’t an effective way to enforce authorization.
     It doesn’t matter if the control is hidden or disabled; neither situation can
     stop a user from sending a malicious request to the server. Authorization must
     be enforced server side; nothing else matters.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 不要被这个功能所误导。条件渲染是改善用户体验的好方法，但它并不是执行授权的有效方法。控件是隐藏还是禁用都无关紧要；这两种情况都不能阻止用户向服务器发送恶意请求。授权必须在服务器端执行；其他任何事情都不重要。
 - en: 10.2.4 Testing authorization
+  id: totrans-157
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 10.2.4 测试授权
 - en: In chapter 8, you learned authentication is no obstacle for testing; this holds
     true for authorization as well. Listing 10.7 demonstrates how to verify that your
     system is properly guarding a protected resource.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第 8 章中，你了解到认证对于测试来说不是障碍；这也适用于授权。清单 10.7 展示了如何验证你的系统是否正确地保护了受保护的资源。
 - en: The setup method of `TestAuthorization` creates and authenticates a new user,
     Charlie. The test method starts by asserting that Charlie is forbidden to view
     messages, shown in bold. (You learned earlier that a server communicates this
     with a status code of 403.) The test method then verifies that Charlie can view
     messages after granting him permission; web servers communicate this with a status
     code of 200, also shown in bold.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: '`TestAuthorization` 的设置方法创建并验证了一个名为 Charlie 的新用户。测试方法从断言 Charlie 被禁止查看消息开始，显示为粗体。（你之前学过服务器用状态码
+    403 来传达这一信息。）然后，测试方法验证了在授予 Charlie 权限后他可以查看消息；网络服务器用状态码 200 来传达这一信息，也显示为粗体。'
 - en: Listing 10.7 Testing authorization
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 清单 10.7 测试授权
 - en: '[PRE27]'
+  id: totrans-161
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: ❶ Creates an account for Charlie
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 为 Charlie 创建账户
 - en: ❷ Asserts no access
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 断言无法访问
 - en: ❸ Grants permission
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 授予权限
 - en: ❹ Asserts access
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 断言可以访问
 - en: In the previous section, you learned how to grant authorization; in this section,
     you learned how to enforce it. I think it’s safe to say this subject isn’t as
     complex as some of the other material in this book. For example, the TLS handshake
     and key derivation functions are much more complicated. Despite how straightforward
     authorization is, a surprisingly high percentage of organizations get it wrong.
     In the next section, I’ll show you a rule of thumb for avoiding this.
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 在前一节中，你学会了如何授予权限；在本节中，你学会了如何执行权限。我认为可以肯定地说，这个主题不像本书中的其他一些材料那么复杂。例如，TLS 握手和密钥派生函数要复杂得多。尽管授权看起来很简单，但令人惊讶的是，有相当高的组织都做错了。在下一节中，我会向你展示一个规则，以避免这种情况。
 - en: 10.3 Antipatterns and best practices
+  id: totrans-167
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 10.3 反模式和最佳实践
 - en: In July of 2020, a small group of attackers gained access to one of Twitter’s
     internal administrative systems. From this system, the attackers reset the passwords
     for 130 prominent Twitter accounts. The accounts of Elon Musk, Joe Biden, Bill
     Gates, and many other public figures were affected. Some of these hijacked accounts
     were then used to target millions of Twitter users with a bitcoin scam, netting
     around $120,000.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 2020年7月，一小群攻击者成功进入了 Twitter 的一个内部管理系统。攻击者通过这个系统重置了 130 个知名 Twitter 账户的密码。埃隆·马斯克、乔·拜登、比尔·盖茨等许多公众人物的账户受到了影响。其中一些被劫持的账户随后被用于针对数百万
+    Twitter 用户进行比特币诈骗，获得了约 12 万美元的收入。
 - en: According to two former Twitter employees, more than 1000 employees and contractors
     had access to the compromised internal administrative system ([http://mng.bz/9NDr](http://mng.bz/9NDr)).
     Although Twitter declined to comment on this number, I’ll go far enough to say
     it wouldn’t make them worse than most organizations. Most organizations have at
     least one shoddy internal tool allowing way too many permissions to be granted
     to way too many users.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据两名前 Twitter 员工的说法，超过 1000 名员工和承包商可以访问受损的内部管理系统（[http://mng.bz/9NDr](http://mng.bz/9NDr)）。尽管
+    Twitter 拒绝就此数字发表评论，但我可以肯定地说这并不会使他们比大多数组织更糟糕。大多数组织至少有一个糟糕的内部工具，允许太多权限被授予太多用户。
 - en: This antipattern, in which everyone can do everything, stems from an organization’s
     failure to apply the principle of least privilege. As noted in chapter 1, the
     PLP states that a user or system should be given only the minimal permissions
     needed to perform their responsibilities. Less is more; err on the safe side.
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种反模式，即每个人都可以做任何事情，源于组织未能应用最小权限原则。正如第 1 章所指出的，PLP 表明用户或系统只应被赋予执行其职责所需的最低权限。越少越好；要保守行事。
 - en: 'Conversely, some organizations have too many permissions and too many groups.
     These systems are more secure, but the administrative and technical maintenance
     costs are prohibitive. How does an organization strike a balance? Generally speaking,
     you want to favor the following two rules of thumb:'
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 相反，一些组织有太多的权限和太多的群组。这些系统更安全，但行政和技术维护成本是高得令人难以承受的。一个组织如何平衡？一般来说，你应该偏爱以下两个经验法则：
 - en: '*Grant* authorization with group membership.'
+  id: totrans-172
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通过组成员资格授予权限。
 - en: '*Enforce* authorization with individual standalone permissions.'
+  id: totrans-173
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通过独立的独立权限强制执行授权。
 - en: This approach minimizes technical costs because your code doesn’t need to change
     every time a group gains or loses a user or a responsibility. The administrative
     costs stay low, but only if each group is defined in a meaningful way. As a rule
@@ -773,42 +1156,61 @@
     your users fall into a category like “sales representative” or “backend operations
     manager,” your system should probably just model them with a group. Don’t be creative
     when you name the group; just call it whatever they refer to themselves as.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种方法可以减少技术成本，因为每次一个群体增加或减少用户或职责时，你的代码都不需要改变。行政成本保持低廉，但前提是每个群体都以有意义的方式定义。作为一个经验法则，创建模拟实际现实世界组织角色的群体。如果你的用户属于“销售代表”或“后端运营经理”这样的类别，你的系统可能只需要用一个组来模拟他们。在为群体命名时不要创造性；只需使用他们自己称呼的名字。
 - en: Authorization is a vital component of any secure system. You know how to grant
     it, enforce it, and test it. In this chapter, you learned about this topic as
     it applies to application development. In the next chapter, I continue with this
     topic as I cover OAuth 2, an authorization protocol. This protocol allows a user
     to authorize third-party access to protected resources.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 授权是任何安全系统的重要组成部分。你知道如何授予、强制执行和测试它。在本章中，你了解了在应用程序开发中应用的这个主题。在下一章中，我将继续讲述这个主题，介绍
+    OAuth 2，一个授权协议。这个协议允许用户授权第三方访问受保护的资源。
 - en: Summary
+  id: totrans-176
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 概要
 - en: Authentication relates to who you are; authorization relates to what you can
     do.
+  id: totrans-177
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 认证与你是谁有关；授权与你能做什么有关。
 - en: Users, groups, and permissions are the building blocks of authorization.
+  id: totrans-178
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 用户、组和权限是授权的构建模块。
 - en: WhiteNoise is a simple and efficient way to serve static resources.
+  id: totrans-179
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: WhiteNoise 是一种简单而高效的静态资源服务方式。
 - en: Django’s administration console enables superusers to manage users.
+  id: totrans-180
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Django 的管理控制台使超级用户能够管理用户。
 - en: Prefer high-level authorization APIs over low-level APIs.
+  id: totrans-181
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 更倾向于使用高级授权 API 而不是低级 API。
 - en: In general, enforce authorization via standalone permissions; grant authorization
     via group membership.
+  id: totrans-182
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通常情况下，通过独立权限来强制执行授权；通过组成员资格授予权限。

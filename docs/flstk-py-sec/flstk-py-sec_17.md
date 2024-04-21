@@ -83,13 +83,13 @@ Mallory 将这个 URL 发送给 Bob 的短信。他上钩了，点击了链接�
 
 在 Mallory 黑掉 Bob 后，Alice 决心修复她的网站。她将结果页面更改为使用客户端渲染显示用户的搜索词。以下代码说明了她的新结果页面是如何做到这一点的。请注意，现在浏览器而不是服务器从 URL 中提取搜索词。由于搜索词只是不再反映，所以反射型 XSS 漏洞已经不存在：
 
-```py
+```html
 <html>
   <head>
     <script>
         const url = new URL(window.location.href);
-        const terms = url.searchParams.get('terms');    # ❶
-        document.write('You searched for ' + terms);    # ❷
+        const terms = url.searchParams.get('terms');    // ❶
+        document.write('You searched for ' + terms);    // ❷
 
     </script>
   </head>
@@ -147,13 +147,13 @@ XSS 抵御是防御深度的完美示例。本章的其余部分将教你如何�
 
 第 14.1 列表 创建新消息的简单模板
 
-```py
+```html
 <html>
 
     <form method='POST'>
-        {% csrf_token %}            # ❶
+        {% csrf_token %}            <!-- ❶ -->
         <table>
-            {{ form.as_table }}     # ❷
+            {{ form.as_table }}     <!-- ❷ -->
         </table>
         <input type='submit' value='Submit'>
     </form>
@@ -424,10 +424,10 @@ class AuthenticatedMessageForm(Form):
 
 与其他主要的 Web 框架一样，Django 的模板引擎会自动转义输出，转义特殊的 HTML 字符。例如，如果您从数据库中提取一些数据并在模板中呈现它，您就不必担心持久性 XSS 攻击：
 
-```py
+```html
 <html>
     <div>
-        {{ fetched_from_db }}     # ❶
+        {{ fetched_from_db }}     <!-- ❶ -->
     <div>
 </html>
 ```
@@ -436,10 +436,10 @@ class AuthenticatedMessageForm(Form):
 
 此外，如果您的模板呈现了一个请求参数，您就不必担心引入反射型 XSS 漏洞：
 
-```py
+```html
 <html>
     <div>
-        {{ request.GET.query_parameter }}    # ❶
+        {{ request.GET.query_parameter }}    <!-- ❶ -->
     <div>
 </html>
 ```
@@ -474,13 +474,13 @@ $ python manage.py shell
 
 Django 的模板引擎提供了许多内置标记、过滤器和实用函数用于渲染 HTML。这里以粗体显示的内置 `autoescape` 标记旨在明确暂停模板中一部分的自动特殊字符转义。当模板引擎解析此标记时，它会渲染其中的所有内容而不转义特殊字符。这意味着以下代码容易受到 XSS 攻击：
 
-```py
+```html
 <html>
-    {% autoescape off %}        # ❶
+    {% autoescape off %}        <!-- ❶ -->
         <div>
             {{ request.GET.query_parameter }}
         </div>
-    {% endautoescape %}         # ❷
+    {% endautoescape %}         <!-- ❷ -->
 </html>
 ```
 
@@ -490,7 +490,7 @@ Django 的模板引擎提供了许多内置标记、过滤器和实用函数用�
 
 `autoescape` 标记的有效用例很少且值得怀疑。例如，也许有人决定在数据库中存储 HTML，现在你被困承担渲染责任。这也适用于下一个以粗体显示的内置 `safe` 过滤器。该过滤器暂停模板中单个变量的自动特殊字符转义。尽管这个过滤器的名称，以下代码容易受到 XSS 攻击：
 
-```py
+```html
 <html>
     <div>
         {{ request.GET.query_parameter|safe }}
@@ -531,13 +531,13 @@ $ python manage.py shell
 
 这个名副其实的内置 `escape` 过滤器，以粗体显示，会触发模板中单个变量的特殊字符转义。在自动 HTML 输出转义已关闭的块内，此过滤器按预期工作。以下代码是安全的：
 
-```py
+```html
 <html>
-    {% autoescape off %}                               # ❶
+    {% autoescape off %}                               <!-- ❶ -->
         <div>
-            {{ request.GET.query_parameter|escape }}   # ❷
+            {{ request.GET.query_parameter|escape }}   <!-- ❷ -->
         </div>
-    {% endautoescape %}                                # ❸
+    {% endautoescape %}                                <!-- ❸ -->
 </html>
 ```
 
@@ -565,7 +565,7 @@ $ python manage.py shell
 
 以下是一个简单模板的示例。如粗体所示，`request`参数确定了`class`属性的值。如果`request`参数等于普通的 CSS 类名，则此页面将按预期行为。另一方面，如果参数包含特殊的 HTML 字符，Django 将像往常一样对其进行转义：
 
-```py
+```html
 <html>
     <div class={{ request.GET.query_parameter }}>
         XSS without special characters

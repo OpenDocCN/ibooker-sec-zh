@@ -12,14 +12,14 @@
 
 列表 18.1 查理的网站使用普通的 HTML 表单发射导弹
 
-```py
+```html
 <html>
     <body>
         <form method='POST' action='/missile/launch/'>
           {% csrf_token %}
-          <button type='submit'>    # ❶
-              Launch missile        # ❶
-          </button>                 # ❶
+          <button type='submit'>    <!-- ❶ -->
+              Launch missile        <!-- ❶ -->
+          </button>                 <!-- ❶ -->
         </form>
         ...
     </body>
@@ -32,29 +32,29 @@
 
 列表 18.2 玛洛瑞的网站嵌入了查理网站的一个网页
 
-```py
+```html
 <html>
   <head>
     <style>
       .bait {
-        position: absolute;                                  # ❶
-        z-index: 1;                                          # ❶
+        position: absolute;                                  /* ❶ */
+        z-index: 1;                                          /* ❶ */
       }
       .transparent {
-        position: relative;                                  # ❷
-        z-index: 2;                                          # ❷
-        opacity: 0;                                          # ❷
+        position: relative;                                  /* ❷ */
+        z-index: 2;                                          /* ❷ */
+        opacity: 0;                                          /* ❷ */
       }
     </style>
   </head>
   <body>
-    <div class='bait'>                                       # ❸
-      <button>Win an iPhone!</button>                        # ❸
-    </div>                                                   # ❸
+    <div class='bait'>                                       <!-- ❸ -->
+      <button>Win an iPhone!</button>                        <!-- ❸ -->
+    </div>                                                   <!-- ❸ -->
 
-    <iframe class='transparent'                              # ❹
-            src='https://charlie.mil/launch-missile.html'>   # ❹
-    </iframe>                                                # ❹
+    <iframe class='transparent'                              <!-- ❹ -->
+            src='https://charlie.mil/launch-missile.html'>   <!-- ❹ -->
+    </iframe>                                                <!-- ❹ -->
     ...
   </body>
 </html>

@@ -174,13 +174,13 @@ TEMPLATES = [
 
 列表 8.2 一个新的用户注册表单
 
-```py
+```html
 <html>
     <body>
 
         <form method='POST'>
-          {% csrf_token %}           # ❶
-          {{ form.as_p }}            # ❷
+          {% csrf_token %}           <!-- ❶ -->
+          {{ form.as_p }}            <!-- ❷ -->
           <button type='submit'>Register</button>
         </form>
 
@@ -194,7 +194,7 @@ TEMPLATES = [
 
 接下来，在同一目录中创建一个名为 registration_complete.html 的文件，并将以下 HTML 添加到其中。此模板在 Bob 成功注册后呈现一个简单的确认页面：
 
-```py
+```html
 <html>
     <body>
         <p>
@@ -222,7 +222,7 @@ to activate your account.
 
 最后，在创建一个名为 activation_complete.html 的文件，并将以下 HTML 添加到其中。这是 Bob 在工作流程中看到的最后一件事：
 
-```py
+```html
 <html>
     <body>
         <p>Account activation completed!</p>
@@ -371,13 +371,13 @@ urlpatterns = [
 
 将以下 HTML 添加到 login.html；Bob 将使用此表单提交他的身份验证凭据。模板表达式 `{{ form.as_p }}` 为用户名和密码分别呈现一个带有标签的输入字段。与用户注册表单一样，请忽略 `csrf_token` 语法；这将在第十六章中介绍：
 
-```py
+```html
 <html>
     <body>
 
         <form method='POST'>
-          {% csrf_token %}                      # ❶
-          {{ form.as_p }}                       # ❷
+          {% csrf_token %}                      <!-- ❶ -->
+          {{ form.as_p }}                       <!-- ❷ -->
           <button type='submit'>Login</button>
         </form>
 
@@ -391,13 +391,13 @@ urlpatterns = [
 
 创建并打开一个名为 profile.html 的文件，位于 templates 目录下。将以下 HTML 添加到 profile.html；此模板将呈现 Bob 的配置文件信息和注销链接。此模板中的 `{{ user }}` 语法引用了由 `ProfileView` 访问的同一用户模型对象。最后一个段落包含一个名为 `url` 的内置模板标签。此标签将查找并呈现映射到 `LogoutView` 的 URL 路径：
 
-```py
+```html
 <html>
     <body>
 
         <p>
-            Hello {{ user.username }},                # ❶
-            your email is {{ user.email }}.           # ❶
+            Hello {{ user.username }},                <!-- ❶ -->
+            your email is {{ user.email }}.           <!-- ❶ -->
         </p>
         <p>
             <a href="{% url 'logout' %}">Logout</a>   # ❷

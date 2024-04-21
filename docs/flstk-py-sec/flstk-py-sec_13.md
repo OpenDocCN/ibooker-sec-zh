@@ -324,14 +324,14 @@ OAUTH2_PROVIDER = {
 
 您的登录页面只需添加一个额外的隐藏输入字段。这个字段在这里用粗体显示，让服务器在用户登录后将用户重定向到授权表单：
 
-```py
+```html
 <html>
     <body>
 
        <form method='POST'>
-         {% csrf_token %}                                          # ❶
-         {{ form.as_p }}                                           # ❷
- <input type="hidden" name="next" value="{{ next }}" />    # ❸
+         {% csrf_token %}                                  <!-- ❶ -->
+         {{ form.as_p }}                                   <!-- ❷ -->
+ <input type="hidden" name="next" value="{{ next }}" />    <!-- ❸ -->
          <button type='submit'>Login</button>
        </form>
 
@@ -650,15 +650,15 @@ class WelcomeView(View):
 
 接下来，将以下欢迎页面模板添加到你的第三方项目中。如果用户的电子邮件已知，则渲染用户的电子邮件。否则，渲染授权链接（加粗显示）：
 
-```py
+```html
 <html>
     <body>
         {% if email %}
             Email: {{ email }}
         {% else %}
-            <a href='{{ authorization_url }}'>    # ❶
-                What is your email?               # ❶
-            </a>                                  # ❶
+            <a href='{{ authorization_url }}'>    <!-- ❶ -->
+                What is your email?               <!-- ❶ -->
+            </a>                                  <!-- ❶ -->
         {% endif %}
     </body>
 </html>

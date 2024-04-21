@@ -24,20 +24,20 @@ Mallory 的攻击失败得很惨，如下列表所示。Bob 的浏览器阻止�
 
 列表 17.1 Mallory 未能窃取 Bob 的私人信息
 
-```py
+```html
 <html>
   <script>
     function recordVote(){
-      const ballot = frames[0].document.getElementById('ballot');   # ❶
+      const ballot = frames[0].document.getElementById('ballot');   // ❶
 
       const headers = {
         'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
       };
-      fetch('/record/', {                                           # ❷
-        method: 'POST',                                             # ❷
-        headers: headers,                                           # ❷
-        body: 'vote=' + ballot.value                                # ❷
-      });                                                           # ❷
+      fetch('/record/', {                                           // ❷
+        method: 'POST',                                             // ❷
+        headers: headers,                                           // ❷
+        body: 'vote=' + ballot.value                                // ❷
+      });                                                           // ❷
     };
   </script>
   <body>
@@ -79,15 +79,15 @@ CORS 是浏览器和服务器之间的协作努力，由一组请求和响应头
 
 列表 17.2 网页嵌入了来自谷歌的样式表和字体
 
-```py
+```html
 <html>
   <head>
-    <link href='https:/./fonts.googleapis.com/css?family=Caveat'    # ❶
-          rel='stylesheet'>                                        # ❶
-    <style>                                                        # ❷
-      body {                                                       # ❷
-        font-family: 'Caveat', serif;                              # ❷
-      }                                                            # ❷
+    <link href='https:/./fonts.googleapis.com/css?family=Caveat'   <!-- ❶ -->
+          rel='stylesheet'>                                        <!-- ❶ -->
+    <style>                                                        /*   ❷  */
+      body {                                                       /*   ❷  */
+        font-family: 'Caveat', serif;                              /*   ❷  */
+      }                                                            /*   ❷  */
     </style>
   </head>
     <body>

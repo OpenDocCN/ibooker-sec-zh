@@ -20,13 +20,13 @@
 
 此攻击的剩余部分不需要 Alice 进行进一步操作。一个加粗的 body 标签的事件处理程序会在页面加载后自动提交表单。当前已经登录到 admin.alice.com 的 Alice 无意间将 Mallory 添加到管理员组中。作为管理员，Mallory 现在可以自由滥用她的新权限：
 
-```py
+```html
 <html>
-  <body onload="document.forms[0].submit()">                      # ❶
+  <body onload="document.forms[0].submit()">                      <!-- ❶ -->
     <form method="POST"
-          action="https:/./admin.alice.com/group-membership/">     # ❷
-      <input type="hidden" name="username" value="mallory"/>      # ❸
-      <input type="hidden" name="group" value="administrator"/>   # ❸
+          action="https:/./admin.alice.com/group-membership/">     <!-- ❷ -->
+      <input type="hidden" name="username" value="mallory"/>      <!-- ❸ -->
+      <input type="hidden" name="group" value="administrator"/>   <!-- ❸ -->
     </form>
   </body>
 </html>
@@ -284,11 +284,11 @@ Django 的 CSRF 令牌策略的详细信息取决于浏览器是否发送了 POS
 
 当涉及到老式的 HTML 表单时，Django 会让这变得很容易。你在之前的章节中已经看到了几个例子。例如，在第十章中，Alice 使用了一个表单，再次显示在这里，给 Bob 发送了一条消息。注意表单包含了 Django 的内置`csrf_token`标记，以粗体字显示：
 
-```py
+```html
 <html>
 
     <form method='POST'>
- {% csrf_token %}      # ❶
+ {% csrf_token %}      <!-- ❶ -->
         <table>
             {{ form.as_table }}
         </table>

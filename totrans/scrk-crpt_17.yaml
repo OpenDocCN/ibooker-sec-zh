@@ -1,17 +1,21 @@
 - en: 17 Codes
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
 - en: Ideas for constructing a code
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
 - en: Over the centuries, despite advances in ciphers, then cipher machines, and now
     digital cryptography, the military has always relied on codes. Even today, we
     can assume that the military still has codes as a backup in case electronic devices
     fail or power is unavailable.
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
 - en: Most codes replace letters, syllables, words or phrases with groups of a fixed
@@ -24,6 +28,7 @@
     they know that any codes close in value to 08452 must have meanings such as CAMOUFLAGE,
     CAMPAIGN, CANCEL, CANINE, CANVAS, CAPITAL, CAPITULATE, CAPSIZE, CAPTAIN, and so
     forth.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
 - en: In a double code, the code groups are assigned in random order. The code book
@@ -32,6 +37,7 @@
     codes took months to compile, and were very costly. A government might, therefore,
     use the same code for years, largely negating its effectiveness. Since the 1960s,
     the job of compiling a double code can be done by computer in seconds.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
 - en: Compilers of codes had lots of tricks to make their codes more secure. For common
@@ -42,15 +48,18 @@
     sections of a message may be entirely null. Some code groups may have multiple
     meanings depending on some indicator, such as the last digit of the preceding
     group.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
 - en: Some code books are printed in two columns. The code is taken from either the
     left or the right column according to some indicator. For example, if the current
     code group begins with an even digit, take the next code group from the left column,
     otherwise take the next code group from the right column.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
 - en: 17.1 The Joker
+  id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -61,6 +70,7 @@
     the other character, called the Joker, is there to cause mayhem. Simply having
     one null character makes the opponent’s job a good deal harder, but there is much
     more you can do with this special letter or digit.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s assume a code of 5-digit groups. Four of the digits are the code itself,
@@ -69,125 +79,185 @@
     that this is a 2-column code book, where the codes in the left column have entirely
     different meanings from the codes in the right column. For example, 0022 in the
     left column could mean “rescue,” while 0022 in the right column means “engine.”
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设一个5位数字组的代码。其中4位是代码本身，另一位是小丑。为了开始，假设小丑总是在每条消息中第一个代码组的中间位置。还假设这是一个2列代码书，左列的代码与右列的代码完全不同。例如，左列的0022可能表示“救援”，而右列的0022可能表示“引擎”。
 - en: Similarly, there could be two columns of meanings for the Joker, so the Joker
     can move to a different digit position, and also move to a different column.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 同样，小丑可能有两列含义，因此小丑可以移动到不同的数字位置，也可以移动到不同的列。
 - en: Here is a list of possible meanings you could assign to the Joker. There are
     a lot more than 10\. You can pick the 10 you want. Or, use 2 columns and have
     20 meanings for the Joker. Or, use letters instead of digits and choose 26 meanings
     for the Joker.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里是您可以为小丑分配的可能含义列表。不止10个。您可以选择您想要的10个。或者，使用2列并为小丑选择20个含义。或者，使用字母而不是数字，并为小丑选择26个含义。
 - en: Starting with the next group, the Joker moves 1 position left.
+  id: totrans-13
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 从下一组开始，小丑向左移动1个位置。
 - en: Starting with the next group, the Joker moves 1 position right.
+  id: totrans-14
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 从下一组开始，小丑向右移动1个位置。
 - en: Starting with the next group, the Joker moves to position 1.
+  id: totrans-15
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 从下一组开始，小丑移动到位置1。
 - en: Starting with the next group, the Joker moves to position 2, and so on.
+  id: totrans-16
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 从下一组开始，小丑移动到位置2，依此类推。
 - en: For the next group only, the Joker is in position 1.
+  id: totrans-17
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 仅对于下一组，小丑在位置1。
 - en: For the next group only, the Joker is in position 2, and so on.
+  id: totrans-18
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 仅对于下一组，小丑在位置2，依此类推。
 - en: Switch to the left column of codes.
+  id: totrans-19
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 切换到代码的左列。
 - en: Switch to the right column of codes.
+  id: totrans-20
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 切换到代码的右列。
 - en: Switch to the opposite column of codes.
+  id: totrans-21
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 切换到代码的相反列。
 - en: For the next code only, use the opposite code column.
+  id: totrans-22
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 仅对于下一个代码，使用相反的代码列。
 - en: For the next 2 codes, use the opposite code column, and so on.
+  id: totrans-23
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对于接下来的2个代码，使用相反的代码列，依此类推。
 - en: The next group is null.
+  id: totrans-24
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 接下来的组为空。
 - en: The group after next is null.
+  id: totrans-25
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 下一组之后为空。
 - en: The next 2 groups are null, and so on.
+  id: totrans-26
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 接下来的2组为空，依此类推。
 - en: In the next group, the code is null but the Joker is real.
+  id: totrans-27
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在下一组中，代码为空，但小丑是真实的。
 - en: In the next group, the code is real but the Joker is null.
+  id: totrans-28
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在下一组中，代码是真实的，但小丑是空的。
 - en: Swap the order of the next 2 groups.
+  id: totrans-29
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 交换接下来的2组的顺序。
 - en: Add 1111 to the code in the next group (non-carrying addition).
+  id: totrans-30
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在下一组的代码中加上1111（不进位相加）。
 - en: Add 3030 to the code in the next group (non-carrying addition), and so on.
+  id: totrans-31
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在下一组的代码中加上3030（不进位相加），依此类推。
 - en: If the next code is even, add 2222, otherwise subtract 2222 (non-carrying).
+  id: totrans-32
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果下一个代码是偶数，则加上2222，否则减去2222（不进位）。
 - en: Add 1 to the Joker in the next group (non-carrying).
+  id: totrans-33
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在下一组中，将小丑加1（不进位）。
 - en: Add 2 to the Joker in the next group (non-carrying), and so on.
+  id: totrans-34
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在下一组的小丑中加2（不进位），依此类推。
 - en: Add this 4-digit code to the next 4-digit code. The Joker is excluded.
+  id: totrans-35
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将这个4位代码加到下一个4位代码中。小丑除外。
 - en: Read the digits of the next code backward, for example 1075 really means 5701.
+  id: totrans-36
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 反向阅读下一个代码的数字，例如1075实际上表示5701。
 - en: Ignore the following codes until there is a code starting with 0.
+  id: totrans-37
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 忽略接下来的代码，直到有一个以0开头的代码。
 - en: The next group is a special indicator.
+  id: totrans-38
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 下一组是一个特殊指示器。
 - en: For an example of non-carrying addition, see section 4.6.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 有关不进位相加的示例，请参见第4.6节。
 - en: Special indicators require a fuller explanation. In a special indicator, all
     5 digits of the code group serve a special purpose, such as telling where the
     Joker will be, or which column to use. For example, a special indicator of 13152
@@ -197,17 +267,21 @@
     column and an even digit indicating the code is from the right column. A special
     indicator of 10384 could mean that in the following 5 groups the codes are taken
     from the left, right, left, right and right columns successively.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
 - en: 'Another use for a special indicator might be to specify numbers to add to the
     codes in the next 5 groups. For example, the special indicators might mean to
     add the following values to the 4-digit codes:'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
 - en: '![17-unnumb-1](../Images/17-unnumb-1.png)'
+  id: totrans-42
   prefs: []
   type: TYPE_IMG
 - en: These values would be added using non-carrying addition, addition modulo 10.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
 - en: The Joker always indicates an action to be taken in the following group or groups,
@@ -217,6 +291,7 @@
     Jokers do not conflict. For example, you should not have a Joker in group 20 saying,
     “the next 3 codes are taken from the left column” followed by a Joker in group
     21 saying, “the next 3 codes are taken from the right column.”
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
 - en: Another trick that can be used with the Joker code is to use a letter A through
@@ -225,6 +300,7 @@
     1, a B indicates position 2, and so forth. You can also assign meanings to the
     letters F, G and H. For example, F could indicate that the code should be taken
     from the opposite column and the next Joker will be in position 1.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
 - en: Do not use the letter I if there is any chance that it could be mistaken for
@@ -232,5 +308,6 @@
     following is null. You can bang on for another 10, 20 or 100 code groups of gibberish
     and really send Emily into delirium. Or, you can use those nulls to send a misleading
     false message, say “Normandy landing postponed to June 10 at Utah beach.”
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL

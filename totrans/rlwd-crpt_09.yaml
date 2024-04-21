@@ -752,11 +752,13 @@
   id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，让我提一下避免随机性缺陷的一个解决方案是使用更少依赖于随机性的算法。例如，你在第7章看到了，ECDSA要求你每次签名时都要生成一个随机的nonce，而EdDSA则不需要。另一个例子是在第4章中看到的AES-GCM-SIV，如果你偶尔重复使用相同的nonce，它不会发生灾难性的故障，而AES-GCM则会泄露认证密钥，然后失去密文的完整性。
 - en: 8.5 Public randomness
   id: totrans-92
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 8.5 公共随机性
 - en: 'So far, I’ve talked mostly about *private randomness*, the kind you might need
     for your private keys. Sometimes, privacy is not required and *public randomness*
     is needed. In this section, I briefly survey some ways to obtain such public randomness.
@@ -764,16 +766,19 @@
   id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，我主要谈论了*私密随机性*，即你可能需要用于私钥的类型。有时，不需要隐私，需要*公共随机性*。在本节中，我简要概述了一些获得此类公共随机性的方法。我区分了两种情况：
 - en: '*One-to-many*—You want to produce randomness for others.'
   id: totrans-94
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*一对多* —— 你想为其他人产生随机性。'
 - en: '*Many-to-many*—A set of participants want to produce randomness together.'
   id: totrans-95
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*多对多* —— 一组参与者希望共同产生随机性。'
 - en: 'First, let’s imagine that you want to generate a stream of randomness in a
     way that many participants can verify it. In other words, the stream should be
     unpredictable but impossible to alter from your perspective. Now imagine that
@@ -784,18 +789,21 @@
   id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，让我们想象一下，你想以一种许多参与者可以验证的方式生成一系列的随机性。换句话说，这个流应该是不可预测的，但是从你的角度来看不可能被更改。现在想象一下，你有一个签名方案，它基于一个密钥对和一个消息提供唯一的签名。有了这样的签名方案，存在一种叫做*可验证随机函数*（VRF）的构造来以可验证的方式获得随机数（图8.5说明了这个概念）。以下是它的工作原理：
 - en: You generate a key pair and publish the verifying key. You also publish a public
     seed.
   id: totrans-97
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 你生成一个密钥对并公布验证密钥。你还公布了一个公共种子。
 - en: To generate random numbers, you sign the public seed and hash the signature.
     The digest is your random number, and the signature is also published as proof.
   id: totrans-98
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 为了生成随机数，你对公共种子进行签名并哈希签名。摘要就是你的随机数，签名也被公布为证明。
 - en: To verify the random number, anyone can hash the signature to check if it matches
     the random number and verify that the signature is correct with the public seed
     and verifying key.
@@ -803,10 +811,12 @@
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 要验证随机数，任何人都可以对签名进行哈希以检查是否与随机数匹配，并使用公共种子和验证密钥验证签名是否正确。
 - en: '![](../Images/08_05.jpg)'
   id: totrans-100
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/08_05.jpg)'
 - en: Figure 8.5 A verifiable random function (VRF) generates verifiable randomness
     via public key cryptography. To generate a random number, simply use a signature
     scheme which produces unique signatures (like BLS) to sign a seed, then hash the
@@ -816,21 +826,25 @@
   id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 图8.5 可验证随机函数（VRF）通过公钥密码学生成可验证的随机性。要生成一个随机数，只需使用一个产生唯一签名的签名方案（如BLS）对种子进行签名，然后对签名进行哈希以生成公共随机数。要验证生成的随机性，确保签名的哈希确实是随机数，并验证种子上的签名。
 - en: This construction can be extended to produce many random numbers by using the
     public seed like a counter. Because the signature is unique and the public seed
     is fixed, there is no way for the signer to generate a different random number.
   id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个构造可以通过使用公共种子类似于计数器来产生许多随机数。因为签名是唯一的且公共种子是固定的，签署者无法生成不同的随机数。
 - en: Exercise
   id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 练习
 - en: Signature schemes like BLS (mentioned in figure 8.5 and in chapter 7) produce
     unique signatures, but this is not true for ECDSA and EdDSA. Do you see why?
   id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 像BLS（在图8.5和第7章中提到）这样的签名方案会生成唯一的签名，但对于ECDSA和EdDSA并非如此。你知道为什么吗？
 - en: To solve this, the Internet Draft (a document that is meant to become an RFC)
     [https://tools.ietf.org/html/draft-irtf-cfrg-vrf-08](https://tools.ietf.org/html/draft-irtf-cfrg-vrf-08)
     specifies how to implement a VRF using ECDSA. In some scenarios (for example,
@@ -921,10 +935,12 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*KDF通常不被设计用来产生大量随机数*。相反，通常用于派生有限数量的密钥。'
 - en: '![](../Images/08_06.jpg)'
   id: totrans-116
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/08_06.jpg)'
 - en: Figure 8.6 A key derivation function (KDF) and a PRNG are two similar constructions.
     The main differences are that a KDF does not expect a fully uniformly random secret
     as input (as long as it has enough entropy) and is usually not used to generate
@@ -932,6 +948,7 @@
   id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 8.6 密钥派生函数（KDF）和伪随机数发生器（PRNG）是两个类似的构造。主要区别在于KDF不期望输入是完全均匀随机的秘密（只要具有足够的熵）并且通常不用于生成太多的输出。
 - en: 'The most popular KDF is the *HMAC-based key derivation function* (HKDF). You
     learned about HMAC (a MAC based on hash functions) in chapter 3\. HKDF is a light
     KDF built on top of HMAC and defined in RFC 5869\. For this reason, one can use
@@ -940,12 +957,15 @@
   id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 最流行的KDF是基于HMAC的密钥派生函数（HKDF）。您在第三章中学到了HMAC（基于哈希函数的MAC）。HKDF是建立在HMAC之上的轻量级KDF，并在RFC
+    5869中定义。因此，人们可以使用不同的哈希函数来使用HKDF，尽管它最常用于SHA-2。HKDF被指定为两个不同的函数：
 - en: '*HKDF-Extract*—Removes biases from a secret input, producing a uniformly random
     secret.'
   id: totrans-119
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*HKDF-Extract*—从一个秘密输入中移除偏差，产生一个均匀随机的秘密。'
 - en: '*HKDF-Expand*—Produces an arbitrary length and uniformly random output. Like
     PRNGs, *it expects a uniformly random secret as input* and is, thus, usually ran
     after HKDF-Extract.'
@@ -953,10 +973,12 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*HKDF-Expand*—产生任意长度和均匀随机的输出。与伪随机数发生器一样，*它期望一个均匀随机的秘密作为输入*，因此通常在HKDF-Extract之后运行。'
 - en: '![](../Images/08_07.jpg)'
   id: totrans-121
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/08_07.jpg)'
 - en: Figure 8.7 HKDF-Expand is the second function specified by HKDF. It takes an
     optional `info` byte string and an input secret that needs to be uniformly random.
     Using different `info` byte strings with the same input secret produces different
@@ -964,6 +986,7 @@
   id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 8.7 HKDF-Expand 是由HKDF指定的第二个函数。它接受一个可选的`info`字节串和一个需要均匀随机的输入秘密。使用相同的输入秘密与不同的`info`字节串会产生不同的输出。输出的长度由`length`参数控制。
 - en: 'Let’s look at HKDF-Extract first, which I illustrate in figure 8.7\. Technically,
     a hash function is enough to uniformize the randomness of an input byte string
     (remember, the output of a hash function is supposed to be indistinguishable from
@@ -977,15 +1000,18 @@
   id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先让我们看一下HKDF-Extract，我在图 8.7 中进行了说明。从技术上讲，哈希函数足以使输入字节串的随机性均匀化（请记住，哈希函数的输出应该是不可区分于随机的），但是HKDF更进一步，接受一个额外的输入：*盐*。对于密码哈希，盐区分了同一协议中对HKDF-Extract的不同用法。虽然这个盐是可选的，如果不使用，则设置为全零字节串，但建议您使用它。此外，HKDF不期望盐是一个秘密；它可以被所有人，包括对手，知道。HKDF-Extract不使用哈希函数，而是使用一个MAC（具体来说是HMAC），巧合的是，它有一个接受两个参数的接口。
 - en: Let’s now look at HKDF-Expand, which I illustrate in figure 8.8\. If your input
     secret is already uniformly random, you can skip HKDF-Extract and use HKDF-Expand.
   id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们看看HKDF-Expand，我在图 8.8 中进行了说明。如果您的输入秘密已经是均匀随机的，您可以跳过HKDF-Extract并使用HKDF-Expand。
 - en: '![](../Images/08_08.jpg)'
   id: totrans-125
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/08_08.jpg)'
 - en: Figure 8.8 HKDF-Extract is the first function specified by HKDF. It takes an
     optional salt that is used as the key in HMAC and the input secret that might
     be nonuniformly random. Using different salts with the same input secret produces
@@ -993,6 +1019,7 @@
   id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 8.8 HKDF-Extract 是由HKDF指定的第一个函数。它接受一个可选的盐，该盐用作HMAC中的密钥，以及可能不是均匀随机的输入秘密。使用相同的输入秘密与不同的盐会产生不同的输出。
 - en: Similar to HKDF-Extract, HKDF-Expand also accepts an additional and optional
     customization argument called `info`. While a salt is meant to provide some domain
     separation between calls within the same protocol for HKDF (or HKDF-Extract),
@@ -1006,6 +1033,8 @@
   id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 与HKDF-Extract类似，HKDF-Expand还接受一个名为`info`的附加和可选的自定义参数。虽然盐旨在在HKDF（或HKDF-Extract）的相同协议中的调用之间提供一些域分隔，但`info`旨在用于区分您的HKDF（或HKDF-Expand）版本与其他协议。您还可以指定您需要多少输出，但请记住，HKDF不是PRNG，并且不设计为导出大量的密钥。HKDF受您使用的哈希函数的大小限制；更准确地说，如果您使用SHA-512（产生512位输出）与HKDF，则对于给定的密钥和一个`info`字节字符串，您限于512
+    × 255位 = 16,320字节的输出。
 - en: Calling HKDF or HKDF-Expand several times with the same arguments, except for
     the output length, produces the same output truncated to the different length
     requested (see figure 8.9). This property is called *related outputs* and can,
@@ -1013,32 +1042,39 @@
   id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 多次使用相同的参数调用HKDF或HKDF-Expand，除了输出长度之外，会产生相同的输出截断为不同长度的请求（请参阅图8.9）。此属性称为*相关输出*，在罕见情况下，可能会令协议设计人员感到惊讶。记住这一点是很好的。
 - en: '![](../Images/08_09.jpg)'
   id: totrans-129
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/08_09.jpg)'
 - en: Figure 8.9 HKDF and HKDF-Expands provide related outputs, meaning that calling
     the function with different output lengths truncates the same result to the requested
     length.
   id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 图8.9 HKDF和HKDF-Expand提供相关输出，这意味着使用不同输出长度调用该函数会将相同结果截断为所请求的长度。
 - en: Most cryptographic libraries combine HKDF-Extract and HKDF-Expand into a single
     call as figure 8.10 illustrates. As usual, make sure to read the manual (in this
     case, RFC 5869) before using HKDF.
   id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 大多数密码库将HKDF-Extract和HKDF-Expand组合成单个调用，如图8.10所示。通常，在使用HKDF之前，请务必阅读手册（在本例中为RFC
+    5869）。
 - en: '![](../Images/08_10.jpg)'
   id: totrans-132
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/08_10.jpg)'
 - en: Figure 8.10 HKDF is usually found implemented as a single function call that
     combines both HKDF-Extract (to extract uniform randomness from an input key) and
     HKDF-Expand (to generate an arbitrary length output).
   id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 图8.10 HKDF通常以单个函数调用的形式实现，该函数同时结合了HKDF-Extract（从输入密钥中提取均匀随机性）和HKDF-Expand（生成任意长度的输出）。
 - en: HKDF is not the only way to derive multiple secrets from one secret. A more
     naive approach is to use *hash functions*. As hash functions do not expect a uniformly
     random input and produce uniformly random outputs, they are fit for the task.
@@ -1051,10 +1087,12 @@
   id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: HKDF并不是从一个秘密中导出多个秘密的唯一方法。更为朴素的方法是使用*哈希函数*。由于哈希函数不期望均匀随机的输入并产生均匀随机的输出，因此它们适合这项任务。然而，哈希函数并不完美，因为它们的接口不考虑*域分隔*（没有自定义字符串参数），并且它们的输出长度是固定的。最佳做法是在可以使用KDF时避免使用哈希函数。尽管如此，一些被广泛接受的算法确实使用哈希函数来实现这一目的。例如，您在第7章学到的Ed25519签名方案就是使用SHA-512对256位密钥进行哈希以产生两个256位密钥。
 - en: Do these functions really produce random outputs?
   id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些函数真的会产生随机输出吗？
 - en: In theory, a hash function’s properties do not say anything about the output
     being uniformly random; the properties only dictate that a hash function should
     be collision resistant, pre-image resistant, and second pre-image resistant. In
@@ -1068,27 +1106,34 @@
   id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 理论上，哈希函数的属性并不代表输出是均匀随机的；这些属性仅仅规定了哈希函数应该具备抗碰撞、抗原像和抗第二原像的特性。然而，在现实世界中，我们到处使用哈希函数来实现随机预言机（正如你在第二章学到的那样），因此，我们假设它们的输出是均匀随机的。这与
+    MAC（在理论上不应产生均匀随机输出，不像第三章中介绍的 PRF 那样）也是一样的，但在实践中，大多数情况下确实如此。这就是为什么 HMAC 被用于 HKDF
+    的原因。在本书的其余部分，我会假设流行的哈希函数（如 SHA-2 和 SHA-3）和流行的 MAC（如 HMAC 和 KMAC）产生随机输出。
 - en: The extended output functions (XOFs) we saw in chapter 2 (SHAKE and cSHAKE)
     can be used as a KDF as well! Remember, a XOF
   id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们在第 2 章看到的扩展输出函数（XOFs）也可以用作 KDF！记住，XOF
 - en: Does not expect a uniformly random input
   id: totrans-138
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 不期望均匀随机输入
 - en: Can produce a practically infinitely large uniformly random output
   id: totrans-139
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 可以产生一个实际上无限大的均匀随机输出
 - en: In addition, KMAC (a MAC covered in chapter 3) does not have the related output
     issue I mentioned earlier. Indeed, KMAC’s length argument randomizes the output
     of the algorithm, effectively acting like an additional customization string.
   id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，KMAC（第 3 章介绍的 MAC）没有我之前提到的相关输出问题。实际上，KMAC 的长度参数随机化了算法的输出，有效地起到了额外的定制字符串的作用。
 - en: Finally, there exists an edge case for inputs that have low entropy. Think about
     passwords, for example, that can be relatively guessable compared to a 128-bit
     key. The password-based key derivation functions used to hash passwords (covered
@@ -1096,17 +1141,20 @@
   id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，存在低熵输入的边缘情况。例如，考虑密码，相对于 128 位密钥，密码可能相对容易猜测。用于哈希密码的基于密码的密钥派生函数（在第 2 章中介绍）也可以用于派生密钥。
 - en: 8.7 Managing keys and secrets
   id: totrans-142
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 8.7 管理密钥和秘密
 - en: All right, all good, we know how to generate cryptographic random numbers, and
     we know how to derive secrets in different types of situations. But we’re not
     out of the woods yet.
   id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 好了，一切顺利，我们知道如何生成加密随机数，也知道如何在不同类型的情况下派生秘密。但我们还没有摆脱困境。
 - en: Now that we’re using all of these cryptographic algorithms, we end up having
     to maintain a lot of secret keys. How do we store these keys? And how do we prevent
     these extremely sensitive secrets from being compromised? And what do we do if
@@ -1114,15 +1162,18 @@
   id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们正在使用所有这些加密算法，我们最终需要维护大量的秘密密钥。我们如何存储这些密钥？我们如何防止这些极度敏感的秘密被泄露？如果一个密钥被泄露了，我们该怎么办？这个问题通常被称为*密钥管理*。
 - en: '*Crypto is a tool for turning a whole swathe of problems into key management
     problems*.'
   id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: '*加密是将一系列问题转化为密钥管理问题的工具*。'
 - en: —Lea Kissner (2019, [http://mng.bz/eMrJ](http://mng.bz/eMrJ))
   id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: —Lea Kissner（2019，[http://mng.bz/eMrJ](http://mng.bz/eMrJ)）
 - en: 'While many systems choose to leave keys close to the application that makes
     use of them, this does not necessarily mean that applications have no recourse
     when bad things happen. To prepare against an eventual breach or a bug that would
@@ -1130,6 +1181,7 @@
   id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然许多系统选择将密钥留在使用它们的应用程序附近，但这并不意味着应用程序在出现问题时没有任何补救措施。为了应对可能发生的违规行为或泄漏密钥的漏洞，大多数严肃的应用程序采用了两种深度防御技术：
 - en: '*Key rotation*— By associating an expiration date to a key (usually a public
     key) and by replacing your key with a new key periodically, you can “heal” from
     an eventual compromise. The shorter the expiration date and rotation frequency,
@@ -1138,6 +1190,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*密钥轮换*— 通过为密钥（通常是公钥）关联到期日期，并定期用新密钥替换你的密钥，你可以从可能的妥协中“恢复”。到期日期和轮换频率越短，你就可以更快地替换可能已知给攻击者的密钥。'
 - en: '*Key revocation*— Key rotation is not always enough, and you might want to
     cancel a key as soon as you hear it has been compromised. For this reason, some
     systems allow you to ask if a key has been revoked before making use of it. (You
@@ -1146,6 +1199,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*密钥吊销* — 密钥轮换并不总是足够的，当你听说密钥已被泄露时，你可能希望立即取消一个密钥。因此，一些系统允许你在使用密钥之前询问该密钥是否已被吊销。（你将在下一章关于安全传输中了解更多信息。）'
 - en: Automation is often indispensable to successfully using these techniques as
     a well-oiled machine is much more apt to work correctly in times of crisis. Furthermore,
     you can also associate a particular role to a key in order to limit the consequences
@@ -1156,18 +1210,21 @@
   id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 自动化通常是使用这些技术成功的不可或缺的部分，因为一个运转良好的机器在危机时更容易正常工作。此外，你还可以将特定角色与密钥关联起来，以限制妥协的后果。例如，你可以在某个虚构的应用程序中区分两个公钥，公钥1仅用于签署交易，而公钥2仅用于进行密钥交换。这样，与公钥2关联的私钥的妥协不会影响交易签署。
 - en: If one does not want to leave keys lying around on device storage media, hardware
     solutions exist that aim at preventing keys from being extracted. You will learn
     more about these in chapter 13 on hardware cryptography.
   id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果不想让密钥留在设备存储介质上，硬件解决方案可以防止密钥被提取。你将在第13章关于硬件密码学中了解更多信息。
 - en: Finally, many ways exist for applications to delegate key management. This is
     often the case on mobile OSs that provide *key stores* or *key chains*, which
     will keep keys for you and will even perform cryptographic operations!
   id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，应用程序有许多方式可以委托密钥管理。这在提供*密钥存储*或*密钥链*的移动操作系统中经常发生，这些系统将为你保留密钥，甚至执行加密操作！
 - en: Applications living in the cloud can sometimes have access to cloud key management
     services. These services allow an application to delegate creation of secret keys
     and cryptographic operations and to avoid thinking about the many ways to attack
@@ -1176,22 +1233,26 @@
   id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 存在一些云应用程序可以访问云密钥管理服务。这些服务允许应用程序委托创建秘密密钥和加密操作，并避免考虑攻击这些方式的许多方法。尽管如此，与硬件解决方案一样，如果应用程序受到妥协，它仍然可以向委托服务发出任何类型的请求。
 - en: Note There are no silver bullets, and you should still consider what you can
     do to detect and respond to a compromise.
   id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意：并没有银弹，你仍应考虑如何检测和应对妥协。
 - en: Key management is a hard problem that is beyond the scope of this book, so I
     will not dwell on this topic too much. In the next section, I go over cryptographic
     techniques that attempt to avoid the key management problem.
   id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 密钥管理是一个棘手的问题，超出了本书的范围，所以我不会过多讨论这个话题。在下一节中，我将介绍试图避免密钥管理问题的加密技术。
 - en: 8.8 Decentralize trust with threshold cryptography
   id: totrans-156
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 8.8 使用阈值密码学去分散信任
 - en: 'Key management is a vast field of study that can be quite annoying to invest
     in as users do not always have the resources to implement best practices, nor
     the tools available in the space. Fortunately, cryptography has something to offer
@@ -1203,6 +1264,7 @@
   id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 密钥管理是一个广阔的研究领域，投资其中可能会令人烦恼，因为用户并不总是有资源来实施最佳实践，也没有空间中可用的工具。幸运的是，密码学为那些想减轻密钥管理负担的人提供了一些东西。我将首先讨论的是*秘密共享*（或*秘密分割*）。秘密分割允许你将一个秘密分成多个部分，可以在一组参与者之间共享。在这里，秘密可以是任何你想要的东西：对称密钥、签名私钥等等。
 - en: Typically, a person called a *dealer* generates the secret, then splits it and
     shares the different parts among all participants before deleting the secret.
     The most famous secret splitting scheme was invented by Adi Shamir (one of the
@@ -1211,15 +1273,18 @@
   id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 通常，一个称为*经销商*的人生成秘密，然后将其拆分并将不同的部分分享给所有参与者，然后删除秘密。最著名的秘密分享方案由Adi Shamir（RSA的共同发明人之一）发明，称为*Shamir的秘密分享*（SSS）。我在图8.11中说明了这个过程。
 - en: '![](../Images/08_11.jpg)'
   id: totrans-159
   prefs: []
   type: TYPE_IMG
+  zh: '![图8.11](../Images/08_11.jpg)'
 - en: Figure 8.11 Given a key and a number of shares *n*, the Shamir’s Secret Sharing
     scheme creates *n* partial keys of the same size as the original key.
   id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 图8.11给定一个密钥和一些份额* n *，Shamir的秘密分享方案创建与原始密钥大小相同的* n *部分密钥。
 - en: When the time comes and the secret is needed to perform some cryptographic operation
     (encrypting, signing, and so on), all share owners need to return their private
     shares back to the dealer who is in charge of reconstructing the original secret.
@@ -1229,21 +1294,25 @@
   id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 当时机成熟并且需要秘密来执行一些加密操作（加密、签名等）时，所有股东都需要将他们的私密份额归还给负责重建原始秘密的经销商。这种方案防止了攻击者针对单个用户，因为每个份额本身都是无用的，而是迫使攻击者在利用密钥之前先妥协所有参与者！我在图8.12中说明了这一点。
 - en: '![](../Images/08_12.jpg)'
   id: totrans-162
   prefs: []
   type: TYPE_IMG
+  zh: '![图8.12](../Images/08_12.jpg)'
 - en: Figure 8.12 The Shamir’s Secret Sharing scheme used to split a secret in *n*
     partial keys requires all of the *n* partial keys to reconstruct the original
     key.
   id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 图8.12 Shamir的秘密分享方案用于分割* n *部分密钥以重构原始密钥需要所有* n *部分密钥。
 - en: The mathematics behind the scheme’s algorithm are actually not too hard to understand!
     So let me spare a few paragraphs here to give you a simplified idea of the scheme.
   id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 该方案算法背后的数学实际上并不难理解！所以让我在这里花几段文字给你一个简化的想法。
 - en: Imagine a random straight line on a 2-dimensional space, and let’s say that
     its equation—*y* = *ax* + *b*—is the secret. By having two participants hold two
     random points on the line, they can collaborate to recover the line equation.
@@ -1253,10 +1322,12 @@
   id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象一条二维空间中的随机直线，假设其方程为—* y * = * ax * + * b *—是秘密。通过让两个参与者持有线上的两个随机点，他们可以合作恢复线方程。该方案推广到任何次数的多项式，因此可以用于将秘密分割成任意数量的份额。这在图8.13中有所说明。
 - en: '![](../Images/08_13.jpg)'
   id: totrans-166
   prefs: []
   type: TYPE_IMG
+  zh: '![图8.13](../Images/08_13.jpg)'
 - en: Figure 8.13 The idea behind the Shamir’s Secret Sharing scheme is to see a polynomial
     defining a curve as the secret and random points on the curve as partial keys.
     To recover a polynomial of degree *n* that defines a curve, one needs to know
@@ -1267,6 +1338,9 @@
   id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 图8.13 Shamir的秘密分享方案背后的想法是将定义曲线的多项式视为秘密，将曲线上的随机点视为部分密钥。要恢复定义曲线的次数为* n *的多项式，需要知道曲线上的*
+    n * + 1个点。例如，* f *（* x *）= 3 * x * + 5是1次，因此您需要任何两个点（* x *，* f *（* x *））来恢复多项式，而*
+    f *（* x *）= 5 * x * ² + 2 * x * + 3是2次，因此您需要任何三个点来恢复多项式。
 - en: Secret splitting is a technique often adopted due to its simplicity. Yet, in
     order to be useful, key shares must be gathered into one place to recreate the
     key each and every time it is used in a cryptographic operation. This creates
@@ -1277,6 +1351,7 @@
   id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 秘密分割是一种常用的技术，因其简单性而被广泛采用。然而，为了有用，密钥份额必须收集到一个地方，以便在每次用于加密操作时重新创建密钥。这会创建一个窗口期，其中秘密变得容易受到盗窃或意外泄漏的机会，有效地使我们回到了一个*单点故障*模型。为了避免这种单点故障问题，在不同场景中存在几种有用的加密技术。
 - en: For example, imagine a protocol that accepts a financial transaction only if
     it has been signed by Alice. This places a large burden on Alice, who might be
     afraid of getting targeted by attackers. In order to reduce the impact of an attack
@@ -1288,6 +1363,9 @@
   id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，想象一个只有被 Alice 签署的财务交易才能被接受的协议。这给 Alice 带来了很大的负担，她可能害怕成为攻击者的目标。为了减少对 Alice
+    攻击的影响，我们可以改变协议，接受（在同一交易中）来自 *n* 个不同公钥的 *n* 个签名，其中包括 Alice 的签名。攻击者必须破坏所有 *n* 个签名才能伪造有效交易！这种系统被称为
+    *多重签名*（通常缩写为 *multi-sig*），在加密货币领域被广泛采用。
 - en: Naive multi-signature schemes, though, can add some annoying overhead. Indeed,
     the size of a transaction in our example grows linearly with the number of signatures
     required. To solve this, some signature schemes (like the BLS signature scheme)
@@ -1300,6 +1378,9 @@
   id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，天真的多重签名方案可能会增加一些烦人的开销。实际上，在我们的示例中，交易的大小随所需签名数量的增加而线性增长。为了解决这个问题，一些签名方案（如
+    BLS 签名方案）可以将多个签名压缩成一个。这被称为 *签名聚合*。一些多重签名方案甚至通过允许将 *n* 个公钥聚合成一个单一公钥来进一步压缩。这种技术被称为
+    *分布式密钥生成*（DKG），是一种称为 *安全多方计算* 的密码学领域的一部分，我将在第 15 章中介绍。
 - en: DKG lets *n* participants collaboratively compute a public key without ever
     having the associated private key in the clear during the process (unlike SSS,
     there is no dealer). If participants want to sign a message, they can then collaboratively
@@ -1311,19 +1392,24 @@
   id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: DKG 让 *n* 个参与者在计算公钥时不需要在过程中明文存储相关私钥（与 SSS 不同，没有经销商）。如果参与者想要签署一条消息，他们可以协作使用每个参与者的私密份额来创建签名，这些签名可以使用他们之前创建的公钥进行验证。再次强调，私钥在物理上从未存在，避免了
+    SSS 存在的单点故障问题。因为你在第 7 章看到了 Schnorr 签名，图 8.14 展示了简化的 Schnorr DKG 方案背后的直觉。
 - en: '![](../Images/08_14.jpg)'
   id: totrans-172
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/08_14.jpg)'
 - en: Figure 8.14 The Schnorr signature scheme can be decentralized into a distributed
     key generation scheme.
   id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 8.14 Schnorr 签名方案可以分散为分布式密钥生成方案。
 - en: Finally, note that
   id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，请注意
 - en: Each scheme I’ve mentioned can be made to work even when only a threshold *m*
     out of the *n* participants take part in the protocol. This is really important
     as most real-world systems must tolerate a number of malicious or inactive participants.
@@ -1331,6 +1417,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 我提到的每种方案都可以在只有 *n* 个参与者中的阈值 *m* 参与协议时运行。这对于大多数现实世界系统必须容忍一些恶意或不活跃的参与者非常重要。
 - en: These types of schemes can work with other asymmetric cryptographic algorithms.
     For example, using threshold encryption, a set of participants can collaborate
     to asymmetrically decrypt a message.
@@ -1338,19 +1425,23 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 这些类型的方案可以与其他非对称加密算法一起使用。例如，使用阈值加密，一组参与者可以协作地对一条消息进行非对称解密。
 - en: I review all these examples in figure 8.15.
   id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 我在图 8.15 中回顾了所有这些示例。
 - en: '![](../Images/08_15.jpg)'
   id: totrans-178
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/08_15.jpg)'
 - en: Figure 8.15 A recap of existing techniques to split the trust we have in one
     participant into several participants.
   id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 8.15 对将我们对一个参与者的信任分割为多个参与者的现有技术进行了回顾。
 - en: Threshold schemes are an important new paradigm in the key management world,
     and it is a good idea to follow their development. NIST currently has a threshold
     cryptography group, which organizes workshops and has the intent to standardize
@@ -1358,17 +1449,20 @@
   id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 阈值方案是密钥管理领域的一个重要新范式，跟踪它们的发展是一个好主意。NIST 目前有一个阈值密码学组，组织研讨会，并有意在长远的未来标准化原语和协议。
 - en: Summary
   id: totrans-181
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 摘要
 - en: A number is taken uniformly and at random from a set if it was picked with equal
     probability compared to all the other numbers from that set.
   id: totrans-182
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果一个数字是与该集合中的所有其他数字相比以相等的概率选择的，则从集合中均匀且随机地获取一个数字。
 - en: Entropy is a metric to indicate how much randomness a byte string has. High
     entropy refers to byte strings that are uniformly random, while low entropy refers
     to byte strings that are easy to guess or predict.
@@ -1376,6 +1470,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 熵是衡量字节串具有多少随机性的度量标准。高熵指的是均匀随机的字节串，而低熵指的是容易猜测或预测的字节串。
 - en: Pseudorandom number generators (PRNGs) are algorithms that take a uniformly
     random seed and generate (in practice) a nearly infinite amount of randomness
     that can be used for cryptographic purposes (as cryptographic keys, for example)
@@ -1384,6 +1479,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '伪随机数生成器（PRNGs）是一种算法，它以均匀随机的种子生成（实际上）几乎无限数量的随机性，如果种子足够大，则可以用于加密目的（例如作为加密密钥）。  '
 - en: 'To obtain random numbers, one should rely on a programming language’s standard
     library or on its well-known cryptographic libraries. If these are not available,
     operating systems generally provide interfaces to obtain random numbers:'
@@ -1391,18 +1487,21 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '要获取随机数，应该依赖于编程语言的标准库或其知名的加密库。如果这些不可用，操作系统通常提供接口来获取随机数：  '
 - en: Windows offers the `BCryptGenRandom` system call.
   id: totrans-186
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Windows提供了`BCryptGenRandom`系统调用。
 - en: Linux and FreeBSD offer the `getrandom` system call.
   id: totrans-187
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Linux和FreeBSD提供了`getrandom`系统调用。
 - en: Other Unix-like operating systems usually have a special file called /dev/ urandom
     that exhibites randomness.
   id: totrans-188
@@ -1410,18 +1509,21 @@
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '其他类Unix操作系统通常有一个名为`/dev/urandom`的特殊文件，显示出随机性。  '
 - en: Key derivation functions (KDFs) are useful in scenarios where one wants to derive
     secrets from a biased but high entropy secret.
   id: totrans-189
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 密钥派生函数（KDF）在希望从偏向但熵值高的秘密派生密钥的场景中非常有用。
 - en: HKDF (HMAC-based key derivation function) is the most widely used KDF and is
     based on HMAC.
   id: totrans-190
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: HKDF（基于HMAC的密钥派生函数）是最广泛使用的KDF，基于HMAC。
 - en: Key management is the field of keeping secrets, well, secret. It mostly consists
     of finding where to store secrets, proactively expiring and rotating secrets,
     figuring out what to do when secrets are compromised, and so on.
@@ -1429,9 +1531,11 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 密钥管理是保持秘密的领域，主要包括找到存储秘密的位置、积极地过期和轮换秘密、确定秘密被泄露时该做什么等。
 - en: To lessen the burden of key management, one can split the trust from one participant
     into multiple participants.
   id: totrans-192
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 为了减轻密钥管理的负担，可以将一个参与者的信任分散到多个参与者中。

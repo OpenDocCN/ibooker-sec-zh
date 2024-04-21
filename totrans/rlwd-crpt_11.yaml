@@ -1,19 +1,24 @@
 - en: 9 Secure transport
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
 - en: Secure transport protocols
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The Transport Layer Security (TLS) protocol
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The Noise protocol framework
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -23,14 +28,17 @@
     directly, but instead use much more involved protocols that abstract the use of
     the cryptographic primitives. I call these protocols *secure transport protocols*,
     for lack of a better term.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
 - en: 'In this chapter, you will learn about the most widely used secure transport
     protocol: the Transport Layer Security (TLS) protocol. I will also lightly cover
     other secure transport protocols and how they differ from TLS.'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
 - en: 9.1 The SSL and TLS secure transport protocols
+  id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -44,6 +52,7 @@
     at the HTTP messages that are being sent and received over the wire and read them
     without the help of any other tool. But this is not enough for your browser to
     communicate to the web server.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
 - en: 'HTTP messages are encapsulated into other types of messages, called *TCP frames*,
@@ -53,6 +62,7 @@
     Protocol (IP), and IP messages are further encapsulated using something else.
     This is known as the *Internet protocol suite*, and as it is the subject of many
     books, I won’t go much further into this.'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
 - en: 'Back to our scenario, as there’s a confidentiality issue that we need to talk
@@ -60,6 +70,7 @@
     [example.com](http://example.com) has an interesting position: they can passively
     observe and read your requests as well as the server’s responses. Worse, MITM
     attackers can also actively tamper and reorder messages. This is not great.'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
 - en: Imagine your credit card information leaking out every time you buy something
@@ -71,20 +82,27 @@
     being used in combination with HTTP, extending it into the *Hypertext Transfer
     Protocol Secure* (HTTPS). HTTPS now allowed browsers to secure their communications
     to the different websites they visited.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象一下，每次在互联网上购物时您的信用卡信息泄露，每次登录网站时密码被盗，每次向朋友发送图片和私人消息时被窃取等等。这足以让足够多的人感到恐慌，以至于在1990年代，TLS的前身——*安全套接字层*（SSL）*协议*诞生了。虽然SSL可以用于不同类型的情况，但它最初是由网页浏览器构建和用于的。因此，它开始与HTTP一起使用，将其扩展为*超文本传输安全协议*（HTTPS）。现在，HTTPS允许浏览器将其与访问的不同网站之间的通信安全地连接起来。
 - en: 9.1.1 From SSL to TLS
+  id: totrans-12
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 9.1.1 从SSL到TLS
 - en: Although SSL was not the only protocol that attempted to secure some of the
     web, it did attract most of the attention and, with time, has become the de facto
     standard. But this is not the whole story. Between the first version of SSL and
     what we currently use today, a lot has happened. All versions of SSL (the last
     being SSL v3.0) were broken due to a combination of bad design and bad cryptographic
     algorithms. (Many of the attacks have been summarized in RFC 7457.)
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管SSL并不是唯一尝试保护网络的协议，但它吸引了大部分关注，并且随着时间的推移，已成为事实上的标准。但这并不是整个故事。在第一个SSL版本和我们今天使用的之间，发生了很多事情。所有版本的SSL（最后一个是SSL
+    v3.0）由于设计不良和加密算法不佳的组合而被破解。（许多攻击已在RFC 7457中总结。）
 - en: After SSL 3.0, the protocol was officially transferred to the Internet Engineering
     Task Force (IETF), the organization in charge of publishing *Request For Comments*
     (RFCs) standards. The name SSL was dropped in favor of TLS, and TLS 1.0 was released
@@ -93,43 +111,58 @@
     solid collaboration between the industry and academia. Yet, today, the internet
     is still divided between many different versions of SSL and TLS as servers have
     been slow to update.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 在SSL 3.0之后，该协议正式转移到了互联网工程任务组（IETF），这是负责发布*请求评论*（RFCs）标准的组织。SSL的名称被更改为TLS，TLS
+    1.0于1999年作为RFC 2246发布。TLS的最新版本是TLS 1.3，规定在RFC 8446中，并于2018年发布。与其前身不同，TLS 1.3源自行业和学术界之间的紧密合作。然而，如今，互联网仍然在许多不同版本的SSL和TLS之间分裂，因为服务器更新速度缓慢。
 - en: Note There’s a lot of confusion around the two names SSL and TLS. The protocol
     is now called *TLS*, but many articles and even libraries still choose to use
     the term *SSL* .
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 关于SSL和TLS这两个名称存在很多混淆。该协议现在被称为*TLS*，但许多文章甚至库仍然选择使用术语*SSL*。
 - en: TLS has become more than just the protocol securing the web; it is now used
     in many different scenarios and among many different types of applications and
     devices as a protocol to secure communications. Thus, what you will learn about
     TLS in this chapter is not only useful for the web, but also for any scenario
     where communications between two applications need to be secure.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: TLS已经不仅仅是保护网络的协议；它现在在许多不同的场景和各种类型的应用程序和设备中被用作保护通信的协议。因此，在本章中学到的关于TLS的知识不仅对网络有用，而且对任何需要保护两个应用程序之间通信的场景都有用。
 - en: 9.1.2 Using TLS in practice
+  id: totrans-17
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 9.1.2 在实践中使用TLS
 - en: 'How do people use TLS? First let’s define some terms. In TLS, the two participants
     that want to secure their communications are called a *client* and a *server*.
     It works the same way as with other network protocols like TCP or IP: the client
     is the one that initiates the connection, and the server is the one that waits
     for one to be initiated. A TLS client is typically built from'
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 人们如何使用TLS？首先让我们定义一些术语。在TLS中，想要保护通信的两个参与者被称为*客户端*和*服务器*。它的工作方式与其他网络协议（如TCP或IP）相同：客户端是发起连接的一方，服务器是等待连接被发起的一方。一个TLS客户端通常是由
 - en: '*Some configuration*—A client is configured with the versions of SSL and TLS
     that it wants to support, cryptographic algorithms that it is willing to use to
     secure the connection, ways it can authenticate servers, and so on.'
+  id: totrans-19
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*一些配置*—客户端配置了它想要支持的SSL和TLS版本，愿意使用的加密算法来保护连接，可以对服务器进行身份验证的方式等。'
 - en: '*Some information about the server it wants to connect to*—It includes at least
     an IP address and a port, but for the web, it often includes a fully qualified
     domain name instead (like example.com).'
+  id: totrans-20
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*它想要连接的服务器的一些信息* — 至少包括 IP 地址和端口，但对于 Web，通常会使用完全合格的域名（如 example.com）。'
 - en: Given these two arguments, a client can initiate a connection with a server
     to produce a secure *session*, a channel that both the client and the server can
     use to share encrypted messages with each other. In some cases, a secure session
@@ -137,166 +170,239 @@
     to tamper with the connection or if the server’s configuration is not compatible
     with the client’s (more on that later), the client fails to establish a secure
     session.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 有了这两个参数，客户端就可以与服务器建立连接以建立一个安全的 *会话*，这是客户端和服务器都可以用来相互分享加密消息的通道。在某些情况下，安全会话可能无法成功创建并在中途失败。例如，如果攻击者试图篡改连接，或者服务器的配置与客户端不兼容（稍后详细介绍），客户端将无法建立安全会话。
 - en: A TLS server is often much simpler as it only takes a configuration, which is
     similar to the client’s configuration. A server then waits for clients to connect
     to it in order to produce a secure session. In practice, using TLS on the client
     side can be as easy as the following listing demonstrates (that is, if you use
     a programming language like Golang).
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: TLS 服务器通常要简单得多，因为它只需要一个配置，这与客户端的配置类似。然后服务器等待客户端连接以建立一个安全会话。在实践中，在客户端使用 TLS 可以像下面的清单所示那样简单（即，如果你使用像
+    Golang 这样的编程语言）。
 - en: Listing 9.1 A TLS client in Golang
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 清单 9.1 Golang 中的 TLS 客户端
 - en: '[PRE0]'
+  id: totrans-24
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: ❶ The fully qualified domain name and the server’s port (443 is the default
     port for HTTPS).
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 完全合格的域名和服务器的端口（443 是 HTTPS 的默认端口）。
 - en: ❷ An empty config serves as the default configuration.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 空配置作为默认配置。
 - en: How does the client know that the connection it established is really with [google.com](http://google.com)
     and not some impersonator? By default, Golang’s TLS implementation uses your operating
     system’s configuration to figure out how to authenticate TLS servers. (Later in
     this chapter, you will learn exactly how the authentication in TLS works.) Using
     TLS on the server side is pretty easy as well. The following listing shows how
     simple this is.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 客户端如何知道它建立的连接确实是与 [google.com](http://google.com) 而不是某个冒名顶替者？默认情况下，Golang 的
+    TLS 实现使用您操作系统的配置来确定如何对 TLS 服务器进行身份验证。（本章后面，您将了解 TLS 中身份验证的确切工作原理。）在服务器端使用 TLS
+    也非常简单。下面的清单展示了这是多么简单。
 - en: Listing 9.2 A TLS server in Golang
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 清单 9.2 Golang 中的 TLS 服务器
 - en: '[PRE1]'
+  id: totrans-29
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: ❶ A solid minimal configuration for a TLS 1.3 server
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ TLS 1.3 服务器的稳定最小配置
 - en: ❷ Serves a simple page displaying “Hello, world”.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 提供一个显示“Hello, world”的简单页面。
 - en: ❸ An HTTPS server starts on port 8080.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 在端口 8080 上启动一个 HTTPS 服务器。
 - en: ❹ Some .pem files containing a certificate and a secret key (more on this later)
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 包含证书和私钥的一些 .pem 文件（稍后详细介绍）
 - en: Golang and its standard library do a lot for us here. Unfortunately, not all
     languages’ standard libraries provide easy-to-use TLS implementations, if they
     provide a TLS implementation at all, and not all TLS libraries provide secure-by-default
     implementations! For this reason, configuring a TLS server is not always straightforward,
     depending on the library. In the next section, you will learn about the inner
     workings of TLS and its different subtleties.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: Golang 及其标准库在这方面为我们做了很多工作。不幸的是，并非所有语言的标准库都提供易于使用的 TLS 实现，如果提供的话，也并非所有 TLS 库都提供默认安全的实现！因此，根据库的不同，配置
+    TLS 服务器并不总是直截了当的。在下一节中，你将了解 TLS 的内部工作原理及其不同的微妙之处。
 - en: Note TLS is a protocol that works on top of TCP. To secure UDP connections,
     we can use DTLS (*D* is for *datagram*, the term for UDP messages), which is fairly
     similar to TLS. For this reason, I ignore DTLS in this chapter.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 TLS 是在 TCP 之上运行的协议。为了保护 UDP 连接，我们可以使用 DTLS（*D* 代表 *数据报*，即 UDP 消息的术语），它与 TLS
+    非常相似。因此，本章中我忽略了 DTLS。
 - en: 9.2 How does the TLS protocol work?
+  id: totrans-36
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.2 TLS 协议是如何工作的？
 - en: As I said earlier, today TLS is the de facto standard to secure communications
     between applications. In this section, you will learn more about how TLS works
     underneath the surface and how it is used in practice. You will find this section
     useful for learning how to use TLS properly and also for understanding how most
     (if not all) secure transport protocols work. You will also find out why it is
     hard (and strongly discouraged) to redesign or reimplement such protocols.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我之前所说，如今TLS是保护应用程序之间通信的事实标准。在本节中，您将了解TLS在表面下如何工作以及它在实践中的使用方式。您会发现这一节对于学习如何正确使用TLS以及理解大多数（如果不是全部）安全传输协议如何工作非常有用。您还将了解为什么重新设计或重新实现这些协议是困难的（并且强烈不建议）。
 - en: At a high level, TLS is split into two phases as noted in the following list.
     Figure 9.1 illustrates this idea.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 在高层次上，TLS分为两个阶段，如下列表所示。图9.1说明了这个概念。
 - en: '*A handshake phase*—A secure communication is negotiated and created between
     two participants.'
+  id: totrans-39
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*握手阶段*—两个参与者之间协商并创建了安全通信。'
 - en: '*A post-handshake phase*—Communications are encrypted between the two participants.'
+  id: totrans-40
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*后握手阶段*—两个参与者之间的通信被加密。'
 - en: '![](../Images/09_01.jpg)'
+  id: totrans-41
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/09_01.jpg)'
 - en: Figure 9.1 At a high level, secure transport protocols first create a secure
     connection during a handshake phase. After that, applications on both sides of
     the secure connection can communicate securely.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 图9.1 在高层次上，安全传输协议首先在握手阶段创建安全连接。之后，安全连接两侧的应用程序可以安全通信。
 - en: 'At this point, because you learned about hybrid encryption in chapter 6, you
     should have the following (correct) intuition about how these two steps works:'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 此时，由于您在第6章学习了混合加密，您应该对这两个步骤的工作原理有以下（正确的）直觉：
 - en: '*The handshake is, at its core, simply a key exchange.* The handshake ends
     up with the two participants agreeing on a set of symmetric keys.'
+  id: totrans-44
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*握手本质上只是一个密钥交换过程。* 握手最终导致两个参与者就一组对称密钥达成一致。'
 - en: '*The post-handshake phase is purely about encrypting messages between participants.*
     This phase uses an authenticated encryption algorithm and the set of keys produced
     at the end of the handshake.'
+  id: totrans-45
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*后握手阶段纯粹是关于在参与者之间加密消息。* 这个阶段使用经过认证的加密算法和在握手结束时产生的密钥集。'
 - en: Most transport security protocols work this way, and the interesting parts of
     these protocols always lie in the handshake phase. Next, let’s take a look at
     the handshake phase.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 大多数传输安全协议都是这样工作的，这些协议的有趣部分总是在握手阶段。接下来，让我们看看握手阶段。
 - en: 9.2.1 The TLS handshake
+  id: totrans-47
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 9.2.1 TLS握手
 - en: 'As you’ve seen, TLS is (and most transport security protocols are) divided
     into two parts: a *handshake* and a *post-handshake* phase. In this section, you’ll
     learn about the handshake first. The handshake itself has four aspects that I
     want to tell you about:'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如您所见，TLS（以及大多数传输安全协议）分为两部分：*握手*和*后握手*阶段。在本节中，您将首先了解握手。握手本身有四个方面，我想告诉您：
 - en: '*Negotiation*—TLS is highly configurable. Both a client and a server can be
     configured to negotiate a range of SSL and TLS versions as well as a menu of acceptable
     cryptographic algorithms. The negotiation phase of the handshake aims at finding
     common ground between the client’s and the server’s configurations in order to
     securely connect the two peers.'
+  id: totrans-49
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*协商*—TLS高度可配置。客户端和服务器都可以配置为协商一系列SSL和TLS版本以及一组可接受的加密算法。握手的协商阶段旨在在客户端和服务器的配置之间找到共同点，以便安全连接两个对等方。'
 - en: '*Key exchange*—The whole point of the handshake is to perform a key exchange
     between two participants. Which key exchange algorithm to use? This is one of
     the things decided as part of the client/server negotiation process.'
+  id: totrans-50
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*密钥交换*—握手的整个目的是在两个参与者之间执行密钥交换。要使用哪种密钥交换算法？这是客户端/服务器协商过程的一部分决定的事情之一。'
 - en: '*Authentication*—As you learned in chapter 5 on key exchanges, it is trivial
     for MITM attackers to impersonate any side of a key exchange. Due to this, key
     exchanges must be authenticated. Your browser must have a way to ensure that it
     is talking to google.com, for example, and not your internet service provider
     (ISP).'
+  id: totrans-51
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*认证*—正如您在第5章中学到的关于密钥交换的知识，中间人攻击者可以轻易冒充密钥交换的任何一方。因此，密钥交换必须经过认证。例如，您的浏览器必须有一种方式来确保它正在与google.com通信，而不是您的互联网服务提供商（ISP）。'
 - en: '*Session resumption*—As browsers often connect to the same websites again and
     again, key exchanges can be costly and can slow down a user’s experience. For
     this reason, mechanisms to fast-track secure sessions without redoing a key exchange
     are integrated into TLS.'
+  id: totrans-52
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*会话恢复*—由于浏览器经常连接到同一网站，密钥交换可能成本高昂，可能会减慢用户体验。因此，TLS集成了快速跟踪安全会话而无需重新进行密钥交换的机制。'
 - en: This is a comprehensive list! As fast as greased lightning, let’s start with
     the first item.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个全面的列表！像闪电一样快，让我们从第一项开始。
 - en: 'Negotiation in TLS: What version and what algorithms?'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: TLS中的协商：选择哪个版本和哪些算法？
 - en: Most of the complexity in TLS comes from the negotiation of the different moving
     parts of the protocol. Infamously, this negotiation has also been the source of
     many issues in the history of TLS. Attacks like FREAK, LOGJAM, DROWN, and others
@@ -306,46 +412,60 @@
     negotiated, SSL/TLS was designed for the web. As such, SSL/TLS needed a way to
     maintain backward compatibility with older clients and servers that could be slow
     to update.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: TLS中的大部分复杂性来自协议的不同部分的协商。臭名昭著的是，这种协商也是TLS历史上许多问题的根源。像FREAK、LOGJAM、DROWN等攻击利用旧版本中存在的弱点来破坏协议的更近期版本（有时甚至在服务器不支持旧版本的情况下！）。虽然并非所有协议都具有版本控制或允许协商不同算法，但SSL/TLS是为网络设计的。因此，SSL/TLS需要一种方式来与可能更新缓慢的旧客户端和服务器保持向后兼容性。
 - en: 'This is what happens on the web today: your browser might be recent and up-to-date
     and made to support TLS version 1.3, but when visiting some old web page, chances
     are that the server behind it only supports TLS versions up to 1.2 or 1.1 (or
     worse). Vice-versa, many websites must support older browsers, which translates
     into supporting older versions of TLS (as some users are still stuck in the past).'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是今天网络上发生的事情：你的浏览器可能是最新的，支持TLS版本1.3，但当访问一些旧网页时，很可能其背后的服务器只支持TLS版本1.2或1.1（或更糟糕）。反之亦然，许多网站必须支持旧浏览器，这意味着支持旧版本的TLS（因为一些用户仍停留在过去）。
 - en: Are older versions of SSL and TLS secure?
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 旧版SSL和TLS安全吗？
 - en: Most versions of SSL and TLS have security issues, except for TLS versions 1.2
     and 1.3\. Why not just support the latest version (1.3) and call it a day? The
     reason is that some companies support older clients that can’t easily be updated.
     Due to these requirements, it is not uncommon to find libraries implementing mitigations
     to known attacks in order to securely support older versions. Unfortunately, these
     mitigations are often too complex to implement correctly.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 大多数SSL和TLS版本都存在安全问题，除了TLS版本1.2和1.3。为什么不只支持最新版本（1.3）并结束呢？原因在于一些公司支持无法轻松更新的旧客户端。由于这些要求，通常会发现库实施对已知攻击的缓解措施，以安全地支持旧版本。不幸的是，这些缓解措施通常太复杂，难以正确实施。
 - en: 'For example, well-known attacks like Lucky13 and Bleichenbacher98 have been
     rediscovered again and again by security researchers in various TLS implementations
     that had previously attempted to fix the issues. Although it is possible to mitigate
     a number of attacks on older TLS versions, I would recommend against it, and I
     am not the only one telling you this. In March 2021, the IETF published RFC 8996:
     “Deprecating TLS 1.0 and TLS 1.1,” effectively making the deprecation official.'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，像Lucky13和Bleichenbacher98这样的著名攻击一再被安全研究人员在各种TLS实现中重新发现，这些实现先前曾试图修复这些问题。虽然可以减轻对旧版TLS的一些攻击，但我建议不要这样做，而且我不是唯一一个这样告诉你的人。2021年3月，IETF发布了RFC
+    8996：“淘汰TLS 1.0和TLS 1.1”，从而正式宣布了淘汰。
 - en: Negotiation starts with the client sending a first request (called a *ClientHello*)
     to the server. The ClientHello contains a range of supported SSL and TLS versions,
     a suite of cryptographic algorithms that the client is willing to use, and some
     more information that could be relevant for the rest of the handshake or for the
     application. The suite of cryptographic algorithms include
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 协商始于客户端向服务器发送第一个请求（称为*ClientHello*）。ClientHello包含一系列支持的SSL和TLS版本，客户端愿意使用的一套加密算法，以及可能与握手的其余部分或应用程序相关的其他信息。加密算法套件包括
 - en: '*One or more key exchange algorithms*—TLS 1.3 defines the following algorithms
     allowed for negotiations: ECDH with P-256, P-384, P-521, X25519, X448, and FFDH
     with the groups defined in RFC 7919\. I talked about all of these in chapter 5\.
     Previous versions of TLS also offered RSA key exchanges (covered in chapter 6),
     but they were removed in the last version.'
+  id: totrans-61
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -354,6 +474,7 @@
     elliptic curve algorithms like ECDSA and EdDSA. I talked about these in chapter
     7\. Note that digital signatures are specified with a hash function, which allows
     you to negotiate, for example, RSA-PSS with either SHA-256 or SHA-512.'
+  id: totrans-62
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -363,21 +484,25 @@
     by the digital signature algorithm. As a reminder, HMAC is the message authentication
     code you learned in chapter 3, and HKDF is the key derivation function we covered
     in chapter 8.'
+  id: totrans-63
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*One or more authenticated encryption algorithms*—These can include AES-GCM
     with keys of 128 or 256 bits, ChaCha20-Poly1305, and AES-CCM. I talked about all
     of these in chapter 4.'
+  id: totrans-64
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The server then responds with a *ServerHello* message, which contains one of
     each type of cryptographic algorithm, cherry-picked from the client’s selection.
     The following illustration depicts this response.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/09_01_UN01.jpg)'
+  id: totrans-66
   prefs: []
   type: TYPE_IMG
 - en: If the server is unable to find an algorithm it supports, it aborts the connection.
@@ -386,14 +511,17 @@
     with a message called a *HelloRetryRequest*, asking for the missing piece of information.
     The client can then resend its ClientHello, this time with the added requested
     information.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
 - en: TLS and forward-secure key exchanges
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
 - en: The key exchange is the most important part of the TLS handshake! Without it,
     there’s obviously no symmetric key being negotiated. But for a key exchange to
     happen, the client and the server must first trade their respective public keys.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
 - en: 'In TLS 1.2 and previous versions, the client and the server start a key exchange
@@ -405,36 +533,51 @@
     algorithm, then the client falls back to the outcome of the negotiation and sends
     a new ClientHello containing the correct public key. The following steps describe
     how this might look. I illustrate the difference in figure 9.2.'
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 TLS 1.2 和之前的版本中，客户端和服务器只有在双方同意使用哪种密钥交换算法后才开始密钥交换。这发生在协商阶段。TLS 1.3 通过尝试同时进行协商和密钥交换来优化这个流程：客户端推测选择一个密钥交换算法，并在第一条消息（ClientHello）中发送一个公钥。如果客户端未能预测服务器选择的密钥交换算法，则客户端回退到协商的结果，并发送包含正确公钥的新
+    ClientHello。以下步骤描述了这种情况可能是什么样子。我在图 9.2 中说明了这种差异。
 - en: The client sends a TLS 1.3 ClientHello message announcing that it can do either
     an X25519 or an X448 key exchange. It also sends an X25519 public key.
+  id: totrans-71
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 客户端发送一个 TLS 1.3 ClientHello 消息，宣布它可以执行 X25519 或 X448 密钥交换。它还发送了一个 X25519 公钥。
 - en: The server does not support X25519 but does support X448\. It sends a HelloRetryRequest
     to the client announcing that it only supports X448.
+  id: totrans-72
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 服务器不支持 X25519，但支持 X448。它向客户端发送一个 HelloRetryRequest，宣布它只支持 X448。
 - en: The client sends the same ClientHello but with an X448 public key instead.
+  id: totrans-73
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 客户端发送相同的 ClientHello，但是使用 X448 公钥。
 - en: The handshake goes on.
+  id: totrans-74
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 握手继续进行。
 - en: '![](../Images/09_02.jpg)'
+  id: totrans-75
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/09_02.jpg)'
 - en: Figure 9.2 In TLS 1.2, the client waits for the server to choose which key exchange
     algorithm to use before sending a public key. In TLS 1.3, the client speculates
     on which key exchange algorithm(s) the server will settle on and preemptively
     sends a public key (or several) in the first message, potentially avoiding an
     extra round trip.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 9.2 在 TLS 1.2 中，客户端在发送公钥之前等待服务器选择要使用的密钥交换算法。在 TLS 1.3 中，客户端推测服务器将选择哪种密钥交换算法，并在第一条消息中预先发送一个（或多个）公钥，可能避免额外的往返。
 - en: 'TLS 1.3 is full of such optimizations, which are important for the web. Indeed,
     many people worldwide have unstable or slow connections, and it is important to
     keep nonapplication communication to the bare minimum required. Furthermore, in
@@ -444,38 +587,54 @@
     provides *forward secrecy* to the key exchange: a compromise of the long-term
     keys of the client or the server, which won’t allow an attacker to decrypt this
     session as long as the ephemeral private keys were safely deleted.'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: TLS 1.3 中充满了这样的优化，对于网络来说非常重要。事实上，全球许多人拥有不稳定或缓慢的连接，保持非应用通信的最低限度是非常重要的。此外，在 TLS
+    1.3 中（与之前的 TLS 版本不同），所有密钥交换都是*临时*的。这意味着对于每个新会话，客户端和服务器都会生成新的密钥对，然后在密钥交换完成后将其丢弃。这为密钥交换提供了*前向保密性*：客户端或服务器的长期密钥泄露不会允许攻击者解密此会话，只要临时私钥被安全删除。
 - en: Imagine what would happen if, instead, a TLS server used a single private key
     for every key exchange it performs with its clients. By performing ephemeral key
     exchanges and getting rid of private keys as soon as a handshake ends, the server
     protects against such attackers. I illustrate this in figure 9.3.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象一下，如果一个 TLS 服务器在与客户端执行每次密钥交换时都使用单个私钥会发生什么。通过执行临时密钥交换并在握手结束后立即摆脱私钥，服务器可以防止此类攻击者。我在图
+    9.3 中进行了说明。
 - en: '![](../Images/09_03.jpg)'
+  id: totrans-79
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/09_03.jpg)'
 - en: Figure 9.3 In TLS 1.3, each session starts with an ephemeral key exchange. If
     a server is compromised at some point in time, no previous sessions will be impacted.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 9.3 在 TLS 1.3 中，每个会话都以临时密钥交换开始。如果服务器在某个时间点被攻破，之前的会话不会受到影响。
 - en: Exercise
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 练习
 - en: A compromise of the server’s private key at some point in time would be devastating
     as MITM attackers would then be able to decrypt all previously recorded conversations.
     Do you understand how this can happen?
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果服务器的私钥在某个时间点被泄露，那么中间人攻击者将能够解密所有先前记录的对话。你明白这是如何发生的吗？
 - en: Once ephemeral public keys are traded, a key exchange is performed, and keys
     can be derived. TLS 1.3 derives different keys at different points in time to
     encrypt different phases with independent keys.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
 - en: The first two messages, the ClientHello and the ServerHello, cannot be encrypted
     because no public keys were traded at this point. But after that, as soon as the
     key exchange happens, TLS 1.3 encrypts the rest of the handshake. (This is unlike
     previous versions of TLS that did not encrypt any of the handshake messages.)
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
 - en: To derive the different keys, TLS 1.3 uses HKDF with the hash function negotiated.
@@ -487,9 +646,11 @@
     is used to derive symmetric keys for the server to encrypt to the client after
     the handshake. Remember though, *unauthenticated* key exchanges are insecure!
     Next, you’ll see how TLS addresses this.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
 - en: TLS authentication and the web public key infrastructure
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
 - en: 'After some negotiations and after the key exchange has taken place, the handshake
@@ -500,38 +661,46 @@
     and not to an impersonator. But, first, let’s take a step back. There is something
     I haven’t told you yet. A TLS 1.3 handshake is actually split into three different
     stages (as figure 9.4 illustrates):'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
 - en: '*Key exchange*—This phase contains the *ClientHello* and *ServerHello* messages
     that provide some negotiation and perform the key exchange. All messages including
     handshake messages after this phase are encrypted.'
+  id: totrans-88
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: '*Server parameters*—Messages in this phase contain additional negotiation data
     from the server. This is negotiation data that does not have to be contained in
     the first message of the server and that could benefit from being encrypted.'
+  id: totrans-89
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: '*Authentication*—This phase includes authentication information from both the
     server and the client.'
+  id: totrans-90
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: '![](../Images/09_04.jpg)'
+  id: totrans-91
   prefs: []
   type: TYPE_IMG
 - en: 'Figure 9.4 A TLS 1.3 handshake is divided into three phases: the key exchange
     phase, the server parameters phase, and (finally) the authentication phase.'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
 - en: On the web, authentication in TLS is usually one-sided. Only the browser verifies
     that google.com, for example, is indeed google.com, but google.com does not verify
     who you are (or at least not as part of TLS).
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
 - en: Mutually-authenticated TLS
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
 - en: Client authentication is often delegated to the application layer for the web,
@@ -539,29 +708,40 @@
     authentication can also happen in TLS if requested by the server during the server
     parameters phase. When both sides of the connection are authenticated, we talk
     about *mutually-authenticated TLS* (sometimes abbreviated as mTLS).
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 客户端认证通常通过应用层进行，最常见的方式是通过一个表单要求您输入凭据。也就是说，如果服务器在服务器参数阶段请求，客户端认证也可以在TLS中发生。当连接的双方都经过认证时，我们称之为*相互认证的TLS*（有时缩写为mTLS）。
 - en: Client authentication is done the same way as server authentication. This can
     happen at any point after the authentication of the server (for example, during
     the handshake or in the post-handshake phase).
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 客户端认证与服务器认证的方式相同。这可以在服务器认证之后的任何时候发生（例如，在握手期间或在握手后阶段）。
 - en: Let’s now answer the question, “When connecting to google.com, how does your
     browser verify that you are indeed handshaking with google.com?” The answer is
     by using the *web public key infrastructure (web PKI)*.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们回答一个问题，“当连接到google.com时，您的浏览器如何验证您确实正在与google.com握手？”答案是通过使用*web公钥基础设施（web
+    PKI）*。
 - en: You learned about the concept of public key infrastructure in chapter 7 on digital
     signatures, but let me briefly reintroduce this concept as it is quite important
     in understanding how the web works. There are two sides to the web PKI. First,
     browsers must trust a set of root public keys that we call *certificate authorities*
     (CAs). Usually, browsers will either use a hardcoded set of trusted public keys
     or will rely on the operating system to provide them.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第7章关于数字签名中，您了解了公钥基础设施的概念，但让我简要地重新介绍一下这个概念，因为它在理解Web运作方式方面非常重要。Web PKI有两个方面。首先，浏览器必须信任一组我们称之为*证书颁发机构*（CAs）的根公钥。通常，浏览器要么使用一组硬编码的受信任公钥，要么依赖操作系统提供它们。
 - en: The web PKI
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: web PKI
 - en: For the web, there exist hundreds of these CAs that are independently run by
     different companies and organizations across the world. It is quite a complex
     system to analyze, and these CAs can sometimes also sign the public keys of intermediate
@@ -570,54 +750,71 @@
     (CA/Browser Forum) enforce rules and decide when new organizations can join the
     set of trusted public keys or when a CA can no longer be trusted and must be removed
     from that set.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于Web，存在数百家由世界各地不同公司和组织独立运行的这些CA。这是一个相当复杂的系统，这些CA有时也可以签署中间CA的公钥，而中间CA反过来也有权签署网站的公钥。因此，像*证书颁发机构浏览器论坛*（CA/Browser
+    Forum）这样的组织制定规则，并决定何时新组织可以加入受信任公钥集合，或者何时CA不再可信并必须从该集合中移除。
 - en: Second, websites that want to use HTTPS must have a way to obtain a certification
     (a signature of their signing public key) from these CAs. In order to do this,
     a website owner (or a webmaster, as we used to say) must prove to a CA that they
     own a specific domain.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次，想要使用HTTPS的网站必须有一种方式从这些CA那里获取认证（对其签名公钥的签名）。为了做到这一点，网站所有者（或者我们过去常说的网站管理员）必须向CA证明他们拥有特定的域名。
 - en: Note Obtaining a certificate for your own website used to involve a fee. This
     is no longer the case as CAs like Let’s Encrypt provide certificates for free.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意：为自己的网站获取证书过去需要支付费用。现在情况已经不同了，因为像Let's Encrypt这样的CA提供免费证书。
 - en: To prove that you own example.com, for example, a CA might ask you to host a
     file at example.com/some_path/file.txt that contains some random numbers generated
     for your request. The following comic strip shows this exchange.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 要证明你拥有example.com，例如，CA可能会要求你在example.com/some_path/file.txt上托管一个包含为你的请求生成的一些随机数字的文件。以下漫画展示了这个交换过程。
 - en: '![](../Images/09_04_UN02.jpg)'
+  id: totrans-104
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/09_04_UN02.jpg)'
 - en: After this, a CA can provide a signature over the website’s public key. As the
     CA’s signature is usually valid for a period of years, we say that it is over
     a long-term signing public key (as opposed to an ephemeral public key). More specifically,
     CAs do not actually sign public keys, but instead they sign *certificates* (more
     on this later). A certificate contains the long-term public key, along with some
     additional important metadata like the web page’s domain name.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
 - en: To prove to your browser that the server it is talking to is indeed google.com,
     the server sends a *certificate chain* as part of the TLS handshake. The chain
     comprises
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
 - en: Its own leaf certificate, containing (among others) the domain name ([google
     .com](http://google.com), for example), Google’s long-term signing public key,
     as well as a CA’s signature
+  id: totrans-107
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: A chain of intermediate CA certificates from the one that signed Google’s certificate
     to the root CA that signed the last intermediate CA
+  id: totrans-108
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: This is a bit wordy so I illustrated this in figure 9.5.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/09_05.jpg)'
+  id: totrans-110
   prefs: []
   type: TYPE_IMG
 - en: Figure 9.5 Web browsers only have to trust a relatively small set of root CAs
@@ -626,6 +823,7 @@
     its leaf certificate signed by one of these CAs. Sometimes root CAs only sign
     intermediate CAs, which, in turn, sign other intermediate CAs or leaf certificates.
     This is what’s known as the web PKI.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
 - en: The certificate chain is sent in a certificate TLS message by the server and
@@ -633,6 +831,7 @@
     the server can use its certified long-term key pair to sign all handshake messages
     that have been received and previously sent in what is called a *CertificateVerify*
     message. Figure 9.6 reviews this flow, where only the server authenticates itself.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
 - en: The signature in the CertificateVerify message proves to the client what the
@@ -641,9 +840,11 @@
     contained in the ServerHello message, allowing the attacker to successfully impersonate
     the server. Take a few moments to understand why an attacker cannot replace the
     server’s ephemeral public key in the presence of the CertificateVerify signature.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/09_06.jpg)'
+  id: totrans-114
   prefs: []
   type: TYPE_IMG
 - en: Figure 9.6 The authentication part of a handshake starts with the server sending
@@ -652,9 +853,11 @@
     metadata like the domain name) and ends with a root certificate that is trusted
     by the browser. Each certificate contains a signature from the certificate above
     it in the chain.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
 - en: Story time
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
 - en: 'A few years ago, I was hired to review a custom TLS protocol made by a large
@@ -663,6 +866,7 @@
     room went silent for a full minute. It was, of course, a substantial mistake:
     an attacker who could have intercepted the custom handshake and replaced the ephemeral
     key with its own would have successfully impersonated the server.'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
 - en: The lesson here is that it is important not to reinvent the wheel. Secure transport
@@ -670,6 +874,7 @@
     in many unexpected ways. Instead, you should rely on mature protocols like TLS
     and make sure you use a popular implementation that has received a substantial
     amount of public attention.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
 - en: Finally, in order to officially end the handshake, both sides of the connection
@@ -681,19 +886,23 @@
     with by MITM attackers, this integrity check allows the participants to detect
     and abort the connection. This is especially useful as some handshakes modes are
     *not* signed (more on this later).
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
 - en: Before heading to a different aspect of the handshake, let’s look at X.509 certificates.
     They are an important detail of many cryptographic protocols.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
 - en: Authentication via X.509 certificates
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
 - en: While certificates are optional in TLS 1.3 (you can always use plain keys),
     many applications and protocols, not just the web, make heavy use of them in order
     to certify additional metadata. Specifically, the X.509 certificate standard version
     3 is used.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
 - en: 'X.509 is a pretty old standard that was meant to be flexible enough to be used
@@ -701,41 +910,52 @@
     a description language called *Abstract Syntax Notation One* (ASN.1) to specify
     information contained in a certificate. A data structure described in ASN.1 looks
     like this:'
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE2]'
+  id: totrans-124
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 'You can literally read this as a structure that contains three fields:'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
 - en: '`tbsCertificate`—The to-be-signed certificate. This contains all the information
     that one wants to certify. For the web, this can contain a domain name (google.com,
     for example), a public key, an expiration date, and so on.'
+  id: totrans-126
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '`signatureAlgorithm`—The algorithm used to sign the certificate.'
+  id: totrans-127
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '`signatureValue`—The signature from a CA.'
+  id: totrans-128
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Exercise
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
 - en: The values `signatureAlgorithm` and `signatureValue` are not contained in the
     actual certificate, `tbsCertificate`. Do you know why?
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
 - en: You can easily check what’s in an X.509 certificate by connecting to any website
     using HTTPS and then using your browser functionalities to observe the certificate
     chain sent by the server. See figure 9.7 for an example.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/09_07.jpg)'
+  id: totrans-132
   prefs: []
   type: TYPE_IMG
 - en: Figure 9.7 Using Chrome’s Certificate Viewer, we can observe the certificate
@@ -744,25 +964,31 @@
     due to its certificate containing a signature from Global Sign. In turn, Google’s
     leaf certificate, valid for *.google.com (google.com, mail.google.com, and so
     on), contains a signature from GTS CA 101.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
 - en: 'You might encounter X.509 certificates as .pem files, which is some base64-encoded
     content surrounded by some human-readable hint of what the base64-encoded data
     contains (here, a certificate). The following snippet represents the content of
     a certificate in a .pem format:'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE3]'
+  id: totrans-135
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: If you decode the base64 content surrounded by `BEGIN` `CERTIFICATE` and `END`
     `CERTIFICATE`, you end up with a *Distinguished Encoding Rules* (DER) encoded
     certificate. DER is a *deterministic* (only one way to encode) binary encoding
     used to translate X.509 certificates into bytes. All these encodings are often
     quite confusing to newcomers! I recap all of this in figure 9.8.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/09_08.jpg)'
+  id: totrans-137
   prefs: []
   type: TYPE_IMG
 - en: Figure 9.8 On the top left corner, an X.509 certificate is written using the
@@ -770,6 +996,7 @@
     encoding. As this is not text that can easily be copied around or recognized by
     humans, it is base64-encoded. The last touch wraps the base64 data with some handy
     contextual information using the PEM format.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
 - en: DER only encodes information as “here is an integer” or “this is a bytearray.”
@@ -779,20 +1006,25 @@
     you to decode and translate in human terms the content of a DER-encoded certificate.
     For example, if you download google.com’s certificate, you can use the following
     code snippet to display its content in your terminal.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE4]'
+  id: totrans-140
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: Having said all of this, X.509 certificates are quite controversial. Validating
     X.509 certificates has been comically dubbed “the most dangerous code in the world”
     by a team of researchers in 2012\. This is because DER encoding is a difficult
     protocol to parse correctly, and the complexity of X.509 certificates makes for
     many mistakes to be potentially devastating. For this reason, I don’t recommend
     any modern application to use X.509 certificates unless it has to.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
 - en: Pre-shared keys and session resumption in TLS or how to avoid key exchanges
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
 - en: Key exchanges can be costly and are sometimes not needed. For example, you might
@@ -801,6 +1033,7 @@
     TLS 1.3 offers a way to avoid this overhead with *pre-shared keys* (PSKs). A PSK
     is simply a secret that both the client and the server know, one that can be used
     to derive symmetric keys for the session.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
 - en: In TLS 1.3, a PSK handshake works by having the client advertise in its ClientHello
@@ -809,9 +1042,11 @@
     can then avoid doing a key exchange (if they want to). By doing this, the authentication
     phase is skipped, making the Finished message at the end of the handshake important
     to prevent MITM attacks.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
 - en: Client random and server random
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
 - en: An avid reader might have noticed that ephemeral public keys brought randomness
@@ -821,6 +1056,7 @@
     be linked. Worse, because encrypted messages might be different between sessions,
     this could lead to nonce reuses and their catastrophic implications (see chapter
     4).
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
 - en: To mitigate this, both the ClientHello and ServerHello messages have a `random`
@@ -828,6 +1064,7 @@
     as *client random* and *server random*). As these random values are used in the
     derivation of symmetric keys in TLS, it effectively randomizes the session symmetric
     keys for each new connection.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
 - en: Another use case for PSKs is *session resumption*. Session resumption is about
@@ -837,6 +1074,7 @@
     minutes or hours later when you revisit? TLS 1.3 offers a way to generate a PSK
     after a handshake is successfully performed, which can be used in subsequent connections
     to avoid having to redo a full handshake.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
 - en: If the server wants to offer this feature, it can send a New Session Ticket
@@ -846,9 +1084,11 @@
     but as this mechanism is quite complex and most of the time not necessary, I won’t
     touch on more of it in this chapter. Next, let’s see the easiest part of TLS—how
     communications eventually get encrypted.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
 - en: 9.2.2 How TLS 1.3 encrypts application data
+  id: totrans-150
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -859,9 +1099,11 @@
     and is incremented for each new message. If a message is replayed or reordered,
     the nonce will be different from what is expected and decryption fails. When this
     happens, the connection is killed.'
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
 - en: Hiding the plaintext’s length
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
 - en: As you learned in chapter 4, encryption does not always hide the length of what
@@ -871,6 +1113,7 @@
     attacks that remove the added noise may exist, and it is not straightforward to
     mitigate them. If you really require this security property, you should refer
     to the TLS 1.3 specification.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
 - en: Starting with TLS 1.3, if a server decides to allow it, clients have the possibility
@@ -880,12 +1123,14 @@
     This mechanism is called *early data* or *0-RTT* (for zero round trip time). It
     can only be used with the combination of a PSK as it allows derivation of symmetric
     keys during the ClientHello message.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
 - en: Note This feature was quite controversial during the development of the TLS
     1.3 standard because a passive attacker can replay an observed ClientHello followed
     by the encrypted 0-RTT data. This is why 0-RTT must be used only with application
     data that can be replayed safely.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
 - en: For the web, browsers treat every GET query as *idempotent*, meaning that GET
@@ -894,9 +1139,11 @@
     and applications have been known to do whatever they want to do. For this reason,
     if you are confronted with the decision of using 0-RTT or not, it is simpler just
     to not use it.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
 - en: 9.3 The state of the encrypted web today
+  id: totrans-157
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -906,17 +1153,20 @@
     the protocol (up to SSL version 3 sometimes!). This is not straightforward and,
     because of the number of vulnerabilities you need to defend against, many hard-to-implement
     mitigations must be maintained.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
 - en: Warning Using TLS 1.3 (and TLS 1.2) is considered secure and best practice.
     Using any lower version means that you will need to consult experts and will have
     to figure out how to avoid known vulnerabilities.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
 - en: By default, browsers still connect to web servers using HTTP, and websites still
     have to manually ask a CA to obtain a certificate. This means that with the current
     protocols, the web will never be fully encrypted, although some estimates show
     global web traffic to be 90% encrypted as of 2019.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
 - en: The fact that, by default, your browser always uses an insecure connection is
@@ -926,12 +1176,14 @@
     called *HTTP Strict Transport Security* (HSTS). Yet, the first connection to a
     website is still unprotected (unless the user thinks about typing `https` in the
     address bar) and can be intercepted to remove the redirection to HTTPS.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
 - en: In addition, other web protocols like *NTP* (to get the current time) and *DNS*
     (to obtain the IP behind a domain name) are currently largely unencrypted and
     vulnerable to MITM attacks. While there are research efforts to improve the status
     quo, these are attack vectors that one needs to be aware of.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
 - en: There’s another threat to TLS users—misbehaving CAs. What if, today, a CA decides
@@ -940,6 +1192,7 @@
     users. The obvious solution, if you control the client-side of the connection,
     is to either not use the web PKI (and rely on your own PKI) or to *pin* a specific
     certificate or public key.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
 - en: 'Certificate or public key pinning are techniques where a server’s certificate
@@ -951,15 +1204,18 @@
     should look like (unlike browsers that have to connect to an infinite number of
     servers). Hardcoding certificates and public keys is not always possible, though,
     and two other mechanisms co-exist to deal with bad certificates:'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
 - en: '*Certificate revocation*—As the name indicates, this allows a CA to revoke
     a certificate and warn browsers about it.'
+  id: totrans-165
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Certificate monitoring*—This is a relatively new system that forces CAs to
     publicly log every certificate signed.'
+  id: totrans-166
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -968,6 +1224,7 @@
     a list of revoked certificates, those that were no longer considered valid. The
     problem with CRLs is that they can grow quite large and one needs to constantly
     check them.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
 - en: 'CRLs were deprecated in favor of *Online Certificate Status Protocol* (OCSP),
@@ -979,14 +1236,17 @@
     OCSP with *OCSP stapling* : the website is in charge of querying the CA for a
     signed status of its certificate and attaches (staples) the response to its certificate
     during the TLS handshake. I review the three solutions in figure 9.9.'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/09_09.jpg)'
+  id: totrans-169
   prefs: []
   type: TYPE_IMG
 - en: 'Figure 9.9 Certificate revocation on the web has had three popular solutions:
     Certificate Revocation Lists (CRLs), Online Certificate Status Protocol (OCSP),
     and OCSP stapling.'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
 - en: Certificate revocation might not seem to be a prime feature to support (especially
@@ -994,6 +1254,7 @@
     Like a car seatbelt, certificate revocation is a security feature that is useless
     most of the time but can be a lifesaver in rare cases. This is what we in security
     call “defense in depth.”
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
 - en: Note For the web, certificate revocation has largely proven to be a good decision.
@@ -1002,6 +1263,7 @@
     was found to have a *buffer overread* bug (reading past the limit of an array),
     allowing anyone to send a specially crafted message to any OpenSSL server and
     receive a dump of its memory, often revealing its long-term private keys.
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
 - en: Yet, if a CA truly misbehaves, it can decide not to revoke malicious certificates
@@ -1014,6 +1276,7 @@
     transparency allows you to check if a certificate was wrongly issued for a domain
     you own (there should be no other certificates other than the ones you requested
     in the past).
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
 - en: Note that a Certificate Transparency relies on people monitoring logs for their
@@ -1022,9 +1285,11 @@
     sometimes remove misbehaving CAs from their trust stores. Certificate Transparency
     is, thus, not as powerful as certificate or public key pinning, which mitigates
     CA misbehaviors.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
 - en: 9.4 Other secure transport protocols
+  id: totrans-175
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -1033,15 +1298,18 @@
     transport protocol class. Many other protocols exist, and you might most likely
     be using them already. Yet, most of them are TLS-like protocols, customized to
     support a specific use case. This is the case, for example, with the following:'
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
 - en: '*Secure Shell (SSH)*—The most widely used protocol and application to securely
     connect to a remote terminal on a different machine.'
+  id: totrans-177
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Wi-Fi Protected Access (WPA)*—The most popular protocol to connect devices
     to private network access points or to the internet.'
+  id: totrans-178
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1050,6 +1318,7 @@
     office networks. As its name indicates, it acts at the IP layer and is often found
     in routers, firewalls, and other network appliances. Another popular VPN is OpenVPN,
     which makes direct use of TLS.'
+  id: totrans-179
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1058,9 +1327,11 @@
     issues, as for example, several of the Wi-Fi protocols have been broken. To finish
     this chapter, I want to introduce you to the *Noise protocol framework*. Noise
     is a much more modern alternative to TLS.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
 - en: '9.5 The Noise protocol framework: A modern alternative to TLS'
+  id: totrans-181
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -1070,6 +1341,7 @@
     overall complexity. Indeed, in many scenarios where you are in control of all
     the endpoints, you might not need all of the features that TLS has to offer. The
     next best solution is called the *Noise protocol framework*.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
 - en: The Noise protocol framework removes the run-time complexity of TLS by avoiding
@@ -1077,6 +1349,7 @@
     linear protocol that does not branch. Contrast this to TLS, which can take many
     different paths, depending on the information contained in the different handshake
     messages. What Noise does is that it pushes all the complexity to the design phase.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
 - en: Developers who want to use the Noise protocol framework must decide what ad
@@ -1087,9 +1360,11 @@
     is implemented and turns into a rigid series of messages, which can be a problem
     if one needs to update the protocol later while maintaining backward compatibility
     with devices that cannot be updated.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
 - en: 9.5.1 The many handshakes of Noise
+  id: totrans-185
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1101,26 +1376,32 @@
     for *known*). Once a handshake pattern is chosen, applications making use of it
     will never attempt to perform any of the other possible handshake patterns. As
     opposed to TLS, this makes Noise a simple and linear protocol in practice.
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
 - en: 'In the rest of this section, I will use a handshake pattern called *NN* to
     explain how Noise works. It is simple enough for to explain, but insecure because
     of the two *N* ’s indicating that no authentication takes place on both sides.
     In Noise’s lingo, the pattern is written like this:'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE5]'
+  id: totrans-188
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 'Each line represents a message pattern, and the arrow indicates the direction
     of the message. Each message pattern is a succession of tokens (here, there are
     only two: `e` and `ee`) that dictates what both sides of the connection need to
     do:'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
 - en: '`->` `e`—Means that the client must generate an ephemeral key pair and send
     the public key to the server. The server interprets this message differently:
     it must receive an ephemeral public key and store it.'
+  id: totrans-190
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1129,6 +1410,7 @@
     with the client’s ephemeral (the first `e`) and its own ephemeral (the second
     `e`). On the other hand, the client must receive an ephemeral public key from
     the server, and use it to do a DH key exchange as well.'
+  id: totrans-191
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1137,6 +1419,7 @@
     word for *long-term key*) as opposed to an ephemeral key, and the token `es` means
     that both participants must perform a DH key exchange using the client’s ephemeral
     key and the server’s static key.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
 - en: 'There’s more to it: at the end of each message pattern (`->` `e` and `<-` `e,`
@@ -1145,9 +1428,11 @@
     payload is encrypted and authenticated. At the end of the handshake both participants
     derive a set of symmetric keys and start encrypting communications similarly to
     TLS.'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
 - en: 9.5.2 A handshake with Noise
+  id: totrans-194
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1155,9 +1440,11 @@
     transcript. To achieve this, both sides maintain two variables: a hash (`h`) and
     a chaining key (`ck`). Each handshake message sent or received is hashed with
     the previous `h` value. I illustrate this in figure 9.10.'
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/09_10.jpg)'
+  id: totrans-196
   prefs: []
   type: TYPE_IMG
 - en: Figure 9.10 In the Noise protocol framework, each side of the connection keeps
@@ -1165,6 +1452,7 @@
     the handshake. When a message is sent and encrypted with an authenticated encryption
     with associated data (AEAD) algorithm, the current `h` value is used as associated
     data in order to authenticate the handshake up to this point.
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
 - en: At the end of each message pattern, a (potentially empty) payload is encrypted
@@ -1173,6 +1461,7 @@
     data field of the AEAD. This allows Noise to continuously verify that both sides
     of the connection are seeing the exact same series of messages and in the same
     order.
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
 - en: In addition, every time a DH key exchange happens (several can happen during
@@ -1180,15 +1469,18 @@
     HKDF, which derives a new chaining key and a new set of symmetric keys to use
     for authenticating and encrypting subsequent messages. I illustrate this in figure
     9.11.
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/09_11.jpg)'
+  id: totrans-200
   prefs: []
   type: TYPE_IMG
 - en: Figure 9.11 In the Noise protocol framework, each side of the connection keeps
     track of a *chaining key*, `ck`. This value is used to derive a new chaining key
     and new encryption keys to be used in the protocol every time a DH key exchange
     is performed.
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
 - en: This makes Noise a simple protocol at run time; there is no branching and both
@@ -1197,54 +1489,64 @@
     to hundreds of thousands of lines for TLS libraries. While Noise is more complex
     to use and will require developers who understand how Noise works to integrate
     it into an application, it is a strong alternative to TLS.
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
 - en: Summary
+  id: totrans-203
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: Transport Layer Security (TLS) is a secure transport protocol to encrypt communications
     between machines. It was previously called Secure Sockets Layer (SSL) and is sometimes
     still referred to as SSL.
+  id: totrans-204
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: TLS works on top of TCP and is used daily to protect connections between browsers,
     web servers, mobile applications, and so on.
+  id: totrans-205
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: To protect sessions on top of User Datagram Protocol (UDP), TLS has a variant
     called Datagram Transport Layer Security (DTLS) that works with UDP.
+  id: totrans-206
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: TLS and most other transport security protocols have a handshake phase (in which
     the secure negotiation is created) and a post-handshake phase (in which communications
     are encrypted using keys derived from the first phase).
+  id: totrans-207
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: To avoid delegating too much trust to the web public key infrastructure, applications
     making use of TLS can use certificate and public key pinning to only allow secure
     communications with specific certificates or public keys.
+  id: totrans-208
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: As a defense-in-depth measure, systems can implement certificate revocation
     (to remove compromised certificates) and monitoring (to detect compromised certificates
     or CAs).
+  id: totrans-209
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: In order to avoid TLS complexity and size and whether you control both sides
     of the connection, you can use the Noise protocol framework.
+  id: totrans-210
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: To use Noise, one must decide what variant of a handshake they want to use when
     designing the protocol. Due to this, it is much simpler and secure than TLS, but
     less flexible.
+  id: totrans-211
   prefs:
   - PREF_UL
   type: TYPE_NORMAL

@@ -39,9 +39,9 @@
 以下的 `openssl` 命令演示了如何使用 `genpkey` 子命令生成一个 3072 位的 RSA 私钥。在撰写本文时，RSA 密钥应至少为 2048 位：
 
 ```py
-$ openssl genpkey -algorithm RSA \      ❶
-    -out private_key.pem \              ❷
-    -pkeyopt rsa_keygen_bits:3072       ❸
+$ openssl genpkey -algorithm RSA \      # ❶
+    -out private_key.pem \              # ❷
+    -pkeyopt rsa_keygen_bits:3072       # ❸
 ```
 
 ❶ 生成 RSA 密钥
@@ -61,8 +61,8 @@ $ openssl rsa -pubout -in private_key.pem -out public_key.pem
 私钥和公钥有时存储在文件系统中。重要的是要管理这些文件的访问权限。私钥文件不应该对除所有者以外的任何人可读或可写。另一方面，公钥文件可以被任何人读取。以下命令演示了如何在类 Unix 系统上限制对这些文件的访问：
 
 ```py
-$ chmod 600 private_key.pem   ❶
-$ chmod 644 public_key.pem    ❷
+$ chmod 600 private_key.pem   # ❶
+$ chmod 644 public_key.pem    # ❷
 ```
 
 ❶ 拥有者具有读取和写入权限。
@@ -90,16 +90,16 @@ u9bOaomYoLvErKnBET5UpOCrJ548G4mzIXEZRiYEqOVb9d0jHpGo/qAk5VCwfNPG
 用 Python 生成 RSA 密钥对的列表 5.1
 
 ```py
-from cryptography.hazmat.backends import default_backend    ❶
-from cryptography.hazmat.primitives import serialization    ❶
-from cryptography.hazmat.primitives.asymmetric import rsa   ❶
+from cryptography.hazmat.backends import default_backend    # ❶
+from cryptography.hazmat.primitives import serialization    # ❶
+from cryptography.hazmat.primitives.asymmetric import rsa   # ❶
 
-private_key = rsa.generate_private_key(                     ❷
-    public_exponent=65537,                                  ❷
-    key_size=3072,                                          ❷
-    backend=default_backend(), )                            ❷
+private_key = rsa.generate_private_key(                     # ❷
+    public_exponent=65537,                                  # ❷
+    key_size=3072,                                          # ❷
+    backend=default_backend(), )                            # ❷
 
-public_key = private_key.public_key()                       ❸
+public_key = private_key.public_key()                       # ❸
 ```
 
 ❶ 复杂的低级 API
@@ -115,20 +115,20 @@ public_key = private_key.public_key()                       ❸
 用 Python 序列化 RSA 密钥对的列表 5.2
 
 ```py
-private_bytes = private_key.private_bytes(                    ❶
-    encoding=serialization.Encoding.PEM,                      ❶
-    format=serialization.PrivateFormat.PKCS8,                 ❶
-    encryption_algorithm=serialization.NoEncryption(), )      ❶
+private_bytes = private_key.private_bytes(                    # ❶
+    encoding=serialization.Encoding.PEM,                      # ❶
+    format=serialization.PrivateFormat.PKCS8,                 # ❶
+    encryption_algorithm=serialization.NoEncryption(), )      # ❶
 
-with open('private_key.pem', 'xb') as private_file:           ❶
-    private_file.write(private_bytes)                         ❶
+with open('private_key.pem', 'xb') as private_file:           # ❶
+    private_file.write(private_bytes)                         # ❶
 
-public_bytes = public_key.public_bytes(                       ❷
-    encoding=serialization.Encoding.PEM,                      ❷
-    format=serialization.PublicFormat.SubjectPublicKeyInfo, ) ❷
+public_bytes = public_key.public_bytes(                       # ❷
+    encoding=serialization.Encoding.PEM,                      # ❷
+    format=serialization.PublicFormat.SubjectPublicKeyInfo, ) # ❷
 
-with open('public_key.pem', 'xb') as public_file:             ❷
-    public_file.write(public_bytes)                           ❷
+with open('public_key.pem', 'xb') as public_file:             # ❷
+    public_file.write(public_bytes)                           # ❷
 ```
 
 ❶ 私钥序列化
@@ -140,18 +140,18 @@ with open('public_key.pem', 'xb') as public_file:             ❷
 用 Python 反序列化 RSA 密钥对的列表 5.3
 
 ```py
-with open('private_key.pem', 'rb') as private_file:            ❶
-   loaded_private_key = serialization.load_pem_private_key(    ❶
-       private_file.read(),                                    ❶
-       password=None,                                          ❶
-       backend=default_backend()                               ❶
-   )                                                           ❶
+with open('private_key.pem', 'rb') as private_file:            # ❶
+   loaded_private_key = serialization.load_pem_private_key(    # ❶
+       private_file.read(),                                    # ❶
+       password=None,                                          # ❶
+       backend=default_backend()                               # ❶
+   )                                                           # ❶
 
-with open('public_key.pem', 'rb') as public_file:              ❷
-   loaded_public_key = serialization.load_pem_public_key(      ❷
-       public_file.read(),                                     ❷
-       backend=default_backend()                               ❷
-   )                                                           ❷
+with open('public_key.pem', 'rb') as public_file:              # ❷
+   loaded_public_key = serialization.load_pem_public_key(      # ❷
+       public_file.read(),                                     # ❷
+       backend=default_backend()                               # ❷
+   )                                                           # ❷
 ```
 
 ❶ 私钥反序列化
@@ -168,20 +168,20 @@ with open('public_key.pem', 'rb') as public_file:              ❷
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 
-padding_config = padding.OAEP(                           ❶
-   mgf=padding.MGF1(algorithm=hashes.SHA256()),          ❶
-   algorithm=hashes.SHA256(),                            ❶
-   label=None, )                                         ❶
+padding_config = padding.OAEP(                           # ❶
+   mgf=padding.MGF1(algorithm=hashes.SHA256()),          # ❶
+   algorithm=hashes.SHA256(),                            # ❶
+   label=None, )                                         # ❶
 
 plaintext = b'message from Alice to Bob'
 
-ciphertext = loaded_public_key.encrypt(                  ❷
-   plaintext=plaintext,                                  ❷
-   padding=padding_config, )                             ❷
+ciphertext = loaded_public_key.encrypt(                  # ❷
+   plaintext=plaintext,                                  # ❷
+   padding=padding_config, )                             # ❷
 
-decrypted_by_private_key = loaded_private_key.decrypt(   ❸
-   ciphertext=ciphertext,                                ❸
-   padding=padding_config)                               ❸
+decrypted_by_private_key = loaded_private_key.decrypt(   # ❸
+   ciphertext=ciphertext,                                # ❸
+   padding=padding_config)                               # ❸
 
 assert decrypted_by_private_key == plaintext
 ```
@@ -237,21 +237,21 @@ from cryptography.hazmat.primitives import hashes
 
 message = b'from Bob to Alice'
 
-padding_config = padding.PSS(                     ❶
-    mgf=padding.MGF1(hashes.SHA256()),            ❶
-    salt_length=padding.PSS.MAX_LENGTH)           ❶
+padding_config = padding.PSS(                     # ❶
+    mgf=padding.MGF1(hashes.SHA256()),            # ❶
+    salt_length=padding.PSS.MAX_LENGTH)           # ❶
 
-private_key = load_rsa_private_key()              ❷
-signature = private_key.sign(                     ❸
-    message,                                      ❸
-    padding_config,                               ❸
-    hashes.SHA256())                              ❸
+private_key = load_rsa_private_key()              # ❷
+signature = private_key.sign(                     # ❸
+    message,                                      # ❸
+    padding_config,                               # ❸
+    hashes.SHA256())                              # ❸
 
-signed_msg = {                                    ❹
-    'message': list(message),                     ❹
-    'signature': list(signature),                 ❹
-}                                                 ❹
-outbound_msg_to_alice = json.dumps(signed_msg)    ❹
+signed_msg = {                                    # ❹
+    'message': list(message),                     # ❹
+    'signature': list(signature),                 # ❹
+}                                                 # ❹
+outbound_msg_to_alice = json.dumps(signed_msg)    # ❹
 ```
 
 ❶ 使用 PSS 填充
@@ -293,21 +293,21 @@ from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.exceptions import InvalidSignature
 
 def receive(inbound_msg_from_bob):
-    signed_msg = json.loads(inbound_msg_from_bob)    ❶
-    message = bytes(signed_msg['message'])           ❶
-    signature = bytes(signed_msg['signature'])       ❶
+    signed_msg = json.loads(inbound_msg_from_bob)    # ❶
+    message = bytes(signed_msg['message'])           # ❶
+    signature = bytes(signed_msg['signature'])       # ❶
 
-    padding_config = padding.PSS(                    ❷
-        mgf=padding.MGF1(hashes.SHA256()),           ❷
-        salt_length=padding.PSS.MAX_LENGTH)          ❷
+    padding_config = padding.PSS(                    # ❷
+        mgf=padding.MGF1(hashes.SHA256()),           # ❷
+        salt_length=padding.PSS.MAX_LENGTH)          # ❷
 
-    private_key = load_rsa_private_key()             ❸
+    private_key = load_rsa_private_key()             # ❸
     try:
-        private_key.public_key().verify(             ❹
-            signature,                               ❹
-            message,                                 ❹
-            padding_config,                          ❹
-            hashes.SHA256())                         ❹
+        private_key.public_key().verify(             # ❹
+            signature,                               # ❹
+            message,                                 # ❹
+            padding_config,                          # ❹
+            hashes.SHA256())                         # ❹
         print('Trust message')
     except InvalidSignature:
         print('Do not trust message')
@@ -348,7 +348,7 @@ message = b'from Bob to Alice'
 
 private_key = ec.generate_private_key(ec.SECP384R1(), default_backend())
 
-signature = private_key.sign(message, ec.ECDSA(hashes.SHA256()))    ❶
+signature = private_key.sign(message, ec.ECDSA(hashes.SHA256()))    # ❶
 ```
 
 ❶ 使用 SHA-256 进行签名
@@ -360,12 +360,12 @@ signature = private_key.sign(message, ec.ECDSA(hashes.SHA256()))    ❶
 ```py
 from cryptography.exceptions import InvalidSignature
 
-public_key = private_key.public_key()   ❶
+public_key = private_key.public_key()   # ❶
 
 try:
     public_key.verify(signature, message, ec.ECDSA(hashes.SHA256()))
-except InvalidSignature:                ❷
-    pass                                ❷
+except InvalidSignature:                # ❷
+    pass                                # ❷
 ```
 
 ❶ 提取公钥
@@ -382,17 +382,17 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec, utils
 
-large_msg = b'from Bob to Alice ...'              ❶
-sha256 = hashlib.sha256()                         ❶
-sha256.update(large_msg[:8])                      ❶
-sha256.update(large_msg[8:])                      ❶
-hash_value = sha256.digest()                      ❶
+large_msg = b'from Bob to Alice ...'              # ❶
+sha256 = hashlib.sha256()                         # ❶
+sha256.update(large_msg[:8])                      # ❶
+sha256.update(large_msg[8:])                      # ❶
+hash_value = sha256.digest()                      # ❶
 
 private_key = ec.generate_private_key(ec.SECP384R1(), default_backend())
 
-signature = private_key.sign(                     ❷
-    hash_value,                                   ❷
-    ec.ECDSA(utils.Prehashed(hashes.SHA256())))   ❷
+signature = private_key.sign(                     # ❷
+    hash_value,                                   # ❷
+    ec.ECDSA(utils.Prehashed(hashes.SHA256())))   # ❷
 ```
 
 ❶ 调用者高效地对消息进行哈希

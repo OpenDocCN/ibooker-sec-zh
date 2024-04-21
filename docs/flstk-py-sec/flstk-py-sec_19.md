@@ -22,11 +22,11 @@
 
 ```py
 <html>
-  <body onload="document.forms[0].submit()">                      ❶
+  <body onload="document.forms[0].submit()">                      # ❶
     <form method="POST"
-          action="https:/./admin.alice.com/group-membership/">     ❷
-      <input type="hidden" name="username" value="mallory"/>      ❸
-      <input type="hidden" name="group" value="administrator"/>   ❸
+          action="https:/./admin.alice.com/group-membership/">     # ❷
+      <input type="hidden" name="username" value="mallory"/>      # ❸
+      <input type="hidden" name="group" value="administrator"/>   # ❸
     </form>
   </body>
 </html>
@@ -136,9 +136,9 @@ Set-Cookie: sessionid=<session-id-value>; SameSite=Lax; ...
 不正确的状态管理不仅仅是丑陋的；它实际上会使您的站点容易受到攻击。为什么？除了程序员和安全标准外，这些约定还得到了浏览器供应商的认可。例如，假设 admin.alice.com 为 Alice 的会话 ID 设置了`SameSite`为`Lax`。这使 Mallory 的隐藏表单失效，因此她将其替换为以下链接。Alice 点击链接，将带有她的会话 ID cookie 的 GET 请求发送到 admin.alice.com。如果/group-membership/处理程序接受 GET 请求，Mallory 仍然获胜：
 
 ```py
-<a href="https://admin.alice.com/group-membership/?   ❶
-➥ username=mallory&                                  ❷
-➥ group=administrator">                              ❷
+<a href="https://admin.alice.com/group-membership/?   # ❶
+➥ username=mallory&                                  # ❷
+➥ group=administrator">                              # ❷
   Win an iPhone!
 </a>
 ```
@@ -160,9 +160,9 @@ from django.http import HttpResponse, HttpResponseNotAllowed
 
 def group_membership_function(request):
 
-    allowed_methods = {'POST'}                           ❶
-    if request.method not in allowed_methods:            ❶
-        return HttpResponseNotAllowed(allowed_methods)   ❶
+    allowed_methods = {'POST'}                           # ❶
+    if request.method not in allowed_methods:            # ❶
+        return HttpResponseNotAllowed(allowed_methods)   # ❶
 
     ...
     return HttpResponse('state change successful')
@@ -178,7 +178,7 @@ from django.views import View
 
 class GroupMembershipView(View):
 
-    def post(self, request, *args, **kwargs):    ❶
+    def post(self, request, *args, **kwargs):    # ❶
 
         ...
         return HttpResponse('state change successful')
@@ -288,7 +288,7 @@ Django 的 CSRF 令牌策略的详细信息取决于浏览器是否发送了 POS
 <html>
 
     <form method='POST'>
- {% csrf_token %}      ❶
+ {% csrf_token %}      # ❶
         <table>
             {{ form.as_table }}
         </table>
@@ -327,14 +327,14 @@ function extractToken(){
 const headers = {
    'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
 };
-fetch('/resource/', {                                    ❶
-        method: 'POST',                                  ❶
-        headers: headers,                                ❶
- body: 'csrfmiddlewaretoken=' + extractToken()    ❶
+fetch('/resource/', {                                    # ❶
+        method: 'POST',                                  # ❶
+        headers: headers,                                # ❶
+ body: 'csrfmiddlewaretoken=' + extractToken()    # ❶
     })
-    .then(response => response.json())                   ❷
-    .then(data => console.log(data))                     ❷
-    .catch(error => console.error('error', error));      ❷
+    .then(response => response.json())                   # ❷
+    .then(data => console.log(data))                     # ❷
+    .catch(error => console.error('error', error));      # ❷
 ```
 
 ❶ 将 CSRF 令牌作为 POST 参数发送
@@ -351,10 +351,10 @@ POST 只是许多不安全请求方法之一；Django 对其他请求方法有�
 
 ```py
 fetch('/resource/', {
-        method: 'DELETE',                    ❶
- headers: {                           ❷
- 'X-CSRFToken': extractToken()    ❷
- }                                    ❷
+        method: 'DELETE',                    # ❶
+ headers: {                           # ❷
+ 'X-CSRFToken': extractToken()    # ❷
+ }                                    # ❷
     })
     .then(response => response.json())
     .then(data => console.log(data))

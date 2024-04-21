@@ -46,12 +46,12 @@ TLS 服务器通常要简单得多，因为它只需要一个配置，这与客�
 
 清单 9.1 Golang 中的 TLS 客户端
 
-```py
+```go
 import "crypto/tls"
 
 func main() {
-    destination := "google.com:443"                           ❶
-     TLSconfig := &tls.Config{}                               ❷
+    destination := "google.com:443"                           // ❶
+     TLSconfig := &tls.Config{}                               // ❷
      conn, err := tls.Dial("tcp", destination, TLSconfig)
     if err != nil {
         panic("failed to connect: " + err.Error())
@@ -68,7 +68,7 @@ func main() {
 
 清单 9.2 Golang 中的 TLS 服务器
 
-```py
+```go
 import (
     "crypto/tls"
     "net/http"
@@ -79,20 +79,20 @@ func hello(rw http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
-    config := &tls.Config{                                 ❶
-         MinVersion: tls.VersionTLS13,                     ❶
-     }                                                     ❶
+    config := &tls.Config{                                 // ❶
+         MinVersion: tls.VersionTLS13,                     // ❶
+     }                                                     // ❶
 
-    http.HandleFunc("/", hello)                            ❷
+    http.HandleFunc("/", hello)                            // ❷
 
-    server := &http.Server{                                ❸
-         Addr:      ":8080",                               ❸
-         TLSConfig: config,                                ❸
+    server := &http.Server{                                // ❸
+         Addr:      ":8080",                               // ❸
+         TLSConfig: config,                                // ❸
      }
 
     cert := "cert.pem"
     key := "key.pem"
-    err := server.ListenAndServeTLS(cert, key)             ❹
+    err := server.ListenAndServeTLS(cert, key)             // ❹
      if err != nil {
         panic(err)
     }
@@ -287,7 +287,7 @@ CertificateVerify 消息中的签名向客户端证明了服务器目前所见�
 
 X.509 是一个相当古老的标准，旨在足够灵活，可以用于多种场景：从电子邮件到网页。X.509 标准使用了一种称为 *Abstract Syntax Notation One* (ASN.1) 的描述语言来指定证书中包含的信息。在 ASN.1 中描述的数据结构如下所示：
 
-```py
+```go
 Certificate  ::=  SEQUENCE  {
     tbsCertificate       TBSCertificate,
     signatureAlgorithm   AlgorithmIdentifier,
@@ -314,7 +314,7 @@ Certificate  ::=  SEQUENCE  {
 
 您可能会遇到以.pem 文件形式存在的 X.509 证书，其中包含一些被 base64 编码的内容，周围包含一些人类可读的提示，说明 base64 编码的数据包含的内容（这里是一个证书）。以下代码片段表示.pem 格式证书的内容：
 
-```py
+```go
 -----BEGIN CERTIFICATE-----
 MIIJQzCCCCugAwIBAgIQC1QW6WUXJ9ICAAAAAEbPdjANBgkqhkiG9w0BAQsFADBC
 MQswCQYDVQQGEwJVUzEeMBwGA1UEChMVR29vZ2xlIFRydXN0IFNlcnZpY2VzMRMw
@@ -337,7 +337,7 @@ dl0nq4fcF8PN+ppgNFbwC2JxX08L1wEFk2LvDOQgKqHR1TRJ0U3A2gkuMtf6Q6au
 
 DER 只编码信息为“这是一个整数”或“这是一个字节数组”。在编码后，ASN.1 中描述的字段名称（如`tbsCertificate`）将丢失。因此，如果没有原始 ASN.1 描述每个字段真正含义的知识，解码 DER 就毫无意义。像 OpenSSL 这样的便捷命令行工具允许您解码和将 DER 编码的证书内容翻译成人类术语。例如，如果您下载 google.com 的证书，您可以使用以下代码片段在终端中显示其内容。
 
-```py
+```go
 $ openssl x509 -in google.pem -text
 Certificate:
     Data:
@@ -459,7 +459,7 @@ Noise 协议框架提供了不同的*握手模式*供您选择。握手模式通
 
 在本节的其余部分中，我将使用一个名为 *NN* 的握手模式来解释 Noise 的工作原理。这个模式足够简单来解释，但是不安全，因为有两个 *N* 表示双方都没有进行认证。在 Noise 的术语中，该模式被写成这样：
 
-```py
+```go
 NN:
   -> e
   <- e, ee

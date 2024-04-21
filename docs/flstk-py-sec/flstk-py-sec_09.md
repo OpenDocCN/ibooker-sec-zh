@@ -46,7 +46,7 @@ Cookies 通过`Cookie`请求头在随后的请求中回显到服务器。该头�
 
 ```py
 ...
-Cookie: sessionid=cgqbyjpxaoc5x5mmm9ymcqtsbp7w7cn1; key=value;    ❶
+Cookie: sessionid=cgqbyjpxaoc5x5mmm9ymcqtsbp7w7cn1; key=value;    # ❶
 Host: alice.com
 Referer: https:/./alice.com/admin/login/?next=/admin/
 ...
@@ -93,7 +93,7 @@ Set-Cookie: sessionid=<session-id-value>; Domain=alice.com
 `SESSION_COOKIE_DOMAIN` 设置配置了会话 ID 的 `Set-Cookie` 头部的 `Domain` 指令。此设置接受两个值：`None` 和表示域名的字符串，例如 `alice.com`。此设置默认为 `None`，省略响应头中的 `Domain` 指令。以下是一个示例配置设置：
 
 ```py
-SESSION_COOKIE_DOMAIN = "alice.com"      ❶
+SESSION_COOKIE_DOMAIN = "alice.com"      # ❶
 ```
 
 ❶ 从 settings.py 配置 Domain 指令
@@ -133,9 +133,9 @@ response = HttpResponse()
 response.set_cookie(
     'cookie-name',
     'cookie-value',
-    secure=True,           ❶
-    domain='alice.com',    ❷
-    max_age=42, )          ❸
+    secure=True,           # ❶
+    domain='alice.com',    # ❷
+    max_age=42, )          # ❸
 ```
 
 ❶ 浏览器将仅通过 HTTPS 发送此 Cookie。
@@ -153,10 +153,10 @@ response.set_cookie(
 列表 7.2 Django 会话状态访问
 
 ```py
-request.session['name'] = 'Alice'            ❶
-name = request.session.get('name', 'Bob')    ❷
-request.session['name'] = 'Charlie'          ❸
-del request.session['name']                  ❹
+request.session['name'] = 'Alice'            # ❶
+name = request.session.get('name', 'Bob')    # ❷
+request.session['name'] = 'Charlie'          # ❸
+del request.session['name']                  # ❹
 ```
 
 ❶ 创建会话状态条目
@@ -183,11 +183,11 @@ Django 将会话状态的序列化和反序列化委托给可配置的组件。�
 >>> from django.contrib.sessions.serializers import JSONSerializer
 >>> 
 >>> json_serializer = JSONSerializer()
->>> serialized = json_serializer.dumps({'name': 'Bob'})    ❶
+>>> serialized = json_serializer.dumps({'name': 'Bob'})    # ❶
 >>> serialized
-b'{"name":"Bob"}'                                          ❷
->>> json_serializer.loads(serialized)                      ❸
-{'name': 'Bob'}                                            ❹
+b'{"name":"Bob"}'                                          # ❷
+>>> json_serializer.loads(serialized)                      # ❸
+{'name': 'Bob'}                                            # ❹
 ```
 
 ❶ 序列化一个 Python 字典
@@ -208,11 +208,11 @@ b'{"name":"Bob"}'                                          ❷
 ...         self.name = name
 ... 
 >>> pickle_serializer = PickleSerializer()
->>> serialized = pickle_serializer.dumps(Profile('Bob'))          ❶
+>>> serialized = pickle_serializer.dumps(Profile('Bob'))          # ❶
 >>> serialized
-b'\x80\x05\x95)\x00\x00\x00\x00\x00\x00\x00\x8c\x08__main__...'   ❷
->>> deserialized = pickle_serializer.loads(serialized)            ❸
->>> deserialized.name                                             ❹
+b'\x80\x05\x95)\x00\x00\x00\x00\x00\x00\x00\x8c\x08__main__...'   # ❷
+>>> deserialized = pickle_serializer.loads(serialized)            # ❸
+>>> deserialized.name                                             # ❹
 'Bob'
 ```
 
@@ -262,11 +262,11 @@ Memcached 后端
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',        ❶
+        'LOCATION': '127.0.0.1:11211',        # ❶
     },
     'cache': {
         'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
-        'LOCATION': '/tmp/memcached.sock',    ❷
+        'LOCATION': '/tmp/memcached.sock',    # ❷
     }
 }
 ```
@@ -406,13 +406,13 @@ Cookie 大小限制
 >>> credentials = {
 ...     'username': 'eve',
 ...     'password': 'evil', }
->>> response = requests.post(                               ❶
-...     'https:/./social.bob.com/login/',                    ❶
-...     data=credentials, )                                 ❶
->>> sessionid = response.cookies['sessionid']               ❷
->>> decoded = base64.b64decode(sessionid.split(':')[0])     ❷
->>> json.loads(decoded)                                     ❷
-{'name': 'Eve', 'username': 'eve', 'blocked_by': ['alice']} ❸
+>>> response = requests.post(                               # ❶
+...     'https:/./social.bob.com/login/',                    # ❶
+...     data=credentials, )                                 # ❶
+>>> sessionid = response.cookies['sessionid']               # ❷
+>>> decoded = base64.b64decode(sessionid.split(':')[0])     # ❷
+>>> json.loads(decoded)                                     # ❷
+{'name': 'Eve', 'username': 'eve', 'blocked_by': ['alice']} # ❸
 ```
 
 ❶ 伊芙登录到鲍勃的社交媒体网站。
@@ -467,20 +467,20 @@ $ python manage.py shell
 >>> import requests
 >>> 
 >>> class MaliciousCode:
-...     def __reduce__(self):                                              ❶
-...         return sys.exit, ()                                            ❷
+...     def __reduce__(self):                                              # ❶
+...         return sys.exit, ()                                            # ❷
 ... 
 >>> session_state = {'malicious_code': MaliciousCode(), }
->>> sessionid = signing.dumps(                                             ❸
-...     session_state,                                                     ❸
-...     salt='django.contrib.sessions.backends.signed_cookies',            ❸
-...     serializer=PickleSerializer)                                       ❸
+>>> sessionid = signing.dumps(                                             # ❸
+...     session_state,                                                     # ❸
+...     salt='django.contrib.sessions.backends.signed_cookies',            # ❸
+...     serializer=PickleSerializer)                                       # ❸
 >>> 
 >>> session = requests.Session()
 >>> session.cookies['sessionid'] = sessionid
->>> session.get('https:/./vulnerable.alice.com/')                           ❹
+>>> session.get('https:/./vulnerable.alice.com/')                           # ❹
 Starting new HTTPS connection (1): vulnerable.com
-http.client.RemoteDisconnected: Remote end closed connection without response❺
+http.client.RemoteDisconnected: Remote end closed connection without response# ❺
 ```
 
 ❶ Pickle 将此方法称为反序列化。

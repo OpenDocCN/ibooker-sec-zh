@@ -258,18 +258,18 @@ TEE 的首要目标是防止*软件攻击*。虽然声称的软件安全看起�
 
 [Golang 如何实现两个字节数组之间的常量时间比较](https://wiki.example.org/constant_time_comparison_in_golang)
 
-```py
+```go
 func ConstantTimeCompare(x, y []byte) byte {
-    if len(x) != len(y) {                        ❶
-        return 0                                 ❶
-    }                                            ❶
+    if len(x) != len(y) {                        // ❶
+        return 0                                 // ❶
+    }                                            // ❶
 
-    var v byte                                   ❷
-    for i := 0; i < len(x); i++ {                ❷
-        v |= x[i] ^ y[i]                         ❷
-    }                                            ❷
+    var v byte                                   // ❷
+    for i := 0; i < len(x); i++ {                // ❷
+        v |= x[i] ^ y[i]                         // ❷
+    }                                            // ❷
 
-    return v                                     ❸
+    return v                                     // ❸
 }
 ```
 

@@ -30,9 +30,9 @@
 
 ```py
 try:
-    file = open(path_to_file)   ❶
-except PermissionError:         ❷
-    return None                 ❷
+    file = open(path_to_file)   # ❶
+except PermissionError:         # ❷
+    return None                 # ❷
 else:
     with file:
         return file.read()
@@ -47,9 +47,9 @@ EAFP 与另一种编码风格相对应，称为*先尝试，再请求允许*（*
 以下代码是 LBYL 的一个示例；它打开一个文件，但首先查看它是否具有足够的访问权限。注意，这段代码容易受到意外和恶意竞争条件的影响。一个错误或攻击者可能利用`os.access`函数返回和调用`open`函数之间的时间间隔。这种编码风格还会导致更多的文件系统访问：
 
 ```py
-if os.access(path_to_file, os.R_OK):    ❶
-    with open(path_to_file) as file:    ❷
-        return file.read()              ❷
+if os.access(path_to_file, os.R_OK):    # ❶
+    with open(path_to_file) as file:    # ❷
+        return file.read()              # ❷
 return None
 ```
 
@@ -74,11 +74,11 @@ Python 本身支持使用专用模块 `tempfile` 进行临时文件使用；在�
 ```py
 >>> from tempfile import TemporaryFile
 >>> 
->>> with TemporaryFile() as tmp:                           ❶
-...     tmp.write(b'Explicit is better than implicit.')    ❷
-...     tmp.seek(0)                                        ❸
-...     tmp.read()                                         ❸
-...                                                        ❹
+>>> with TemporaryFile() as tmp:                           # ❶
+...     tmp.write(b'Explicit is better than implicit.')    # ❷
+...     tmp.seek(0)                                        # ❸
+...     tmp.read()                                         # ❸
+...                                                        # ❹
 33
 0
 b'Explicit is better than implicit.'
@@ -148,8 +148,8 @@ Python 的`os`模块具有几个设计用于修改文件系统元数据的函数
 import os
 import stat
 
-os.chmod(path_to_file, stat.S_IRUSR)    ❶
-os.chmod(path_to_file, stat.S_IRGRP)    ❷
+os.chmod(path_to_file, stat.S_IRUSR)    # ❶
+os.chmod(path_to_file, stat.S_IRGRP)    # ❷
 ```
 
 ❶ 只有所有者可以阅读此内容。
@@ -159,7 +159,7 @@ os.chmod(path_to_file, stat.S_IRGRP)    ❷
 如何授予多个权限？使用 OR 运算符组合模式。例如，以下代码行同时向所有者和群组授予读取访问权限：
 
 ```py
-os.chmod(path_to_file, stat.S_IRUSR | stat.S_IRGRP)    ❶
+os.chmod(path_to_file, stat.S_IRUSR | stat.S_IRGRP)    # ❶
 ```
 
 ❶ 只有所有者和群组可以阅读此内容。
@@ -177,10 +177,10 @@ os.chown(path_to_file, 42, -1)
 >>> 
 >>> path = './alice/alice/settings.py'
 >>> stat = os.stat(path)
->>> stat.st_uid             ❶
-501                         ❶
->>> stat.st_gid             ❷
-20                          ❷
+>>> stat.st_uid             # ❶
+501                         # ❶
+>>> stat.st_gid             # ❷
+20                          # ❷
 ```
 
 ❶ 访问用户 ID
@@ -210,11 +210,11 @@ os.chown(path_to_file, 42, -1)
 ```py
 >>> import os
 >>> 
->>> file_name = input('Select a file for deletion:')   ❶
-Select a file for deletion: alice.txt                  ❶
+>>> file_name = input('Select a file for deletion:')   # ❶
+Select a file for deletion: alice.txt                  # ❶
 >>> command = 'rm %s' % file_name
->>> os.system(command)                                 ❷
-0                                                      ❷
+>>> os.system(command)                                 # ❷
+0                                                      # ❷
 ```
 
 ❶ 从不受信任的来源接受输入
@@ -234,9 +234,9 @@ Shell 注入和命令注入都是更广泛的攻击类别的特殊类型，通�
 如果你*想*执行外部程序，你应该首先问自己是否*需要*。在 Python 中，答案通常是否定的。Python 已经为最常见的问题开发了内部解决方案；在这些情况下，没有必要调用外部可执行文件。例如，以下代码使用`os.remove`而不是`os.system`删除文件。这样的解决方案更容易编写，更容易阅读，更少出错，更安全：
 
 ```py
->>> file_name = input('Select a file for deletion:')    ❶
-Select a file for deletion:bob.txt                      ❶
->>> os.remove(file_name)                                ❷
+>>> file_name = input('Select a file for deletion:')    # ❶
+Select a file for deletion:bob.txt                      # ❶
+>>> os.remove(file_name)                                # ❷
 ```
 
 ❶ 从不受信任的来源接受输入
@@ -246,10 +246,10 @@ Select a file for deletion:bob.txt                      ❶
 这种替代方案更安全在哪里？与 `os.system` 不同，`os.remove` 免疫于命令注入，因为它只做一件事，这是设计原则；这个函数不接受命令字符串，因此没有办法注入其他命令。此外，`os.remove` 避免了 shell 注入，因为它完全绕过了 shell；这个函数直接与操作系统交流，而不需要 shell 的帮助，也没有 shell 的风险。如粗体所示，特殊字符如 `*` 被直接解释：
 
 ```py
->>> os.remove('*')                                             ❶
+>>> os.remove('*')                                             # ❶
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
-FileNotFoundError: [Errno 2] No such file or directory: '*'    ❷
+FileNotFoundError: [Errno 2] No such file or directory: '*'    # ❷
 ```
 
 ❶ 这看起来不好 . . .
@@ -304,16 +304,16 @@ FileNotFoundError: [Errno 2] No such file or directory: '*'    ❷
 ```py
 >>> from subprocess import run
 >>> 
->>> character_name = input('alice, bob, or charlie?')        ❶
-alice, bob, or charlie?charlie                               ❶
->>> command = ['ruby', 'list_domains.rb', character_name]    ❶
+>>> character_name = input('alice, bob, or charlie?')        # ❶
+alice, bob, or charlie?charlie                               # ❶
+>>> command = ['ruby', 'list_domains.rb', character_name]    # ❶
 >>>
 >>> completed_process = run(command, capture_output=True, check=True)
 >>>
->>> completed_process.stdout                                 ❷
-b'charlie.com\nclient.charlie.com\n'                         ❷
->>> completed_process.returncode                             ❸
-0                                                            ❸
+>>> completed_process.stdout                                 # ❷
+b'charlie.com\nclient.charlie.com\n'                         # ❷
+>>> completed_process.returncode                             # ❸
+0                                                            # ❸
 ```
 
 ❶ 构建一个命令

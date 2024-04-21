@@ -146,9 +146,9 @@ Bob 访问 Charlie 的网站，client.charlie.com。Bob 对这个网站不熟悉
 
 ```py
 <a href='https:/./authorize.alice.com/o/authorize/?
-➥ response_type=code&                                    ❶
-➥ client_id=Q7kuJVjbGbZ6dGlwY49eFP7fNFEUFrhHGGG84aI3&    ❶
-➥ state=ju2rUmafnEIxvSqphp3IMsHvJNezWb'>                 ❷
+➥ response_type=code&                                    # ❶
+➥ client_id=Q7kuJVjbGbZ6dGlwY49eFP7fNFEUFrhHGGG84aI3&    # ❶
+➥ state=ju2rUmafnEIxvSqphp3IMsHvJNezWb'>                 # ❷
     What is your email?
 </a>
 ```
@@ -166,9 +166,9 @@ Bob 通过点击链接导航到 authorize.alice.com。Bob 碰巧已经登录，�
 Bob 通过提交授权表单来授予权限。然后，Alice 的授权服务器将他重定向回 Charlie 的站点。重定向 URI 包含两个参数。授权码由 code 参数携带，如粗体所示；Charlie 的站点稍后将用此来交换访问令牌。state 参数的值与通过授权 URL 到达的值匹配：
 
 ```py
-https:/./client.charlie.com/oauth/callback/?    ❶
-➥ code=CRN7DwyquEn99mrWJg5iAVVlJZDTzM&        ❷
-➥ state=ju2rUmafnEIxvSqphp3IMsHvJNezWb        ❸
+https:/./client.charlie.com/oauth/callback/?    # ❶
+➥ code=CRN7DwyquEn99mrWJg5iAVVlJZDTzM&        # ❷
+➥ state=ju2rUmafnEIxvSqphp3IMsHvJNezWb        # ❸
 ```
 
 ❶ 重定向 URI
@@ -187,10 +187,10 @@ Charlie 的站点通过解析重定向 URI 中的代码并将其直接发送回 
 
 ```py
 {
- 'access_token': 'A2IkdaPkmAjetNgpCRNk0zR78DUqoo',   ❶
- 'token_type': 'Bearer'                              ❶
- 'scope': 'email',                                   ❷
- 'expires_in': 36000,                                ❷
+ 'access_token': 'A2IkdaPkmAjetNgpCRNk0zR78DUqoo',   # ❶
+ 'token_type': 'Bearer'                              # ❶
+ 'scope': 'email',                                   # ❷
+ 'expires_in': 36000,                                # ❷
  ...
 }
 ```
@@ -244,7 +244,7 @@ $ pipenv install django-oauth-toolkit
 ```py
 INSTALLED_APPS = [
     ...
-    'oauth2_provider',     ❶
+    'oauth2_provider',     # ❶
 ]
 ```
 
@@ -293,7 +293,7 @@ DOT 提供用于处理授权服务器职责的 Web 用户界面、配置设置�
 确保你的授权服务器配置了一个邮件范围，如下面代码中的粗体所示。与其他 DOT 配置设置一样，`SCOPES` 位于方便的 `OAUTH2_PROVIDER` 命名空间下：
 
 ```py
-OAUTH2_PROVIDER = {     ❶
+OAUTH2_PROVIDER = {     # ❶
     ...
  'SCOPES': {
  'email': 'Your email',
@@ -329,9 +329,9 @@ OAUTH2_PROVIDER = {
     <body>
 
        <form method='POST'>
-         {% csrf_token %}                                          ❶
-         {{ form.as_p }}                                           ❷
- <input type="hidden" name="next" value="{{ next }}" />    ❸
+         {% csrf_token %}                                          # ❶
+         {{ form.as_p }}                                           # ❷
+ <input type="hidden" name="next" value="{{ next }}" />    # ❸
          <button type='submit'>Login</button>
        </form>
 
@@ -423,11 +423,11 @@ DOT 提供了一个类似于授权码管理页面的访问令牌管理界面。�
 from django.http import JsonResponse
 from oauth2_provider.views import ProtectedResourceView
 
-class EmailView(ProtectedResourceView):     ❶
-    def get(self, request):                 ❷
-        return JsonResponse({               ❸
-            'email': request.user.email,    ❸
-        })                                  ❸
+class EmailView(ProtectedResourceView):     # ❶
+    def get(self, request):                 # ❷
+        return JsonResponse({               # ❸
+            'email': request.user.email,    # ❸
+        })                                  # ❸
 ```
 
 ❶ 需要有效的访问令牌
@@ -451,8 +451,8 @@ MIDDLEWARE = [
 
 ```py
 AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',    ❶
- 'oauth2_provider.backends.OAuth2Backend',       ❷
+    'django.contrib.auth.backends.ModelBackend',    # ❶
+ 'oauth2_provider.backends.OAuth2Backend',       # ❷
 ]
 ```
 
@@ -472,8 +472,8 @@ DOT 资源服务器使用`ScopedProtectedResourceView`强制执行范围。从�
 from django.http import JsonResponse
 from oauth2_provider.views import ScopedProtectedResourceView
 
-class ScopedEmailView(ScopedProtectedResourceView):    ❶
- required_scopes = ['email', ]                      ❷
+class ScopedEmailView(ScopedProtectedResourceView):    # ❶
+ required_scopes = ['email', ]                      # ❷
 
     def get(self, request):
         return JsonResponse({
@@ -501,19 +501,19 @@ from oauth2_provider.views import ReadWriteScopedResourceView
 class ReadWriteEmailView(ReadWriteScopedResourceView):
     required_scopes = ['email', ]
 
-    def get(self, request):                   ❶
-        return JsonResponse({                 ❶
-            'email': request.user.email,      ❶
-        })                                    ❶
+    def get(self, request):                   # ❶
+        return JsonResponse({                 # ❶
+            'email': request.user.email,      # ❶
+        })                                    # ❶
 
-    def patch(self, request):                 ❷
-        body = json.loads(request.body)       ❷
-        email = body['email']                 ❷
-        validate_email(email)                 ❷
-        user = request.user                   ❷
-        user.email = email                    ❷
-        user.save(update_fields=['email'])    ❷
-        return HttpResponse()                 ❷
+    def patch(self, request):                 # ❷
+        body = json.loads(request.body)       # ❷
+        email = body['email']                 # ❷
+        validate_email(email)                 # ❷
+        user = request.user                   # ❷
+        user.email = email                    # ❷
+        user.save(update_fields=['email'])    # ❷
+        return HttpResponse()                 # ❷
 ```
 
 ❶ 需要读取和邮件范围
@@ -527,12 +527,12 @@ DOT 为基于函数的视图提供函数装饰器。这里粗体显示的`@prote
 ```py
 from oauth2_provider.decorators import protected_resource
 
-@protected_resource()                        ❶
+@protected_resource()                        # ❶
 def protected_resource_view_function(request):
     ...
     return HttpResponse()
 
-@protected_resource(scopes=['email'])        ❷
+@protected_resource(scopes=['email'])        # ❷
 def scoped_protected_resource_view_function(request):
     ...
     return HttpResponse()
@@ -547,12 +547,12 @@ def scoped_protected_resource_view_function(request):
 ```py
 from oauth2_provider.decorators import rw_protected_resource
 
-@rw_protected_resource()                     ❶
+@rw_protected_resource()                     # ❶
 def read_write_view_function(request):
     ...
     return HttpResponse()
 
-@rw_protected_resource(scopes=['email'])     ❷
+@rw_protected_resource(scopes=['email'])     # ❷
 def scoped_read_write_view_function(request):
     ...
     return HttpResponse()
@@ -595,7 +595,7 @@ RESOURCE_URL = 'https:/./resource.alice.com/protected/email/'
 只需确保你的第三方服务器绑定到与授权服务器不同的端口即可。服务器的端口由`bind`参数指定，如下所示加粗显示：
 
 ```py
-$ gunicorn third.wsgi --bind localhost:8001 \              ❶
+$ gunicorn third.wsgi --bind localhost:8001 \              # ❶
                       --keyfile path/to/private_key.pem \
                       --certfile path/to/certificate.pem
 ```
@@ -632,12 +632,12 @@ class WelcomeView(View):
         ctx = {}
 
         if not access_token:
-            url, state = client.authorization_url(AUTH_FORM_URL)    ❶
-            ctx['authorization_url'] = url                          ❶
-            request.session['state'] = state                        ❶
+            url, state = client.authorization_url(AUTH_FORM_URL)    # ❶
+            ctx['authorization_url'] = url                          # ❶
+            request.session['state'] = state                        # ❶
         else:
-            response = client.get(RESOURCE_URL)                     ❷
-            ctx['email'] = response.json()['email']                 ❷
+            response = client.get(RESOURCE_URL)                     # ❷
+            ctx['email'] = response.json()['email']                 # ❷
 
         return render(request, 'welcome.html', context=ctx)
 ```
@@ -656,9 +656,9 @@ class WelcomeView(View):
         {% if email %}
             Email: {{ email }}
         {% else %}
-            <a href='{{ authorization_url }}'>    ❶
-                What is your email?               ❶
-            </a>                                  ❶
+            <a href='{{ authorization_url }}'>    # ❶
+                What is your email?               # ❶
+            </a>                                  # ❶
         {% endif %}
     </body>
 </html>
@@ -685,13 +685,13 @@ class OAuthCallbackView(View):
         client = OAuth2Session(CLIENT_ID, state=state)
 
         redirect_URI = request.build_absolute_uri()
-        access_token = client.fetch_token(          ❶
-            TOKEN_EXCHANGE_URL,                     ❶
-            client_secret=CLIENT_SECRET,            ❶
-            authorization_response=redirect_URI)    ❶
+        access_token = client.fetch_token(          # ❶
+            TOKEN_EXCHANGE_URL,                     # ❶
+            client_secret=CLIENT_SECRET,            # ❶
+            authorization_response=redirect_URI)    # ❶
         request.session['access_token'] = access_token
 
-        return redirect(reverse('welcome'))         ❷
+        return redirect(reverse('welcome'))         # ❷
 ```
 
 ❶ 请求授权
@@ -712,10 +712,10 @@ DOT 通过一个专门的端点来处理令牌撤销。这个端点需要一个�
 ...     'client_secret': CLIENT_SECRET,
 ...     'token': client.token['access_token']
 ... }
->>> client.post('%s/o/revoke_token/' % AUTH_SERVER, data=data)    ❶
-<Response [200]>                                                  ❶
->>> client.get(RESOURCE_URL)                                      ❷
-<Response [403]>                                                  ❷
+>>> client.post('%s/o/revoke_token/' % AUTH_SERVER, data=data)    # ❶
+<Response [200]>                                                  # ❶
+>>> client.get(RESOURCE_URL)                                      # ❷
+<Response [403]>                                                  # ❷
 ```
 
 ❶ 撤销访问令牌

@@ -108,7 +108,7 @@ PRNG 需要一个初始秘密，通常称为*种子*，我们可以通过混合�
 
 根据操作系统和可用硬件的不同，这三个概念可能会以不同的方式实现。在 2021 年，Linux 使用基于 ChaCha20 流密码的 PRNG，而 macOS 使用基于 SHA-1 散列函数的 PRNG。此外，向开发人员公开的随机数生成器接口将根据操作系统而异。在 Windows 上，可以使用 `BCryptGenRandom` 系统调用生成随机数，而在其他平台上，则公开了一个特殊文件（通常称为 /dev/urandom），可以读取以提供随机性。例如，在 Linux 或 macOS 上，可以使用 `dd` 命令行工具从终端读取 16 字节：
 
-```py
+```go
 $ dd if=/dev/urandom bs=16 count=1 2> /dev/null | xxd -p
 40b1654b12320e2e0105f0b1d61e77b1
 ```
@@ -117,14 +117,14 @@ $ dd if=/dev/urandom bs=16 count=1 2> /dev/null | xxd -p
 
 `8.1` 在 C 中获取随机数示例
 
-```py
+```go
 #include <sys/random.h>
 
-uint8_t secret[16];                                ❶
-int len = getrandom(secret, sizeof(secret), 0);    ❷
+uint8_t secret[16];                                // ❶
+int len = getrandom(secret, sizeof(secret), 0);    // ❷
 
 if (len != sizeof(secret)) {
-    abort();                                       ❸
+    abort();                                       // ❸
 
 }
 ```
@@ -143,11 +143,11 @@ if (len != sizeof(secret)) {
 
 `8.2` 在 PHP 中获取随机数示例
 
-```py
+```go
 <?php
-$bad_random_number = rand(0, 10);    ❶
+$bad_random_number = rand(0, 10);    // ❶
 
-$secret_key = random_bytes(16);      ❷
+$secret_key = random_bytes(16);      // ❷
 ?>
 ```
 

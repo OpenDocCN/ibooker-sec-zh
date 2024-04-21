@@ -64,16 +64,16 @@ MAC 就像一个私有的哈希函数，只有你知道密钥才能计算出来�
 
 列表 3.1 在 Rust 中发送经过身份验证的消息
 
-```py
+```go
 use sha2::Sha256;
 use hmac::{Hmac, Mac, NewMac};
 
 fn send_message(key: &[u8], message: &[u8]) -> Vec<u8> {
-    let mut mac = Hmac::<Sha256>::new(key.into());          ❶
+    let mut mac = Hmac::<Sha256>::new(key.into());          // ❶
 
-    mac.update(message);                                    ❷
+    mac.update(message);                                    // ❷
 
-    mac.finalize().into_bytes().to_vec()                    ❸
+    mac.finalize().into_bytes().to_vec()                    // ❸
 }
 ```
 
@@ -87,14 +87,14 @@ fn send_message(key: &[u8], message: &[u8]) -> Vec<u8> {
 
 列表 3.2 在 Rust 中接收经过身份验证的消息
 
-```py
+```go
 use sha2::Sha256;
 use hmac::{Hmac, Mac, NewMac};
 
 fn receive_message(key: &[u8], message: &[u8],
   authentication_tag: &[u8]) -> bool {
-    let mut mac = Hmac::<Sha256>::new(key);         ❶
-    mac.update(message);                            ❷
+    let mut mac = Hmac::<Sha256>::new(key);         // ❶
+    mac.update(message);                            // ❷
 
     mac.verify(&authentication_tag).is_ok()
 }
@@ -170,7 +170,7 @@ MACs，像所有的密码学原语一样，有它们的怪异之处和陷阱。�
 
 清单 3.3 Golang 中的常量时间比较
 
-```py
+```go
 for i := 0; i < len(x); i++ {
     v |= x[i] ^ y[i]
 }

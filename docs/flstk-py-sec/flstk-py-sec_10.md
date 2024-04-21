@@ -86,7 +86,7 @@ $ pipenv install django-registration
 INSTALLED_APPS = [
     ...
     'django.contrib.staticfiles',
-    'django_registration',         ❶
+    'django_registration',         # ❶
 ]
 ```
 
@@ -104,11 +104,11 @@ $ python manage.py migrate
 
 ```py
 from django.contrib import admin
-from django.urls import path, include                                ❶
+from django.urls import path, include                                # ❶
 
 urlpatterns = [
     path('admin/', admin.site.urls),
- path('accounts/',          include('django_registration.backends.activation.urls')),   ❷
+ path('accounts/',          include('django_registration.backends.activation.urls')),   # ❷
 ]
 ```
 
@@ -141,14 +141,14 @@ urlpatterns = [
 就像 Django 的每个其他主要子系统一样，模板引擎在`settings`模块中配置。打开 Django 根目录中的`settings`模块。在此模块的顶部，添加对`os`模块的导入，如下面代码中所示。在此导入下方，找到`TEMPLATES`设置，一个模板引擎列表。找到第一个且唯一的模板引擎的`DIRS`键。`DIRS`告诉模板引擎在搜索模板文件时要使用哪些目录。将以下条目添加到`DIRS`中，同样显示为粗体，告诉模板引擎在名为 templates 的目录中查找模板文件，位于项目根目录下方：
 
 ```py
-import os                                                 ❶
+import os                                                 # ❶
 
 ...
 
 TEMPLATES = [
     {
         ...
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],    ❷
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],    # ❷
         ...
     }
 ]
@@ -179,8 +179,8 @@ TEMPLATES = [
     <body>
 
         <form method='POST'>
-          {% csrf_token %}           ❶
-          {{ form.as_p }}            ❷
+          {% csrf_token %}           # ❶
+          {{ form.as_p }}            # ❷
           <button type='submit'>Register</button>
         </form>
 
@@ -284,7 +284,7 @@ ACCOUNT_ACTIVATION_DAYS = 3
 ```py
 urlpatterns = [
    ...
- path('accounts/', include('django.contrib.auth.urls')),     ❶
+ path('accounts/', include('django.contrib.auth.urls')),     # ❶
 ]
 ```
 
@@ -335,10 +335,10 @@ from django.views.generic import View
 class ProfileView(View):
 
     def get(self, request):
-        user = request.user                      ❶
-        if not user.is_authenticated:            ❷
-            return HttpResponse(status=401)      ❷
-        return render(request, 'profile.html')   ❸
+        user = request.user                      # ❶
+        if not user.is_authenticated:            # ❷
+            return HttpResponse(status=401)      # ❷
+        return render(request, 'profile.html')   # ❸
 ```
 
 ❶ 以编程方式访问用户对象
@@ -376,8 +376,8 @@ urlpatterns = [
     <body>
 
         <form method='POST'>
-          {% csrf_token %}                      ❶
-          {{ form.as_p }}                       ❷
+          {% csrf_token %}                      # ❶
+          {{ form.as_p }}                       # ❷
           <button type='submit'>Login</button>
         </form>
 
@@ -396,11 +396,11 @@ urlpatterns = [
     <body>
 
         <p>
-            Hello {{ user.username }},                ❶
-            your email is {{ user.email }}.           ❶
+            Hello {{ user.username }},                # ❶
+            your email is {{ user.email }}.           # ❶
         </p>
         <p>
-            <a href="{% url 'logout' %}">Logout</a>   ❷
+            <a href="{% url 'logout' %}">Logout</a>   # ❷
         </p>
 
     </body>
@@ -468,17 +468,17 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 清单 8.4 简洁地禁止匿名访问
 
 ```py
-from django.contrib.auth.mixins import LoginRequiredMixin    ❶
-from django.http import HttpResponse                         ❷
+from django.contrib.auth.mixins import LoginRequiredMixin    # ❶
+from django.http import HttpResponse                         # ❷
 from django.shortcuts import render
 from django.views.generic import View
 
-class ProfileView(LoginRequiredMixin, View):                 ❸
+class ProfileView(LoginRequiredMixin, View):                 # ❸
 
     def get(self, request):
-        user = request.user                                  ❹
-        if not user.is_authenticated:                        ❹
-            return HttpResponse(status=401)                  ❹
+        user = request.user                                  # ❹
+        if not user.is_authenticated:                        # ❹
+            return HttpResponse(status=401)                  # ❹
         return render(request, 'profile.html')
 ```
 
@@ -495,7 +495,7 @@ class ProfileView(LoginRequiredMixin, View):                 ❸
 ```py
 from django.contrib.auth.decorators import login_required
 
-@login_required               ❶
+@login_required               # ❶
 def profile_view(request):
    ...
    return render(request, 'profile.html')
@@ -522,20 +522,20 @@ from django.test import TestCase
 class TestAuthentication(TestCase):
 
     def test_authenticated_workflow(self):
-        passphrase = 'wool reselect resurface annuity'                   ❶
-        get_user_model().objects.create_user('bob', password=passphrase) ❶
+        passphrase = 'wool reselect resurface annuity'                   # ❶
+        get_user_model().objects.create_user('bob', password=passphrase) # ❶
 
-        self.client.login(username='bob', password=passphrase)           ❷
-        self.assertIn('sessionid', self.client.cookies)                  ❷
+        self.client.login(username='bob', password=passphrase)           # ❷
+        self.assertIn('sessionid', self.client.cookies)                  # ❷
 
-        response = self.client.get(                                      ❸
-            '/accounts/profile/',                                        ❸
-            secure=True)                                                 ❹
-        self.assertEqual(200, response.status_code)                      ❺
-        self.assertContains(response, 'bob')                             ❺
+        response = self.client.get(                                      # ❸
+            '/accounts/profile/',                                        # ❸
+            secure=True)                                                 # ❹
+        self.assertEqual(200, response.status_code)                      # ❺
+        self.assertContains(response, 'bob')                             # ❺
 
-        self.client.logout()                                             ❻
-        self.assertNotIn('sessionid', self.client.cookies)               ❻
+        self.client.logout()                                             # ❻
+        self.assertNotIn('sessionid', self.client.cookies)               # ❻
 ```
 
 ❶ 为 Bob 创建一个测试用户帐户
@@ -560,9 +560,9 @@ class TestAuthentication(TestCase):
 ...
 
     def test_prohibit_anonymous_access(self):
-        response = self.client.get('/accounts/profile/', secure=True)   ❶
-        self.assertEqual(302, response.status_code)                     ❷
-        self.assertIn('/accounts/login/', response['Location'])         ❷
+        response = self.client.get('/accounts/profile/', secure=True)   # ❶
+        self.assertEqual(302, response.status_code)                     # ❷
+        self.assertIn('/accounts/login/', response['Location'])         # ❷
 ```
 
 ❶ 尝试匿名访问

@@ -34,10 +34,10 @@ Mallory 已经入侵了 Alice 依赖的包仓库。在这个位置，Mallory 使
 ...
 "requests": {
  "hashes": [
- "Sha256:b3559a131db72c33ee969480840fff4bb6dd1117c8...", ❶
- "Sha256:fe75cc94a9443b9246fc7049224f756046acb93f87..." ❶
+ "Sha256:b3559a131db72c33ee969480840fff4bb6dd1117c8...", # ❶
+ "Sha256:fe75cc94a9443b9246fc7049224f756046acb93f87..." # ❶
  ],
-    "version": "==2.24.0"                                          ❷
+    "version": "==2.24.0"                                          # ❷
 },
 ...
 ```
@@ -58,14 +58,14 @@ Mallory 已经入侵了 Alice 依赖的包仓库。在这个位置，Mallory 使
 $ pipenv install
 Installing dependencies from Pipfile.lock
 An error occurred while installing requests==2.24.0 
-➥ --hash=sha256:b3559a131db72c33ee969480840fff4bb6dd1117c8...   ❶
-➥ --hash=sha256:fe75cc94a9443b9246fc7049224f756046acb93f87...   ❶
+➥ --hash=sha256:b3559a131db72c33ee969480840fff4bb6dd1117c8...   # ❶
+➥ --hash=sha256:fe75cc94a9443b9246fc7049224f756046acb93f87...   # ❶
 ...
 [pipenv.exceptions.InstallError]: ['ERROR: THESE PACKAGES DO NOT
 ➥ MATCH THE HASHES FROM THE REQUIREMENTS FILE. If you have updated
 ➥ the package versions, please update the hashes. Otherwise,
-➥ examine the package contents carefully; someone may have      ❷
-➥ tampered with them.                                           ❷
+➥ examine the package contents carefully; someone may have      # ❷
+➥ tampered with them.                                           # ❷
 ...
 ```
 
@@ -92,21 +92,21 @@ $ pipenv install pyyaml
 ```py
 >>> import yaml
 >>> 
->>> document = """                             ❶
-...   title: Full Stack Python Security        ❶
-...   characters:                              ❶
-...     - Alice                                ❶
-...     - Bob                                  ❶
-...     - Charlie                              ❶
-...     - Eve                                  ❶
-...     - Mallory                              ❶
-... """                                        ❶
+>>> document = """                             # ❶
+...   title: Full Stack Python Security        # ❶
+...   characters:                              # ❶
+...     - Alice                                # ❶
+...     - Bob                                  # ❶
+...     - Charlie                              # ❶
+...     - Eve                                  # ❶
+...     - Mallory                              # ❶
+... """                                        # ❶
 >>> 
 >>> book = yaml.load(document, Loader=yaml.BaseLoader)
->>> book['title']                              ❷
-'Full Stack Python Security'                   ❷
->>> book['characters']                         ❷
-['Alice', 'Bob', 'Charlie', 'Eve', 'Mallory']  ❷
+>>> book['title']                              # ❷
+'Full Stack Python Security'                   # ❷
+>>> book['characters']                         # ❷
+['Alice', 'Bob', 'Charlie', 'Eve', 'Mallory']  # ❷
 ```
 
 ❶ 从 YAML . . .
@@ -130,13 +130,13 @@ $ pipenv install pyyaml
 如果你的系统接受 YAML 作为输入，不遵循 PLP 可能是致命的。以下代码演示了当使用 `UnsafeLoader` 从不受信任的源加载 YAML 时会有多么危险。此示例创建了一个内联 YAML，其中嵌入了对 `sys.exit` 的函数调用。如粗体字所示，然后将 YAML 输入给 PyYAML。然后，该过程使用退出码 42 调用 `sys.exit` 杀死自身。最后，`echo` 命令结合 `$?` 变量确认 Python 进程确实以值 42 退出：
 
 ```py
-$ python                                           ❶
+$ python                                           # ❶
 >>> import yaml
 >>> 
->>> input = '!!python/object/new:sys.exit [42]'    ❷
->>> yaml.load(input, Loader=yaml.UnsafeLoader)     ❸
-$ echo $?                                          ❹
-42                                                 ❹
+>>> input = '!!python/object/new:sys.exit [42]'    # ❷
+>>> yaml.load(input, Loader=yaml.UnsafeLoader)     # ❸
+$ echo $?                                          # ❹
+42                                                 # ❹
 ```
 
 ❶ 创建进程
@@ -170,16 +170,16 @@ $ echo $?                                          ❹
 ```py
 >>> from xml.etree.ElementTree import fromstring
 >>> 
->>> xml = """                 ❶
+>>> xml = """                 # ❶
 ... <!DOCTYPE example [
-...   <!ENTITY a "Alice">     ❷
+...   <!ENTITY a "Alice">     # ❷
 ... ]>
-... <root>&a;&a;</root>       ❸
+... <root>&a;&a;</root>       # ❸
 ... """
 >>> 
 >>> example = fromstring(xml)
->>> example.text              ❹
-'AliceAlice'                  ❹
+>>> example.text              # ❹
+'AliceAlice'                  # ❹
 ```
 
 ❶ 定义一个内联 XML 文档
@@ -198,9 +198,9 @@ $ echo $?                                          ❹
 
 ```py
 <!DOCTYPE bomb [
-  <!ENTITY e "a loooooooooooooooooooooooooong entity ...">   ❶
+  <!ENTITY e "a loooooooooooooooooooooooooong entity ...">   # ❶
 ]>
-<bomb>&e;&e;&e;&e;&e;&e;&e;&e;&e;&e;</bomb>                  ❷
+<bomb>&e;&e;&e;&e;&e;&e;&e;&e;&e;&e;</bomb>                  # ❷
 ```
 
 ❶ 单个实体声明
@@ -217,10 +217,10 @@ $ echo $?                                          ❹
 
 ```py
 <!DOCTYPE bomb [
-  <!ENTITY a "lol">                               ❶
-  <!ENTITY b "&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;">    ❶
-  <!ENTITY c "&b;&b;&b;&b;&b;&b;&b;&b;&b;&b;">    ❶
-  <!ENTITY d "&c;&c;&c;&c;&c;&c;&c;&c;&c;&c;">    ❶
+  <!ENTITY a "lol">                               # ❶
+  <!ENTITY b "&a;&a;&a;&a;&a;&a;&a;&a;&a;&a;">    # ❶
+  <!ENTITY c "&b;&b;&b;&b;&b;&b;&b;&b;&b;&b;">    # ❶
+  <!ENTITY d "&c;&c;&c;&c;&c;&c;&c;&c;&c;&c;">    # ❶
 ]>
 <bomb>&d;</bomb>
 ```
@@ -242,7 +242,7 @@ $ pipenv install defusedxml
 ```py
 from xml.etree.ElementTree import parse
 
-parse('/path/to/billion_laughs.xml')    ❶
+parse('/path/to/billion_laughs.xml')    # ❶
 ```
 
 ❶ 打开了一个内存炸弹
@@ -253,7 +253,7 @@ parse('/path/to/billion_laughs.xml')    ❶
 from xml.etree.ElementTree import parse
 from defusedxml.ElementTree import parse
 
-parse('/path/to/billion_laughs.xml')    ❶
+parse('/path/to/billion_laughs.xml')    # ❶
 ```
 
 ❶ 引发一个 EntitiesForbidden 异常
@@ -326,7 +326,7 @@ Alice 的应用程序服务器如何生成 Bob 的密码重置链接？不幸的
 您的应用程序服务器永远不应从客户端获取其标识。因此，直接访问 `Host` 头是不安全的，像这样：
 
 ```py
-bad_practice = request.META['HTTP_HOST']    ❶
+bad_practice = request.META['HTTP_HOST']    # ❶
 ```
 
 ❶ 绕过输入验证
@@ -334,7 +334,7 @@ bad_practice = request.META['HTTP_HOST']    ❶
 如果需要访问主机名，请始终在请求上使用 `get_host` 方法。此方法验证并检索 `Host` 头：
 
 ```py
-good_practice = request.get_host()    ❶
+good_practice = request.get_host()    # ❶
 ```
 
 ❶ 验证 Host 头
@@ -360,11 +360,11 @@ good_practice = request.get_host()    ❶
 from cryptography.hazmat.backends import default_backend
 from cryptography.x509.oid import NameOID
 
-with open(CERTIFICATE_PATH, 'rb') as f:                            ❶
-    cert = default_backend().load_pem_x509_certificate(f.read())   ❶
-atts = cert.subject.get_attributes_for_oid(NameOID.COMMON_NAME)    ❶
+with open(CERTIFICATE_PATH, 'rb') as f:                            # ❶
+    cert = default_backend().load_pem_x509_certificate(f.read())   # ❶
+atts = cert.subject.get_attributes_for_oid(NameOID.COMMON_NAME)    # ❶
 
-ALLOWED_HOSTS = [a.value for a in atts]                            ❷
+ALLOWED_HOSTS = [a.value for a in atts]                            # ❷
 ```
 
 ❶ 在启动时从证书中提取通用名称
@@ -412,8 +412,8 @@ from django.shortcuts import redirect
 class OpenRedirectView(View):
     def get(self, request):
         ...
-        next = request.GET.get('next')    ❶
-        return redirect(next)             ❷
+        next = request.GET.get('next')    # ❶
+        return redirect(next)             # ❷
 ```
 
 ❶ 读取下一个请求参数
@@ -431,12 +431,12 @@ from django.utils.http import url_has_allowed_host_and_scheme
 class ValidatedRedirectView(View):
     def get(self, request):
         ...
-        next = request.GET.get('next')                                     ❶
-        host = request.get_host()                                          ❷
-        if url_has_allowed_host_and_scheme(next, host, require_https=True):❸
+        next = request.GET.get('next')                                     # ❶
+        host = request.get_host()                                          # ❷
+        if url_has_allowed_host_and_scheme(next, host, require_https=True):# ❸
             return redirect(next)
 
-        return HttpResponseBadRequest()                                    ❹
+        return HttpResponseBadRequest()                                    # ❹
 ```
 
 ❶ 读取下一个请求参数
@@ -484,7 +484,7 @@ Charlie 点击链接，将他带到 Alice 的站点，通过 HTTPS。不幸的�
 ```py
 from django.contrib.auth.models import User
 
-sql = 'SELECT id, username FROM auth_user'      ❶
+sql = 'SELECT id, username FROM auth_user'      # ❶
 users_with_username = User.objects.raw(sql)
 ```
 
@@ -521,10 +521,10 @@ Django 允许你通过数据库连接直接执行任意原始 SQL 查询。如�
 ```py
 from django.db import connection
 
-sql = """DELETE FROM messaging_authenticatedmessage    ❶
-         WHERE id = %s """ % msg_id                    ❶
-with connection.cursor() as cursor:                    ❷
-    cursor.execute(sql)                                ❷
+sql = """DELETE FROM messaging_authenticatedmessage    # ❶
+         WHERE id = %s """ % msg_id                    # ❶
+with connection.cursor() as cursor:                    # ❷
+    cursor.execute(sql)                                # ❷
 ```
 
 ❶ 带有一个占位符的 SQL 语句
@@ -535,9 +535,9 @@ with connection.cursor() as cursor:                    ❷
 
 ```py
 sql = """DELETE FROM messaging_authenticatedmessage
-         WHERE id = %s """                 ❶
+         WHERE id = %s """                 # ❶
 with connection.cursor() as cursor:
-    cursor.execute(sql, params=[msg_id])   ❷
+    cursor.execute(sql, params=[msg_id])   # ❷
 ```
 
 ❶ 未引用的占位符

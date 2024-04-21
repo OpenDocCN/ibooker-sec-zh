@@ -162,7 +162,7 @@ DH 方法是比使用 RSA 等密码系统产生计算开销的公钥加密更有
 import ssl
 
 address = ('wikipedia.org', 443)
-certificate = ssl.get_server_certificate(address)      ❶
+certificate = ssl.get_server_certificate(address)      # ❶
 print(certificate)
 ```
 
@@ -202,7 +202,7 @@ $ openssl x509 -in wikipedia.crt -text -noout | less
 
 ```py
 ...
-        Subject: CN=*.wikipedia.org     ❶
+        Subject: CN=*.wikipedia.org     # ❶
         Subject Public Key Info:
 ...
 ```
@@ -216,7 +216,7 @@ $ openssl x509 -in wikipedia.crt -text -noout | less
 ```py
 ...
     Signature Algorithm: sha256WithRSAEncryption
-        Issuer: C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3    ❶
+        Issuer: C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3    # ❶
         Validity
 ...
 ```
@@ -230,14 +230,14 @@ $ openssl x509 -in wikipedia.crt -text -noout | less
 ```py
 ...
 Subject Public Key Info:
-    Public Key Algorithm: id-ecPublicKey                         ❶
- Public-Key: (256 bit)                                    ❷
+    Public Key Algorithm: id-ecPublicKey                         # ❶
+ Public-Key: (256 bit)                                    # ❷
  pub: 
- 04:6a:e9:9d:aa:68:8e:18:06:f4:b3:cf:21:89:f2: ❸
- b3:82:7c:3d:f5:2e:22:e6:86:01:e2:f3:1a:1f:9a: ❸
- ba:22:91:fd:94:42:82:04:53:33:cc:28:75:b4:33: ❸
- 84:a9:83:ed:81:35:11:77:33:06:b0:ec:c8:cb:fa: ❸
-                a3:51:9c:ad:dc ❸
+ 04:6a:e9:9d:aa:68:8e:18:06:f4:b3:cf:21:89:f2: # ❸
+ b3:82:7c:3d:f5:2e:22:e6:86:01:e2:f3:1a:1f:9a: # ❸
+ ba:22:91:fd:94:42:82:04:53:33:cc:28:75:b4:33: # ❸
+ 84:a9:83:ed:81:35:11:77:33:06:b0:ec:c8:cb:fa: # ❸
+                a3:51:9c:ad:dc # ❸
 ...
 ```
 
@@ -265,10 +265,10 @@ Validity
 
 ```py
 ...
-Signature Algorithm: sha256WithRSAEncryption                  ❶
-    4c:a4:5c:e7:9d:fa:a0:6a:ee:8f:47:3e:e2:d7:94:86:9e:46:    ❷
-    95:21:8a:28:77:3c:19:c6:7a:25:81:ae:03:0c:54:6f:ea:52:    ❷
-    61:7d:94:c8:03:15:48:62:07:bd:e5:99:72:b1:13:2c:02:5e:    ❷
+Signature Algorithm: sha256WithRSAEncryption                  # ❶
+    4c:a4:5c:e7:9d:fa:a0:6a:ee:8f:47:3e:e2:d7:94:86:9e:46:    # ❷
+    95:21:8a:28:77:3c:19:c6:7a:25:81:ae:03:0c:54:6f:ea:52:    # ❷
+    61:7d:94:c8:03:15:48:62:07:bd:e5:99:72:b1:13:2c:02:5e:    # ❷
 ...
 ```
 
@@ -325,8 +325,8 @@ Django 根目录还包含一个名为`wsgi`的模块。我稍后会介绍`wsgi`�
 使用以下命令运行你的 Django 服务器。从项目根目录中，使用`runserver`子命令运行 manage.py 脚本。命令行应该会挂起：
 
 ```py
-$ cd alice                      ❶
-$ python manage.py runserver    ❷
+$ cd alice                      # ❶
+$ python manage.py runserver    # ❷
 ...
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
@@ -377,7 +377,7 @@ $ pipenv install gunicorn
 在运行 Gunicorn 之前，请确保先停止正在运行的 Django 应用程序。在您的 shell 中按下 Ctrl-C 来执行此操作。接下来，从项目根目录运行以下命令，使用 Gunicorn 重新启动您的 Django 服务器。命令行应该会挂起：
 
 ```py
-$ gunicorn alice.wsgi       ❶
+$ gunicorn alice.wsgi       # ❶
 [2020-08-16 11:42:20 -0700] [87321] [INFO] Starting gunicorn 20.0.4
 ...
 ```
@@ -393,11 +393,11 @@ $ gunicorn alice.wsgi       ❶
 使用以下`openssl`命令生成一个密钥对和自签名的公钥证书。此示例生成一个椭圆曲线密钥对和一个自签名的公钥证书。证书有效期为 10 年：
 
 ```py
-$ openssl req -x509 \                                  ❶
-    -nodes -days 3650 \                                ❷
-    -newkey ec:<(openssl ecparam -name prime256v1) \   ❸
-    -keyout private_key.pem \                          ❹
-    -out certificate.pem                               ❺
+$ openssl req -x509 \                                  # ❶
+    -nodes -days 3650 \                                # ❷
+    -newkey ec:<(openssl ecparam -name prime256v1) \   # ❸
+    -keyout private_key.pem \                          # ❹
+    -out certificate.pem                               # ❺
 ```
 
 ❶ 生成一个 X.509 证书
@@ -418,7 +418,7 @@ State or Province Name (full name) []:AK
 Locality Name (eg, city) []:Anchorage
 Organization Name (eg, company) []:Alice Inc.
 Organizational Unit Name (eg, section) []:
-Common Name (eg, fully qualified host name) []:localhost    ❶
+Common Name (eg, fully qualified host name) []:localhost    # ❶
 Email Address []:alice@alice.com
 ```
 
@@ -427,9 +427,9 @@ Email Address []:alice@alice.com
 在提示符处按 Ctrl-C 停止运行的 Gunicorn 实例。要安装您的证书，请使用以下命令行重新启动 Gunicorn。`keyfile` 和 `certfile` 参数接受分别指向您的密钥文件和证书的路径。
 
 ```py
-$ gunicorn alice.wsgi \            ❶
-    --keyfile private_key.pem \    ❷
-    --certfile certificate.pem     ❸
+$ gunicorn alice.wsgi \            # ❶
+    --keyfile private_key.pem \    # ❷
+    --certfile certificate.pem     # ❸
 ```
 
 ❶ alice.wsgi 模块位于 alice/alice/wsgi.py。
@@ -558,7 +558,7 @@ Django 数据库连接由 `DATABASES` 设置管理。该字典中的每个条目
 DATABASES = {
    'default': {
        'ENGINE': 'django.db.backends.sqlite3',
-       'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),    ❶
+       'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),    # ❶
    }
 }
 ```
@@ -580,9 +580,9 @@ DATABASES = {
        "PORT": 5432,
        "USER": "db_user",
        "PASSWORD": db_password,
-       "OPTIONS": {                     ❶
-           "sslmode": "verify-full",    ❶
-       },                               ❶
+       "OPTIONS": {                     # ❶
+           "sslmode": "verify-full",    # ❶
+       },                               # ❶
    }
 }
 ```
@@ -628,10 +628,10 @@ from django.core.mail import send_mail
 
 send_mail('subject',
          'message',
-         'alice@python.org',                    ❶
-         ['bob@python.org'],                    ❷
-         auth_user='overridden_user_name',      ❸
-         auth_password='overridden_password')   ❹
+         'alice@python.org',                    # ❶
+         ['bob@python.org'],                    # ❷
+         auth_user='overridden_user_name',      # ❸
+         auth_password='overridden_password')   # ❹
 ```
 
 ❶ 发件人电子邮件

@@ -62,7 +62,7 @@ AUTH_PASSWORD_VALIDATORS = [
    'NAME': 'django.contrib.auth...UserAttributeSimilarityValidator',
    'OPTIONS': {
        'user_attributes': ('custom', 'attribute', 'names'),
-       'max_similarity': 0.6,      ❶
+       'max_similarity': 0.6,      # ❶
    }
 }
 ```
@@ -77,7 +77,7 @@ AUTH_PASSWORD_VALIDATORS = [
 {
    'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
    'OPTIONS': {
-       'min_length': 12,     ❶
+       'min_length': 12,     # ❶
    }
 }
 ```
@@ -113,11 +113,11 @@ class PassphraseValidator:
 
     def __init__(self, dictionary_file='/usr/share/dict/words'):
         self.min_words = 4
-        with open(dictionary_file) as f:                                 ❶
-            self.words = set(word.strip() for word in f)                 ❶
+        with open(dictionary_file) as f:                                 # ❶
+            self.words = set(word.strip() for word in f)                 # ❶
 
     def get_help_text(self):
-        return _('Your password must contain %s words' % self.min_words) ❷
+        return _('Your password must contain %s words' % self.min_words) # ❷
 
 ```
 
@@ -137,13 +137,13 @@ class PassphraseValidator:
     def validate(self, password, user=None):
         tokens = password.split(' ')
 
-        if len(tokens) < self.min_words:                                   ❶
-            too_short = _('This password needs %s words' % self.min_words) ❶
-            raise ValidationError(too_short, code='too_short')             ❶
+        if len(tokens) < self.min_words:                                   # ❶
+            too_short = _('This password needs %s words' % self.min_words) # ❶
+            raise ValidationError(too_short, code='too_short')             # ❶
 
-        if not all(token in self.words for token in tokens):               ❷
-            not_passphrase = _('This password is not a passphrase')        ❷
-            raise ValidationError(not_passphrase, code='not_passphrase')   ❷
+        if not all(token in self.words for token in tokens):               # ❷
+            not_passphrase = _('This password is not a passphrase')        # ❷
+            raise ValidationError(not_passphrase, code='not_passphrase')   # ❷
 ```
 
 ❶ 确保每个密码由四个单词组成
@@ -159,7 +159,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'profile_info.validators.PassphraseValidator',
         'OPTIONS': {
-            'dictionary_file': '/path/to/dictionary.txt.gz',     ❶
+            'dictionary_file': '/path/to/dictionary.txt.gz',     # ❶
         }
     },
 ]
@@ -293,14 +293,14 @@ Malory 可以使用多种工具：
 >>> 
 >>> message = b'same message'
 >>> 
->>> sodium = secrets.token_bytes(16)       ❶
->>> chloride = secrets.token_bytes(16)     ❶
+>>> sodium = secrets.token_bytes(16)       # ❶
+>>> chloride = secrets.token_bytes(16)     # ❶
 >>> 
->>> x = blake2b(message, salt=sodium)      ❷
->>> y = blake2b(message, salt=chloride)    ❷
+>>> x = blake2b(message, salt=sodium)      # ❷
+>>> y = blake2b(message, salt=chloride)    # ❷
 >>> 
->>> x.digest() == y.digest()               ❸
-False                                      ❸
+>>> x.digest() == y.digest()               # ❸
+False                                      # ❸
 ```
 
 ❶ 生成两个随机的 16 字节盐值
@@ -353,7 +353,7 @@ import secrets
 import sys
 import timeit
 
-iterations = int(sys.argv[1])                                         ❶
+iterations = int(sys.argv[1])                                         # ❶
 
 def test():
     message = b'password'
@@ -361,11 +361,11 @@ def test():
     hash_value = hashlib.pbkdf2_hmac('sha256',
                                      message,
                                      salt,
-                                     iterations)                      ❷
+                                     iterations)                      # ❷
     print(hash_value.hex())
 
 if __name__ == '__main__':
-    seconds = timeit.timeit('test()', number=10, globals=globals())   ❸
+    seconds = timeit.timeit('test()', number=10, globals=globals())   # ❸
     print('Seconds elapsed: %s' % seconds)
 ```
 
@@ -479,7 +479,7 @@ from django.contrib.auth.hashers import PBKDF2PasswordHasher
 
 class TwoFoldPBKDF2PasswordHasher(PBKDF2PasswordHasher):
 
-    iterations = PBKDF2PasswordHasher.iterations * 2      ❶
+    iterations = PBKDF2PasswordHasher.iterations * 2      # ❶
 ```
 
 ❶ 将迭代次数加倍
@@ -538,7 +538,7 @@ PASSWORD_HASHERS = [
 
 ```py
 PASSWORD_HASHERS = [
- 'django.contrib.auth.hashers.Argon2PasswordHasher',       ❶
+ 'django.contrib.auth.hashers.Argon2PasswordHasher',       # ❶
    'django.contrib.auth.hashers.UnsaltedMD5PasswordHasher',
 ]
 ```
@@ -568,13 +568,13 @@ class UnsaltedMD5ToArgon2PasswordHasher(Argon2PasswordHasher):
     algorithm = '%s->%s' % (UnsaltedMD5PasswordHasher.algorithm,
                             Argon2PasswordHasher.algorithm)
 
-    def encode(self, password, salt):                  ❶
-        md5_hash = self.get_md5_hash(password)         ❷
-        return self.encode_md5_hash(md5_hash, salt)    ❷
+    def encode(self, password, salt):                  # ❶
+        md5_hash = self.get_md5_hash(password)         # ❷
+        return self.encode_md5_hash(md5_hash, salt)    # ❷
 
-    def verify(self, password, encoded):               ❸
-        md5_hash = self.get_md5_hash(password)         ❹
-        return super().verify(md5_hash, encoded)       ❹
+    def verify(self, password, encoded):               # ❸
+        md5_hash = self.get_md5_hash(password)         # ❹
+        return super().verify(md5_hash, encoded)       # ❹
 
     def encode_md5_hash(self, md5_hash, salt):
         return super().encode(md5_hash, salt)
@@ -614,21 +614,21 @@ from django.db.models.functions import Length
 from django_app.hashers import UnsaltedMD5ToArgon2PasswordHasher
 
 def forwards_func(apps, schema_editor):
-   User = apps.get_model('auth', 'User')                         ❶
-   unmigrated_users = User.objects.annotate(                     ❷
-       text_len=Length('password')).filter(text_len=32)          ❷
+   User = apps.get_model('auth', 'User')                         # ❶
+   unmigrated_users = User.objects.annotate(                     # ❷
+       text_len=Length('password')).filter(text_len=32)          # ❷
 
    hasher = UnsaltedMD5ToArgon2PasswordHasher()
    for user in unmigrated_users:
        md5_hash = user.password
        salt = hasher.salt()
-       user.password = hasher.encode_md5_hash(md5_hash, salt)    ❸
-       user.save(update_fields=['password'])                     ❹
+       user.password = hasher.encode_md5_hash(md5_hash, salt)    # ❸
+       user.save(update_fields=['password'])                     # ❹
 
 class Migration(migrations.Migration):
 
    dependencies = [
-       ('auth', '0011_update_proxy_permissions'),                ❺
+       ('auth', '0011_update_proxy_permissions'),                # ❺
    ]
 
    operations = [

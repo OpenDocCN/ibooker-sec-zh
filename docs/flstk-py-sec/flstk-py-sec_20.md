@@ -28,24 +28,24 @@ Mallory 的攻击失败得很惨，如下列表所示。Bob 的浏览器阻止�
 <html>
   <script>
     function recordVote(){
-      const ballot = frames[0].document.getElementById('ballot');   ❶
+      const ballot = frames[0].document.getElementById('ballot');   # ❶
 
       const headers = {
         'Content-type': 'application/x-www-form-urlencoded; charset=UTF-8'
       };
-      fetch('/record/', {                                           ❷
-        method: 'POST',                                             ❷
-        headers: headers,                                           ❷
-        body: 'vote=' + ballot.value                                ❷
-      });                                                           ❷
+      fetch('/record/', {                                           # ❷
+        method: 'POST',                                             # ❷
+        headers: headers,                                           # ❷
+        body: 'vote=' + ballot.value                                # ❷
+      });                                                           # ❷
     };
   </script>
   <body>
     ...
 
-    <iframe src="https://ballot.charlie.com/"                       ❸
-            onload="recordVote()"                                   ❹
-            style="display: none;">                                 ❺
+    <iframe src="https://ballot.charlie.com/"                       # ❸
+            onload="recordVote()"                                   # ❹
+            style="display: none;">                                 # ❺
     </iframe>
   </body>
 </html>
@@ -82,12 +82,12 @@ CORS 是浏览器和服务器之间的协作努力，由一组请求和响应头
 ```py
 <html>
   <head>
-    <link href='https:/./fonts.googleapis.com/css?family=Caveat'    ❶
-          rel='stylesheet'>                                        ❶
-    <style>                                                        ❷
-      body {                                                       ❷
-        font-family: 'Caveat', serif;                              ❷
-      }                                                            ❷
+    <link href='https:/./fonts.googleapis.com/css?family=Caveat'    # ❶
+          rel='stylesheet'>                                        # ❶
+    <style>                                                        # ❷
+      body {                                                       # ❷
+        font-family: 'Caveat', serif;                              # ❷
+      }                                                            # ❷
     </style>
   </head>
     <body>
@@ -104,7 +104,7 @@ CORS 是浏览器和服务器之间的协作努力，由一组请求和响应头
 
 ```py
 ...
-Access-Control-Allow-Origin: *     ❶
+Access-Control-Allow-Origin: *     # ❶
 Content-Type: font/woff
 ...
 ```
@@ -122,11 +122,11 @@ Content-Type: font/woff
 ```py
 <script>
 
-  fetch('https:/./social.bob.com/trending/')               ❶
+  fetch('https:/./social.bob.com/trending/')               # ❶
     .then(response => response.json())
-    .then(data => {                                       ❷
-      const widget = document.getElementById('widget');   ❷
-      ...                                                 ❷
+    .then(data => {                                       # ❷
+      const widget = document.getElementById('widget');   # ❷
+      ...                                                 # ❷
     })
     .catch(error => console.error('error', error));
 
@@ -262,18 +262,18 @@ Bob 部署了 social.bob.com/comment/，允许任何人创建或更新评论。�
 ```py
 <script>
 
-  const comment = document.getElementById('comment');     ❶
-  const photoId = document.getElementById('photo-id');    ❶
-  const body = {                                          ❶
-    comment: comment.value,                               ❶
-    photo_id: photoId.value                               ❶
-  };                                                      ❶
+  const comment = document.getElementById('comment');     # ❶
+  const photoId = document.getElementById('photo-id');    # ❶
+  const body = {                                          # ❶
+    comment: comment.value,                               # ❶
+    photo_id: photoId.value                               # ❶
+  };                                                      # ❶
 
   const headers = {
-    'Content-type': 'application/json'                    ❷
+    'Content-type': 'application/json'                    # ❷
   };
   fetch('https:/./social.bob.com/comment/', {
-      method: 'PUT',                                      ❸
+      method: 'PUT',                                      # ❸
       headers: headers,
       body: JSON.stringify(body)
     })
@@ -384,12 +384,12 @@ CORS_ALLOW_METHODS = [
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
-    'authorization',      ❶
-    'content-type',       ❷
+    'authorization',      # ❶
+    'content-type',       # ❷
     'dnt',
-    'origin',             ❸
+    'origin',             # ❸
     'user-agent',
-    'x-csrftoken',        ❹
+    'x-csrftoken',        # ❹
     'x-requested-with',
 ]
 ```
@@ -452,7 +452,7 @@ CORS_ALLOW_CREDENTIALS = True
   fetch('https:/./social.bob.com/comment/', {
       method: 'PUT',
       headers: headers,
-      credentials: 'include',        ❶
+      credentials: 'include',        # ❶
       body: JSON.stringify(body)
     })
     .then(response => response.json())

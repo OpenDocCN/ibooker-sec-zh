@@ -64,22 +64,22 @@
 
 代码清单 7.1 在 Python 中签名和验证签名
 
-```py
+```go
 from cryptography.hazmat.primitives.asymmetric.ed25519 import (
-    Ed25519PrivateKey                                              ❶
+    Ed25519PrivateKey                                              // ❶
 )
 
-private_key = Ed25519PrivateKey.generate()                         ❷
-public_key = private_key.public_key()                              ❷
+private_key = Ed25519PrivateKey.generate()                         // ❷
+public_key = private_key.public_key()                              // ❷
 
-message = b"example.com has the public key 0xab70..."              ❸
-signature = private_key.sign(message)                              ❸
+message = b"example.com has the public key 0xab70..."              // ❸
+signature = private_key.sign(message)                              // ❸
 
-try:                                                               ❹
-    public_key.verify(signature, message)                          ❹
-    print("valid signature")                                       ❹
-except InvalidSignature:                                           ❹
-    print("invalid signature")                                     ❹
+try:                                                               // ❹
+    public_key.verify(signature, message)                          // ❹
+    print("valid signature")                                       // ❹
+except InvalidSignature:                                           // ❹
+    print("invalid signature")                                     // ❹
 ```
 
 ❶ 使用 Ed25519 签名算法，这是一种流行的签名方案

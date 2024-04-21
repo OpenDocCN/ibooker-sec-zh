@@ -122,29 +122,29 @@
 
 列表 6.1 Java 中的混合加密
 
-```py
+```go
 import com.google.crypto.tink.HybridDecrypt;
 import com.google.crypto.tink.HybridEncrypt;
 import com.google.crypto.tink.hybrid.HybridKeyTemplates
 ➥ .ECIES_P256_HKDF_HMAC_SHA256_AES128_GCM;
 import com.google.crypto.tink.KeysetHandle;
 
-KeysetHandle privkey = KeysetHandle.generateNew(          ❶
-   ECIES_P256_HKDF_HMAC_SHA256_AES128_GCM);               ❶
+KeysetHandle privkey = KeysetHandle.generateNew(          // ❶
+   ECIES_P256_HKDF_HMAC_SHA256_AES128_GCM);               // ❶
 
-KeysetHandle publicKeysetHandle =                         ❷
-   privkey.getPublicKeysetHandle();                       ❷
+KeysetHandle publicKeysetHandle =                         // ❷
+   privkey.getPublicKeysetHandle();                       // ❷
 
-HybridEncrypt hybridEncrypt =                             ❸
-   publicKeysetHandle.getPrimitive(                       ❸
-      HybridEncrypt.class);                               ❸
-byte[] ciphertext = hybridEncrypt.encrypt(                ❸
-   plaintext, associatedData);                            ❸
+HybridEncrypt hybridEncrypt =                             // ❸
+   publicKeysetHandle.getPrimitive(                       // ❸
+      HybridEncrypt.class);                               // ❸
+byte[] ciphertext = hybridEncrypt.encrypt(                // ❸
+   plaintext, associatedData);                            // ❸
 
-HybridDecrypt hybridDecrypt =                             ❹
-   privkey.getPrimitive(HybridDecrypt.class);             ❹
-byte[] plaintext = hybridDecrypt.decrypt(                 ❹
-   ciphertext, associatedData);                           ❹
+HybridDecrypt hybridDecrypt =                             // ❹
+   privkey.getPrimitive(HybridDecrypt.class);             // ❹
+byte[] plaintext = hybridDecrypt.decrypt(                 // ❹
+   ciphertext, associatedData);                           // ❹
 ```
 
 ❶ 为特定混合加密方案生成密钥

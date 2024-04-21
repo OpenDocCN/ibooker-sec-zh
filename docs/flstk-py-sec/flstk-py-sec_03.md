@@ -32,9 +32,9 @@
 
 ```py
 $ python
->>> message = 'message'   ❶
+>>> message = 'message'   # ❶
 >>> hash(message)
-2010551929503284934       ❷
+2010551929503284934       # ❷
 ```
 
 ❶ 消息输入
@@ -55,9 +55,9 @@ $ python
 
 ```py
 >>> hash('same message')
-1116605938627321843        ❶
+1116605938627321843        # ❶
 >>> hash('same message')
-1116605938627321843        ❶
+1116605938627321843        # ❶
 ```
 
 ❶ 相同的哈希值
@@ -239,8 +239,8 @@ SHA-1
 ```py
 import hashlib
 
-named = hashlib.sha256()           ❶
-generic = hashlib.new('sha256')    ❷
+named = hashlib.sha256()           # ❶
+generic = hashlib.new('sha256')    # ❷
 ```
 
 ❶ 命名构造函数
@@ -259,11 +259,11 @@ generic = hashlib.new('sha256')    ❷
 无论如何创建，每个哈希函数实例都有相同的 API。对于 SHA-256 实例的公共方法类似于对于 MD5 实例的公共方法。`digest` 和 `hexdigest` 方法分别返回哈希值作为字节和十六进制文本：
 
 ```py
->>> hash_function.digest()        ❶
+>>> hash_function.digest()        # ❶
 b'\xabS\n\x13\xe4Y\x14\x98+y\xf9\xb7\xe3\xfb\xa9\x94\xcf\xd1\xf3\xfb"\xf7\x
 1c\xea\x1a\xfb\xf0+F\x0cm\x1d'
 >>> 
->>> hash_function.hexdigest()     ❷
+>>> hash_function.hexdigest()     # ❷
 'ab530a13e45914982b79f9b7e3fba994cfd1f3fb22f71cea1afbf02b460c6d1d'
 ```
 
@@ -290,11 +290,11 @@ f4b30283e4888325f1415a085125e8f7cdc99fd91dbd7280373c5bd8823e3156348f5bae6da
 cd436c919c6dd53e23487da03fd02396306d248cda0e99f33420f577ee8ce54b67080280d1e
 c69821bcb6a8839396f965ab6ff72a70')
 >>> 
->>> x == y                               ❶
-False                                    ❶
+>>> x == y                               # ❶
+False                                    # ❶
 >>> 
->>> md5(x).digest() == md5(y).digest()   ❷
-True                                     ❷
+>>> md5(x).digest() == md5(y).digest()   # ❷
+True                                     # ❷
 ```
 
 ❶ 不同的消息
@@ -306,11 +306,11 @@ True                                     ❷
 ```py
 >>> message = b'message'
 >>> 
->>> hash_function = hashlib.sha256()                             ❶
->>> hash_function.update(message)                                ❷
+>>> hash_function = hashlib.sha256()                             # ❶
+>>> hash_function.update(message)                                # ❷
 >>> 
->>> hash_function.digest() == hashlib.sha256(message).digest()   ❸
-True                                                             ❸
+>>> hash_function.digest() == hashlib.sha256(message).digest()   # ❸
+True                                                             # ❸
 ```
 
 ❶ 构造的哈希函数没有消息
@@ -325,18 +325,18 @@ True                                                             ❸
 >>> from hashlib import sha256
 >>> 
 >>> once = sha256()
->>> once.update(b'message')            ❶
+>>> once.update(b'message')            # ❶
 >>> 
 >>> many = sha256()
->>> many.update(b'm')                  ❷
->>> many.update(b'e') ❷
->>> many.update(b's') ❷
->>> many.update(b's') ❷
->>> many.update(b'a') ❷
->>> many.update(b'g')                  ❷
->>> many.update(b'e')                  ❷
+>>> many.update(b'm')                  # ❷
+>>> many.update(b'e') # ❷
+>>> many.update(b's') # ❷
+>>> many.update(b's') # ❷
+>>> many.update(b'a') # ❷
+>>> many.update(b'g')                  # ❷
+>>> many.update(b'e')                  # ❷
 >>> 
->>> once.digest() == many.digest()     ❸
+>>> once.digest() == many.digest()     # ❸
 True
 ```
 
@@ -371,8 +371,8 @@ $ ruby -e 'require "digest"; puts Digest::SHA256.hexdigest "m"'
 ```py
 $ python -c 'print(hash("message"))'
 8865927434942197212
-$ python -c 'print(hash("message"))'    ❶
-3834503375419022338                     ❷
+$ python -c 'print(hash("message"))'    # ❶
+3834503375419022338                     # ❷
 ```
 
 ❶ 相同的消息
@@ -392,14 +392,14 @@ Python 本身支持校验和函数，如循环冗余校验（CRC）和 Adler-32 
 ```py
 >>> import zlib
 >>> 
->>> message = b'this is repetitious' * 42         ❶
->>> checksum = zlib.crc32(message)                ❶
+>>> message = b'this is repetitious' * 42         # ❶
+>>> checksum = zlib.crc32(message)                # ❶
 >>> 
->>> compressed = zlib.compress(message)           ❷
->>> decompressed = zlib.decompress(compressed)    ❷
+>>> compressed = zlib.compress(message)           # ❷
+>>> decompressed = zlib.decompress(compressed)    # ❷
 >>> 
->>> zlib.crc32(decompressed) == checksum          ❸
-True                                              ❸
+>>> zlib.crc32(decompressed) == checksum          # ❸
+True                                              # ❸
 ```
 
 ❶ 对消息进行校验和

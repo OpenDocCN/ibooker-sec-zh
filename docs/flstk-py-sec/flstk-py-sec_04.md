@@ -42,14 +42,14 @@ Python 3.6 引入了一个专门用于生成密码安全随机数的显式高级
 ```py
 >>> from secrets import token_bytes, token_hex, token_urlsafe
 >>> 
->>> token_bytes(16)                                     ❶
-b'\x1d\x7f\x12\xadsu\x8a\x95[\xe6\x1b|\xc0\xaeM\x91'    ❶
+>>> token_bytes(16)                                     # ❶
+b'\x1d\x7f\x12\xadsu\x8a\x95[\xe6\x1b|\xc0\xaeM\x91'    # ❶
 >>> 
->>> token_hex(16)                                       ❷
-'87983b1f3dcc18080f21dc0fd97a65b3'                      ❷
+>>> token_hex(16)                                       # ❷
+'87983b1f3dcc18080f21dc0fd97a65b3'                      # ❷
 >>> 
->>> token_urlsafe(16)                                   ❸
-'Z_HIRhlJBMPh0GYRcbICIg'                                ❸
+>>> token_urlsafe(16)                                   # ❸
+'Z_HIRhlJBMPh0GYRcbICIg'                                # ❸
 ```
 
 ❶ 生成 16 个随机字节
@@ -81,9 +81,9 @@ $ python -c 'import secrets; print(secrets.token_hex(16))'
 from pathlib import Path
 import secrets
 
-words = Path('/usr/share/dict/words').read_text().splitlines()    ❶
+words = Path('/usr/share/dict/words').read_text().splitlines()    # ❶
 
-passphrase = ' '.join(secrets.choice(words) for i in range(4))    ❷
+passphrase = ' '.join(secrets.choice(words) for i in range(4))    # ❷
 
 print(passphrase)
 ```
@@ -124,13 +124,13 @@ print(passphrase)
 >>> from hashlib import blake2b
 >>> 
 >>> m = b'same message'
->>> x = b'key x'                                               ❶
->>> y = b'key y'                                               ❷
+>>> x = b'key x'                                               # ❶
+>>> y = b'key y'                                               # ❷
 >>> 
->>> blake2b(m, key=x).digest() == blake2b(m, key=x).digest()   ❸
-True                                                           ❸
->>> blake2b(m, key=x).digest() == blake2b(m, key=y).digest()   ❹
-False                                                          ❹
+>>> blake2b(m, key=x).digest() == blake2b(m, key=x).digest()   # ❸
+True                                                           # ❸
+>>> blake2b(m, key=x).digest() == blake2b(m, key=y).digest()   # ❹
+False                                                          # ❹
 ```
 
 ❶ 第一个密钥
@@ -153,22 +153,22 @@ def store(path, data, key):
     data_path = Path(path)
     hash_path = data_path.with_suffix('.hash')
 
-    hash_value = hashlib.blake2b(data, key=key).hexdigest()     ❶
+    hash_value = hashlib.blake2b(data, key=key).hexdigest()     # ❶
 
-    with data_path.open(mode='x'), hash_path.open(mode='x'):    ❷
-        data_path.write_bytes(data)                             ❷
-        hash_path.write_text(hash_value)                        ❷
+    with data_path.open(mode='x'), hash_path.open(mode='x'):    # ❷
+        data_path.write_bytes(data)                             # ❷
+        hash_path.write_text(hash_value)                        # ❷
 
 def is_modified(path, key):
     data_path = Path(path)
     hash_path = data_path.with_suffix('.hash')
 
-    data = data_path.read_bytes()                               ❸
-    original_hash_value = hash_path.read_text()                 ❸
+    data = data_path.read_bytes()                               # ❸
+    original_hash_value = hash_path.read_text()                 # ❸
 
-    hash_value = hashlib.blake2b(data, key=key).hexdigest()     ❹
+    hash_value = hashlib.blake2b(data, key=key).hexdigest()     # ❹
 
-    return original_hash_value != hash_value                    ❺
+    return original_hash_value != hash_value                    # ❺
 ```
 
 ❶ 使用给定的密钥对文档进行哈希
@@ -208,12 +208,12 @@ Python 对 HMAC 的回答是`hmac`模块。以下代码使用消息、密钥和 
 新的 HMAC 函数实例反映了它包装的哈希函数实例的行为。这里显示的`digest`和`hexdigest`方法，以及`digest_size`属性，现在应该看起来很熟悉：
 
 ```py
->>> hmac_sha256.digest()                                             ❶
+>>> hmac_sha256.digest()                                             # ❶
 b"n\x9e\xf2\x9bu\xff\xfcz\xba\xe5'\xd5\x8f\xda\xdb/\xe4.r\x19\x01\x19v\x91
 sC\x06_X\xedJ"
->>> hmac_sha256.hexdigest()                                          ❷
+>>> hmac_sha256.hexdigest()                                          # ❷
 '6e9ef29b75fffc5b7abae527d58fdadb2fe42e7219011976917343065f58ed4a'
->>> hmac_sha256.digest_size                                          ❸
+>>> hmac_sha256.digest_size                                          # ❸
 32
 ```
 
@@ -265,15 +265,15 @@ import hashlib
 import hmac
 import json
 
-hmac_sha256 = hmac.new(b'shared_key', digestmod=hashlib.sha256)   ❶
-message = b'from Bob to Alice'                                    ❶
-hmac_sha256.update(message)                                       ❶
-hash_value = hmac_sha256.hexdigest()                              ❶
+hmac_sha256 = hmac.new(b'shared_key', digestmod=hashlib.sha256)   # ❶
+message = b'from Bob to Alice'                                    # ❶
+hmac_sha256.update(message)                                       # ❶
+hash_value = hmac_sha256.hexdigest()                              # ❶
 
-authenticated_msg = {                                             ❷
-   'message': list(message),                                      ❷
-   'hash_value': hash_value, }                                    ❷
-outbound_msg_to_alice = json.dumps(authenticated_msg)             ❷
+authenticated_msg = {                                             # ❷
+   'message': list(message),                                      # ❷
+   'hash_value': hash_value, }                                    # ❷
+outbound_msg_to_alice = json.dumps(authenticated_msg)             # ❷
 ```
 
 ❶ Bob 对文档进行哈希处理。
@@ -292,11 +292,11 @@ import json
 authenticated_msg = json.loads(inbound_msg_from_bob)
 message = bytes(authenticated_msg['message'])
 
-hmac_sha256 = hmac.new(b'shared_key', digestmod=hashlib.sha256)    ❶
-hmac_sha256.update(message)                                        ❶
-hash_value = hmac_sha256.hexdigest()                               ❶
+hmac_sha256 = hmac.new(b'shared_key', digestmod=hashlib.sha256)    # ❶
+hmac_sha256.update(message)                                        # ❶
+hash_value = hmac_sha256.hexdigest()                               # ❶
 
-if hash_value == authenticated_msg['hash_value']:                  ❷
+if hash_value == authenticated_msg['hash_value']:                  # ❷
     print('trust message')
     ...
 ```
@@ -328,10 +328,10 @@ Mallory 通过重复这个过程来完成攻击，对剩下的 63 个字符中�
 ```py
 >>> from hmac import compare_digest
 >>> 
->>> compare_digest('alice', 'mallory')    ❶
-False                                     ❶
->>> compare_digest('alice', 'alice')      ❷
-True                                      ❷
+>>> compare_digest('alice', 'mallory')    # ❶
+False                                     # ❶
+>>> compare_digest('alice', 'alice')      # ❷
+True                                      # ❷
 ```
 
 ❶ 不同的参数，相同的运行时间

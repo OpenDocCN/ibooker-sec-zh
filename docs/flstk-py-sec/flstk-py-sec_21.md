@@ -17,9 +17,9 @@
     <body>
         <form method='POST' action='/missile/launch/'>
           {% csrf_token %}
-          <button type='submit'>    ❶
-              Launch missile        ❶
-          </button>                 ❶
+          <button type='submit'>    # ❶
+              Launch missile        # ❶
+          </button>                 # ❶
         </form>
         ...
     </body>
@@ -37,24 +37,24 @@
   <head>
     <style>
       .bait {
-        position: absolute;                                  ❶
-        z-index: 1;                                          ❶
+        position: absolute;                                  # ❶
+        z-index: 1;                                          # ❶
       }
       .transparent {
-        position: relative;                                  ❷
-        z-index: 2;                                          ❷
-        opacity: 0;                                          ❷
+        position: relative;                                  # ❷
+        z-index: 2;                                          # ❷
+        opacity: 0;                                          # ❷
       }
     </style>
   </head>
   <body>
-    <div class='bait'>                                       ❸
-      <button>Win an iPhone!</button>                        ❸
-    </div>                                                   ❸
+    <div class='bait'>                                       # ❸
+      <button>Win an iPhone!</button>                        # ❸
+    </div>                                                   # ❸
 
-    <iframe class='transparent'                              ❹
-            src='https://charlie.mil/launch-missile.html'>   ❹
-    </iframe>                                                ❹
+    <iframe class='transparent'                              # ❹
+            src='https://charlie.mil/launch-missile.html'>   # ❹
+    </iframe>                                                # ❹
     ...
   </body>
 </html>
@@ -115,7 +115,7 @@ Django 支持一些装饰器，以便根据每个视图基础上修改 `X-Frame-
 from django.utils.decorators import method_decorator
 from django.views.decorators.clickjacking import xframe_options_sameorigin
 
-@method_decorator(xframe_options_sameorigin, name='dispatch')     ❶
+@method_decorator(xframe_options_sameorigin, name='dispatch')     # ❶
 class XFrameOptionsSameOriginView(View):
 
    def get(self, request):
@@ -135,7 +135,7 @@ Django 还附带了一个 `xframe_options_deny` 装饰器。此实用程序的�
 from django.utils.decorators import method_decorator
 from django.views.decorators.clickjacking import xframe_options_exempt
 
-@method_decorator(xframe_options_exempt, name='dispatch')     ❶
+@method_decorator(xframe_options_exempt, name='dispatch')     # ❶
 class XFrameOptionsExemptView(View):
 
    def get(self, request):

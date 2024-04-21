@@ -43,10 +43,10 @@
 要安装 Pipenv，请根据您的操作系统选择以下命令之一。不建议使用 Homebrew（macOS）或 LinuxBrew（Linux）安装 Pipenv。
 
 ```py
-$ sudo apt install pipenv    ❶
-$ sudo dnf install pipenv    ❷
-$ pkg install py36-pipenv    ❸
-$ pip install --user pipenv  ❹
+$ sudo apt install pipenv    # ❶
+$ sudo dnf install pipenv    # ❷
+$ pkg install py36-pipenv    # ❸
+$ pip install --user pipenv  # ❹
 ```
 
 ❶ 在 Debian Buster+ 上
@@ -112,7 +112,7 @@ recipes layer 是一个称为*fernet*的对称加密方法的实现。这个规�
 `Fernet`类被设计为加密数据的通用工具。`Fernet.generate_key`方法生成 32 个随机字节。`Fernet`的 init 方法接受这个密钥，如下所示：
 
 ```py
->>> from cryptography.fernet import Fernet     ❶
+>>> from cryptography.fernet import Fernet     # ❶
 >>> 
 >>> key = Fernet.generate_key()
 >>> fernet = Fernet(key)
@@ -125,7 +125,7 @@ recipes layer 是一个称为*fernet*的对称加密方法的实现。这个规�
 `Fernet.encrypt`方法不仅加密明文，还使用 HMAC-SHA256 对密文进行哈希。换句话说，密文变成了一条消息。密文和哈希值一起作为一个*fernet token*对象返回，如下所示：
 
 ```py
->>> token = fernet.encrypt(b'plaintext')    ❶
+>>> token = fernet.encrypt(b'plaintext')    # ❶
 ```
 
 ❶ 加密明文，哈希密文
@@ -139,7 +139,7 @@ recipes layer 是一个称为*fernet*的对称加密方法的实现。这个规�
 `Fernet.decrypt` 方法是 `Fernet.encrypt` 的反方法。该方法从 Fernet 令牌中提取密文并使用 HMAC-SHA256 进行身份验证。如果新的哈希值与 Fernet 令牌中的旧哈希值不匹配，则会引发 `InvalidToken` 异常。如果哈希值匹配，则解密并返回密文：
 
 ```py
->>> fernet.decrypt(token)     ❶
+>>> fernet.decrypt(token)     # ❶
 b'plaintext'
 ```
 
@@ -176,16 +176,16 @@ old_fernet = Fernet(old_key)
 new_key = Fernet.generate_key()
 new_fernet = Fernet(new_key)
 
-multi_fernet = MultiFernet([new_fernet, old_fernet])        ❶
-old_tokens = read_tokens_from_somewhere_safe()              ❶
-new_tokens = [multi_fernet.rotate(t) for t in old_tokens]   ❶
+multi_fernet = MultiFernet([new_fernet, old_fernet])        # ❶
+old_tokens = read_tokens_from_somewhere_safe()              # ❶
+new_tokens = [multi_fernet.rotate(t) for t in old_tokens]   # ❶
 
-replace_old_tokens(new_tokens)                              ❷
-replace_old_key_with_new_key(new_key)                       ❷
-del old_key                                                 ❷
+replace_old_tokens(new_tokens)                              # ❷
+replace_old_key_with_new_key(new_key)                       # ❷
+del old_key                                                 # ❷
 
-for new_token in new_tokens:                                ❸
-    plaintext = new_fernet.decrypt(new_token)               ❸
+for new_token in new_tokens:                                # ❸
+    plaintext = new_fernet.decrypt(new_token)               # ❸
 ```
 
 ❶ 使用旧密钥解密，使用新密钥加密
@@ -268,14 +268,14 @@ RC4 和 ChaCha 都是流密码的示例。RC4 在网络协议中广泛使用，�
 >>> key = b'key must be 128, 196 or 256 bits'
 >>> 
 >>> cipher = Cipher(
-...     algorithms.AES(key),                             ❶
-...     modes.ECB(),                                     ❶
-...     backend=default_backend())                       ❷
+...     algorithms.AES(key),                             # ❶
+...     modes.ECB(),                                     # ❶
+...     backend=default_backend())                       # ❷
 >>> encryptor = cipher.encryptor()
 >>> 
->>> plaintext = b'block size = 128'                      ❸
+>>> plaintext = b'block size = 128'                      # ❸
 >>> encryptor.update(plaintext) + encryptor.finalize()
-b'G\xf2\xe2J]a;\x0e\xc5\xd6\x1057D\xa9\x88'              ❹
+b'G\xf2\xe2J]a;\x0e\xc5\xd6\x1057D\xa9\x88'              # ❹
 ```
 
 ❶ 使用 AES 在 ECB 模式下
@@ -321,22 +321,22 @@ CBC 模式在使用相同密钥加密相同明文时也会产生不同的密文�
 >>> key = b'key must be 128, 196 or 256 bits'
 >>> 
 >>> def encrypt(data):
-...     iv = secrets.token_bytes(16)      ❶
+...     iv = secrets.token_bytes(16)      # ❶
 ...     cipher = Cipher(
-...         algorithms.AES(key),          ❷
-...         modes.CBC(iv),                ❷
+...         algorithms.AES(key),          # ❷
+...         modes.CBC(iv),                # ❷
 ...         backend=default_backend())
 ...     encryptor = cipher.encryptor()
 ...     return encryptor.update(data) + encryptor.finalize()
 ... 
->>> plaintext = b'the same message' * 2   ❸
->>> x = encrypt(plaintext)                ❹
->>> y = encrypt(plaintext)                ❹
+>>> plaintext = b'the same message' * 2   # ❸
+>>> x = encrypt(plaintext)                # ❹
+>>> y = encrypt(plaintext)                # ❹
 >>> 
->>> x[:16] == x[16:]                      ❺
-False                                     ❺
->>> x == y                                ❻
-False                                     ❻
+>>> x[:16] == x[16:]                      # ❺
+False                                     # ❺
+>>> x == y                                # ❻
+False                                     # ❻
 ```
 
 ❶ 生成 16 个随机字节

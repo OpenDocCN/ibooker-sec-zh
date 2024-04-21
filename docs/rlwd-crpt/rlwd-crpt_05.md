@@ -200,19 +200,19 @@ AES 提供了三个不同版本：AES-128 使用 128 位（16 字节）密钥，
 
 列表 4.1 在 JavaScript 中使用 AES-GCM 进行认证加密
 
-```py
+```go
 let config = {
     name: 'AES-GCM',
-    length: 128                                                            ❶
+    length: 128                                                            // ❶
 };
 let keyUsages = ['encrypt', 'decrypt'];
 let key = await crypto.subtle.generateKey(config, false, keyUsages);
 
 let iv = new Uint8Array(12);
-await crypto.getRandomValues(iv);                                          ❷
+await crypto.getRandomValues(iv);                                          // ❷
 
 let te = new TextEncoder();
-let ad = te.encode("some associated data");                                ❸
+let ad = te.encode("some associated data");                                // ❸
 let plaintext = te.encode("hello world");
 
 let param = {
@@ -222,8 +222,8 @@ let param = {
 };
 let ciphertext = await crypto.subtle.encrypt(param, key, plaintext);
 
-let result = await window.crypto.subtle.decrypt(                           ❹
-    param, key, ciphertext);                                               ❹
+let result = await window.crypto.subtle.decrypt(                           // ❹
+    param, key, ciphertext);                                               // ❹
 new TextDecoder("utf-8").decode(result);
 ```
 

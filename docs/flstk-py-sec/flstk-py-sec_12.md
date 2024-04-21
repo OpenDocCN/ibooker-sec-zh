@@ -56,7 +56,7 @@ class AuthenticatedMessage(Model):
 ```py
 $ python manage.py makemigrations messaging
 Migrations for 'messaging':
- messaging/migrations/0001_initial.py      ❶
+ messaging/migrations/0001_initial.py      # ❶
     - Create model AuthenticatedMessage
 ```
 
@@ -97,11 +97,11 @@ $ python manage.py shell
 随着项目的发展，通常会需要自定义权限。通过将一个内部`Meta`类添加到你的模型中来声明这些权限。打开你的`models`模块，并向`AuthenticatedMessage`添加以下`Meta`类，显示为粗体，`Meta`类的`permissions`属性定义了两个自定义权限。这些权限指定了哪些用户可以发送和接收消息：
 
 ```py
-class AuthenticatedMessage(Model):       ❶
+class AuthenticatedMessage(Model):       # ❶
     message = CharField(max_length=100)
     mac = CharField(max_length=64)
 
- class Meta:                          ❷
+ class Meta:                          # ❷
  permissions = [
  ('send_authenticatedmessage', 'Can send msgs'),
  ('receive_authenticatedmessage', 'Can receive msgs'),
@@ -117,7 +117,7 @@ class AuthenticatedMessage(Model):       ❶
 ```py
 $ python manage.py makemigrations messaging --name=add_permissions
 Migrations for 'messaging':
- messaging/migrations/0002_add_permissions.py      ❶
+ messaging/migrations/0002_add_permissions.py      # ❶
     - Change Meta options on authenticatedmessage
 ```
 
@@ -157,8 +157,8 @@ $ pipenv install whitenoise
 
 ```py
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',   ❶
-    'whitenoise.middleware.WhiteNoiseMiddleware',      ❷
+    'django.middleware.security.SecurityMiddleware',   # ❶
+    'whitenoise.middleware.WhiteNoiseMiddleware',      # ❷
     ...
 ]
 ```
@@ -214,15 +214,15 @@ $ python manage.py createsuperuser \
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group, Permission
 
-bob = User.objects.get(username='bob')                                  ❶
-observers = Group.objects.get(name='observers')                         ❶
-can_send = Permission.objects.get(codename='send_authenticatedmessage') ❶
+bob = User.objects.get(username='bob')                                  # ❶
+observers = Group.objects.get(name='observers')                         # ❶
+can_send = Permission.objects.get(codename='send_authenticatedmessage') # ❶
 
-bob.groups.add(observers)                                               ❷
-bob.user_permissions.add(can_send)                                      ❸
+bob.groups.add(observers)                                               # ❷
+bob.user_permissions.add(can_send)                                      # ❸
 
-bob.groups.remove(observers)                                            ❹
-bob.user_permissions.remove(can_send)                                   ❺
+bob.groups.remove(observers)                                            # ❹
+bob.user_permissions.remove(can_send)                                   # ❺
 ```
 
 ❶ 检索模型实体
@@ -248,10 +248,10 @@ bob.user_permissions.remove(can_send)                                   ❺
 ```py
 >>> from django.contrib.auth.models import User
 >>> bob = User.objects.get(username='bob')
->>> bob.has_perm('auth.add_user')                            ❶
-False                                                        ❶
->>> bob.has_perm('messaging.receive_authenticatedmessage')   ❷
-True                                                         ❷
+>>> bob.has_perm('auth.add_user')                            # ❶
+False                                                        # ❶
+>>> bob.has_perm('messaging.receive_authenticatedmessage')   # ❷
+True                                                         # ❷
 ```
 
 ❶ Bob 无法添加用户。
@@ -262,8 +262,8 @@ True                                                         ❷
 
 ```py
 >>> alice = User.objects.get(username='alice')
->>> alice.is_superuser                         ❶
-True                                           ❶
+>>> alice.is_superuser                         # ❶
+True                                           # ❶
 >>> alice.has_perm('auth.add_user')
 True
 ```
@@ -273,13 +273,13 @@ True
 `has_perms` 方法提供了一种方便的方式来一次检查多个权限：
 
 ```py
->>> bob.has_perms(['auth.add_user',                              ❶
-...                'messaging.receive_authenticatedmessage'])    ❶
-False                                                            ❶
+>>> bob.has_perms(['auth.add_user',                              # ❶
+...                'messaging.receive_authenticatedmessage'])    # ❶
+False                                                            # ❶
 >>> 
->>> bob.has_perms(['messaging.send_authenticatedmessage',        ❷
-...                'messaging.receive_authenticatedmessage'])    ❷
-True                                                             ❷
+>>> bob.has_perms(['messaging.send_authenticatedmessage',        # ❷
+...                'messaging.receive_authenticatedmessage'])    # ❷
+True                                                             # ❷
 ```
 
 ❶ Bob 无法添加用户和接收消息。
@@ -300,16 +300,16 @@ False
 这是另一个陷阱。权限是一次从数据库中批量获取并缓存的。这带来了一个危险的折衷。一方面，`has_perm` 和 `has_perms` 在每次调用时不会触发数据库查询。另一方面，当你在将权限应用到用户之后立即检查权限时，你必须小心。下面的代码片段演示了为什么。在这个例子中，一个权限被从 Bob 那里拿走了。不幸的是，本地权限状态没有被更新：
 
 ```py
->>> perm = 'messaging.send_authenticatedmessage'    ❶
->>> bob.has_perm(perm)                              ❶
-True                                                ❶
+>>> perm = 'messaging.send_authenticatedmessage'    # ❶
+>>> bob.has_perm(perm)                              # ❶
+True                                                # ❶
 >>> 
->>> can_send = Permission.objects.get(              ❷
-...     codename='send_authenticatedmessage')       ❷
->>> bob.user_permissions.remove(can_send)           ❷
+>>> can_send = Permission.objects.get(              # ❷
+...     codename='send_authenticatedmessage')       # ❷
+>>> bob.user_permissions.remove(can_send)           # ❷
 >>> 
->>> bob.has_perm(perm)                              ❸
-True                                                ❸
+>>> bob.has_perm(perm)                              # ❸
+True                                                # ❸
 ```
 
 ❶ Bob 从权限开始。
@@ -321,13 +321,13 @@ True                                                ❸
 继续使用同一个例子，当在 `User` 对象上调用 `refresh_from_db` 方法时会发生什么？本地权限状态仍然没有被更新。为了获取最新状态的副本，必须重新从数据库加载一个新的 `User` 模型：
 
 ```py
->>> bob.refresh_from_db()                     ❶
->>> bob.has_perm(perm)                        ❶
-True                                          ❶
+>>> bob.refresh_from_db()                     # ❶
+>>> bob.has_perm(perm)                        # ❶
+True                                          # ❶
 >>> 
->>> reloaded = User.objects.get(id=bob.id)    ❷
->>> reloaded.has_perm(perm)                   ❷
-False                                         ❷
+>>> reloaded = User.objects.get(id=bob.id)    # ❷
+>>> reloaded.has_perm(perm)                   # ❷
+False                                         # ❷
 ```
 
 ❶ 本地副本仍然无效。
@@ -345,9 +345,9 @@ from django.views import View
 class UserView(View):
 
     def get(self, request):
-        assert request.user.has_perm('auth.view_user')   ❶
+        assert request.user.has_perm('auth.view_user')   # ❶
         ...
-        return render(request, 'sensitive_info.html')    ❷
+        return render(request, 'sensitive_info.html')    # ❷
 ```
 
 ❶ 检查权限
@@ -357,11 +357,11 @@ class UserView(View):
 第一个错误在哪里？与许多编程语言一样，Python 有一个 `assert` 语句。该语句评估一个条件，如果条件为 `False`，则会引发一个 `AssertionError`。在这个例子中，条件是一个权限检查。在开发和测试环境中，assert 语句非常有用，但是当 Python 使用 `-O` 选项调用时，它们会产生一种虚假的安全感。（此选项代表 *优化*。）作为一种优化，Python 解释器会移除所有 `assert` 语句。在控制台中键入以下两个命令，自己看一下：
 
 ```py
-$ python -c 'assert 1 == 2'               ❶
-Traceback (most recent call last):        ❶
-  File "<string>", line 1, in <module>    ❶
-AssertionError                            ❶
-$ python -Oc 'assert 1 == 2'              ❷
+$ python -c 'assert 1 == 2'               # ❶
+Traceback (most recent call last):        # ❶
+  File "<string>", line 1, in <module>    # ❶
+AssertionError                            # ❶
+$ python -Oc 'assert 1 == 2'              # ❷
 ```
 
 ❶ 引发 AssertionError
@@ -392,8 +392,8 @@ $ python -Oc 'assert 1 == 2'              ❷
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import JsonResponse
 
-class AuthenticatedMessageView(PermissionRequiredMixin, View):     ❶
- permission_required = 'messaging.view_authenticatedmessage'    ❷
+class AuthenticatedMessageView(PermissionRequiredMixin, View):     # ❶
+ permission_required = 'messaging.view_authenticatedmessage'    # ❷
 
     def get(self, request):
          ...
@@ -414,10 +414,10 @@ class AuthenticatedMessageView(PermissionRequiredMixin, View):     ❶
 from django.contrib.auth.decorators import permission_required
 from django.http import JsonResponse
 
-@permission_required('messaging.view_authenticatedmessage', raise_exception=True)                      ❶
-def authenticated_message_view(request):        ❷
-    ...                                         ❷
-    return JsonResponse(data)                   ❷
+@permission_required('messaging.view_authenticatedmessage', raise_exception=True)                      # ❶
+def authenticated_message_view(request):        # ❷
+    ...                                         # ❷
+    return JsonResponse(data)                   # ❷
 ```
 
 ❶ 在处理请求之前检查权限
@@ -440,9 +440,9 @@ from django.http import JsonResponse
 
 class UserPassesTestView(UserPassesTestMixin, View):
 
-    def test_func(self):                                                ❶
-        user = self.request.user                                        ❶
-        return user.date_joined.year > 2020 or user.username == 'alice' ❶
+    def test_func(self):                                                # ❶
+        user = self.request.user                                        # ❶
+        return user.date_joined.year > 2020 or user.username == 'alice' # ❶
 
     def get(self, request):
         ...
@@ -459,13 +459,13 @@ class UserPassesTestView(UserPassesTestMixin, View):
 from django.contrib.auth.decorators import user_passes_test
 from django.http import JsonResponse
 
-def test_func(user):                                                     ❶
-    return user.email.endswith('@alice.com') or user.first_name == 'bob' ❶
+def test_func(user):                                                     # ❶
+    return user.email.endswith('@alice.com') or user.first_name == 'bob' # ❶
 
 @user_passes_test(test_func)
-def user_passes_test_view(request):                                      ❷
-    ...                                                                  ❷
-    return JsonResponse(data)                                            ❷
+def user_passes_test_view(request):                                      # ❷
+    ...                                                                  # ❷
+    return JsonResponse(data)                                            # ❷
 ```
 
 ❶ 任意授权逻辑
@@ -510,23 +510,23 @@ from django.contrib.auth.models import User, Permission
 class TestAuthorization(TestCase):
 
     def setUp(self):
-        passphrase = 'fraying unwary division crevice'     ❶
-        self.charlie = User.objects.create_user(           ❶
-            'charlie', password=passphrase)                ❶
+        passphrase = 'fraying unwary division crevice'     # ❶
+        self.charlie = User.objects.create_user(           # ❶
+            'charlie', password=passphrase)                # ❶
         self.client.login(
             username=self.charlie.username, password=passphrase)
 
     def test_authorize_by_permission(self):
         url = '/messaging/authenticated_message/'
-        response = self.client.get(url, secure=True)       ❷
- self.assertEqual(403, response.status_code)        ❷
+        response = self.client.get(url, secure=True)       # ❷
+ self.assertEqual(403, response.status_code)        # ❷
 
-        permission = Permission.objects.get(               ❸
-            codename='view_authenticatedmessage')          ❸
-        self.charlie.user_permissions.add(permission)      ❸
+        permission = Permission.objects.get(               # ❸
+            codename='view_authenticatedmessage')          # ❸
+        self.charlie.user_permissions.add(permission)      # ❸
 
-        response = self.client.get(url, secure=True)       ❹
- self.assertEqual(200, response.status_code)        ❹
+        response = self.client.get(url, secure=True)       # ❹
+ self.assertEqual(200, response.status_code)        # ❹
 ```
 
 ❶ 为 Charlie 创建账户

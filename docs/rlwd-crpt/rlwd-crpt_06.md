@@ -50,20 +50,20 @@
 
 5.1 C 语言中的密钥交换示例
 
-```py
-unsigned char client_pk[crypto_kx_PUBLICKEYBYTES];                ❶
-unsigned char client_sk[crypto_kx_SECRETKEYBYTES];                ❶
-crypto_kx_keypair(client_pk, client_sk);                          ❶
+```go
+unsigned char client_pk[crypto_kx_PUBLICKEYBYTES];                // ❶
+unsigned char client_sk[crypto_kx_SECRETKEYBYTES];                // ❶
+crypto_kx_keypair(client_pk, client_sk);                          // ❶
 
-unsigned char server_pk[crypto_kx_PUBLICKEYBYTES];                ❷
-obtain(server_pk);                                                ❷
+unsigned char server_pk[crypto_kx_PUBLICKEYBYTES];                // ❷
+obtain(server_pk);                                                // ❷
 
-unsigned char decrypt_key[crypto_kx_SESSIONKEYBYTES];             ❸
-unsigned char encrypt_key[crypto_kx_SESSIONKEYBYTES];             ❸
+unsigned char decrypt_key[crypto_kx_SESSIONKEYBYTES];             // ❸
+unsigned char encrypt_key[crypto_kx_SESSIONKEYBYTES];             // ❸
 
 if (crypto_kx_client_session_keys(decrypt_key, encrypt_key,
-    client_pk, client_sk, server_pk) != 0) {                      ❹
-    abort_session();                                              ❺
+    client_pk, client_sk, server_pk) != 0) {                      // ❹
+    abort_session();                                              // ❺
 }
 ```
 

@@ -1454,6 +1454,9 @@
   id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 四个 PModX 密码都非常快，因为大多数编程语言都直接支持 64 位的加法、乘法和模除。在某些计算机上，它们是单一的机器指令。这使得 PModX 密码能够以
+    4 或 8 个字节作为一个单位运行，而不是像 DES 那样将每个 4 位块单独处理。这类密码非常适合软件加密。PMod2 比 DES 更安全，因为密钥长度更大，而
+    PMod4 比 3DES 更安全。
 - en: There is a second approach to multiplication modulo P that eliminates the unchanged
     values. The idea is to divide the range of integers from 0 to 2^(64)-1 into two
     separate ranges, with a different prime modulus and a different multiplier for
@@ -1466,25 +1469,34 @@
   id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于模 P 的乘法还有第二种方法，可以消除不变的值。思路是将从 0 到 2^(64)-1 的整数范围分成两个单独的范围，每个范围使用不同的质数模数和不同的乘数。选择两个质数
+    P 和 Q，使得 P+Q = 2^(64)+2。大约有 1016 对这样的数字，所以很容易找到，例如 P = 9228410438352162389 和 Q
+    = 9218333635357389229，以及两个小于 P 和 Q 的大乘数 M 和 N。麻烦的部分在于你必须将每个范围进行移位，以便仅乘以范围 1 到
+    P-1 或 1 到 Q-1 中的数字。通过重新定义 modp 函数来实现这一点。
 - en: '![15-unnumb-25](../Images/15-unnumb-25.png)'
   id: totrans-184
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-25](../Images/15-unnumb-25.png)'
 - en: With this redefined modp function, the PMod1 through PMod4 ciphers work the
     same as before, and have the same ratings. This diagram shows how the range 0
     to 2^(64)-1 is divided.
   id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过重新定义的 modp 函数，PMod1 到 PMod4 密码与以前的工作方式相同，并且具有相同的评级。这张图展示了范围从 0 到 2^(64)-1
+    是如何被划分的。
 - en: '![15-unnumb-26](../Images/15-unnumb-26.png)'
   id: totrans-186
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-26](../Images/15-unnumb-26.png)'
 - en: 15.10 Change of base
   id: totrans-187
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.10 进制转换
 - en: Changing the number base is closely related to multiplication by a large integer.
     Changing number bases is a slow operation when the number is very large, so the
     best strategy is to divide the message into blocks and convert each block separately.
@@ -1492,6 +1504,7 @@
   id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 更改数字进制与乘以一个大整数紧密相关。当数字非常大时，更改数字进制是一个缓慢的操作，因此最好的策略是将消息分成块，并分别转换每个块。更改进制会模糊消息字节之间的分隔。
 - en: There are two methods for converting numbers from one base to another. You can
     work from the low-order end or from the high-order end. Many people learn these
     techniques in school, but often forget them over time. To refresh everyone’s memories,
@@ -1501,58 +1514,72 @@
   id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 有两种将数字从一种进制转换为另一种进制的方法。你可以从低位开始计算，也可以从高位开始计算。很多人在学校学过这些技巧，但随着时间的推移往往会忘记。为了提醒大家，这里展示了两种方法。我们将使用低位技术将数字
+    1A87 从十一进制转换为七进制，然后再使用高位方法将其转换回十一进制。
 - en: 'With the low-end technique you repeatedly divide the number by the new base.
     Each remainder becomes the next digit of the converted number. Here are the steps
     to convert 1A87:'
   id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用低位技术，你要反复将数字除以新的基数。每个余数都成为转换后数字的下一个数字。以下是将 1A87 转换的步骤：
 - en: 1A87/7 is 312 with remainder **4**.
   id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 1A87÷7 等于 312，余数为 **4**。
 - en: 312/7 is 49 with remainder **5**.
   id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 312÷7 等于 49，余数为 **5**。
 - en: 49/7 is 7 with remainder **4**.
   id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 49÷7 等于 7，余数为 **4**。
 - en: 7/7 is **1** with remainder **0**.
   id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: 7÷7 等于 **1**，余数为 **0**。
 - en: So 1A87 in base 11 becomes 10454 in base 7.
   id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，十一进制中的 1A87 变为七进制中的 10454。
 - en: 'With the high-end technique you repeatedly multiply the high-end digits by
     the old base and add the next digit. Here are the steps to convert 10454:'
   id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用高位技术，你要反复将高位数字乘以旧的基数，然后加上下一个数字。以下是将 10454 转换的步骤：
 - en: '**1**×7+**0** is 7.'
   id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: '**1**×7+**0** 等于 7。'
 - en: 7×7+**4** is 49.
   id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 7×7+**4** 等于 49。
 - en: 49×7+**5** is 312.
   id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 49×7+**5** 等于 312。
 - en: 312×7+**4** is 1A87.
   id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 312×7+**4** 等于 1A87。
 - en: If those numbers don’t look quite right to you, remember that the numbers 7,
     49, 312 and 1A87 are all in base 11.
   id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果这些数字看起来不太对，记住数字 7、49、312 和 1A87 都是以十一进制表示的。
 - en: There are lots of neat ciphers you can make, based on changing bases. For example,
     a 16-byte block is also a 16-digit number expressed in base 256\. Convert that
     number to another base, say 263\. Now you can transpose the base-263 digits, or
@@ -1564,6 +1591,7 @@
   id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以根据改变进制制作很多漂亮的密码。例如，一个16字节的块也是一个以基数256表示的16位数字。将该数字转换为另一个进制，比如263。现在你可以对基数263的数字进行置换，或者执行替换，或者两者兼而有之。然后，你可以将其转换为基数277，并做同样的事情。最后，你将其转换回基数256。这需要一个17字节的数字来保存结果。你可以使用从256到362的任何进制。请记住，如果任何结果有一个前导数字0，那么这个数字是必需的，以便Riva能够解密密文。
 - en: If each successive base is a little larger than the previous, the same number
     of digits are required at each stage. The number of digits will increase only
     at the last step when the number is converted back to base 256\. There is no reason
@@ -1571,6 +1599,7 @@
   id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果每个连续的基数都比前一个稍大，那么在每个阶段都需要相同数量的数字。只有在将数字转换回基数256时，数字的位数才会增加。没有理由要求这些基数必须是素数。
 - en: Here is a concept for a block cipher based on base changes. Begin with a secret
     well-mixed keyed simple substitution S. S operates on bytes, that is, on integers
     from 0 to 255\. S can be extended to bases larger than 256 by leaving any digit
@@ -1582,6 +1611,8 @@
   id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个基于进制变换的分组密码概念。首先，从一个秘密的、混合良好的、基于密钥的简单替换S开始。S操作的是字节，即从0到255的整数。S可以扩展到大于256的进制，方法是保持大于255的任何数字不变。这样就消除了为每种可能的进制准备单独的替换表的必要性。选择3个数字基数B[1]、B[2]和B[3]，满足256
+    < B[1] < B[2] < B[3] < 363。你还需要3个针对16个元素的带密钥的置换T[1]、T[2]和T[3]。这些元素是整数，可以大到B[3]-1，因此它们每个都需要超过1个字节。
 - en: 'Block cipher *3Base* consists of the following steps: (1) Substitute S. (2)
     Convert to base B[1]. (3) Substitute S. (4) Transpose T[1]. (5) Convert to base
     B[2]. (6) Substitute S. (7) Transpose T[2]. (8) Convert to base B[3]. (9) Substitute
@@ -1591,11 +1622,14 @@
   id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 分组密码*3Base*包括以下步骤：（1）替换S。（2）转换为基数B[1]。（3）替换S。（4）转置T[1]。（5）转换为基数B[2]。（6）替换S。（7）转置T[2]。（8）转换为基数B[3]。（9）替换S。（10）转置T[3]。（11）转换为基数256。
+    （12）替换S。密码块由步骤11中的16个元素组成。第12步将块扩展为17字节。密码3Base评级为Ten。
 - en: '*15.11 Rings'
   id: totrans-206
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: '*15.11 环'
 - en: 'A *ring* is an abstract version of the integers. That is, a ring is a set of
     elements that can be added and multiplied analogously to the way integers are
     added and multiplied. You are already familiar with several rings: the integers,
@@ -1608,62 +1642,74 @@
   id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: '*环*是整数的抽象版本。也就是说，环是一组可以像整数一样进行加法和乘法运算的元素集合。你已经熟悉了几个环：整数、有理数、实数、模某个固定数的整数，也许还有复数和代数数。一些不太熟悉的环是多项式，其系数是环的成员，矩阵，其元素是环的元素，形式为a
+    +b√13，形式为a +b∛7+c∛49，以及形式为a +b√2+c√3+d√6的数，其中a、b、c和d可以是整数、有理数或模某个固定整数的整数。'
 - en: Before we discuss how to use rings in cryptography, let’s lay out the formal
     rules for a ring. Ring addition is denoted by the + sign, a+b, and ring multiplication
     is denoted by juxtaposition, ab.
   id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们讨论如何在密码学中使用环之前，让我们先制定环的正式规则。环加法用加号+表示，a+b，环乘法用并置表示，ab。
 - en: For all ring elements a and b, a +b and ab are elements of the ring. (Closure)
   id: totrans-209
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对于所有的环元素a和b，a +b和ab都是环的元素。（封闭性）
 - en: For all ring elements a, b and c, a +(b+c) = (a +b)+c. (Associative rule for
     addition)
   id: totrans-210
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对于所有环元素a、b和c，a +(b+c) = (a +b)+c。（加法的结合规则）
 - en: For all ring elements a and b, a +b = b +a. (Commutative rule for addition)
   id: totrans-211
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对于所有环元素 a 和 b，a +b = b +a。（加法的交换律）
 - en: There is a ring element 0 such that 0+a = a +0 = a for all ring elements a.
     (Additive identity)
   id: totrans-212
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 存在一个环元素 0，使得 0+a = a +0 = a 对于所有环元素 a。（加法恒等式）
 - en: For every ring element a there is an element -a such that a +(-a) = (-a)+a =
     0\. (Additive inverse)
   id: totrans-213
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对于每个环元素 a，存在一个元素 -a，使得 a +(-a) = (-a)+a = 0。（加法的逆元素）
 - en: For all ring elements a, b and c, a(bc) = (ab)c. (Associative rule for multiplication)
   id: totrans-214
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对于所有环元素 a、b 和 c，a(bc) = (ab)c。（乘法的结合律）
 - en: For all ring elements a, b and c, a(b +c) = ab +ac, and (a +b)c = ac +bc. (Distributive
     rule)
   id: totrans-215
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对于所有环元素 a、b 和 c，a(b +c) = ab +ac，且 (a +b)c = ac +bc。（分配律）
 - en: There is a ring element 1 such that 1a = a1 = a for every element a. (Multiplicative
     identity)
   id: totrans-216
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 存在一个环元素 1，使得 1a = a1 = a 对于每个元素 a。（乘法的恒等式）
 - en: The parentheses are usually dropped when adding an additive inverse, so (-a)+b
     becomes -a +b, and a +(-b) becomes a-b.
   id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 当添加一个加法逆元素时，通常会省略括号，因此 (-a)+b 变成 -a +b，而 a +(-b) 变成 a-b。
 - en: Notice that ring multiplication need not be commutative. If the ring multiplication
     is commutative, then the ring is called *commutative*. All the previous examples
     are commutative rings. For the time being, let’s assume that all of the rings
@@ -1674,6 +1720,8 @@
   id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，环乘法不一定是可交换的。如果环乘法是可交换的，则称该环为 *可交换环*。所有前述的例子都是可交换环。暂时假设我们讨论的所有环都是可交换的。如果环元素
+    a 有一个乘法逆元素 a'，使得 aa' = 1，则称 a 为 *可逆的*。在处理有限环时，建议尝试对所有可能的元素对进行乘法运算，以确定哪些元素是可逆的，并保留一个逆元素表以供快速参考。
 - en: A simple way to use ring arithmetic for encryption is to combine the ripple
     cipher of section 11.8 with the lagged linear addition of section 13.14.1\. Let’s
     choose the ring ***R13***, whose elements take the form *a* + *b*√13, where a
@@ -1684,6 +1732,9 @@
   id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: 一种利用环算术进行加密的简单方法是将第 11.8 节的涟漪密码与第 13.14.1 节的滞后线性加法结合起来。让我们选择环 ***R13***，其元素采用
+    *a* + *b*√13 的形式，其中 a 和 b 是十六进制数字，即模 16 的整数。两个十六进制数 a 和 b 组成一个表示字符的字节。例如，字母 X
+    在 ASCII 码中表示为十六进制 58，对应于 ***R13*** 环元素 5+8√13。
 - en: Two ***R13*** ring elements *a* + *b*√13 and *c* + *d*√13 are added as (*a*
     + *c*) + (*b *+ *d*)√13, and multiplied together as (*ac* + 13*bd*) + (*ad* +
     *bc*)√13, with all addition done modulo 16\. For example, if *x* = 2+3√13 and
@@ -1691,6 +1742,9 @@
   id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: 两个 ***R13*** 环元素 *a* + *b*√13 和 *c* + *d*√13 的加法为 (*a* + *c*) + (*b *+ *d*)√13，乘法为
+    (*ac* + 13*bd*) + (*ad* + *bc*)√13，其中所有的加法都是模 16 进行的。例如，如果 *x* = 2+3√13，*y* =
+    4+5√13，则 *x*+*y* 为 6+8√13，*xy* 为 11+6√13。
 - en: For the combined ripple + lagged linear addition cipher, which could be called
     *Lag Ripple*, you replace x[n] with ax[n]+bx[n-i]+cx[n-j], where the coefficients
     a, b and c are elements of the ring, in this case ***R13***, and the lags *i*
@@ -1700,10 +1754,13 @@
   id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于组合的涟漪 + 滞后线性加法密码，可以称为 *Lag Ripple*，将 x[n] 替换为 ax[n]+bx[n-i]+cx[n-j]，其中系数 a、b
+    和 c 是环的元素，这种情况下为 ***R13***，而滞后 *i* 和 *j* 是小整数，如 2 和 5。明文可以分成，比如，16 字节的块，但对于短消息，密码可以应用于整个消息。我们假设是后者。然后，加密将是
 - en: x[n] = ax[n] + bx[n-2] + cx[n-5] for n = 1,2,3, ...,L.
   id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: x[n] = ax[n] + bx[n-2] + cx[n-5] 对于 n = 1,2,3, ...,L。
 - en: Here a is an invertible element of ***R13***, b and c are any elements of ***R13***,
     and L is the length of the message. The arithmetic is carried out in the ring.
     You may recognize this as a variant of the **madd** combining function from section
@@ -1711,6 +1768,8 @@
   id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: '这里 a 是 ***R13*** 的一个可逆元素，b 和 c 是 ***R13*** 的任意元素，L 是消息的长度。算术运算在环中进行。您可能会认出这是第
+    11.8 节中 **madd** 组合函数的变体。对于加密前几个字节，通常会使用环绕。 '
 - en: For a single pass using known fixed lags, lag ripple is rated Two, since there
     are only 256³ combinations of coefficients possible. With a simple substitution
     before and after the lagged ripple phase, the rating increases to Five. Using
@@ -1719,6 +1778,7 @@
   id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于使用已知的固定滞后进行单次通过的情况，滞后纹波的评级为Two，因为可能的系数组合只有256³种。通过在滞后纹波阶段之前和之后使用简单替代，评级增加到Five。使用3次通过，每次通过的系数和滞后不同，评级变为Six。
 - en: '*Triple Ripple* uses 3 passes with a secret keyed simple substitution before
     each ripple pass and after the last ripple pass. Each pass has different secret
     coefficients and lags. Optionally, you can start the ripple from a different position
@@ -1726,11 +1786,13 @@
   id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: '*三重纹波*使用3次通过，每次纹波通过前后使用秘密钥匙化的简单替代。每次通过都有不同的秘密系数和滞后。可选择为每次通过的消息从不同位置开始并循环。三重纹波评级为Ten。'
 - en: 15.12 Matrices over a ring
   id: totrans-226
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.12 环上的矩阵
 - en: In sections 15.1 and 15.2 we looked at the Hill cipher, which consisted of treating
     each block of the message as a vector of integers, and multiplying that vector
     by a matrix of integers modulo 26 or 256\. There is nothing magical about integers
@@ -1741,6 +1803,7 @@
   id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: '在15.1节和15.2节中，我们研究了希尔密码，它由将消息的每个块视为整数向量，并将该向量乘以模26或256的整数矩阵组成。整数模26或256没有什么神奇的。你可以使用任何环的元素来表示消息的字符。如果字符比环元素多，你可以使用环元素的成对或三元组，就像将1到5的整数对用于表示25个字母的Polybius方阵（9.1节）一样。 '
 - en: Suppose that you used a matrix over ***R13***, the ring whose elements have
     the form *a*+*b*√13. If you view a plaintext block as a vector of 32 hex digits
     instead of 16 bytes, and you write out the expression for every digit of the matrix
@@ -1753,6 +1816,8 @@
   id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设你使用的是***R13***上的矩阵，该环的元素形式为*a*+*b*√13。如果你将明文块视为包含32个十六进制数字而不是16字节的向量，并且为矩阵乘积的每个数字写出表达式，你会发现密文中的每个十六进制数字都是明文数字的线性组合。因此，在***R13***环上使用16×16的矩阵等效于在十六进制数字上使用32×32的矩阵，即模16的整数。因此，这样的密码仍然容易受到已知明文攻击。攻击需要至少256字节的明文。可能16×17
+    = 272字节就足够了。
 - en: You, the sender, can easily defeat such an attack by using a keyed simple substitution
     before and after the matrix multiplication. Or, you could construct your own ring,
     a ring unknown to anyone except your legitimate correspondents. As long as you
@@ -1760,11 +1825,13 @@
   id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: 你，发送者，可以轻松地通过在矩阵乘法之前和之后使用钥匙化的简单替代来击败这样的攻击。或者，你可以构建自己的环，一个除了你的合法通信者以外其他人都不知道的环。只要你能保密你的环，就没有人能对你的矩阵密码发起任何攻击。
 - en: 15.13 Constructing a ring
   id: totrans-230
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.13 构建环
 - en: A ring of N elements, called a ring of *order* N, is represented by two N×N
     tables, its addition table and its multiplication table. Constructing a ring can
     be done in stages. Let’s construct a ring of 8 elements as a demonstration. Begin
@@ -1775,10 +1842,12 @@
   id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个包含N个元素的环，称为*阶数*为N的环，由两个N×N的表表示，即加法表和乘法表。构建环可以分阶段进行。让我们以构建一个包含8个元素的环为例进行演示。首先构建加法表。你从一开始就知道这个环必须有两个元素，0是加法恒元，1是乘法恒元。对于所有a，和0+a和a+0都是已知的。这给了我们加法表的顶行和左列。
 - en: '![15-unnumb-27](../Images/15-unnumb-27.png)'
   id: totrans-232
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-27](../Images/15-unnumb-27.png)'
 - en: Next, start on the second row. The strategy is to take the first sum whose value
     is not yet assigned, assign that sum a value, and then make all possible deductions
     about other sums by using the associative rule. Suppose you wanted 1+1 = 2, 2+1
@@ -1788,10 +1857,14 @@
   id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，从第二行开始。策略是取第一个尚未分配值的和，为该和分配一个值，然后利用结合规则推断其他和的所有可能的值。假设你想要 1+1 = 2，2+1 =
+    3，3+1 = 4 和 4+1 = 0。利用结合规则，现在可以填写表的左上部分。例如，你可以确定 2+2 是多少，因为 2+2 = (1+1)+2 = 1+(1+2)
+    = 1+3 = 4。
 - en: '![15-unnumb-28](../Images/15-unnumb-28.png)'
   id: totrans-234
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-28](../Images/15-unnumb-28.png)'
 - en: Since 4+1 = 0, it follows that the additive inverse of 1 is 4 and the additive
     inverse of 4 is 1\. Likewise, 2 is the additive inverse of 3, and 3 is the additive
     inverse of 2\. So, what value should we assign to 5+1? It can’t be 0, because
@@ -1805,6 +1878,11 @@
   id: totrans-235
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于 4+1 = 0，因此 1 的加法逆元是 4，4 的加法逆元是 1。同样，2 是 3 的加法逆元，3 是 2 的加法逆元。那么我们应该给 5+1 赋什么值呢？它不能是
+    0，因为 4 和 5 不能同时是 1 的加法逆元。它也不能是 1，因为那样 5 就会是 0。它也不能是 2，因为 5+1 = 1+1 意味着 5 = 1。同样，5+1
+    也不能是 3 或 4。它也不能是 5，因为 5+5 = 5 意味着 5 = 0。那就只剩下 5+1 = 6 或 5+1 = 7。它们是等价的，所以假设 5+1
+    = 6。这强制使得 6+1 = 7 和 7+1 = 5。这意味着 5+1+1+1 = 5。这使得 1+1+1 = 0。由于我们已经知道 1+1+1 = 3，这意味着
+    3 = 0。不可能。这是一个死胡同。设置 4+1 = 0 不起作用。
 - en: What went wrong? The cycle 1+1+1+1+1 = 0 has 5 terms. The length of any such
     cycle in a ring of order N must evenly divide N. Since 5 does not evenly divide
     8 it was impossible to complete the addition table. That leaves you with 3 choices,
@@ -1815,34 +1893,43 @@
   id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: 出了什么问题？循环 1+1+1+1+1 = 0 有 5 个项。在一个阶数为 N 的环中，任何这样的循环的长度必须能够整除 N。由于 5 不能整除 8，因此无法完成加法表。这就留下了
+    3 个选择，将循环长度设为 2、4 或 8。如果选择循环长度为 8，则该环是模 8 的整数环。如果选择循环长度为 2，则加法与异或相同。由于目标是开发一个新环，所以只能选择循环长度为
+    4。加法表必须是
 - en: '![15-unnumb-29](../Images/15-unnumb-29.png)'
   id: totrans-237
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-29](../Images/15-unnumb-29.png)'
 - en: The multiplication table can now be worked out by using the distributive rule.
     For example, 2×2 = 2×(1+1) = 2+2 = 0.
   id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过使用分配规则，现在可以推算出乘法表。例如，2×2 = 2×(1+1) = 2+2 = 0。
 - en: '![15-unnumb-30](../Images/15-unnumb-30.png)'
   id: totrans-239
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-30](../Images/15-unnumb-30.png)'
 - en: Let’s call this ring ***R8***. It is a commutative ring, since ab = ba for all
     ring elements a and b. Notice that 1 and 3 are the only elements in ring ***R8***
     that have multiplicative inverses, and that each is its own inverse.
   id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们称这个环为***R8***。它是一个可交换环，因为对于所有环元素 a 和 b，都有 ab = ba。注意环***R8***中只有 1 和 3 有乘法逆元，而且每个元素都是其自身的逆元。
 - en: There are two rings that deserve special mention, Gaussian integers and quaternions.
   id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: 有两个环值得特别提及，即高斯整数和四元数。
 - en: 15.13.1 Gaussian integers
   id: totrans-242
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.13.1 高斯整数
 - en: '*Gaussian integers* are numbers of the form a+bi, where a and b are integers,
     and i is the imaginary number √-1\. In other words, Gaussian integers are complex
     numbers where the real and imaginary parts are both integers. For cryptographic
@@ -1853,23 +1940,30 @@
   id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: '*高斯整数*是形式为 a+bi 的数字，其中 a 和 b 是整数，i 是虚数单位√-1。换句话说，高斯整数是实部和虚部都是整数的复数。对于密码学用途，a
+    和 b 可以是模 16 的整数。因此，高斯数 a+bi 可以用来表示十六进制数 ab。例如，字母 X，在十六进制 ASCII 码中是 58，将被表示为高斯整数
+    5+8i。'
 - en: 'Gaussian integers are added and multiplied like this:'
   id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: 高斯整数的加法和乘法如下：
 - en: '![15-unnumb-31](../Images/15-unnumb-31.png)'
   id: totrans-245
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-31](../Images/15-unnumb-31.png)'
 - en: where the addition and multiplication are done modulo 16 for cryptographic use.
   id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中加法和乘法是用于密码学的模 16 运算。
 - en: 15.13.2 Quaternions
   id: totrans-247
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.13.2 四元数
 - en: 'Quaternions were invented by Irish mathematician William Rowan Hamilton of
     Trinity College Dublin, the Royal Astronomer of Ireland, in 1843 to describe the
     motions of a rotating body. They are numbers of the form a+bi+cj+dk, where a,
@@ -1879,15 +1973,20 @@
   id: totrans-248
   prefs: []
   type: TYPE_NORMAL
+  zh: 四元数是爱尔兰数学家威廉·罗恩·哈密尔顿（William Rowan Hamilton）于 1843 年在都柏林三一学院（Trinity College
+    Dublin）发明的，他是爱尔兰皇家天文学家，用于描述旋转体的运动。它们是形式为 a+bi+cj+dk 的数，其中 a、b、c 和 d 是普通数，i、j 和
+    k 是抽象单位。四元数的定义关系是 i² = j² = k² = ijk = -1。从这个关系中，您可以推导出这些乘法规则：
 - en: '![15-unnumb-32](../Images/15-unnumb-32.png)'
   id: totrans-249
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-32](../Images/15-unnumb-32.png)'
 - en: Quaternion multiplication is not commutative. Quaternions are often used as
     *the* example of a non-commutative ring.
   id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: 四元数乘法不是交换的。四元数经常被用作非交换环的典型例子。
 - en: Quaternions are widely used in physics for representing such things as points
     on a spherical surface, and the rotations of solid bodies. They can be adapted
     for cryptographic use by letting a, b, c and d be integers modulo 16 or modulo
@@ -1895,6 +1994,8 @@
   id: totrans-251
   prefs: []
   type: TYPE_NORMAL
+  zh: 四元数在物理学中被广泛用于表示球面上的点和固体的旋转等事物。通过让 a、b、c 和 d 成为模 16 或模 256 的整数，可以将其适应于加密用途。这将使每个四元数代表消息的
+    2 或 4 个字符。
 - en: Another way to use quaternions is to let the coefficients a, b, c and d be integers
     modulo 2^(32). You can use a secret well-mixed set of 5-bit, 6-bit or 8-bit character
     codes so that each coefficient can represent 6, 5 or 4 characters, respectively.
@@ -1910,6 +2011,10 @@
   id: totrans-252
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用四元数的另一种方法是让系数 a、b、c 和 d 成为模 2^(32) 的整数。您可以使用一组秘密的混合良好的 5 位、6 位或 8 位字符代码，以便每个系数可以分别表示
+    6、5 或 4 个字符。因此，整个四元数将代表消息的 24、20 或 16 个字符。您可以通过左乘或右乘一个秘密的四元数乘法器来加密消息四元数 M。由于四元数乘法不是交换的，左乘和右乘它更强大，比如
+    AMB。与普通乘法一样，每个分量中的低阶字节最弱，因此在第一次乘法后最好将整个 16 字节块循环左移 16 位位置。可以使用相同的字符代码集将乘积转换回标准
+    ASCII 字符，但最好使用不同的代码集，最好是不同大小的代码。
 - en: Let’s call this method *Qmult*. Qmult is rated Ten. To decipher this message,
     Riva must left-multiply by the inverse quaternion A', and right-multiply by the
     inverse quaternion B'. The inverse of the quaternion a+bi+cj+dk is given by (a-bi-cj-dk)/(a²+b²+c²+d²).
@@ -1919,11 +2024,15 @@
   id: totrans-253
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们称这种方法为*Qmult*。 Qmult 被评为十分。为了解密这条消息，Riva 必须左乘逆四元数 A'，右乘逆四元数 B'。 四元数 a+bi+cj+dk
+    的逆由 (a-bi-cj-dk)/(a²+b²+c²+d²) 给出。由于我们是在模 2^(32) 下工作，当 a²+b²+c²+d² 为奇数时，即当其中一个或三个系数为奇数时，a²+b²+c²+d²
+    将具有乘法逆元。
 - en: 15.14 Finding an invertible matrix
   id: totrans-254
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.14 寻找可逆矩阵
 - en: To use a matrix for a Hill-style cipher, that matrix must be invertible. Invertible
     matrices are often difficult to find. If the number of invertible elements in
     the ring is i, and the total number of elements is r, then the probability that
@@ -1938,6 +2047,8 @@
   id: totrans-255
   prefs: []
   type: TYPE_NORMAL
+  zh: 要将矩阵用于希尔式密码，该矩阵必须是可逆的。可逆矩阵通常难以找到。如果环中的可逆元素数为i，总元素数为r，则随机n×n矩阵是可逆的概率为(i/r)*n*。对于***R8***环，i/r为2/8
+    = 1/4。(这与有理数或实数上的矩阵形成鲜明对比，在这些域上除了0之外的每个元素都有乘法逆元，因此几乎每个矩阵都是可逆的。)如果矩阵很小，通常可以通过随机选择元素，然后尝试最后一个元素或最坏的情况下最后两个元素的所有可能值来找到一个可逆矩阵。通过使用最后1或2个元素，您可以将矩阵减少到底部两行，而不必为每次试验都进行完整的减少。
 - en: I have chosen not to cover determinants in this book, since I don’t know of
     any use for them in cryptography, however, for readers who are familiar with determinants,
     a matrix is invertible if the value of its determinant is an invertible element
@@ -1946,6 +2057,7 @@
   id: totrans-256
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本书中我选择不讨论行列式，因为我不知道在密码学中有任何对它们的用途，然而，对于熟悉行列式的读者，如果一个矩阵的行列式值是环中的可逆元素，则矩阵是可逆的。特别地，一个整数矩阵是可逆的，仅当其行列式是+1或-1时。
 - en: 'When the desired matrix is larger, it may not be feasible to *find* an invertible
     matrix. Instead, you need to *construct* an invertible matrix. You begin by constructing
     a set of matrices of the desired size in one of two specific forms: triangular
@@ -1953,10 +2065,12 @@
   id: totrans-257
   prefs: []
   type: TYPE_NORMAL
+  zh: 当所需矩阵较大时，可能不可行*找到*一个可逆矩阵。相反，您需要*构造*一个可逆矩阵。您首先通过以两种特定形式之一构造一组所需尺寸的矩阵来开始：三角形和块对角线。以下是四种类型的三角形矩阵的4×4示例。
 - en: '![15-unnumb-32-equation-15-32](../Images/15-unnumb-32-equation-15-32.png)'
   id: totrans-258
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-32-equation-15-32](../Images/15-unnumb-32-equation-15-32.png)'
 - en: An upper triangular matrix has nonzero entries only on or above the main diagonal
     (upper left to lower right). All other entries are zero. A lower triangular matrix
     has nonzero entries only on or below the main diagonal. All other entries are
@@ -1967,6 +2081,7 @@
   id: totrans-259
   prefs: []
   type: TYPE_NORMAL
+  zh: 上三角矩阵的非零元素只在主对角线上或其上方（从左上到右下）。
 - en: A triangular matrix is invertible if all of the entries on the diagonal are
     invertible. An anti-triangular matrix is invertible if all of the entries on the
     anti-diagonal are invertible. The inverses of these matrices may be found easily
@@ -1976,6 +2091,7 @@
   id: totrans-260
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果对角线上的所有元素是可逆的，则三角矩阵是可逆的。如果反对角线上的所有元素是可逆的，则反三角矩阵是可逆的。这些矩阵的逆可以使用第15.1.1节的技术轻松找到。对于上三角和下反三角矩阵，应从右向左执行第15.1.1节的约化过程。
 - en: A general invertible matrix can be constructed from these triangular forms by
     multiplying them. This must be done prudently. The product of two upper triangular
     matrices will still be upper triangular, and the product of two lower triangular
@@ -1987,6 +2103,7 @@
   id: totrans-261
   prefs: []
   type: TYPE_NORMAL
+  zh: 通用的可逆矩阵可以通过这些三角形形式相乘来构造。这必须谨慎进行。两个上三角矩阵的乘积仍然是上三角的，两个下三角矩阵的乘积仍然是下三角的。反三角矩阵没有这个性质。一个明智的做法是构造四种三角形类型的矩阵的一个矩阵，然后形成它们的乘积。如果三角矩阵是A、B、C和D，它们的逆矩阵是A'、B'、C'和D'，那么乘积ABCD的逆矩阵是D'C'B'A'。
 - en: In addition to triangular matrices, block diagonal matrices can be used to construct
     invertible matrices. Here is a 5×5 example of a block diagonal matrix. This matrix
     may be called type 2,3 because it consists of a 2×2 matrix and a 3×3 matrix arranged
@@ -1994,15 +2111,18 @@
   id: totrans-262
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了三角矩阵外，分块对角矩阵还可以用来构造可逆矩阵。下面是一个5×5的分块对角矩阵示例。这个矩阵可以称为2,3型，因为它由一个2×2矩阵和一个3×3矩阵沿着5×5矩阵的对角线排列而成。
 - en: '![15-unnumb-32-equation-15-33](../Images/15-unnumb-32-equation-15-33.png)'
   id: totrans-263
   prefs: []
   type: TYPE_IMG
+  zh: '![15-unnumb-32-equation-15-33](../Images/15-unnumb-32-equation-15-33.png)'
 - en: When two block diagonal matrices of the same type are multiplied, the result
     is a block diagonal matrix of the same type.
   id: totrans-264
   prefs: []
   type: TYPE_NORMAL
+  zh: 当两个相同类型的分块对角矩阵相乘时，结果是相同类型的分块对角矩阵。
 - en: The advantage of using a block diagonal matrix is that you can find the inverses
     of each of the blocks separately. If you string these inverses along the diagonal,
     the result is the inverse of the entire matrix. It may not be feasible to find
@@ -2013,9 +2133,11 @@
   id: totrans-265
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用分块对角矩阵的优点是您可以分别找到每个分块的逆矩阵。如果您将这些逆矩阵串联在对角线上，结果就是整个矩阵的逆矩阵。找到一个可逆的16×16矩阵可能不可行，但是找到四个4×4可逆矩阵并不是太具挑战性。您可以通过乘以其他类型的分块对角矩阵或一些可逆的三角矩阵来将您的可逆分块对角矩阵扩展到完整矩阵。
 - en: Go all out. Construct your invertible block diagonal matrix using the largest
     blocks that you can, and use 4 triangular matrices, one of each kind. Your final
     invertible matrix is the product of all five of these matrices.******
   id: totrans-266
   prefs: []
   type: TYPE_NORMAL
+  zh: 全力以赴。使用尽可能大的分块构造您的可逆分块对角矩阵，并使用4个三角矩阵，每种一个。您最终的可逆矩阵是这五个矩阵的乘积。******

@@ -700,10 +700,13 @@
   id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以通过两种方式避免在第二次替换时添加额外字符，即从比特到字母的替换。 (1) 你可以每次取4个比特，并且只使用字母表的16个字母，或者使用16个十六进制数字，或者
+    (2) 你可以使用一个具有六个4比特代码组和二十个5比特代码组的可变长度编码。同样，这些代码组必须具有前缀属性。以下是一个示例：
 - en: '![6-unnumb-8](../Images/6-unnumb-8.png)'
   id: totrans-85
   prefs: []
   type: TYPE_IMG
+  zh: '![6-unnumb-8](../Images/6-unnumb-8.png)'
 - en: Notice that I used 4-bit substitutes for the 6 highest-frequency letters. This
     will make those 6 letters have about twice the frequency in the ciphertext as
     the other 20 letters. This could make an unwary opponent believe this is an entirely
@@ -711,12 +714,14 @@
   id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，我为6个最高频率的字母使用了4比特的替代物。这将使这6个字母在密文中的频率大约是其他20个字母的两倍。这可能会使一个不警惕的对手认为这是一种完全不同类型的密码。
 - en: Adding null bits is applicable to many types of encipherment. Since a null bit
     is indistinguishable from any other bit, adding null bits is stronger than adding
     null characters. It can increase the rating of a cipher by as much as Three.
   id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加空位适用于许多类型的加密。由于空位和其他任何比特都无法区分，因此添加空位比添加空字符更强大。它可以使密码的评级提高高达三分。
 - en: Let’s look at a specific example. Call it *Cipher Null5*. As earlier, there
     are 3 steps, convert from letters to bits, add null bits, and convert back from
     bits to letters. Letters are converted to bits using a homophonic substitution
@@ -727,15 +732,18 @@
   id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看一个具体的例子。称之为*Cipher Null5*。和之前一样，有3个步骤，将字母转换为比特，添加空位，然后将比特转换回字母。字母被转换为比特，使用从字母到5比特组的同音替换。为每个字母E、T、A、O、I、N提供了两个替代物。空位通过使用选择密钥插入，如第6.6节所示。比特通过类似于上表的4比特/5比特替换转换回字母。
 - en: Cipher Null5 is rated Six.
   id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: Cipher Null5的评级为六。
 - en: 6.8 Merging multiple messages
   id: totrans-90
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.8 合并多个消息
 - en: The binary form of key can also be used as a merge key to merge two messages.
     That is, the bits of two messages are interleaved to form a single message. A
     merge key in base 3 or base 4 could be used to merge 3 or 4 messages. A base-4
@@ -743,6 +751,7 @@
   id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 二进制形式的密钥也可以作为合并密钥来合并两个消息。也就是说，两个消息的比特会交错以形成单个消息。基数为3或4的合并密钥可以用来合并3或4个消息。基数为4的合并密钥同样可以合并3个消息加空位。
 - en: Two advantages of merging multiple messages are that you don’t add as much extra
     length as using null bits, and you can use simpler, faster encryption. If you
     interleave 4 messages with a long merge key, and you use a different simple substitution
@@ -751,6 +760,7 @@
   id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 合并多个消息的两个优点是，你不会像使用空位一样增加太多额外长度，而且可以使用更简单、更快速的加密。如果你使用一个长的合并密钥交替四个消息，并且对每个消息使用不同的简单替换，那么单单这一步就能获得五分的评价。如果你对合并的消息再进行一次简单替换，评价就会提升到八分。
 - en: The keys for merging messages can take two forms, a bit count form or a selection
     form. In the bit count form, the messages are taken in rotation. Each digit of
     the key specifies how many bits are taken from each successive message. In the
@@ -762,10 +772,12 @@
   id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 合并消息的密钥可以采用两种形式，一种是比特计数形式，一种是选择形式。在比特计数形式中，消息会轮流被取出。密钥的每一位指定了从每个连续消息中取出多少比特。在选择形式中，消息可以按任意顺序被取出，但每次只取出一个比特。密钥的每一位指定了从哪个消息中取出下一个比特。以下示例展示了如何通过比特计数方法使用密钥123123合并消息010101111010001101011和11101010011011100110，以及如何通过选择方法使用密钥12122112合并消息。
 - en: '![6-unnumb-9](../Images/6-unnumb-9.png)'
   id: totrans-94
   prefs: []
   type: TYPE_IMG
+  zh: '![6-unnumb-9](../Images/6-unnumb-9.png)'
 - en: Merging multiple messages may be messy when the messages have different lengths.
     You need to have an end-of-message marker on all but the longest message. Another
     way of dealing with non-matching lengths is to balance the merge. Begin by writing
@@ -780,6 +792,9 @@
   id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 合并多条消息时，如果这些消息长度不同可能会显得混乱。除了最长的消息外，其他消息都需要有一个消息结束标记。另一种处理长度不匹配的方法是平衡合并。首先，将所有消息依次写在一起，用某个预留的字符或字符序列分隔开。然后简单地将这个长字符串分成相等的部分。例如，如果消息长度分别为
+    50、60、70 和 80 个字符，总共是 260 个字符，再加上 3 个分隔符共 263 个字符。你可以将它分成 4 条长度分别为 66、66、66 和
+    65 个字符的子串。如果使用的是 8 位字节，你可以将 263×8 = 2104 位分成 4 条每条 526 位的子串。不需要在比特字符串上按照偶数字节边界进行分割，但是你应该选择从每条子串中取相等位数的密钥。
 - en: Incidentally, the number of messages and the number of strands are independent.
     There can be one message or many, and any number of strands from 2 up. For example,
     one message could be divided into 3 strands, and 3 messages could be divided into
@@ -787,6 +802,8 @@
   id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 顺便说一下，消息数和子串数是独立的。可以只有一条消息，也可以有多条消息，子串数从 2 开始。例如，一条消息可以分成 3 个子串，也可以有 3 条消息分成
+    2 个子串。
 - en: Balancing is half the solution. The other half comes when you get near the end
     of the merging process. Eventually you will have merged all the bits from one
     of the strings, while the other strings have bits left. If the merge key specifies
@@ -794,6 +811,7 @@
   id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 平衡是解决方案的一半。另一半在合并过程接近尾声时出现。最终，你将会合并来自其中一条字符串的所有比特，而其他字符串还剩下一些比特。如果合并密钥指定了另一条没有剩余比特的字符串的另一个比特，则跳到下一个比特选择。
 - en: Let’s pull all of this together into one cipher, which can be called *Merge8*.
     The Merge8 cipher operates on one or more messages concatenated end to end. In
     the base-26 version, the 26 letters are converted to binary using a 4-bit/5-bit
@@ -808,11 +826,16 @@
   id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们把所有内容汇总成一个密码，称为 *Merge8*。Merge8 密码作用于一个或多个连接在一起的消息。在基于 26 进制的版本中，26 个字母使用类似于第
+    6.7 节中的 4 比特/5 比特编码转换为二进制。消息分隔符可以是一串字母，如 XXX 或 END。在基于 256 进制的版本中，对 ASCII 码应用混合良好的简单置换。生成的比特字符串被分成
+    8 个长度相等的比特串。使用 32 个八进制数字的密钥来合并这 8 条比特串。每个 8 进制值在密钥中出现 4 次，因此有 32!/(4!)⁸ = 2.39×10^(24)
+    种可能的合并密钥。对生成的字符串执行第二个简单的置换。基于 26 进制和基于 256 进制的版本都使用 8 比特置换。Merge8 评级为六。
 - en: 6.9 Embedding a message in a file
   id: totrans-99
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.9 在文件中嵌入消息
 - en: When a message is hidden in a picture file, there are at least 7 bits of the
     image for every bit of the message. That’s mighty inefficient. You can hide a
     lot more message bits in a file if you don’t try to make it look like something
@@ -823,12 +846,15 @@
   id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 当将消息隐藏在图片文件中时，每个消息比特至少有 7 个图像比特。这相当低效。如果不试图让它看起来像其他东西，你可以在文件中隐藏更多的消息比特。它是密文，就让它看起来像密文。有数十种方法可以在文件中隐藏明文消息。我将简单列举一些选项。与第
+    6.6 节一样，对于文件的每个字节，一定数量的明文比特被隐藏在其中的 8 比特中。
 - en: A fixed number of plaintext bits or a variable number of plaintext bits are
     taken each time.
   id: totrans-101
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 每次取固定数量的明文比特或可变数量的明文比特。
 - en: The bits are placed in fixed bit locations or variable bit locations within
     each byte.
   id: totrans-102

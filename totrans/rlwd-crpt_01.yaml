@@ -1,13 +1,17 @@
 - en: 'Part 1\. Primitives: The ingredients of cryptography'
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 第一部分. 原语：密码学的基本组成部分
 - en: Welcome to the real-world of cryptography! The book you’re holding in your hands
     (if you chose to acquire a printed version) is split into two equal parts of eight
     chapters. By going through all of it, you will learn (almost) all there is to
     know about cryptography in the real world—the one you’re standing in.
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 欢迎来到密码学的现实世界！你手中的这本书（如果你选择获取印刷版本）分为两个相等的部分，共有八章。通过阅读整本书，你将了解几乎所有关于现实世界密码学的知识——就是你所处的这个世界。
 - en: Note that the first part of the book was written to be read in order, although
     each chapter should tell you what the prerequisites are, so do not view this as
     a mandatory constraint. The first eight chapters take you through the basics—the
@@ -15,8 +19,12 @@
     teaches you what it does, how it works, and how it can be used with other elements.
     This first part is all about giving you good abstractions and insights before
     we start making use of it all in the second part of the book.
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，本书的第一部分是按顺序阅读的，尽管每一章都会告诉你前提条件是什么，所以不要把这看作是一种强制性的限制。前八章带你了解基础知识——密码学的基本构建块。每一章介绍一个新的原语，并教你它的作用、工作原理以及它如何与其他元素结合使用。本书的第一部分旨在在我们开始利用全部内容之前，为你提供良好的抽象和见解。
 - en: Good luck!
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 祝你好运！

@@ -1,19 +1,24 @@
 - en: 1 Introduction
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
 - en: What cryptography is about
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Theoretical versus real-world cryptography
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: What you’ll learn throughout this adventure
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -23,22 +28,27 @@
     the spells that we need to defend ourselves against the malice. Many have attempted
     to learn this craft, but few have survived the challenges that stand in the way
     of mastery. Exciting adventures await, indeed!
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
 - en: In this book, we’ll uncover how cryptographic algorithms can secure our letters,
     identify our allies, and protect treasures from our enemies. Sailing through the
     cryptographic sea will not be the smoothest journey as cryptography is the foundation
     of all security and privacy in our world—the slightest mistake could be deadly.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
 - en: Note If you find yourself lost, remember to keep moving forward. It will all
     eventually make sense.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_001_UN01.jpg)'
+  id: totrans-8
   prefs: []
   type: TYPE_IMG
 - en: 1.1 Cryptography is about securing protocols
+  id: totrans-9
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -48,23 +58,28 @@
     something. For example, imagine the following premise: you want to leave your
     magic sword unattended for a few hours so you can take a nap. One protocol to
     do this could be the following:'
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
 - en: Deposit weapon on the ground
+  id: totrans-11
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Take nap under a tree
+  id: totrans-12
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Recover weapon from the ground
+  id: totrans-13
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Of course, it’s not a great protocol as anybody can steal your sword while you’re
     napping . . . And so, cryptography is about taking into account the adversaries
     who are looking to take advantage of you.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
 - en: In ancient times, when rulers and generals were busy betraying each other and
@@ -73,6 +88,7 @@
     born. It took centuries and hard work before cryptography became the serious discipline
     it is today. Now, it’s used all around us to provide the most basic services in
     the face of our chaotic and adverse world.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
 - en: The story of this book is about the practice of cryptography. It takes you on
@@ -84,6 +100,7 @@
     I want to tell you about what I’ve witnessed myself, reviewing cryptographic applications
     for large companies as a consultant, or the cryptography I’ve made use of myself
     as an engineer in the field.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
 - en: There will be (almost) no scary math formulas. The purpose of this book is to
@@ -93,17 +110,23 @@
     Chapter 1, this chapter, initiates a tour of the world of cryptography. We will
     discover the different types of cryptography, which ones matter to us, and how
     the world agreed on using these.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 几乎不会有可怕的数学公式。本书的目的是揭示密码学的神秘，调查当今被认为有用的内容，并提供关于你周围事物是如何构建的直觉。本书面向对此感兴趣的人，有冒险精神的工程师，冒险的开发者和好奇的研究人员。第1章，本章，开始了对密码学世界的探索之旅。我们将发现不同类型的密码学，哪些对我们重要，以及世界是如何同意使用这些的。
 - en: '1.2 Symmetric cryptography: What is symmetric encryption?'
+  id: totrans-18
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 1.2 对称加密：什么是对称加密？
 - en: One of the fundamental concepts of cryptography is *symmetric encryption*. It
     is used in a majority of cryptographic algorithms in this book, and it is, thus,
     extremely important. I introduce this new concept here via our first protocol.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 密码学的一个基本概念是*对称加密*。它在本书中的大多数密码算法中使用，因此非常重要。我通过我们的第一个协议在这里介绍这个新概念。
 - en: Let’s imagine that Queen Alice needs to send a letter to Lord Bob, who lives
     a few castles away. She asks her loyal messenger to ride his trusty steed and
     battle his way through the dangerous lands ahead in order to deliver the precious
@@ -111,62 +134,85 @@
     served her for many years, she wishes the message in transit to remain secret
     from all passive observers, including the messenger! You see, the letter most
     likely contains some controversial gossip about the kingdoms on the way.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们想象一下，女王爱丽丝需要给住在几个城堡之外的鲍勃勋爵发送一封信。她请求她忠诚的信使骑着他可靠的坐骑，冒着前方危险的土地，为了将珍贵的消息送到鲍勃勋爵手中。然而，她心存疑虑；即使她的忠诚信使为她服务多年，她希望在传输过程中的消息对所有被动观察者保密，包括信使！你看，这封信很可能包含了一些关于途中王国的有争议的八卦。
 - en: '![](../Images/01_001_UN02.jpg)'
+  id: totrans-21
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/01_001_UN02.jpg)'
 - en: What Queen Alice needs is a protocol that mimics handing the message to Lord
     Bob herself with no middlemen. This is quite an impossible problem to solve in
     practice unless we introduce cryptography (or teleportation) into the equation.
     This is what we ended up doing ages ago by inventing a new type of cryptographic
     algorithm—called a *symmetric encryption algorithm* (also known as a *cipher*).
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 女王爱丽丝需要的是一个模拟将消息直接交给鲍勃勋爵而没有中间人的协议。这在实践中是一个几乎不可能解决的问题，除非我们引入密码学（或者传送）到方程中。这就是我们很久以前通过发明一种新类型的加密算法——称为*对称加密算法*（也称为*密码*）来解决的问题。
 - en: Note By the way, a type of cryptographic algorithm is often referred to as a
     *primitive*. You can think of a primitive as the smallest, useful construction
     you can have in cryptography, and it is often used with other primitives in order
     to build a protocol. It is mostly a term and has no particularly important meaning,
     although it appears often enough in the literature that it is good to know about
     it.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 顺便说一下，一种加密算法通常被称为*原语*。你可以把原语看作是密码学中最小的、有用的构造，通常与其他原语一起使用以构建协议。这主要是一个术语，没有特别重要的意义，尽管它在文献中经常出现，但了解它是很好的。
 - en: 'Let’s see how we can use an encryption primitive to hide Queen Alice’s message
     from the messenger. Imagine for now that the primitive is a black box (we can’t
     see what’s inside or what it’s doing internally) that provides two functions:'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看如何使用加密原语来隐藏女王爱丽丝的消息免受信使的干扰。现在想象一下，这个原语是一个黑匣子（我们看不到里面或者它内部在做什么），提供两个函数：
 - en: ENCRYPT
+  id: totrans-25
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: ENCRYPT
 - en: DECRYPT
+  id: totrans-26
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: DECRYPT
 - en: The first function, ENCRYPT, works by taking a *secret key* (usually a large
     number) and a *message*. It then outputs a series of random-looking numbers, some
     noisy data if you will. We will call that output the encrypted message. I illustrate
     this in figure 1.1.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一个函数，ENCRYPT，通过取一个*秘钥*（通常是一个大数）和一个*消息*来工作。然后输出一系列看起来像随机数的数字，一些嘈杂的数据。我们将称这个输出为加密消息。我在图1.1中说明了这一点。
 - en: '![](../Images/01_01.jpg)'
+  id: totrans-28
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/01_01.jpg)'
 - en: Figure 1.1 The ENCRYPT function takes a message and a secret key and outputs
     the encrypted message—a long series of numbers that look like random noise.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 图1.1 ENCRYPT函数接受一个消息和一个秘钥，并输出加密消息——一长串看起来像随机噪音的数字。
 - en: The second function, DECRYPT, is the inverse of the first one. It takes the
     same secret key and the random output of the first function (the encrypted message)
     and then it finds the original message. I illustrate this in figure 1.2.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_02.jpg)'
+  id: totrans-31
   prefs: []
   type: TYPE_IMG
 - en: Figure 1.2 The DECRYPT function takes an encrypted message and a secret key
     and returns the original message.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
 - en: To make use of this new primitive, Queen Alice and Lord Bob have to first meet
@@ -176,9 +222,11 @@
     it to Lord Bob. Lord Bob then uses the DECRYPT function on the encrypted message
     with the same secret key to recover the original message. Figure 1.3 shows this
     process.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_03.jpg)'
+  id: totrans-34
   prefs: []
   type: TYPE_IMG
 - en: Figure 1.3 (1) Alice uses the ENCRYPT function with a secret key to transform
@@ -186,6 +234,7 @@
     who will not learn anything about the underlying message. (3) Once Bob receives
     the encrypted message, he can recover the original content by using the DECRYPT
     function with the same secret key Alice used.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
 - en: During this exchange, all the messenger had was something that looked random
@@ -194,20 +243,24 @@
     help of cryptography. The new protocol makes it possible for Queen Alice to deliver
     a confidential letter to Lord Bob without anyone (except Lord Bob) learning the
     content of it.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
 - en: The process of using a secret key to render things to noise, making them indistinguishable
     from random, is a common way of securing a protocol in cryptography. You will
     see more of this as you learn more cryptographic algorithms in the next chapters.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
 - en: By the way, symmetric encryption is part of a larger category of cryptography
     algorithms called *symmetric cryptography* or *secret key cryptography*. This
     is due to the same key being used by the different functions exposed by the cryptographic
     primitive. As you will see later, sometimes there’s more than one key.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
 - en: '1.3 Kerckhoff’s principle: Only the key is kept secret'
+  id: totrans-39
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -219,6 +272,7 @@
     the history of cryptography, as well as the lessons that the community has learned
     from them. As we take a look at the past, we will grasp at what turns a cryptographic
     algorithm into a trusted-to-be-secure one.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
 - en: 'Hundreds of years have passed and many queens and lords have been buried. Since
@@ -231,6 +285,7 @@
     Our enemies are now able to observe many more messages as each request you make
     to a website might pass through the wrong wire and become altered or copied in
     a matter of nanoseconds without anyone noticing.'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
 - en: Before us, we can see that recent history contains many instances of encryption
@@ -238,6 +293,7 @@
     researchers, and failing to protect their messages or accomplish their claims.
     Many lessons were learned, and we slowly came to understand how to produce good
     cryptography.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
 - en: 'Note A cryptographic algorithm can be considered *broken* in many ways. For
@@ -246,6 +302,7 @@
     the help of the key, some information about the message can be revealed just by
     looking at the encrypted message, and so on. Anything that would somehow weaken
     the assumptions we made about the algorithm could be considered a break.'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
 - en: 'A strong notion came out of the long process of trial and error that cryptography
@@ -255,20 +312,24 @@
     This is why *cryptographers* (the people who build) usually use the help of *cryptanalysts*
     (the people who break) in order to analyze the security of a construction. (Although
     cryptographers are often cryptanalysts themselves and vice-versa.)'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_03_UN03.jpg)'
+  id: totrans-45
   prefs: []
   type: TYPE_IMG
 - en: Let’s take the Advanced Encryption Standard (AES) encryption algorithm as an
     example. AES was the product of an international competition organized by the
     National Institute of Standards and Technology (NIST).
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
 - en: Note NIST is a United States agency whose role is to define standards and develop
     guidelines for use in government-related functions as well as other public or
     private organizations. Like AES, it has standardized many widely used cryptographic
     primitives.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
 - en: The AES competition lasted several years, during which many volunteering cryptanalysts
@@ -278,12 +339,14 @@
     Standard itself. Nowadays, most people trust that AES to be a solid encryption
     algorithm, and it is widely used to encrypt almost anything. For example, you
     use it every day when you browse the web.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
 - en: 'The idea to build cryptographic standards in the open is related to a concept
     often referred to as *Kerckhoffs’ principle*, which can be understood as something
     like this: it would be foolish to rely on our enemies not to discover what algorithms
     we use because they most likely will. Instead, let’s be open about them.'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
 - en: 'If the enemies of Queen Alice and Lord Bob knew exactly how they were encrypting
@@ -296,17 +359,21 @@
     said Jean Robert du Carlet in 1644\. In the next section, I will talk about a
     totally different kind of cryptographic primitive. For now, let’s use figure 1.4
     to organize what we’ve learned so far.'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_04.jpg)'
+  id: totrans-51
   prefs: []
   type: TYPE_IMG
 - en: Figure 1.4 The cryptographic algorithms you have learned so far. AES is an instantiation
     of a symmetric encryption algorithm, which is a cryptographic primitive that is
     part of the broader class of symmetric cryptographic algorithms.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
 - en: '1.4 Asymmetric cryptography: Two keys are better than one'
+  id: totrans-53
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -316,6 +383,7 @@
     less practical in protocols with many participants: do we need our web browser
     to meet with Google, Facebook, Amazon, and the other billions of websites before
     securely connecting to those?'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
 - en: This problem, often referred to as *key distribution*, has been a hard one to
@@ -329,9 +397,11 @@
     in this section. Note that this is only a glance of what you’ll learn in this
     book as I’ll talk about each of these cryptographic primitives in more detail
     in subsequent chapters.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
 - en: 1.4.1 Key exchanges or how to get a shared secret
+  id: totrans-56
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -341,6 +411,7 @@
     main purpose is to establish a common secret between two parties. This common
     secret can then be used for different purposes (for example, as a key to a symmetric
     encryption primitive).
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
 - en: In chapter 5, I will explain how Diffie-Hellman works, but for this introduction,
@@ -352,14 +423,17 @@
     sight, Queen Alice chooses a triangle (▲) and Lord Bob chooses a star (★). The
     objects they chose need to remain secret at all costs! These objects represent
     their *private keys* (see figure 1.5).
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_05.jpg)'
+  id: totrans-59
   prefs: []
   type: TYPE_IMG
 - en: Figure 1.5 The first step of a DH (Diffie-Hellman) key exchange is to have both
     participants generate a private key. In our analogy, Queen Alice chooses a triangle
     as her private key, whereas Lord Bob chooses a star as his private key.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
 - en: Once they chose their private keys, they both individually combine their secret
@@ -367,14 +441,17 @@
     result in unique shapes representing their *public keys*. Queen Alice and Lord
     Bob can now exchange their public keys (hence the name *key exchange*) because
     public keys are considered public information. I illustrate this in figure 1.6.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_06.jpg)'
+  id: totrans-62
   prefs: []
   type: TYPE_IMG
 - en: Figure 1.6 The second step of a DH key exchange where both participants exchange
     their public keys. Participants derive their public keys by combining their private
     keys with a common shape.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
 - en: 'We are now starting to see why this algorithm is called a public key algorithm.
@@ -384,9 +461,11 @@
     the same with Queen Alice’s public key and combines it with his own private key.
     The result should now be the same on each side; in our example, a shape combining
     a star, a square, and a triangle (see figure 1.7).'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_07.jpg)'
+  id: totrans-65
   prefs: []
   type: TYPE_IMG
 - en: Figure 1.7 The final step of a DH key exchange where both participants produce
@@ -394,6 +473,7 @@
     Lord Bob’s public key, and Lord Bob combines his private key with Queen Alice’s
     public key. The shared secret cannot be obtained from solely observing the public
     keys.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
 - en: It is now up to the participants of the protocol to make use of this shared
@@ -401,20 +481,24 @@
     scenario is to make use of it in an algorithm that requires a shared secret. For
     example, Queen Alice and Lord Bob could now use the shared secret as a key to
     encrypt further messages with a symmetric encryption primitive. To recap
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
 - en: Alice and Bob exchange their public keys, which masks their respective private
     keys.
+  id: totrans-68
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: With the other participant’s public key and their respective private key, they
     can compute a shared secret.
+  id: totrans-69
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: An adversary who observes the exchange of public keys doesn’t have enough information
     to compute the shared secret.
+  id: totrans-70
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
@@ -422,10 +506,12 @@
     knowledge of any private keys, we can combine the public keys together to produce
     the shared secret. Fortunately, this is only a limitation of our analogy, but
     it works well enough for us to understand what a key exchange does.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
 - en: In practice, a DH key exchange is quite insecure. Can you take a few seconds
     to figure out why?
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
 - en: Because Queen Alice accepts any public key she receives as being Lord Bob’s
@@ -436,6 +522,7 @@
     need to augment this protocol with another cryptographic primitive, or we need
     to be aware in advance of what Lord Bob’s public key is. But then, aren’t we back
     to square one?
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
 - en: Previously, Queen Alice and Lord Bob needed to know a shared secret; now Queen
@@ -444,22 +531,27 @@
     As we will see, in practice, public key cryptography does not solve the problem
     of trust, but it simplifies its establishment (especially when the number of participants
     is large).
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s stop here and move on to the next section as you will learn more about
     key exchanges in chapter 5\. We still have a few more asymmetric cryptographic
     primitives to uncover (see figure 1.8) to finish our tour of real-world cryptography.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_08.jpg)'
+  id: totrans-76
   prefs: []
   type: TYPE_IMG
 - en: Figure 1.8 The cryptographic algorithms we have learned so far. Two large classes
     of cryptographic algorithms are symmetric cryptography (with symmetric encryption)
     and asymmetric cryptography (with key exchanges).
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
 - en: 1.4.2 Asymmetric encryption, not like the symmetric one
+  id: totrans-78
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -470,6 +562,7 @@
     part of the larger class of cryptographic algorithms called *asymmetric cryptography*.
     In this section, we will explain what these primitives do and how they can be
     useful.'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
 - en: 'The first one, asymmetric encryption, has a similar purpose to the symmetric
@@ -477,14 +570,17 @@
     in order to obtain confidentiality. Yet, unlike symmetric encryption, which had
     the two participants encrypt and decrypt messages with the same symmetric key,
     asymmetric encryption is quite different:'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
 - en: 'It works with two different keys: a public key and a private key.'
+  id: totrans-81
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'It provides an asymmetric point of view: anyone can encrypt with the public
     key, but only the owner of the private key can decrypt messages.'
+  id: totrans-82
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -492,15 +588,18 @@
     We start with our friend Queen Alice again, who holds a private key (and its associated
     public key). Let’s picture her public key as an open chest that she releases to
     the public for anyone to use (see figure 1.9).
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_09.jpg)'
+  id: totrans-84
   prefs: []
   type: TYPE_IMG
 - en: Figure 1.9 To use asymmetric encryption, Queen Alice needs to first publish
     her public key (represented as an open box here). Now, anyone can use the public
     key to encrypt messages to her. And she should be able to decrypt them using the
     associated private key.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
 - en: Now, you and I and everyone who wants can encrypt a message to her using her
@@ -510,30 +609,37 @@
     from observers. The closed box (or encrypted content) can then be sent to Queen
     Alice, and she can use her private key (only known to her, remember) to decrypt
     it (see figure 1.10).
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_10.jpg)'
+  id: totrans-87
   prefs: []
   type: TYPE_IMG
 - en: 'Figure 1.10 Asymmetric encryption: (1) anyone can use Queen Alice’s public
     key to encrypt messages to her. (2) After receiving them, (3) she can decrypt
     the content using her associated private key. Nobody is able to observe the messages
     directed to Queen Alice while they are being sent to her.'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s summarize in figure 1.11 the cryptographic primitives we have learned
     so far. We are only missing one more to finish our tour of real-world cryptography!
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_11.jpg)'
+  id: totrans-90
   prefs: []
   type: TYPE_IMG
 - en: 'Figure 1.11 The cryptographic algorithms we have learned so far: two large
     classes of cryptographic algorithms are symmetric cryptography (with symmetric
     encryption) and asymmetric cryptography (with key exchanges and asymmetric encryption).'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
 - en: 1.4.3 Digital signatures, just like your pen-and-paper signatures
+  id: totrans-92
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -543,6 +649,7 @@
     between the Alices and Bobs of our world. It is similar to real signatures; you
     know, the one that you are required to sign on a contract when you’re trying to
     rent an apartment, for example.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
 - en: “What if they forge my signature?” you may ask, and indeed, real signatures
@@ -551,6 +658,7 @@
     with your name on it. Your cryptographic signature is *unforgeable* and can easily
     be verified by others. Pretty useful compared to the archaic signatures you used
     to write on checks!
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
 - en: In figure 1.12, we can imagine a protocol where Queen Alice wants to show Lord
@@ -560,66 +668,83 @@
     Alice can take a stance and notify Lord David that Lord Bob is to be trusted.
     If Lord David already trusts Queen Alice and her signature algorithm, then he
     can choose to trust Lord Bob in return.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_12.jpg)'
+  id: totrans-96
   prefs: []
   type: TYPE_IMG
 - en: Figure 1.12 Lord David already trusts Queen Alice. Because Queen Alice trusts
     Lord Bob, can Lord David safely trust Lord Bob as well?
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
 - en: In more detail, Queen Alice can use the RSA signature scheme and her private
     key to sign the message, “I, Queen Alice, trust Lord Bob.” This generates a signature
     that should look like random noise (see figure 1.13).
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_13.jpg)'
+  id: totrans-99
   prefs: []
   type: TYPE_IMG
 - en: Figure 1.13 To sign a message, Queen Alice uses her private key and generates
     a signature.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
 - en: 'Anyone can then *verify the signature* by combining:'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
 - en: Alice’s public key
+  id: totrans-102
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The message that was signed
+  id: totrans-103
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The signature
+  id: totrans-104
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The result is either *true* (the signature is valid) or *false* (the signature
     is invalid) as figure 1.14 shows.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_14.jpg)'
+  id: totrans-106
   prefs: []
   type: TYPE_IMG
 - en: Figure 1.14 To verify a signature from Queen Alice, one also needs the message
     signed and Queen Alice’s public key. The result is either validating the signature
     or invalidating it.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
 - en: 'We have now learned about three different asymmetric primitives:'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
 - en: Key exchange with Diffie-Hellman
+  id: totrans-109
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Asymmetric encryption
+  id: totrans-110
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Digital signatures with RSA
+  id: totrans-111
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -628,29 +753,36 @@
     to solve real-world problems, but rest assured, they are used every day by many
     applications to secure things around them. It is time to complete our picture
     with all the cryptographic algorithms we’ve learned about so far (see figure 1.15).
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_15.jpg)'
+  id: totrans-113
   prefs: []
   type: TYPE_IMG
 - en: Figure 1.15 The symmetric and asymmetric algorithms we have learned so far
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
 - en: 1.5 Classifying and abstracting cryptography
+  id: totrans-115
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: 'In the previous section, we surveyed two large classes of algorithms:'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
 - en: '*Symmetric cryptography (or secret key cryptography)*—A single secret is used.
     If several participants are aware of the secret, it is called a *shared* secret.'
+  id: totrans-117
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Asymmetric cryptography (or public key cryptography)*—Participants have an
     asymmetrical view of the secrets. For example, some will have knowledge of a public
     key, while some will have knowledge of both a public and private key.'
+  id: totrans-118
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -660,17 +792,20 @@
     symmetric and asymmetric primitives. This is because a large part of what is useful
     in cryptography nowadays is contained in these subfields. Another way of dividing
     cryptography can be
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
 - en: '*Math-based constructions*—These rely on mathematical problems like factoring
     numbers. (The RSA algorithm for digital signatures and asymmetric encryption is
     an example of such a construction.)'
+  id: totrans-120
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Heuristic-based constructions*—These rely on observations and statistical
     analysis by cryptanalysts. (AES for symmetric encryption is an example of such
     a construction.)'
+  id: totrans-121
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -679,6 +814,7 @@
     symmetric constructions are most often based on heuristics (what seems to be working),
     while most asymmetric constructions are based on mathematical problems (what is
     thought to be hard).
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
 - en: It is hard for us to rigorously categorize all of what cryptography has to offer.
@@ -690,6 +826,7 @@
     of security claims they provide in order to understand how they secure the protocols
     around us. For this reason, the first part of this book will go through the most
     useful cryptographic primitives and their security properties.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
 - en: A lot of the concepts in the book can be quite complicated the first time around.
@@ -699,6 +836,7 @@
     of what these constructions do, and to understand how they can be combined together
     to produce secure protocols. I will often talk about the interface of constructions
     and give real-world examples of usage and composition.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
 - en: 'The definition of cryptography used to be simple: Queen Alice and Lord Bob
@@ -706,22 +844,26 @@
     is quite complex to describe and has grown organically around discoveries, breakthroughs,
     and practical needs. At the end of the day, cryptography is what helps to augment
     a protocol in order to make it work in adversarial settings.'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
 - en: 'To understand exactly how cryptography can help, the set of goals that these
     protocols aim to achieve is what matters to us. That’s the useful part. Most of
     the cryptographic primitives and protocols we’ll learn about in this book provide
     one or two of the following properties:'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
 - en: '*Confidentiality*—It’s about masking and protecting some information from the
     wrong eyes. For example, encryption masks the messages in transit.'
+  id: totrans-127
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Authentication*—It’s about identifying who we are talking to. For example,
     this can be helpful in making sure that messages we receive indeed come from Queen
     Alice.'
+  id: totrans-128
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -729,6 +871,7 @@
     In most cases, the details are in the security claims of the primitives. Depending
     on how we use a cryptographic primitive in a protocol, it will achieve different
     security properties.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
 - en: 'Throughout this book, we will learn new cryptographic primitives and how they
@@ -739,9 +882,11 @@
     an observer, a man in the middle. They reflect what a real-life adversary could
     be. Because eventually, cryptography is a practical field made to defend against
     bad actors in flesh and bones and bits.'
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
 - en: 1.6 Theoretical cryptography vs. real-world cryptography
+  id: totrans-131
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -750,6 +895,7 @@
     Circa 2012, Kenny Paterson and Nigel Smart started an annual conference called
     Real World Crypto that targets the same crowd. But what do applied cryptography
     and real-world cryptography refer to? Is there more than one type of cryptography?
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
 - en: To answer the questions, we have to start by defining *theoretical cryptography*,
@@ -762,6 +908,7 @@
     sense anyway, as no computer is powerful enough to run their research. Having
     said that, theoretical cryptography sometimes becomes so useful and practical
     that it makes its way to the other side.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
 - en: The other side is the world of *applied cryptography* or *real-world cryptography*.
@@ -773,6 +920,7 @@
     harm our systems. Practitioners are usually from the industry but will sometimes
     vet algorithms and design protocols with the help of the academic community. Results
     are often shared through conferences, blog posts, and open source software.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
 - en: 'Real-world cryptography usually cares deeply about real-world considerations:
@@ -783,21 +931,26 @@
     will still take a peek at what is brewing there in the last chapters of this book.
     Be prepared to be amazed as you might catch a glance of the real-world cryptography
     of tomorrow.'
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
 - en: 'Now you might be wondering: how do developers and engineers choose what cryptography
     to use for their real-world applications?'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
 - en: '1.7 From theoretical to practical: Choose your own adventure'
+  id: totrans-137
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: '*Sitting on top are cryptanalysts who propose and solve hard mathematical problems
     [ . . . ] and at the bottom are software engineers who want to encrypt some data*.'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
 - en: —Thai Duong (“So you want to roll your own crypto?,” 2020)
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
 - en: In all the years I’ve spent studying and working with cryptography, I’ve never
@@ -806,6 +959,7 @@
     gets to be adopted, there’s a long list of people who get to handle the primitive
     and shape it into something consumable and sometimes safer for the public at large.
     How can I even explain that to you?
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
 - en: 'Have you heard of *Choose Your Own Adventure*? It’s an old book series where
@@ -815,25 +969,31 @@
     associated with a different section number that you could skip directly to if
     you so chose. So, I did the same here! Start by reading the next paragraph and
     follow the direction it gives you.'
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
 - en: '* * *'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
 - en: '*Where it all begins.* Who are you? Are you Alice, a cryptographer? Are you
     David, working in the private industry and in need of a solution to your problems?
     Or are you Eve, working in a government branch and preoccupied by cryptography?'
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
 - en: You’re Alice, go to step 1.
+  id: totrans-144
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: You’re David, go to step 2.
+  id: totrans-145
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: You’re Eve, go to step 3.
+  id: totrans-146
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -841,17 +1001,21 @@
     or in the research team of a private company or a nonprofit, or in a government
     research organization like NIST or NSA. As such, your funding can come from different
     places and might incentivize you to research different things.'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
 - en: You invent a new primitive, go to step 4.
+  id: totrans-148
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: You invent a new construction, go to step 5.
+  id: totrans-149
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: You start an open competition, go to step 6.
+  id: totrans-150
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -861,17 +1025,21 @@
     protocol. Another example are banks that got together to produce the Payment Card
     Industry Data Security Standard (PCI-DSS), which enforces algorithms and protocols
     to use if you deal with credit card numbers.'
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
 - en: You decide to fund some much needed research, go to step 1.
+  id: totrans-152
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: You decide to standardize a new primitive or protocol, go to step 5.
+  id: totrans-153
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: You start an open competition, go to step 6.
+  id: totrans-154
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -882,6 +1050,7 @@
     While many of these standards were success stories and people tend to have a lot
     of trust in standards being pushed by government agencies, there is (unfortunately)
     a lot to say about failures.'
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
 - en: 'In 2013, following revelations from Edward Snowden, it was discovered that
@@ -893,6 +1062,7 @@
     community lost a lot of confidence in standards and suggestions coming from governmental
     bodies. Recently, in 2019, it was found that the Russian standard GOST had been
     a victim of the same treatment.'
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
 - en: '*Cryptographers have long suspected that the agency planted vulnerabilities
@@ -902,22 +1072,27 @@
     weakness, discovered by two Microsoft cryptographers in 2007, was engineered by
     the agency. The N.S.A. wrote the standard and aggressively pushed it on the international
     group, privately calling the effort “a challenge in finesse.”*.'
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
 - en: —*New York Times* (“N.S.A. Able to Foil Basic Safeguards of Privacy on Web,”
     2013)
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
 - en: You fund some research, go to step 1.
+  id: totrans-159
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: You organize an open competition, go to step 6.
+  id: totrans-160
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: You push for the standardization of a primitive or protocol that you’re using,
     go to step 7.
+  id: totrans-161
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -927,13 +1102,16 @@
     Some of them will prove to be impossible to realize, and some will end up being
     solvable. Maybe you have an actual construction as part of your proposal, or maybe
     you’ll have to wait to see if someone can come up with something that works.'
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
 - en: Your primitive gets implemented, go to step 5.
+  id: totrans-163
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Your primitive ends up being impossible to implement, go back to the beginning.
+  id: totrans-164
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -942,26 +1120,32 @@
     example, AES is an instantiation of an encryption scheme. (AES was initially proposed
     by Vincent Rijmen and Joan Daemen, who named their construction as a contraction
     of their names, Rijndael.) What’s next?'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
 - en: Someone builds on your construction, go to step 5.
+  id: totrans-166
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: You partake in an open competition and win! Go to step 6.
+  id: totrans-167
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: There’s a lot of hype for your work; you’re getting a standard! Go to step 7.
+  id: totrans-168
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: You decide to patent your construction, go to step 8.
+  id: totrans-169
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: You or someone else decides that it’ll be fun to implement your construction.
     Go to step 9.
+  id: totrans-170
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -971,14 +1155,17 @@
     rounds of analysis and help from cryptanalysts (which can take years), the list
     was reduced to a few candidates (in the case of AES, a single one), which then
     moved to become standardized.'
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
 - en: You got lucky, after many years of competition your construction won! Go to
     step 7.
+  id: totrans-172
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Unfortunately, you lost. Go back to the start.
+  id: totrans-173
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -990,6 +1177,7 @@
     on the internet (like TCP, UDP, TLS, and so on) and that you will hear about a
     lot in this book. Standards in the IETF are called *Request For Comment* (RFC)
     and can be written by pretty much anyone who wants to write a standard.'
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
 - en: '*To reinforce that we do not vote, we have also adopted the tradition of “humming”:
@@ -997,9 +1185,11 @@
     group wants to get a “sense of the room”, instead of a show of hands, sometimes
     the chair will ask for each side to hum on a particular question, either “for”
     or “against”*.'
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
 - en: —RFC 7282 (“On Consensus and Humming in the IETF,” 2014)
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
 - en: Sometimes, a company publishes a standard directly. For example, RSA Security
@@ -1008,13 +1198,16 @@
     and techniques the company used at that time. Nowadays, this is pretty rare, and
     a lot of companies go through the IETF to standardize their protocols or algorithms
     as an RFC instead of a custom document.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
 - en: Your algorithm or protocol gets implemented, go to step 9.
+  id: totrans-178
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Nobody cares about your standard, go back to the start.
+  id: totrans-179
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1027,24 +1220,29 @@
     go-to signature scheme at the time, but doesn’t see much use nowadays. The patent
     over Schnorr signatures expired in 2008, and the algorithm has since started regaining
     popularity.'
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
 - en: It’s been too long, your algorithm will be forever forgotten. Go back to the
     beginning.
+  id: totrans-181
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Your construction inspires many more constructions to get invented on top of
     it, go to step 5.
+  id: totrans-182
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Now people want to use your construction, but not before it’s standardized for
     real. Go to step 7.
+  id: totrans-183
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Some developers are implementing your algorithm! Go to step 9.
+  id: totrans-184
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1053,44 +1251,54 @@
     to target implementers), but they also must make their implementations easy and
     safe to use. This is not always a simple task as many devastating bugs can arise
     in the way cryptography is used.'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
 - en: Someone decides it is time for these implementations to be backed by a standard.
     It’s embarrassing without one. Go to step 7.
+  id: totrans-186
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Hype is raining on your cryptographic library! Go to step 10.
+  id: totrans-187
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Step 10: A developer uses a protocol or primitive in an application.* A developer
     has a need, and your cryptographic library seems to solve it—easy peasy!'
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
 - en: The primitive solves the need, but it doesn’t have a standard. Not great. Go
     to step 7.
+  id: totrans-189
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: I wish this was written in my programming language. Go to step 9.
+  id: totrans-190
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: I misused the library or the construction is broken. Game over.
+  id: totrans-191
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '* * *'
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
 - en: You got it! There are many means for a primitive to go real-world. The best
     way involves many years of analysis, an implementor-friendly standard, and good
     libraries. A worse way involves a bad algorithm with a poor implementation. In
     figure 1.16, I illustrate the preferred path.
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/01_16.jpg)'
+  id: totrans-194
   prefs: []
   type: TYPE_IMG
 - en: 'Figure 1.16 The ideal life cycle for a cryptographic algorithm starts when
@@ -1099,23 +1307,28 @@
     encryption algorithms out there). A construction can then be standardized: everybody
     agrees to implement it a certain way to maximize interoperability. Then support
     is created by implementing the standard in different languages.'
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
 - en: 1.8 A word of warning
+  id: totrans-196
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: '*Anyone, from the most clueless amateur to the best cryptographer, can create
     an algorithm that he himself can’t break*.'
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
 - en: —Bruce Schneier (“Memo to the Amateur Cipher Designer,” 1998)
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
 - en: I must warn you, the art of cryptography is difficult to master. It would be
     unwise to assume that you can build complex cryptographic protocols once you’re
     done with this book. This journey should enlighten you, show you what is possible,
     and show you how things work, but it will not make you a master of cryptography.
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
 - en: This book is not the holy grail. Indeed, the last pages of this book take you
@@ -1128,25 +1341,30 @@
     primitives and protocols are available to solve the issues you’re facing, and
     how all these cryptographic algorithms work under the surface. Now that you’ve
     been warned, go to the next chapter.
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
 - en: Summary
+  id: totrans-201
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: A protocol is a step-by-step recipe where multiple participants attempt to achieve
     something like exchanging confidential messages.
+  id: totrans-202
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Cryptography is about augmenting protocols to secure them in adversarial settings.
     It often requires secrets.
+  id: totrans-203
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: A cryptographic primitive is a type of cryptographic algorithm. For example,
     symmetric encryption is a cryptographic primitive, while AES is a specific symmetric
     encryption algorithm.
+  id: totrans-204
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1155,6 +1373,7 @@
     uses a single key (as you saw with symmetric encryption), while asymmetric cryptography
     makes use of different keys (as you saw with key exchanges, asymmetric encryption,
     and digital signatures).'
+  id: totrans-205
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1162,21 +1381,25 @@
     one of these two properties: authentication or confidentiality. Authentication
     is about verifying the authenticity of something or someone, while confidentiality
     is about the privacy of data or identities.'
+  id: totrans-206
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Real-world cryptography matters because it is ubiquitous in technological applications,
     while theoretical cryptography is often less useful in practice.
+  id: totrans-207
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Most of the cryptographic primitives contained in this book were agreed on after
     long standardization processes.
+  id: totrans-208
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Cryptography is complicated, and there are many dangers in implementing or using
     cryptographic primitives.
+  id: totrans-209
   prefs:
   - PREF_UL
   type: TYPE_NORMAL

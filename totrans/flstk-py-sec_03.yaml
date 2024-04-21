@@ -1,212 +1,305 @@
 - en: 2 Hashing
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 2 哈希
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: Defining hash functions
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 定义哈希函数
 - en: Introducing security archetypes
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 引入安全原型
 - en: Verifying data integrity with hashing
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用哈希验证数据完整性
 - en: Choosing a cryptographic hash function
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 选择加密哈希函数
 - en: Using the `hashlib` module for cryptographic hashing
+  id: totrans-6
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用`hashlib`模块进行加密哈希处理
 - en: In this chapter, you’ll learn to use hash functions to ensure data integrity,
     a fundamental building block of secure system design. You’ll also learn how to
     distinguish safe and unsafe hash functions. Along the way, I’ll introduce you
     to Alice, Bob, and a few other archetypal characters. I use these characters to
     illustrate security concepts throughout the book. Finally, you’ll learn how to
     hash data with the `hashlib` module.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，您将学习如何使用哈希函数来确保数据完整性，这是安全系统设计的基本构建块。您还将学习如何区分安全和不安全的哈希函数。在此过程中，我将向您介绍爱丽丝、鲍勃和其他几个原型角色。我使用这些角色贯穿整本书来说明安全概念。最后，您将学习如何使用`hashlib`模块对数据进行哈希处理。
 - en: 2.1 What is a hash function?
+  id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 2.1 什么是哈希函数？
 - en: 'Every *hash function* has input and output. The input to a hash function is
     called a *message*. A message can be any form of data. The Gettysburg Address,
     an image of a cat, and a Python package are examples of potential messages. The
     output of a hash function is a very large number. This number goes by many names:
     *hash value*, *hash*, *hash code*, *digest*, and *message digest*.'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个*哈希函数*都有输入和输出。哈希函数的输入称为*消息*。消息可以是任何形式的数据。葛底斯堡演说、一张猫的图片和一个Python包都是潜在消息的例子。哈希函数的输出是一个非常大的数字。这个数字有许多名称：*哈希值*、*哈希*、*哈希码*、*摘要*和*消息摘要*。
 - en: In this book, I use the term *hash value*. Hash values are typically represented
     as alphanumeric strings. A hash function maps a set of messages to a set of hash
     values. Figure 2.1 illustrates the relationships among a message, a hash function,
     and a hash value.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这本书中，我使用术语*哈希值*。哈希值通常表示为字母数字字符串。哈希函数将一组消息映射到一组哈希值。图2.1说明了消息、哈希函数和哈希值之间的关系。
 - en: '![CH02_F01_Byrne](Images/CH02_F01_Byrne.png)'
+  id: totrans-11
   prefs: []
   type: TYPE_IMG
+  zh: '![CH02_F01_Byrne](Images/CH02_F01_Byrne.png)'
 - en: Figure 2.1 A hash function maps an input known as a message to an output known
     as a hash value.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 图2.1 哈希函数将一个称为消息的输入映射到一个称为哈希值的输出。
 - en: In this book, I depict each hash function as a funnel. A hash function and a
     funnel both accept variable-sized inputs and produce fixed-size outputs. I depict
     each hash value as a fingerprint. A hash value and a fingerprint uniquely identify
     a message or a person, respectively.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这本书中，我将每个哈希函数描绘为一个漏斗。哈希函数和漏斗都接受可变大小的输入并产生固定大小的输出。我将每个哈希值描绘为一个指纹。哈希值和指纹分别唯一标识一条消息或一个人。
 - en: Hash functions are different from one another. These differences typically boil
     down to the properties defined in this section. To illustrate the first few properties,
     we’ll use a built-in Python function, conveniently named `hash`. Python uses this
     function to manage dictionaries and sets, and you and I are going to use it for
     instructional purposes.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 哈希函数彼此之间是不同的。这些差异通常归结为本节中定义的属性。为了说明前几个属性，我们将使用一个内置的Python函数，方便地命名为`hash`。Python使用这个函数来管理字典和集合，而你和我将用它来进行教学目的。
 - en: 'The built-in `hash` function is a good way to introduce the basics because
     it is much simpler than the hash functions discussed later in this chapter. The
     built-in `hash` function takes one argument, the message, and returns a hash value:'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 内置的`hash`函数是介绍基础知识的好方法，因为它比本章后面讨论的哈希函数要简单得多。内置的`hash`函数接受一个参数，即消息，并返回一个哈希值：
 - en: '[PRE0]'
+  id: totrans-16
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: ❶ Message input
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 消息输入
 - en: ❷ Hash value output
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 哈希值输出
 - en: 'Hash functions are characterized by three basic properties:'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 哈希函数具有三个基本属性：
 - en: Deterministic behavior
+  id: totrans-20
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 确定性行为
 - en: Fixed-length hash values
+  id: totrans-21
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 固定长度的哈希值
 - en: The avalanche effect
+  id: totrans-22
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 雪崩效应
 - en: Deterministic behavior
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 确定性行为
 - en: 'Every hash function is *deterministic*: for a given input, a hash function
     always produces the same output. In other words, hash function behavior is repeatable,
     not random. Within a Python process, the built-in `hash` function always returns
     the same hash value for a given message value. Run the following two lines of
     code in an interactive Python shell. Your hash values will match, but will be
     different from mine:'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个哈希函数都是*确定性*的：对于给定的输入，哈希函数总是产生相同的输出。换句话说，哈希函数的行为是可重复的，而不是随机的。在Python进程中，内置的`hash`函数对于给定的消息值始终返回相同的哈希值。在交互式Python
+    shell中运行以下两行代码。你的哈希值将匹配，但会与我的不同：
 - en: '[PRE1]'
+  id: totrans-25
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: ❶ Same hash value
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 相同的哈希值
 - en: The hash functions I discuss later in this chapter are universally deterministic.
     These functions behave the same regardless of how or where they are invoked.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 我在本章后面讨论的哈希函数是普遍确定性的。这些函数无论在何时何地调用，行为都是相同的。
 - en: Fixed-length hash values
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 固定长度的哈希值
 - en: Messages have arbitrary lengths; hash values, for a particular hash function,
     have a fixed length. If a function does not possess this property, it does not
     qualify as a hash function. The length of the message does not affect the length
     of the hash value. Passing different messages to the built-in `hash` function
     will give you different hash values, but each hash value will always be an integer.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 消息具有任意长度；对于特定哈希函数，哈希值具有固定长度。如果一个函数不具备这个属性，那么它就不符合哈希函数的标准。消息的长度不会影响哈希值的长度。将不同的消息传递给内置的`hash`函数将给出不同的哈希值，但每个哈希值始终是一个整数。
 - en: Avalanche effect
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 雪崩效应
 - en: 'When small differences between messages result in large differences between
     hash values, the hash function is said to exhibit the *avalanche effect*. Ideally,
     every output bit depends on every input bit: if two messages differ by one bit,
     then on average only half the output bits should match. A hash function is judged
     by how close it comes to this ideal.'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 当消息之间的微小差异导致哈希值之间的巨大差异时，哈希函数被认为表现出*雪崩效应*。理想情况下，每个输出位都取决于每个输入位：如果两个消息只有一个位不同，那么平均只有一半的输出位应该匹配。哈希函数的评判标准是它与理想情况有多接近。
 - en: 'Take a look at the following code. The hash values for both string and integer
     objects have a fixed length, but only the hash values for string objects exhibit
     the avalanche effect:'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 看一下以下代码。字符串和整数对象的哈希值都具有固定长度，但只有字符串对象的哈希值表现出雪崩效应：
 - en: '[PRE2]'
+  id: totrans-33
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: The built-in `hash` function is a nice instructional tool but it cannot be considered
     a cryptographic hash function. The next section outlines three reasons this is
     true.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 内置的`hash`函数是一个很好的教学工具，但不能被视为加密哈希函数。接下来的部分将阐述这一点的三个原因。
 - en: 2.1.1 Cryptographic hash function properties
+  id: totrans-35
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2.1.1 加密哈希函数属性
 - en: 'A *cryptographic hash function* must meet three additional criteria:'
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: '*加密哈希函数*必须满足三个额外的标准：'
 - en: One-way function property
+  id: totrans-37
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 单向函数属性
 - en: Weak collision resistance
+  id: totrans-38
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 弱碰撞抗性
 - en: Strong collision resistance
+  id: totrans-39
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 强碰撞抗性
 - en: The academic terms for these properties are *preimage resistance*, *second preimage
     resistance*, and *collision resistance*. For purposes of discussion, I avoid the
     academic terms, with no intentional disrespect to scholars.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些属性的学术术语分别是*前像抗性*、*第二前像抗性*和*碰撞抗性*。为了讨论方便，我避免使用学术术语，这并不是对学者们的有意不敬。
 - en: One-way functions
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 单向函数
 - en: Hash functions used for cryptographic purposes, with no exceptions, must be
     *one-way functions*. A function is one-way if it is easy to invoke and difficult
     to reverse engineer. In other words, if you have the output, it must be difficult
     to identify the input. If an attacker obtains a hash value, we want it to be difficult
     for them to figure out what the message was.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于加密目的的哈希函数，没有例外，必须是*单向函数*。如果一个函数易于调用但难以逆向工程，则称其为单向函数。换句话说，如果你有输出，那么很难确定输入。如果攻击者获得了一个哈希值，我们希望他们很难弄清楚消息是什么。
 - en: 'How difficult? We typically use the word *infeasible*. This means *very difficult*—so
     difficult that an attacker has only one option if they wish to reverse engineer
     the message: brute force.'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 有多难？我们通常使用*不可行*这个词。这意味着*非常困难*—难到攻击者只有一个选择，如果他们想要逆向工程消息：暴力破解。
 - en: What does *brute force* mean? Every attacker, even an unsophisticated one, is
     capable of writing a simple program to generate a very large number of messages,
     hash each message, and compare each computed hash value to the given hash value.
     This is an example of a brute-force attack. The attacker has to have a lot of
     time and resources, not intelligence.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: '*暴力破解*是什么意思？每个攻击者，即使是一个不成熟的攻击者，也能够编写一个简单的程序来生成大量的消息，对每个消息进行哈希，并将每个计算出的哈希值与给定的哈希值进行比较。这是一个暴力破解攻击的例子。攻击者需要大量的时间和资源，而不是智力。'
 - en: How much time and resources? Well, it’s subjective. The answer isn’t written
     in stone. For example, a theoretical brute-force attack against some of the hash
     functions discussed later in this chapter would be measured in millions of years
     and billions of dollars. A reasonable security professional would call this infeasible.
     This does not mean it’s impossible. We recognize there is no such thing as a perfect
     hash function, because brute force will always be an option for attackers.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 需要多少时间和资源？这是主观的。答案并非一成不变。例如，对本章后面讨论的一些哈希函数进行理论暴力攻击将需要数百万年和数十亿美元。一个理性的安全专业人士会认为这是不可行的。这并不意味着不可能。我们认识到没有完美的哈希函数，因为暴力攻击始终是攻击者的一个选择。
 - en: Infeasibility is a moving target. A brute-force attack considered infeasible
     a few decades ago may be practical today or tomorrow. As the costs of computer
     hardware continue to fall, so do the costs of brute-force attacks. Unfortunately,
@@ -214,38 +307,52 @@
     every system is eventually vulnerable. Instead, understand that every system must
     eventually use stronger hash functions. This chapter will help you make an informed
     decision about which hash functions to use.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 不可行性是一个不断变化的目标。几十年前被认为不可行的暴力攻击，今天或明天可能就变得实际。随着计算机硬件成本的持续下降，暴力攻击的成本也在降低。不幸的是，加密强度随着时间的推移而减弱。不要把这理解为每个系统最终都会变得脆弱。相反，要明白每个系统最终都必须使用更强大的哈希函数。本章将帮助您就使用哪些哈希函数做出明智的决定。
 - en: Collision resistance
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 碰撞抗性
 - en: Hash functions used for cryptographic purposes, with no exceptions, must possess
     *collision resistance*. What is a collision? Although hash values for different
     messages have the same length, they almost never have the same value . . . almost.
     When two messages hash to the same hash value, it is called a *collision*. Collisions
     are bad. Hash functions are designed to minimize collisions. We judge a hash function
     on how well it avoids collisions; some are better than others.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 用于加密目的的哈希函数，没有例外，必须具有*碰撞抗性*。什么是碰撞？虽然不同消息的哈希值具有相同的长度，但它们几乎永远不会具有相同的值...几乎。当两个消息的哈希值相同时，称为*碰撞*。碰撞是不好的。哈希函数被设计来最小化碰撞。我们根据它们避免碰撞的能力来评判哈希函数；有些比其他的更好。
 - en: A hash function has *weak collision resistance* if, given a message, it is infeasible
     to identify a second message that hashes to the same hash value. In other words,
     if an attacker has one input, it must be infeasible to identify another input
     capable of producing the same output.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果给定一个消息，一个哈希函数具有*弱碰撞抗性*，那么识别出一个第二个消息的哈希值与之相同是不可行的。换句话说，如果攻击者有一个输入，识别出另一个能够产生相同输出的输入是不可行的。
 - en: A hash function has *strong collision resistance* if it is infeasible to find
     any collision whatsoever. The difference between weak collision resistance and
     strong collision resistance is subtle. Weak collision resistance is bound to a
     particular given message; strong collision resistance applies to any pair of messages.
     Figure 2.2 illustrates this difference.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果一个哈希函数具有*强碰撞抗性*，那么找到任何碰撞都是不可行的。弱碰撞抗性和强碰撞抗性之间的区别微妙。弱碰撞抗性限定于特定的给定消息；强碰撞抗性适用于任何一对消息。图2.2说明了这种差异。
 - en: '![CH02_F02_Byrne](Images/CH02_F02_Byrne.png)'
+  id: totrans-51
   prefs: []
   type: TYPE_IMG
+  zh: '![CH02_F02_Byrne](Images/CH02_F02_Byrne.png)'
 - en: Figure 2.2 Weak collision resistance compared to strong collision resistance
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 图2.2 弱碰撞抗性与强碰撞抗性的比较
 - en: Strong collision resistance implies weak collision resistance, not the other
     way around. Any hash function with strong collision resistance also has weak collision
     resistance; a hash function with weak collision resistance may not necessarily
@@ -253,25 +360,33 @@
     challenge; this is usually the first property lost when an attacker or researcher
     breaks a cryptographic hash function. Later in this chapter, I show you an example
     of this in the real world.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 强碰撞抗性意味着弱碰撞抗性，反之则不然。任何具有强碰撞抗性的哈希函数也具有弱碰撞抗性；具有弱碰撞抗性的哈希函数不一定具有强碰撞抗性。因此，强碰撞抗性是一个更大的挑战；这通常是攻击者或研究人员破解加密哈希函数时首先丢失的属性。本章后面，我将向您展示一个现实世界中的例子。
 - en: Again, the key word is *infeasible*. Despite how nice it would be to identify
     a collisionless hash function, we will never find one because it does not exist.
     Think about it. Messages can have any length; hash values can have only one length.
     The set of all possible messages will therefore always be larger than the set
     of all possible hash values. This is known as the *pigeonhole principle*.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 关键词是*不可行*。尽管识别一个无碰撞的哈希函数会有多好，但我们永远也找不到，因为它根本不存在。想想看。消息可以有任意长度；哈希值只能有一个长度。因此，所有可能消息的集合总是大于所有可能哈希值的集合。这被称为*鸽巢原理*。
 - en: In this section, you learned what a hash function is. Now it’s time to learn
     how hashing ensures data integrity. But first, I’ll introduce you to a handful
     of archetypal characters. I use these characters throughout the book to illustrate
     security concepts, starting with data integrity in this chapter.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，您了解了哈希函数是什么。现在是时候学习哈希如何确保数据完整性了。但首先，我将向您介绍一些原型角色。我在整本书中使用这些角色来说明安全概念，从本章开始讲述数据完整性。
 - en: 2.2 Archetypal characters
+  id: totrans-56
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 2.2 原型角色
 - en: I use five archetypal characters to illustrate security concepts in this book
     (see Figure 2.3). Trust me, these characters make it much easier to read (and
     write) this book. The solutions in this book revolve around the problems faced
@@ -281,32 +396,44 @@
     The data for each example in this book tends to flow among Alice, Bob, and Charlie;
     remember A, B, and C. Alice, Bob, and Charlie are good characters. Feel free to
     identify with these characters as you read this book.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 我在这本书中使用五个原型角色来说明安全概念（见图2.3）。相信我，这些角色使阅读（和写作）这本书变得更容易。这本书中的解决方案围绕爱丽丝和鲍勃面临的问题展开。如果你读过其他安全书籍，你可能已经遇到过这两个角色。爱丽丝和鲍勃就像你一样——他们希望安全地创建和共享信息。偶尔，他们的朋友查理也会出现。这本书中每个示例的数据往往在爱丽丝、鲍勃和查理之间流动；记住A、B和C。爱丽丝、鲍勃和查理是好角色。在阅读本书时，可以随意与这些角色产生共鸣。
 - en: '![CH02_F03_Byrne](Images/CH02_F03_Byrne.png)'
+  id: totrans-58
   prefs: []
   type: TYPE_IMG
+  zh: '![CH02_F03_Byrne](Images/CH02_F03_Byrne.png)'
 - en: Figure 2.3 Archetypal characters with halos are good; attackers are designated
     with horns.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 图2.3 带光环的原型角色是好的；攻击者被指定为有角的。
 - en: Eve and Mallory are bad characters. Remember Eve as evil. Remember Mallory as
     malicious. These characters attack Alice and Bob by trying to steal or modify
     their data and identities. Eve is a passive attacker; she is an eavesdropper.
     She tends to gravitate toward the network portion of the attack surface. Mallory
     is an active attacker; she is more sophisticated. She tends to use the system
     or the users as entry points.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 伊芙和玛洛丽是坏角色。记住伊芙是邪恶的。记住玛洛丽是恶意的。这些角色通过试图窃取或修改他们的数据和身份来攻击爱丽丝和鲍勃。伊芙是被动攻击者；她是窃听者。她倾向于向攻击面的网络部分靠拢。玛洛丽是主动攻击者；她更加复杂。她倾向于使用系统或用户作为入口点。
 - en: Remember these characters; you’ll see them again. Alice, Bob, and Charlie have
     halos; Eve and Mallory have horns. In the next section, Alice will use hashing
     to ensure data integrity.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 记住这些角色；你会再次见到它们。爱丽丝、鲍勃和查理有光环；伊芙和玛洛丽有角。在下一节中，爱丽丝将使用哈希来确保数据完整性。
 - en: 2.3 Data integrity
+  id: totrans-62
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 2.3 数据完整性
 - en: '*Data* *integrity*, sometimes called *message integrity*, is the assurance
     that data is free of unintended modification. It answers the question, “Has the
     data changed?” Suppose Alice works on a document management system. Currently,
@@ -315,368 +442,544 @@
     the copies do not match, the document is considered corrupt. Alice is unsatisfied
     with how much storage space the system consumes. The costs are getting out of
     control, and the problem is getting worse as the system accommodates more documents.'
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: '*数据* *完整性*，有时被称为*消息完整性*，是确保数据没有意外修改的保证。它回答了这个问题，“数据是否改变了？”假设爱丽丝在一个文档管理系统上工作。目前，该系统存储每个文档的两份副本以确保数据完整性。为了验证文档的完整性，系统逐字节比较这两份副本。如果副本不匹配，文档被视为损坏。爱丽丝对系统消耗的存储空间感到不满。成本已经失控，随着系统容纳更多文档，问题变得更加严重。'
 - en: Alice realizes she has a common problem and decides to solve it with a common
     solution, a cryptographic hash function. As each document is created, the system
     computes and stores a hash value of it. To verify the integrity of each document,
     the system first rehashes it. The new hash value is then compared to the old hash
     value in storage. If the hash values don’t match, the document is considered corrupt.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 爱丽丝意识到她有一个常见的问题，并决定用一个常见的解决方案来解决它，即一个加密散列函数。当每个文档被创建时，系统会计算并存储它的散列值。为了验证每个文档的完整性，系统首先重新计算其散列值。然后将新的散列值与存储中的旧散列值进行比较。如果散列值不匹配，则认为文档已损坏。
 - en: Figure 2.4 illustrates this process in four steps. A puzzle piece depicts the
     comparison of both hash values.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 2.4 用四个步骤说明了这个过程。一个拼图图案描述了两个散列值的比较。
 - en: '![CH02_F04_Byrne](Images/CH02_F04_Byrne.png)'
+  id: totrans-66
   prefs: []
   type: TYPE_IMG
+  zh: '![CH02_F04_Byrne](Images/CH02_F04_Byrne.png)'
 - en: Figure 2.4 Alice ensures data integrity by comparing hash values, not documents.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 2.4 爱丽丝通过比较散列值而不是文档来确保数据完整性。
 - en: Can you see why collision resistance is important? Let’s say Alice were to use
     a hash function that lacked collision resistance. The system would have no absolute
     way of detecting data corruption if the original version of the file collides
     with the corrupted version.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 你能看出碰撞抵抗为什么很重要吗？假设爱丽丝使用的散列函数缺乏碰撞抵抗性。如果原始文件版本与损坏版本发生碰撞，系统就无法绝对地检测到数据损坏。
 - en: 'This section demonstrated an important application of hashing: data integrity.
     In the next section, you’ll learn how to choose an actual hash function suitable
     for doing this.'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 这一部分展示了散列的一个重要应用：数据完整性。在下一节中，你将学习如何选择一个适合做这件事的实际散列函数。
 - en: 2.4 Choosing a cryptographic hash function
+  id: totrans-70
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 2.4 选择加密散列函数
 - en: 'Python supports cryptographic hashing natively. There is no need for third-party
     frameworks or libraries. Python ships with a `hashlib` module that exposes everything
     most programmers need for cryptographic hashing. The `algorithms_guaranteed` set
     contains every hash function that is guaranteed to be available for all platforms.
     The hash functions in this collection represent your options. Few Python programmers
     will ever need or even see a hash function outside this set:'
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: Python 原生支持加密散列。无需第三方框架或库。Python 自带一个 `hashlib` 模块，提供了大多数程序员需要的加密散列的一切。`algorithms_guaranteed`
+    集合包含了保证在所有平台上可用的每个散列函数。这个集合中的散列函数代表了你的选择。很少有 Python 程序员会需要或者甚至看到这个集合之外的散列函数：
 - en: '[PRE3]'
+  id: totrans-72
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: It is natural to feel overwhelmed by this many choices. Before choosing a hash
     function, we must divide our options into those that are safe and unsafe.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 面对如此多的选择，感到不知所措是很自然的。在选择散列函数之前，我们必须将选项划分为安全和不安全的选项。
 - en: 2.4.1 Which hash functions are safe?
+  id: totrans-74
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2.4.1 哪些散列函数是安全的？
 - en: 'The safe and secure hash functions of `algorithms_guaranteed` fall under the
     following hash algorithm families:'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: '`algorithms_guaranteed` 的安全和可靠的散列函数属于以下散列算法族：'
 - en: SHA-2
+  id: totrans-76
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: SHA-2
 - en: SHA-3
+  id: totrans-77
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: SHA-3
 - en: BLAKE2
+  id: totrans-78
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: BLAKE2
 - en: SHA-2
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: SHA-2
 - en: The *SHA-2* hash function family was published by the NSA in 2001\. This family
     is composed of SHA-224, SHA-256, SHA-384, and SHA-512\. SHA-256 and SHA-512 are
     the core of this family. Don’t bother memorizing the names of all four functions;
     just focus on SHA-256 for now. You’re going to see it a lot in this book.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: '*SHA-2* 散列函数族于 2001 年由 NSA 发布。该族由 SHA-224、SHA-256、SHA-384 和 SHA-512 组成。SHA-256
+    和 SHA-512 是该族的核心。不必费心记住所有四个函数的名称；现在只需关注 SHA-256 即可。在本书中你会经常看到它。'
 - en: You should use SHA-256 for general-purpose cryptographic hashing. This is an
     easy decision because every system we work on is already using it. The operating
     systems and networking protocols we deploy applications with depend on SHA-256,
     so we don’t have a choice. You’d have to work very hard to not use SHA-256\. It
     is safe, secure, well supported, and used everywhere.
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 你应该用 SHA-256 进行通用加密散列。这是一个很容易的决定，因为我们所使用的每个系统都已经在使用它。我们部署应用程序所依赖的操作系统和网络协议都依赖于
+    SHA-256，所以我们别无选择。你必须非常努力才能不使用 SHA-256。它安全、可靠、受到良好支持，并且被广泛使用。
 - en: The name of each function in the SHA-2 family conveniently self-documents its
     hash value length. Hash functions are often categorized, judged, and named by
     the length of their hash values. SHA-256, for example, is a hash function that
     produces—you guessed it—hash values that are 256 bits long. Longer hash values
     are more likely to be unique and less likely to collide. Longer is better.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: SHA-2家族中每个函数的名称方便地自述其哈希值长度。哈希函数通常根据其哈希值的长度进行分类、评判和命名。例如，SHA-256是一个产生——你猜对了——长度为256位的哈希值的哈希函数。较长的哈希值更有可能是唯一的，更不容易发生碰撞。越长越好。
 - en: SHA-3
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: SHA-3
 - en: The *SHA-3* hash function family is composed of SHA3-224, SHA3-256, SHA3-384,
     SHA3-512, SHAKE128 and SHAKE256\. SHA-3 is safe, secure, and considered by many
     to be the natural successor of SHA-2\. Unfortunately, SHA-3 adoption hasn’t gained
     momentum at the time of this writing. You should consider using a SHA-3 function
     like SHA3-256 if you’re working in a high-security environment. Just be aware
     that you may not find the same levels of support that exist for SHA-2.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: '*SHA-3*哈希函数家族由SHA3-224、SHA3-256、SHA3-384、SHA3-512、SHAKE128和SHAKE256组成。SHA-3是安全的、可靠的，并被许多人认为是SHA-2的自然继任者。不幸的是，在撰写本文时，SHA-3的采用尚未获得动力。如果您在高安全环境中工作，应考虑使用SHA3-256等SHA-3函数。只需注意，您可能无法找到与SHA-2存在的相同支持水平。'
 - en: BLAKE2
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: BLAKE2
 - en: '*BLAKE2* isn’t as popular as SHA-2 or SHA-3 but does have one big advantage:
     BLAKE2 leverages modern CPU architecture to hash at extreme speeds. For this reason,
     you should consider using BLAKE2 if you need to hash large amounts of data. BLAKE2
     comes in two flavors: BLAKE2b and BLAKE2s. BLAKE2b is optimized for 64-bit platforms.
     BLAKE2s is optimized for 8- to 32-bit platforms.'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: '*BLAKE2*不像SHA-2或SHA-3那样受欢迎，但有一个很大的优势：BLAKE2利用现代CPU架构以极快的速度进行哈希。因此，如果您需要对大量数据进行哈希，应考虑使用BLAKE2。BLAKE2有两种版本：BLAKE2b和BLAKE2s。BLAKE2b针对64位平台进行了优化。BLAKE2s针对8到32位平台进行了优化。'
 - en: Now that you’ve learned how to identify and choose a safe hash function, you’re
     ready to learn how to identify and avoid the unsafe ones.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在您已经学会了如何识别和选择安全的哈希函数，您准备好学习如何识别和避免不安全的哈希函数了。
 - en: 2.4.2 Which hash functions are unsafe?
+  id: totrans-88
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 2.4.2 哪些哈希函数是不安全的？
 - en: 'The hash functions in `algorithms_guaranteed` are popular and cross-platform.
     This doesn’t mean every one of them is cryptographically secure. Insecure hash
     functions are preserved in Python for the sake of maintaining backward compatibility.
     Understanding these functions is worth your time because you may encounter them
     in legacy systems. The unsafe hash functions of `algorithms_guaranteed` are as
     follows:'
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: '`algorithms_guaranteed`中的哈希函数是流行的跨平台的。这并不意味着它们每一个都是密码学安全的。Python中保留了不安全的哈希函数，以保持向后兼容性。了解这些函数是值得的，因为您可能会在传统系统中遇到它们。`algorithms_guaranteed`的不安全哈希函数如下：'
 - en: MD5
+  id: totrans-90
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: MD5
 - en: SHA-1
+  id: totrans-91
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: SHA-1
 - en: MD5
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: MD5
 - en: '*MD5* is an obsolete 128-bit hash function developed in the early 1990s. This
     is one of the most used hash functions of all time. Unfortunately, MD5 is still
     in use even though researchers have demonstrated MD5 collisions as far back as
     2004\. Today cryptanalysts can generate MD5 collisions on commodity hardware in
     less than an hour.'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: '*MD5*是在上世纪90年代初开发的过时的128位哈希函数。这是有史以来最常用的哈希函数之一。不幸的是，尽管研究人员早在2004年就展示了MD5碰撞，但MD5仍在使用中。今天，密码分析师可以在不到一个小时的时间内在商品硬件上生成MD5碰撞。'
 - en: SHA-1
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: SHA-1
 - en: '*SHA-1* is an obsolete 160-bit hash function developed by the NSA in the mid-1990s.
     Like MD5, this hash function was popular at one time but it is no longer considered
     secure. The first collisions for SHA-1 were announced in 2017 by a collaboration
     effort between Google and Centrum Wiskunde & Informatica, a research institute
     in the Netherlands. In theoretical terms, this effort stripped SHA-1 of strong
     collision resistance, not weak collision resistance.'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: '*SHA-1*是由NSA在上世纪90年代中期开发的过时的160位哈希函数。像MD5一样，这个哈希函数曾经很受欢迎，但现在不再被认为是安全的。SHA-1的第一个碰撞是在2017年由Google和荷兰研究机构Centrum
+    Wiskunde & Informatica的合作努力宣布的。在理论上，这一努力剥夺了SHA-1的强碰撞抵抗力，而不是弱碰撞抵抗力。'
 - en: Many programmers are familiar with SHA-1 because it is used to verify data integrity
     in version-control systems such as Git and Mercurial. Both of these tools use
     a SHA-1 hash value to identify and ensure the integrity of each commit. Linus
     Torvalds, the creator of Git, said at a Google Tech Talk in 2007, “SHA-1, as far
     as Git is concerned, isn’t even a security feature. It’s purely a consistency
     check.”
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 许多程序员熟悉 SHA-1，因为它用于验证版本控制系统（如 Git 和 Mercurial）中的数据完整性。这两个工具都使用 SHA-1 哈希值来标识并确保每个提交的完整性。Git
+    的创建者 Linus Torvalds 在 2007 年的 Google Tech Talk 中说：“就 Git 而言，SHA-1 甚至不是一个安全功能。它纯粹是一种一致性检查。”
 - en: WARNING MD5 or SHA-1 should never be used for security purposes when creating
     a new system. Any legacy system using either function for security purposes should
     be refactored to a secure alternative. Both of these functions have been popular,
     but SHA-256 is popular and secure. Both are fast, but BLAKE2 is faster and secure.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：在创建新系统时，不应将 MD5 或 SHA-1 用于安全目的。任何使用这两个函数用于安全目的的遗留系统都应重构为安全替代方案。这两个函数都很流行，但
+    SHA-256 是流行且安全的。它们都很快，但 BLAKE2 更快更安全。
 - en: 'Here’s a summary of the dos and don’ts of choosing a hash function:'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面是选择哈希函数时的 dos 和 don'ts 摘要：
 - en: Use SHA-256 for general-purpose cryptographic hashing.
+  id: totrans-99
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 用于一般目的的加密哈希，请使用 SHA-256。
 - en: Use SHA3-256 in high-security environments, but expect less support than for
     SHA-256.
+  id: totrans-100
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在高安全环境中，请使用 SHA3-256，但预期的支持会比 SHA-256 较少。
 - en: Use BLAKE2 to hash large messages.
+  id: totrans-101
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 请使用 BLAKE2 对大消息进行哈希处理。
 - en: Never use MD5 or SHA1 for security purposes.
+  id: totrans-102
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 永远不要将 MD5 或 SHA1 用于安全目的。
 - en: Now that you’ve learned how to choose a safe cryptographic hash function, let’s
     apply this choice in Python.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在您已经学会如何选择安全的加密哈希函数了，让我们在 Python 中应用这个选择。
 - en: 2.5 Cryptographic hashing in Python
+  id: totrans-104
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 2.5 Python 中的加密哈希处理
 - en: 'The `hashlib` module features a named constructor for each hash function in
     `hashlib.algorithms_guaranteed`. Alternatively, each hash function is accessible
     dynamically with a general-purpose constructor named `new`. This constructor accepts
     any string in `algorithms_guaranteed`. Named constructors are faster than, and
     preferred over, the generic constructor. The following code demonstrates how to
     construct an instance of SHA-256 with both constructor types:'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: '`hashlib` 模块提供了每个哈希函数的命名构造函数，在 `hashlib.algorithms_guaranteed` 中。或者，每个哈希函数都可以通过通用构造函数
+    `new` 动态访问。该构造函数接受 `algorithms_guaranteed` 中的任何字符串。命名构造函数比通用构造函数更快，更受欢迎。下面的代码演示了如何使用这两种构造函数类型构造
+    SHA-256 的实例：'
 - en: '[PRE4]'
+  id: totrans-106
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: ❶ Named constructor
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 命名构造函数
 - en: ❷ Generic constructor
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 通用构造函数
 - en: 'A hash function instance can be initialized with or without a message. The
     following code initializes a SHA-256 function with a message. Unlike the built-in
     `hash` function, the hash functions in `hashlib` require the message to be of
     type bytes:'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以使用或不使用消息初始化哈希函数实例。下面的代码初始化了一个带有消息的 SHA-256 函数。与内置的 `hash` 函数不同，`hashlib` 中的哈希函数要求消息的类型为字节：
 - en: '[PRE5]'
+  id: totrans-110
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: 'Each hash function instance, regardless of how it is created, has the same
     API. The public methods for a SHA-256 instance are analogous to the public methods
     for an MD5 instance. The `digest` and `hexdigest` methods return a hash value
     as bytes and hexadecimal text, respectively:'
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 无论如何创建，每个哈希函数实例都有相同的 API。对于 SHA-256 实例的公共方法类似于对于 MD5 实例的公共方法。`digest` 和 `hexdigest`
+    方法分别返回哈希值作为字节和十六进制文本：
 - en: '[PRE6]'
+  id: totrans-112
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: ❶ Returns hash value as bytes
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 返回哈希值作为字节
 - en: ❷ Returns hash value as string
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 返回哈希值字符串
 - en: 'The following code uses the `digest` method to demonstrate an MD5 collision.
     Both messages have only a handful of different characters (in bold):'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码使用 `digest` 方法演示了一个 MD5 碰撞。这两条消息只有少数不同的字符（加粗显示）：
 - en: '[PRE7]'
+  id: totrans-116
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: ❶ Different message
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 不同的消息
 - en: ❷ Same hash value, collision
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 相同的哈希值，碰撞
 - en: 'A message can alternatively be hashed with the `update` method, shown in bold
     in the following code. This is useful when the hash function needs to be created
     and used separately. The hash value is unaffected by how the message is fed to
     the function:'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 消息也可以使用 `update` 方法进行哈希处理，如下面的代码中所示。当需要单独创建和使用哈希函数时，这很有用。哈希值不受消息如何馈送到函数的影响：
 - en: '[PRE8]'
+  id: totrans-120
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: ❶ Hash function constructed without message
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 构造的哈希函数没有消息
 - en: ❷ Message delivered with update method
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 使用 update 方法传递的消息
 - en: ❸ Same hash value
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 相同的哈希值
 - en: A message can be broken into chunks and hashed iteratively with repeated calls
     to the `update` method, shown in bold in the following code. Each call to the
     `update` method updates the hash value without copying or storing a reference
     to the message bytes. This feature is therefore useful when a large message cannot
     be loaded into memory all at once. Hash values are insensitive to how the message
     is processed.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 一条消息可以被分成多个块，并通过多次调用 `update` 方法进行迭代哈希处理，如下面代码中加粗显示的部分所示。每次调用 `update` 方法都会更新哈希值，而不会复制或存储消息字节的引用。因此，当无法一次性将大消息加载到内存中时，此功能非常有用。哈希值对消息处理方式不敏感。
 - en: '[PRE9]'
+  id: totrans-125
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: ❶ Hash function initiated with message
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 使用消息初始化哈希函数
 - en: ❷ Hash function given message in chunks
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 将消息分块给哈希函数
 - en: ❸ Same hash value
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 相同的哈希值
 - en: 'The `digest_size` property exposes the length of the hash value in terms of
     bytes. Recall that SHA-256, as the name indicates, is a 256-bit hash function:'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: '`digest_size` 属性以字节为单位公开哈希值的长度。回想一下，SHA-256，正如其名称所示，是一个256位的哈希函数：'
 - en: '[PRE10]'
+  id: totrans-130
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 'Cryptographic hash functions are universally deterministic by definition. They
     are naturally cross-platform. The inputs from the examples in this chapter will
     produce the same outputs on any computer in any programming language through any
     API. The following two commands demonstrate this guarantee, using Python and Ruby.
     If two implementations of the same cryptographic hash function produce a different
     hash value, you know that at least one of them is broken:'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 加密哈希函数在定义上是普遍确定性的。它们天然跨平台。本章示例中的输入在任何计算机、任何编程语言和任何 API 上都会产生相同的输出。以下两个命令演示了这一保证，使用
+    Python 和 Ruby。如果同一加密哈希函数的两个实现产生不同的哈希值，那么至少其中一个是有问题的：
 - en: '[PRE11]'
+  id: totrans-132
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: 'The built-in `hash` function, on the other hand, by default, is deterministic
     only within a particular Python process. The following two commands demonstrate
     two *different* Python processes hashing the same message to different hash values:'
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一方面，内置的 `hash` 函数默认情况下仅在特定的 Python 进程内是确定性的。以下两个命令演示了两个*不同*的 Python 进程对相同消息进行哈希处理得到不同的哈希值：
 - en: '[PRE12]'
+  id: totrans-134
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: ❶ Same message
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 相同的消息
 - en: ❷ Different hash value
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 不同的哈希值
 - en: WARNING The built-in `hash` function should never be used for cryptographic
     purposes. This function is very fast, but it does not possess enough collision
     resistance to be in the same league as SHA-256.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：内置的 `hash` 函数绝对不应用于加密目的。这个函数非常快，但它没有足够的碰撞抵抗力，无法与 SHA-256 相提并论。
 - en: You may have wondered by now, “Aren’t hash values just checksums?” The answer
     is no. The next section explains why.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能会想到，“哈希值不就是校验和吗？” 答案是否定的。下一节将解释为什么不是。
 - en: 2.6 Checksum functions
+  id: totrans-139
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 2.6 校验和函数
 - en: Hash functions and checksum functions share a few things in common. *Hash functions*
     accept data and produce hash values; *checksum functions* accept data and produce
     checksums. A hash value and a checksum are both numbers. These numbers are used
     to detect undesired data modification, usually when data is at rest or in transit.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 哈希函数和校验和函数有一些共同点。*哈希函数*接受数据并生成哈希值；*校验和函数*接受数据并生成校验和。哈希值和校验和都是数字。这些数字用于检测不希望的数据修改，通常在数据静止或传输过程中。
 - en: 'Python natively supports checksum functions such as cyclic redundancy check
     (CRC) and Adler-32 in the `zlib` module. The following code demonstrates a common
     use case of CRC. This code compresses and decompresses a block of repetitious
     data. A checksum of the data is calculated before and after this transformation
     (shown in bold). Finally, error detection is performed by comparing the checksums:'
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: Python 本身支持校验和函数，如循环冗余校验（CRC）和 Adler-32 在 `zlib` 模块中。以下代码演示了 CRC 的一个常见用例。该代码压缩和解压一个重复数据块。在此转换之前和之后计算数据的校验和（加粗显示）。最后，通过比较校验和来执行错误检测：
 - en: '[PRE13]'
+  id: totrans-142
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: ❶ Checksums a message
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 对消息进行校验和
 - en: ❷ Compresses and decompresses the message
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 压缩和解压消息
 - en: ❸ No errors detected by comparing checksums
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 通过比较校验和未检测到任何错误
 - en: 'Despite their similarities, hash functions and checksum functions should not
     be confused with each other. The trade-off between a hash function and a checksum
     function boils down to cryptographic strength versus speed. In other words, cryptographic
@@ -684,60 +987,89 @@
     faster. For example, CRC and Adler-32 are much faster than SHA-256, but neither
     possesses sufficient collision resistance. The following two lines of code demonstrate
     one of countless CRC collisions:'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管它们相似，但哈希函数和校验函数不应混淆。哈希函数和校验函数之间的权衡是在于加密强度与速度之间的权衡。换句话说，加密哈希函数具有更强的碰撞抵抗力，而校验函数更快。例如，CRC
+    和 Adler-32 比 SHA-256 快得多，但都不具有足够的碰撞抵抗力。以下两行代码演示了无数 CRC 碰撞之一：
 - en: '[PRE14]'
+  id: totrans-147
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: If you could identify a collision like this with SHA-256, it would send shockwaves
     across the cybersecurity field. Associating checksum functions with data integrity
     is a bit of a stretch. It is more accurate to characterize checksum functions
     with *error detection*, not data integrity.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您能够像这样使用 SHA-256 找到碰撞，那将在网络安全领域引发震动。将校验函数与数据完整性联系起来有点牵强。更准确地说，应该用*错误检测*来描述校验函数，而不是数据完整性。
 - en: WARNING Checksum functions should never be used for security purposes. Cryptographic
     hash functions can be used in place of checksum functions at a substantial performance
     cost.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：校验函数不应用于安全目的。可以使用加密哈希函数代替校验函数，但会付出相当大的性能代价。
 - en: In this section, you learned to use the `hashlib` module, not the `zlib` module,
     for cryptographic hashing. The next chapter continues with hashing. You’ll learn
     how to use the `hmac` module for keyed hashing, a common solution for data authentication.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，您学习了在加密哈希中使用 `hashlib` 模块，而不是 `zlib` 模块。下一章将继续介绍哈希。您将学习如何使用 `hmac` 模块进行键控哈希，这是一种常见的数据认证解决方案。
 - en: Summary
+  id: totrans-151
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 总结
 - en: Hash functions deterministically map messages to fixed-length hash values.
+  id: totrans-152
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 哈希函数将消息确定性地映射到固定长度的哈希值。
 - en: You use cryptographic hash functions to ensure data integrity.
+  id: totrans-153
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 您使用加密哈希函数来确保数据完整性。
 - en: You should use SHA-256 for general-purpose cryptographic hashing.
+  id: totrans-154
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通常应使用 SHA-256 进行通用加密哈希。
 - en: Code using MD5 or SHA1 for security purposes is vulnerable.
+  id: totrans-155
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用 MD5 或 SHA1 进行安全目的的代码存在漏洞。
 - en: You use the `hashlib` module for cryptographic hashing in Python.
+  id: totrans-156
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在 Python 中，您可以使用 `hashlib` 模块进行加密哈希。
 - en: Checksum functions are unsuitable for cryptographic hashing.
+  id: totrans-157
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 校验函数不适用于加密哈希。
 - en: Alice, Bob, and Charlie are good.
+  id: totrans-158
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 爱丽丝（Alice）、鲍勃（Bob）和查理（Charlie）是好人。
 - en: Eve and Mallory are bad.
+  id: totrans-159
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 伊夫（Eve）和玛洛丽（Mallory）是坏人。

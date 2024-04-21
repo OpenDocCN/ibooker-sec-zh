@@ -1,23 +1,29 @@
 - en: 3 Keyed hashing
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
 - en: Generating a secure key
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Verifying data authentication with keyed hashing
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Using the `hmac` module for cryptographic hashing
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Preventing timing attacks
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -27,9 +33,11 @@
     passphrases. Along the way, you’ll learn about the `os`, `secrets`, `random`,
     and `hmac` modules. Finally, you learn how to resist timing attacks by comparing
     hash values in length-constant time.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
 - en: 3.1 Data authentication
+  id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -38,6 +46,7 @@
     of a document, the system rehashes it and compares the new hash value to the old
     hash value. If the hash values don’t match, the document is considered corrupt.
     If the hash values do match, the document is considered intact.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
 - en: Alice’s system effectively detects accidental data corruption but is less than
@@ -48,6 +57,7 @@
     from detecting that the document has been tampered with. Alice’s solution can
     therefore detect only accidental message corruption; it cannot detect intentional
     message modification.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
 - en: If Alice wants to resist Mallory, she’ll need to change the system to verify
@@ -55,24 +65,29 @@
     the question, “Has the data changed?” The system must also answer, “Who authored
     this data?” In other words, the system will need to ensure data integrity and
     data authentication.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
 - en: '*Data authentication*, sometimes referred to as *message authentication*, ensures
     that a data reader can verify the identity of the data writer. This functionality
     requires two things: a key and a keyed hash function. In the next sections, I
     cover key generation and keyed hashing; Alice combines these tools to resist Mallory.'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
 - en: 3.1.1 Key generation
+  id: totrans-12
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: 'Every key should be hard to guess if it is to remain a secret. In this section,
     I compare and contrast two types of keys: random numbers and passphrases. You’ll
     learn how to generate both, and when to use one or the other.'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
 - en: Random numbers
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
 - en: 'There is no need to use a third-party library when generating a random number;
@@ -82,11 +97,15 @@
     This function accepts an integer `size` and returns `size` random bytes. These
     bytes are sourced from the operating system. On a UNIX-like system, this is `/dev/urandom`;
     on a Windows system, this is `CryptGenRandom`:'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 在生成随机数时无需使用第三方库；Python本身有很多方法可以实现这一点。然而，其中只有一些方法适用于安全目的。Python程序员传统上使用`os.urandom`函数作为密码安全的随机数源。此函数接受一个整数`size`并返回`size`个随机字节。这些字节来自操作系统。在类UNIX系统上，这是`/dev/urandom`；在Windows系统上，这是`CryptGenRandom`：
 - en: '[PRE0]'
+  id: totrans-16
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'An explicit high-level API for generating cryptographically secure random numbers,
     the `secrets` module, was introduced in Python 3.6\. There is nothing wrong with
     `os.urandom`, but in this book I use the `secrets` module for all random-number
@@ -95,97 +114,143 @@
     Random numbers can be represented as a byte array, hexadecimal text, and URL-safe
     text. The prefix for all three function names, shown by the following code, is
     `token_`:'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: Python 3.6引入了一个专门用于生成密码安全随机数的显式高级API，即`secrets`模块。`os.urandom`没有问题，但在本书中，我使用`secrets`模块来生成所有随机数。该模块具有三个方便的用于生成随机数的函数。所有三个函数都接受一个整数并返回一个随机数。随机数可以表示为字节数组、十六进制文本和URL安全文本。所有三个函数名称的前缀如下代码所示，为`token_`：
 - en: '[PRE1]'
+  id: totrans-18
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: ❶ Generates 16 random bytes
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 生成16个随机字节
 - en: ❷ Generates 16 random bytes of hexadecimal text
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 生成16个十六进制文本的随机字节
 - en: ❸ Generates 16 random bytes of URL-safe text
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 生成16个URL安全文本的随机字节
 - en: 'Type the following command to generate 16 random bytes on your computer. I’m
     willing to bet you get a different number than I did:'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 在计算机上键入以下命令以生成16个随机字节。我愿意打赌你得到的数字与我不同：
 - en: '[PRE2]'
+  id: totrans-23
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: A third way to obtain random numbers is the `random` module. Most of the functions
     in this module do not use a secure random-number source. The documentation for
     this module clearly states it “should not be used for security purposes” ([https://docs
     .python.org/3/library/random.html](https://docs.python.org/3/library/random.html)).
     The documentation for the `secrets` module asserts it “should be used in preference
     to the default pseudo-random number generator in the `random` module” ([https://docs.python.org/3/library/secrets.html](https://docs.python.org/3/library/secrets.html)).
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三种获取随机数的方法是使用`random`模块。该模块中的大多数函数不使用安全的随机数源。此模块的文档明确指出“不应用于安全目的”（[https://docs
+    .python.org/3/library/random.html](https://docs.python.org/3/library/random.html)）。`secrets`模块的文档断言“应该优先使用`random`模块中的默认伪随机数生成器”（[https://docs.python.org/3/library/secrets.html](https://docs.python.org/3/library/secrets.html)）。
 - en: WARNING Never use the `random` module for security or cryptographic purposes.
     This module is great for statistics but unsuitable for security or cryptography.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：永远不要将`random`模块用于安全或加密目的。该模块非常适用于统计学，但不适合安全或加密。
 - en: Passphrases
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 密码短语
 - en: A *passphrase* is a sequence of random words rather than a sequence of random
     numbers. Listing 3.1 uses the `secrets` module to generate a passphrase composed
     of four words randomly chosen from a dictionary file.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: '*密码短语*是一系列随机单词，而不是一系列随机数字。列表3.1使用`secrets`模块从字典文件中随机选择的四个单词生成密码短语。'
 - en: The script begins by loading a dictionary file into memory. This file ships
     with standard UNIX-like systems. Users of other operating systems will have no
     problem downloading similar files from the web ([www.karamasoft.com/UltimateSpell/Dictionary.aspx](https://www.karamasoft.com/UltimateSpell/Dictionary.aspx)).
     The script randomly selects words from the dictionary by using the `secrets .choice`
     function. This function returns a random item from a given sequence.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 脚本首先将字典文件加载到内存中。该文件随标准类UNIX系统一起发货。其他操作系统的用户从网上下载类似的文件也不成问题（[www.karamasoft.com/UltimateSpell/Dictionary.aspx](https://www.karamasoft.com/UltimateSpell/Dictionary.aspx)）。脚本使用`secrets
+    .choice`函数从字典中随机选择单词。此函数从给定序列返回一个随机项。
 - en: Listing 3.1 Generating a four-word passphrase
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表3.1 生成一个四个单词的密码短语
 - en: '[PRE3]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: ❶ Loads a dictionary file into memory
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 将字典文件加载到内存中
 - en: ❷ Randomly selects four words
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 随机选择四个单词
 - en: Dictionary files like this are one of the tools attackers use when executing
     brute-force attacks. Constructing a secret from the same source is therefore nonintuitive.
     The power of a passphrase is size. For example, the passphrase `whereat` `isostatic
     custom` `insupportableness` is 42 bytes long. According to [www.useapassphrase.com](https://www.useapassphrase.com/),
     the approximate crack time of this passphrase is 163,274,072,817,384 centuries.
     A brute-force attack against a key this long is infeasible. Key size matters.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 像这样的字典文件是攻击者执行暴力攻击时使用的工具之一。因此，从相同来源构建秘密是非直观的。密码短语的力量在于大小。例如，密码短语`whereat` `isostatic
+    custom` `insupportableness`的长度为42字节。根据[www.useapassphrase.com](https://www.useapassphrase.com/)的说法，这个密码短语的破解时间约为163,274,072,817,384世纪。对这么长的密钥进行暴力攻击是不可行的。密钥大小很重要。
 - en: 'A random number and a passphrase naturally satisfy the most basic requirement
     of a secret: both key types are difficult to guess. The difference between a random
     number and a passphrase boils down to the limitations of long-term human memory.'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个随机数和一个密码短语自然满足秘密的最基本要求：两种密钥类型都难以猜测。随机数和密码短语之间的区别归结为长期人类记忆的局限性。
 - en: TIP Random numbers are hard to remember, and passphrases are easy to remember.
     This difference determines which scenarios each key type is useful for.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 提示 随机数很难记住，而密码短语很容易记住。这种差异决定了每种密钥类型适用于哪些情景。
 - en: Random numbers are useful when a human does not or should not remember a secret
     for more than a few minutes. A multifactor authentication (MFA) token and a temporary
     reset-password value are both good applications of random numbers. Remember how
     `secrets.token_bytes`, `secrets.token_hex`, and `secrets .token_urlsafe` are all
     prefixed with `token_`? This prefix is a hint for what these functions should
     be used for.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 当一个人不需要或不应该记住一个秘密超过几分钟时，随机数是有用的。多因素认证（MFA）令牌和临时重置密码值都是随机数的良好应用场景。还记得`secrets.token_bytes`，`secrets.token_hex`和`secrets
+    .token_urlsafe`吗？这个前缀是对这些函数应该用于什么的提示。
 - en: Passphrases are useful when a human needs to remember a secret for a long time.
     Login credentials for a website or a Secure Shell (SSH) session are both good
     applications of passphrases. Unfortunately, most internet users are not using
     passphrases. Most public websites do not encourage passphrase usage.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 当一个人需要长时间记住一个秘密时，密码短语是有用的。网站的登录凭据或安全外壳（SSH）会话都是密码短语的良好应用场景。不幸的是，大多数互联网用户并没有使用密码短语。大多数公共网站不鼓励使用密码短语。
 - en: It is important to understand that random numbers and passphrases don’t just
     solve problems when applied correctly; they create new problems when they are
     applied incorrectly. Imagine the following two scenarios in which a person must
@@ -193,64 +258,93 @@
     it protects becomes inaccessible. Second, the random number is handwritten to
     a piece of paper on a system administrator’s desk, where it is unlikely to remain
     a secret.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 重要的是要理解，随机数和密码短语不仅在正确应用时解决问题；当它们被错误应用时，它们会产生新问题。想象一下以下两种情况，一个人必须记住一个随机数。首先，随机数被遗忘了，它所保护的信息变得无法访问。其次，随机数被手写到系统管理员桌上的一张纸上，这样它就不太可能保密了。
 - en: Imagine the following scenario in which a passphrase is used for a short-term
     secret. Let’s say you receive a password-reset link or an MFA code containing
     a passphrase. Wouldn’t a malicious bystander be more likely to remember this key
     if they see it on your screen? As a passphrase, this key is less likely to remain
     a secret.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象一下以下情景，在这种情景中，密码短语用于短期秘密。假设您收到一个包含密码重置链接或密码重置代码的密码短语。如果一个恶意旁观者看到它在您的屏幕上，他们更有可能记住这个密钥吗？作为密码短语，这个密钥不太可能保密。
 - en: Note For the sake of simplicity, many of the examples in this book feature keys
     in Python source code. In a production system, however, every key should be stored
     safely in a key management service instead of your code repository. Amazon’s AWS
     Key Management Service ([https://aws.amazon.com/kms/](https://aws.amazon.com/kms/))
     and Google’s Cloud Key Management Service ([https://cloud.google.com/security-key-management](https://cloud.google.com/security-key-management))
     are both examples of good key management services.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 为了简单起见，本书中的许多示例都是在Python源代码中显示的密钥。然而，在生产系统中，每个密钥都应该安全地存储在密钥管理服务中，而不是您的代码库中。亚马逊的AWS密钥管理服务（[https://aws.amazon.com/kms/](https://aws.amazon.com/kms/)）和谷歌的云密钥管理服务（[https://cloud.google.com/security-key-management](https://cloud.google.com/security-key-management)）都是良好的密钥管理服务的示例。
 - en: You now know how to safely generate a key. You know when to use a random number
     and when to use a passphrase. Both skills are relevant to many parts of this book,
     starting with the next section.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 你现在知道如何安全地生成一个密钥。你知道何时使用随机数，何时使用密码。这两种技能与本书的许多部分相关，从下一节开始。
 - en: 3.1.2 Keyed hashing
+  id: totrans-42
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3.1.2 带密钥的哈希
 - en: Some hash functions accept an optional key. The key, as shown in figure 3.1,
     is an input to the hash function just like the message. As with an ordinary hash
     function, the output of a keyed hash function is a hash value.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 一些哈希函数接受一个可选的密钥。如图 3.1 所示，密钥是哈希函数的一个输入，就像消息一样。与普通哈希函数一样，带密钥哈希函数的输出是一个哈希值。
 - en: '![CH03_F01_Byrne](Images/CH03_F01_Byrne.png)'
+  id: totrans-44
   prefs: []
   type: TYPE_IMG
+  zh: '![CH03_F01_Byrne](Images/CH03_F01_Byrne.png)'
 - en: Figure 3.1 Keyed hash functions accept a key in addition to a message.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 3.1 带密钥哈希函数除消息外还接受一个密钥。
 - en: 'Hash values are sensitive to key values. Hash functions using different keys
     produce different hash values of the same message. Hash functions using the same
     key produce matching hash values of the same message. The following code demonstrates
     keyed hashing with BLAKE2, a hash function that accepts an optional key:'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 哈希值对密钥值敏感。使用不同密钥的哈希函数会产生相同消息的不同哈希值。使用相同密钥的哈希函数会产生相同消息的匹配哈希值。下面的代码演示了带 BLAKE2
+    的带密钥哈希，BLAKE2 是一种可选密钥的哈希函数：
 - en: '[PRE4]'
+  id: totrans-47
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: ❶ First key
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 第一个密钥
 - en: ❷ Second key
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 第二密钥
 - en: ❸ Same key, same hash value
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 相同密钥，相同哈希值
 - en: ❹ Different key, different hash value
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 不同密钥，不同哈希值
 - en: Alice, working on her document management system, can add a layer of defense
     against Mallory with keyed hashing. Keyed hashing allows Alice to store each document
     with a hash value that only she can produce. Mallory can no longer get away with
@@ -258,39 +352,61 @@
     the same hash value as Alice when validating the altered document. Alice’s code,
     shown here, can therefore resist accidental data corruption and malicious data
     modification.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: Alice 在她的文档管理系统上工作，可以通过带密钥的哈希添加一层对抗 Mallory 的防御。带密钥的哈希允许 Alice 使用只有她能产生的哈希值存储每个文档。Mallory
+    不能再擅自修改文档并重新计算哈希值了。没有密钥，Mallory 在验证修改后的文档时无法产生与 Alice 相同的哈希值。因此，Alice 的代码，如下所示，可以抵抗意外数据损坏和恶意数据修改。
 - en: Listing 3.2 Alice resists accidental and malicious data modification
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 3.2 Alice 抵抗意外和恶意数据修改
 - en: '[PRE5]'
+  id: totrans-54
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: ❶ Hashes document with the given key
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 使用给定的密钥对文档进行哈希
 - en: ❷ Writes document and hash value to separate files
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 将文档和哈希值写入单独的文件
 - en: ❸ Reads document and hash value from storage
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 从存储中读取文档和哈希值
 - en: ❹ Recomputes new hash value with the given key
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 使用给定的密钥重新计算新的哈希值
 - en: ❺ Compares recomputed hash value with hash value read from disk
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: ❺ 将重新计算的哈希值与从磁盘读取的哈希值进行比较
 - en: Most hash functions are not keyed hash functions. Ordinary hash functions, like
     SHA-256, do not natively support a key like BLAKE2\. This inspired a group of
     really smart people to develop hash-based message authentication code (HMAC) functions.
     The next section explores HMAC functions.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 大多数哈希函数都不是带密钥的哈希函数。普通哈希函数，如 SHA-256，并不原生支持像 BLAKE2 那样的密钥。这启发了一群非常聪明的人来开发基于哈希的消息认证码（HMAC）函数。下一节将探讨
+    HMAC 函数。
 - en: 3.2 HMAC functions
+  id: totrans-61
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 3.2 HMAC 函数
 - en: '*HMAC* *functions* are a generic way to use any ordinary hash function as though
     it were a keyed hash function. An HMAC function accepts three inputs: a message,
     a key, and an ordinary cryptographic hash function (figure 3.2). Yes, you read
@@ -299,146 +415,218 @@
     to it. The output of an HMAC function is—you guessed it—a hash-based message authentication
     code (MAC). A MAC is really just a special kind of hash value. In this book, for
     the sake of simplicity, I use the term *hash value* instead of *MAC*.'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: '*HMAC* *函数* 是一种通用方法，可以像使用带密钥的哈希函数一样使用任何普通哈希函数。HMAC 函数接受三个输入：消息、密钥和一个普通的密码哈希函数（图
+    3.2）。没错，你没看错：HMAC 函数的第三个输入是另一个函数。HMAC 函数将所有繁重的工作都包装并委托给传递给它的函数。HMAC 函数的输出是——你猜对了——基于哈希的消息认证码（MAC）。MAC
+    实际上只是一种特殊类型的哈希值。为了简单起见，在本书中，我使用 *哈希值* 一词来代替 *MAC*。'
 - en: '![CH03_F02_Byrne](Images/CH03_F02_Byrne.png)'
+  id: totrans-63
   prefs: []
   type: TYPE_IMG
+  zh: '![CH03_F02_Byrne](Images/CH03_F02_Byrne.png)'
 - en: 'Figure 3.2 HMAC functions accept three inputs: a message, a key, and a hash
     function.'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 3.2 HMAC 函数接受三个输入：消息、密钥和哈希函数。
 - en: tip Do yourself a favor and commit HMAC functions to memory. HMAC functions
     are the solution to many of the challenges presented later in this book. This
     topic will reappear when I cover encryption, session management, user registration,
     and password-reset workflows.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 为自己着想，务必将HMAC函数牢记于心。HMAC函数是本书后面提出的许多挑战的解决方案。当我讨论加密、会话管理、用户注册和密码重置流程时，这个主题将再次出现。
 - en: 'Python’s answer to HMAC is the `hmac` module. The following code initializes
     an HMAC function with a message, key, and SHA-256\. An HMAC function is initialized
     by passing a key and hash function constructor reference to the `hmac.new` function.
     The `digestmod` keyword argument (kwarg) designates the underlying hash function.
     Any reference to a hash function constructor in the `hashlib` module is an acceptable
     argument for `digestmod`:'
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: Python对HMAC的回答是`hmac`模块。以下代码使用消息、密钥和SHA-256初始化了一个HMAC函数。通过将密钥和哈希函数构造函数引用传递给`hmac.new`函数来初始化HMAC函数。`digestmod`关键字参数指定了底层哈希函数。`hashlib`模块中对哈希函数构造函数的任何引用都是`digestmod`的可接受参数：
 - en: '[PRE6]'
+  id: totrans-67
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: WARNING The `digestmod` kwarg went from optional to required with the release
     of Python 3.8\. You should always explicitly specify the `digestmod` kwarg to
     ensure that your code runs smoothly on different versions of Python.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 `digestmod` kwarg在Python 3.8发布时从可选变为必需。您应始终明确指定`digestmod` kwarg，以确保您的代码在不同版本的Python上顺利运行。
 - en: 'The new HMAC function instance mirrors the behavior of the hash function instance
     it wraps. The `digest` and `hexdigest` methods, as well as the `digest_size` property,
     shown here, should look familiar by now:'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 新的HMAC函数实例反映了它包装的哈希函数实例的行为。这里显示的`digest`和`hexdigest`方法，以及`digest_size`属性，现在应该看起来很熟悉：
 - en: '[PRE7]'
+  id: totrans-70
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: ❶ Returns the hash value in bytes
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 以字节形式返回哈希值
 - en: ❷ Returns the hash value in hexadecimal text
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 以十六进制文本返回哈希值
 - en: ❸ Returns the hash value size
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 返回哈希值大小
 - en: 'The name of an HMAC function is a derivative of the underlying hash function.
     For example, you might refer to an HMAC function wrapping SHA-256 as HMAC-SHA256:'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: HMAC函数的名称是基础哈希函数的衍生物。例如，您可以将包装SHA-256的HMAC函数称为HMAC-SHA256：
 - en: '[PRE8]'
+  id: totrans-75
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: By design, HMAC functions are commonly used for message authentication. The
     *M* and *A* of *HMAC* literally stand for *message authentication*. Sometimes,
     as with Alice’s document management system, the message reader and the message
     writer are the same entity. Other times, the reader and the writer are different
     entities. The next section covers this use case.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 按设计，HMAC函数通常用于消息认证。*HMAC*的*M*和*A*字面上代表*消息认证*。有时，就像Alice的文档管理系统一样，消息的读者和消息的编写者是同一个实体。其他时候，读者和编写者是不同的实体。下一节将涵盖这种用例。
 - en: 3.2.1 Data authentication between parties
+  id: totrans-77
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3.2.1 各方之间的数据认证
 - en: 'Imagine that Alice’s document management system must now receive documents
     from Bob. Alice has to be certain each message has not been modified in transit
     by Mallory. Alice and Bob agree on a protocol:'
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象一下，Alice的文档管理系统现在必须从Bob那里接收文档。Alice必须确保每条消息在传输过程中没有被Mallory修改。Alice和Bob就协议达成一致：
 - en: Alice and Bob share a secret key.
+  id: totrans-79
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: Alice和Bob共享一个秘密密钥。
 - en: Bob hashes a document with his copy of the key and an HMAC function.
+  id: totrans-80
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: Bob使用他的密钥副本和HMAC函数对文档进行哈希处理。
 - en: Bob sends the document and the hash value to Alice.
+  id: totrans-81
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: Bob将文档和哈希值发送给Alice。
 - en: Alice hashes the document with her copy of the key and an HMAC function.
+  id: totrans-82
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: Alice使用她的密钥副本和HMAC函数对文档进行哈希处理。
 - en: Alice compares her hash value to Bob’s hash value.
+  id: totrans-83
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: Alice将她的哈希值与Bob的哈希值进行比较。
 - en: 'Figure 3.3 illustrates this protocol. If the received hash value matches the
     recomputed hash value, Alice can conclude two facts:'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 3.3 说明了这个协议。如果接收到的哈希值与重新计算的哈希值匹配，Alice可以得出两个结论：
 - en: The message was sent by someone with the same key, presumably Bob.
+  id: totrans-85
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 消息是由具有相同密钥的人发送的，据推测是Bob。
 - en: Mallory couldn’t have modified the message in transit.
+  id: totrans-86
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Mallory无法在传输过程中修改消息。
 - en: '![CH03_F03_Byrne](Images/CH03_F03_Byrne.png)'
+  id: totrans-87
   prefs: []
   type: TYPE_IMG
+  zh: '![CH03_F03_Byrne](Images/CH03_F03_Byrne.png)'
 - en: Figure 3.3 Alice verifies Bob’s identity with a shared key and an HMAC function.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 3.3 Alice使用共享密钥和HMAC函数验证Bob的身份。
 - en: Bob’s implementation of his side of the protocol, shown in the following listing,
     uses HMAC-SHA256 to hash his message before sending it to Alice.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: Bob在发送给Alice之前使用HMAC-SHA256对他的消息进行哈希处理的协议的实现，如下列表所示。
 - en: Listing 3.3 Bob uses an HMAC function before sending his message
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 3.3 Bob在发送消息之前使用HMAC函数
 - en: '[PRE9]'
+  id: totrans-91
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: ❶ Bob hashes the document.
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ Bob对文档进行哈希处理。
 - en: ❷ Hash value accompanies document in transit
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 哈希值随文档一起传输
 - en: Alice’s implementation of her side of the protocol, shown next, uses HMAC-SHA256
     to hash the received document. If both MACs are the same value, the message is
     said to be authenticated.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 3.4 Alice uses an HMAC function after receiving Bob’s message
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE10]'
+  id: totrans-96
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: ❶ Alice computes her own hash value.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Alice compares both hash values.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
 - en: Mallory, an intermediary, has no way to trick Alice into accepting an altered
@@ -446,15 +634,18 @@
     the same hash value as they do for a given message. If Mallory modifies the message
     or the hash value in transit, the hash value Alice receives will be different
     from the hash value Alice computes.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
 - en: Take a look at the last few lines of code in listing 3.4\. Notice that Alice
     uses the `==` operator to compare hash values. This operator, believe it or not,
     leaves Alice vulnerable to Mallory in a whole new way. The next section explains
     how attackers like Mallory launch timing attacks.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
 - en: 3.3 Timing attacks
+  id: totrans-101
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -467,6 +658,7 @@
     compare all characters of both hash values. More importantly, `==` will take longer
     to compare two hash values if they share a common prefix. Can you spot the vulnerability
     yet?
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
 - en: Mallory begins a new attack by creating a document she wants Alice to accept
@@ -474,6 +666,7 @@
     the hash value Alice will hash the document to, but she knows the hash value is
     going to be 64 characters long. She also knows the hash value is hexadecimal text,
     so each character has 16 possible values.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
 - en: The next step of the attack is to determine, or crack, the first of 64 hash
@@ -485,13 +678,16 @@
     characters by observing the average response time associated with each hexadecimal
     value. The average response time for the matching hexadecimal value will be slightly
     longer than the others. Figure 3.4 depicts how Mallory cracks the first character.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
 - en: '![CH03_F04_Byrne](Images/CH03_F04_Byrne.png)'
+  id: totrans-105
   prefs: []
   type: TYPE_IMG
 - en: Figure 3.4 Mallory cracks the first character of a hash value after observing
     slightly higher average response times for b.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
 - en: Mallory finishes the attack by repeating this process for the remaining 63 of
@@ -500,8 +696,10 @@
     from system execution time. The attacker obtains hints about private information
     by measuring the time a system takes to perform an operation. In this example,
     the operation is string comparison.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: Mallory 通过重复这个过程来完成攻击，对剩下的 63 个字符中的 64 个字符进行操作，此时她就知道了整个哈希值。这是一个 *时序攻击* 的例子。这种攻击是通过从系统执行时间中获取未经授权的信息来执行的。攻击者通过测量系统执行操作所需的时间来获得关于私有信息的提示。在这个例子中，操作是字符串比较。
 - en: 'Secure systems compare hash values in length-constant time, deliberately sacrificing
     a small amount of performance in order to prevent timing attack vulnerabilities.
     The `hmac` module contains a length-constant time comparison function named `compare_digest`.
@@ -511,57 +709,85 @@
     before it returns. The average, fastest, and slowest use cases are all the same.
     This prevents a timing attack whereby an attacker can determine the value of one
     hash value if they can control the other hash value:'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 安全系统在比较哈希值时使用长度恒定的时间，故意牺牲了一小部分性能，以防止时序攻击漏洞。`hmac` 模块包含一个名为 `compare_digest`
+    的长度恒定时间比较函数。此函数具有与 `==` 操作符相同的功能结果，但时间复杂度不同。`compare_digest` 函数在检测到两个哈希值之间有差异时不会提前返回。它总是在返回之前比较所有字符。平均情况、最快情况和最慢情况都是相同的。这可以防止时序攻击，攻击者可以确定一个哈希值的值，如果他们可以控制另一个哈希值：
 - en: '[PRE11]'
+  id: totrans-109
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: ❶ Different arguments, same runtime
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 不同的参数，相同的运行时间
 - en: ❷ Same arguments, same runtime
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 相同的参数，相同的运行时间
 - en: Always use `compare_digest` to compare hash values. To err on the side of caution,
     use `compare_digest` even if you’re writing code that is using hash values only
     to verify data integrity. This function is used in many examples in this book,
     including the one in the previous section. The arguments for `compare_digest`
     can be strings or bytes.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 始终使用 `compare_digest` 来比较哈希值。为了谨慎起见，即使你正在编写的代码只使用哈希值来验证数据完整性，也要使用 `compare_digest`。这个函数在本书的许多示例中都有使用，包括前一节的示例。`compare_digest`
+    的参数可以是字符串或字节。
 - en: Timing attacks are a specific kind of side channel attack. A *side channel attack*
     is used to derive unauthorized information by measuring any physical side channel.
     Time, sound, power consumption, electromagnetic radiation, radio waves, and heat
     are all side channels. Take these attacks seriously, as they are not just theoretical.
     Side channel attacks have been used to compromise encryption keys, forge digital
     signatures, and gain access to unauthorized information.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 时序攻击是一种特定类型的侧信道攻击。*侧信道攻击* 用于通过测量任何物理侧信道来推导出未经授权的信息。时间、声音、功耗、电磁辐射、无线电波和热量都是侧信道。认真对待这些攻击，因为它们不仅仅是理论上的。侧信道攻击已被用于破解加密密钥、伪造数字签名和获取未经授权的信息。
 - en: Summary
+  id: totrans-114
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 摘要
 - en: Keyed hashing ensures data authentication.
+  id: totrans-115
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通过密钥散列确保数据认证。
 - en: Use a passphrase for a key if a human needs to remember it.
+  id: totrans-116
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果一个人需要记住一个密钥，可以使用一个口令作为密钥。
 - en: Use a random number for a key if a human doesn’t need to remember it.
+  id: totrans-117
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果人类不需要记住一个密钥，可以使用一个随机数作为密钥。
 - en: HMAC functions are your best bet for general-purpose keyed hashing.
+  id: totrans-118
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: HMAC 函数是你用于通用密钥散列的最佳选择。
 - en: Python natively supports HMAC functions with the `hmac` module.
+  id: totrans-119
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Python 本身支持具有 `hmac` 模块的 HMAC 函数。
 - en: Resist timing attacks by comparing hash values in length-constant time.
+  id: totrans-120
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通过在长度恒定的时间内比较哈希值来抵御时序攻击。

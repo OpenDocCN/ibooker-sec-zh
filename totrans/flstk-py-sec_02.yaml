@@ -1,16 +1,22 @@
 - en: Part 1 Cryptographic foundations
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 密码学基础部分
 - en: We depend on hashing, encryption, and digital signatures every day. Of these
     three, encryption typically steals the show. It gets more attention at conferences,
     in lecture halls, and from mainstream media. Programmers are generally more interested
     in learning about it as well.
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们每天都依赖哈希、加密和数字签名。在这三者中，加密通常是最受关注的。它在会议上、讲堂上以及主流媒体中更受关注。程序员们通常也更有兴趣学习它。
 - en: This first part of the book repeatedly demonstrates why hashing and digital
     signatures are as vital as encryption. Moreover, the subsequent parts of the book
     demonstrate the importance of all three. Therefore, chapters 2 through 6 are useful
     by themselves, but they also help you understand many of the later chapters.
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书的第一部分反复展示了为什么哈希和数字签名与加密一样重要。此外，本书的后续部分展示了这三者的重要性。因此，第2至6章本身就很有用，但它们也有助于你理解许多后续章节。

@@ -1,99 +1,143 @@
 - en: 7 Signatures and zero-knowledge proofs
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 7 签名和零知识证明
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章包括
 - en: Zero-knowledge proofs and cryptographic signatures
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 零知识证明和数字签名
 - en: The existing standards for cryptographic signatures
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 密码签名的现有标准
 - en: The subtle behaviors of signatures and avoiding their pitfalls
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 签名的微妙行为和避免它们的陷阱
 - en: You’re about to learn one of the most ubiquitous and powerful cryptographic
     primitives—digital signatures. To put it simply, digital signatures are similar
     to the real-life signatures that you’re used to, the ones that you scribe on checks
     and contracts. Except, of course, that digital signatures are cryptographic and
     so they provide much more assurance than their pen-and-paper equivalents.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 你即将学到一种最普遍和最强大的密码原语——数字签名。简单来说，数字签名类似于你习惯的现实生活中的签名，就像你在支票和合同上写的那种。当然，数字签名是密码学的，所以它们提供比纸笔等价物更多的保证。
 - en: In the world of protocols, digital signatures unlock so many different possibilities
     that you’ll run into them again and again in the second part of this book. In
     this chapter, I will introduce what this new primitive is, how it can be used
     in the real world, and what the modern digital signature standards are. Finally,
     I will talk about security considerations and the hazards of using digital signatures.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 在协议的世界里，数字签名解锁了许多不同的可能性，你将会在本书的第二部分中反复遇到它们。在这一章中，我将介绍这个新原语是什么，它如何在现实世界中使用，以及现代数字签名标准是什么。最后，我将谈论安全考虑和使用数字签名的危险。
 - en: Note Signatures in cryptography are often referred to as *digital signatures*
     or *signature schemes*. In this book, I interchangeably use these terms.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 注：在密码学中，签名经常被称为*数字签名*或*签名方案*。在本书中，我会交替使用这些术语。
 - en: For this chapter, you’ll need to have read
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于本章，你需要阅读
 - en: Chapter 2 on hash functions
+  id: totrans-9
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第2章关于哈希函数
 - en: Chapter 5 on key exchanges
+  id: totrans-10
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第5章关于密钥交换
 - en: Chapter 6 on asymmetric encryption
+  id: totrans-11
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第6章关于非对称加密
 - en: 7.1 What is a signature?
+  id: totrans-12
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 7.1 什么是签名？
 - en: 'I explained in chapter 1 that cryptographic signatures are pretty much like
     real-life signatures. For this reason, they are usually one of the most intuitive
     cryptographic primitives to understand:'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 我在第一章解释过，密码签名基本上就像现实生活中的签名一样。因此，它们通常是最直观的密码原语之一：
 - en: Only you can use your signature to sign arbitrary messages.
+  id: totrans-14
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 只有你可以使用你的签名来签署任意消息。
 - en: Anybody can verify your signature on a message.
+  id: totrans-15
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 任何人都可以验证你在消息上的签名。
 - en: 'As we’re in the realm of asymmetric cryptography, you can probably guess how
     this asymmetry is going to take place. A *signature scheme* typically consists
     of three different algorithms:'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 因为我们处于非对称密码学的领域，你可能已经猜到了这种不对称性会如何发挥作用。一个*签名方案*通常由三种不同的算法组成：
 - en: A key pair generation algorithm that a signer uses to create a new private and
     public key (the public key can then be shared with anyone).
+  id: totrans-17
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个签名者用来创建新的私钥和公钥的密钥对生成算法（然后可以将公钥与任何人分享）。
 - en: A signing algorithm that takes a private key and a message to produce a signature.
+  id: totrans-18
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个签名算法，它接受一个私钥和一个消息，然后产生一个签名。
 - en: A verifying algorithm that takes a public key, a message, and a signature and
     returns a success or error message.
+  id: totrans-19
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个验证算法，它接受一个公钥、一个消息和一个签名，并返回一个成功或错误的消息。
 - en: Sometimes the private key is also called the *signing key*, and the public key
     is called the *verifying key*. Makes sense, right? I recapitulate these three
     algorithms in figure 7.1.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 有时私钥也被称为*签名密钥*，公钥被称为*验证密钥*。有道理吧？我在图7.1中总结了这三个算法。
 - en: '![](../Images/07_01.jpg)'
+  id: totrans-21
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/07_01.jpg)'
 - en: Figure 7.1 The interface of a digital signature. Like other public key cryptographic
     algorithms, you first need to generate a key pair via a key generation algorithm
     that takes a security parameter and some randomness. You can then use a signing
@@ -101,76 +145,113 @@
     the public key to validate a signature over a message. You can’t forge a signature
     that verifies a public key if you don’t have access to its associated private
     key.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 图7.1 数字签名的接口。像其他公钥密码算法一样，你首先需要通过一个接受安全参数和一些随机性的密钥生成算法生成密钥对。然后你可以使用一个带有私钥的签名算法对消息进行签名，并使用带有公钥的验证算法验证消息上的签名。如果你没有访问其关联私钥，你就无法伪造一个验证公钥的签名。
 - en: 'What are signatures good for? They are good for authenticating the origin of
     a message as well as the integrity of a message:'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 签名有什么用？它们用于验证消息的来源以及消息的完整性：
 - en: '*Origin*—If my signature is on it, it came from me.'
+  id: totrans-24
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*原始性* —— 如果我的签名在上面，那么它来自我。'
 - en: '*Integrity*—If someone modifies the message, it voids the signature.'
+  id: totrans-25
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*完整性* —— 如果有人修改了消息，则签名将失效。'
 - en: 'Note While these two properties are linked to authentication, they are often
     distinguished as two separate properties: *origin authentication* and *message
     authentication* (or integrity).'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意：虽然这两个属性与认证相关联，但通常被区分为两个单独的属性：*原始认证* 和 *消息认证*（或完整性）。
 - en: 'In a sense, signatures are similar to the message authentication codes (MACs)
     that you learned about in chapter 3\. But unlike MACs, they allow us to authenticate
     messages asymmetrically: a participant can verify that a message hasn’t been tampered
     without knowledge of the private or signing key. Next, I’ll show you how these
     algorithms can be used in practice.'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 从某种意义上说，签名类似于第三章中您了解到的消息认证码（MACs）。但与 MAC 不同的是，它们允许我们对消息进行非对称认证：参与者可以验证消息未被篡改，而无需私钥或签名密钥的知识。接下来，我将向您展示这些算法如何在实践中使用。
 - en: Exercise
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 练习
 - en: As you saw in chapter 3, authentication tags produced by MACs must be verified
     in constant time to avoid timing attacks. Do you think we need to do the same
     for verifying signatures?
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如您在第三章中看到的那样，MAC 生成的认证标签必须以恒定时间验证，以避免时间攻击。您认为我们需要对验证签名做同样的事情吗？
 - en: 7.1.1 How to sign and verify signatures in practice
+  id: totrans-30
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 7.1.1 如何在实践中签名和验证签名
 - en: Let’s look at a practical example. For this, I use pyca/cryptography ([https://cryptography.io](https://cryptography.io)),
     a well-respected Python library. The following listing simply generates a key
     pair, signs a message using the private key part, and then verifies the signature
     using the public key part.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看一个实际的例子。为此，我使用了 pyca/cryptography（[https://cryptography.io](https://cryptography.io)），一个广受尊敬的
+    Python 库。以下清单简单地生成一个密钥对，使用私钥部分签名消息，然后使用公钥部分验证签名。
 - en: Listing 7.1 Signing and verifying signatures in Python
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 代码清单 7.1 在 Python 中签名和验证签名
 - en: '[PRE0]'
+  id: totrans-33
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: ❶ Uses the Ed25519 signing algorithm, a popular signature scheme
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 使用 Ed25519 签名算法，这是一种流行的签名方案
 - en: ❷ First generates the private key and then generates the public key
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 首先生成私钥，然后生成公钥
 - en: ❸ Using the private key, signs a message and obtains a signature
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 使用私钥对消息进行签名并获得签名
 - en: ❹ Using the public key, verifies the signature over the message
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 使用公钥验证消息上的签名
 - en: As I said earlier, digital signatures unlock many use cases in the real world.
     Let’s see an example in the next section.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我之前所说，数字签名在现实世界中解锁了许多用例。让我们在下一节中看一个例子。
 - en: '7.1.2 A prime use case for signatures: Authenticated key exchanges'
+  id: totrans-39
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 7.1.2 签名的主要用例：认证密钥交换
 - en: Chapters 5 and 6 introduced different ways to perform key exchanges between
     two participants. In the same chapters, you learned that these key exchanges are
     useful to negotiate a shared secret, which can then be used to secure communications
@@ -178,8 +259,10 @@
     the problem of setting up a secure connection between two participants as an active
     man-in-the-middle (MITM) attacker can trivially impersonate both sides of a key
     exchange. This is where signatures enter the ring.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 第 5 和 6 章介绍了两个参与者之间执行密钥交换的不同方法。在同一章节中，您了解到这些密钥交换对于协商一个共享密钥是有用的，然后可以使用该密钥来使用经过身份验证的加密算法来保护通信。然而，密钥交换并未完全解决在两个参与者之间建立安全连接的问题，因为主动的中间人（MITM）攻击者可以轻易地冒充密钥交换的双方。这就是签名的用武之地。
 - en: 'Imagine that Alice and Bob are trying to set up a secure communication channel
     between themselves and that Bob is aware of Alice’s verifying key. Knowing this,
     Alice can use her signing key to authenticate her side of the key exchange: she
@@ -187,16 +270,23 @@
     key, then sends the key exchange public key along with the signature. Bob can
     verify that the signature is valid using the associated verifying key he already
     knows and then use the key exchange public key to perform a key exchange.'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设 Alice 和 Bob 正试图在它们之间建立安全通信渠道，并且 Bob 知道 Alice 的验证密钥。知道这一点，Alice 可以使用她的签名密钥来认证她的密钥交换的一面：她生成一个密钥交换密钥对，用她的签名密钥对公钥部分进行签名，然后发送密钥交换的公钥以及签名。Bob
+    可以使用他已经知道的关联验证密钥验证签名是否有效，然后使用密钥交换的公钥执行密钥交换。
 - en: We call such a key exchange an *authenticated key exchange*. If the signature
     is invalid, Bob can tell someone is actively MITM’ing the key exchange. I illustrate
     authenticated key exchanges in figure 7.2.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们称这样的密钥交换为*身份验证密钥交换*。如果签名无效，鲍勃可以知道有人正在积极地中间人攻击密钥交换。我在图 7.2 中说明了身份验证密钥交换。
 - en: '![](../Images/07_02.jpg)'
+  id: totrans-43
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/07_02.jpg)'
 - en: Figure 7.2 The first picture (top) represents an unauthenticated key exchange,
     which is insecure to an active MITM attacker who can trivially impersonate both
     sides of the exchange by swapping their public keys with their own. The second
@@ -204,8 +294,10 @@
     Alice’s signature over her public key. As Bob (who knows Alice’s verifying key)
     is unable to verify the signature after the message was tampered by the MITM attacker,
     he aborts the key exchange.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 7.2 第一张图片（顶部）代表了一个未经身份验证的密钥交换，这对于一个可以轻松伪装成交换双方的主动中间人攻击者来说是不安全的，因为他可以用自己的公钥与双方交换公钥。第二张图片（底部）代表了一个密钥交换的开始，通过爱丽丝对她的公钥签名来进行身份验证。由于被主动中间人攻击者篡改了消息，鲍勃（知道爱丽丝的验证密钥）无法验证签名，于是他中止了密钥交换。
 - en: 'Note that in this example, the key exchange is only authenticated on one side:
     while Alice cannot be impersonated, Bob can. If both sides are authenticated (Bob
     would sign his part of the key exchange), we call the key exchange a *mutually-authenticated
@@ -213,17 +305,23 @@
     like we moved the problem of not knowing Alice’s key exchange public key in advance
     to the problem of not knowing her verifying key in advance. The next section introduces
     a real-world use of authenticated key exchanges that will make much more sense.'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，在此示例中，密钥交换只在一侧进行了身份验证：尽管爱丽丝无法被冒充，但鲍勃可以。如果双方都经过了身份验证（鲍勃会签署他的密钥交换的一部分），我们称这种密钥交换为*相互身份验证密钥交换*。签署密钥交换可能看起来并不是很有用。我们似乎是把事先不知道爱丽丝的密钥交换公钥的问题转移到了事先不知道她的验证密钥的问题上。下一节将介绍身份验证密钥交换的一个实际应用，这将更容易理解。
 - en: '7.1.3 A real-world usage: Public key infrastructures'
+  id: totrans-46
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 7.1.3 实际应用：公钥基础设施
 - en: Signatures become much more powerful if you assume that trust is *transitive*.
     By that, I mean that if you trust me and I trust Alice, then you can trust Alice.
     She’s cool.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您假设信任是*传递*的，签名就会变得更加强大。我的意思是，如果您信任我，我信任爱丽丝，那么您就可以信任爱丽丝。她很酷。
 - en: Transitivity of trust allows you to scale trust in systems in extreme ways.
     Imagine that you have confidence in some authority and their verifying key. Furthermore,
     imagine that this authority has signed messages indicating what the public key
@@ -233,8 +331,11 @@
     his public key is a large number that looks like 3848 . . . , you can verify that
     by checking if your “beloved” authority has signed some message that looks like
     “the public key of Charles is 3848 . . .”
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 信任的传递允许您以极端的方式扩展系统中的信任。想象一下，您对某个权威及其验证密钥有信心。此外，想象一下，这个权威已经签署了指示查尔斯公钥是什么、戴维公钥是什么等消息。然后，您可以选择相信这个映射！这样的映射称为*公钥基础设施*。例如，如果您尝试与查尔斯进行密钥交换，并且他声称他的公钥是一个看起来像
+    3848... 的大数，您可以通过检查您“心爱的”权威是否已签署了类似“查尔斯的公钥是 3848...”的消息来验证。
 - en: 'One real-world application of this concept is the *web public key infrastructure*
     (web PKI). The web PKI is what your web browser uses to authenticate key exchanges
     it performs with the multitude of websites you visit every day. A simplified explanation
@@ -246,70 +347,99 @@
     they truly own their domain name before they can obtain a signature on their public
     key. (In reality, your browser trusts many authorities to do this job, not just
     a single one.)'
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个概念的一个现实应用是*网络公钥基础设施*（web PKI）。Web PKI 是您的网络浏览器用来验证其与您每天访问的众多网站执行的密钥交换的机制。Web
+    PKI 的简化解释（如图 7.3 所示）如下：当您下载浏览器时，它会带有一些验证密钥嵌入到程序中。这个验证密钥与一个权威机构相关联，其责任是签署成千上万个网站的公钥，以便您可以信任这些而不必了解它们。您看不到的是这些网站必须向权威机构证明他们真正拥有自己的域名，然后才能获得对其公钥的签名。（实际上，您的浏览器信任许多权威机构来执行这项工作，而不仅仅是一个。）
 - en: '![](../Images/07_03.jpg)'
+  id: totrans-50
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/07_03.jpg)'
 - en: Figure 7.3 In the web PKI, browsers trust an authority to certify that some
     domains are linked to some public keys. When visiting a website securely, your
     browser can verify that the website’s public key is indeed theirs (and not from
     some MITM) by verifying a signature from the authority.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 7.3 在网络 PKI 中，浏览器信任一个权威机构来证明某些域名与某些公钥相关联。当安全访问网站时，您的浏览器可以通过验证来自权威机构的签名来验证网站的公钥确实属于他们自己（而不是来自某个中间人）。
 - en: In this section, you learned about signatures from a high-level point of view.
     Let’s dig deeper into how signatures really work. But for this, we first need
     to make a detour and take a look at something called a zero-knowledge proof (ZKP).
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，您从高层次的角度了解了签名。让我们深入了解签名的实际工作原理。但是为此，我们首先需要绕个弯，看看称为零知识证明（ZKP）的东西。
 - en: '7.2 Zero-knowledge proofs (ZKPs): The origin of signatures'
+  id: totrans-53
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 7.2 零知识证明（ZKP）：签名的起源
 - en: The best way to understand how signatures work in cryptography is to understand
     where they come from. For this reason, let’s take a moment to briefly introduce
     ZKPs and then I’ll get back to signatures.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 理解密码学中签名工作原理的最佳方法是了解它们的来源。因此，让我们花点时间简要介绍 ZKP，然后我会回到签名。
 - en: Imagine that Peggy wants to prove something to Victor. For example, she wants
     to prove that she knows the discrete logarithm to the base of some group element.
     In other words, she wants to prove that she knows *x* given *Y* = *g*^x with *g*
     the generator of some group.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象一下，佩姬想向维克多证明某事。例如，她想证明自己知道某个群元素的离散对数。换句话说，她想证明自己知道*x*，给定*Y* = *g*^x，其中*g*是某个群的生成元。
 - en: '![](../Images/07_03_UN01.jpg)'
+  id: totrans-56
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/07_03_UN01.jpg)'
 - en: Of course, the simplest solution is for Peggy to simply send the value *x* (called
     the *witness*). This solution would be a simple *proof of knowledge*, and this
     would be OK, unless Peggy does not want Victor to learn it.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，最简单的解决方案是佩姬简单地发送值*x*（称为*见证*）。这个解决方案将是一个简单的*知识证明*，这样就可以了，除非佩姬不希望维克多知道它。
 - en: Note In theoretical terms, we say that the protocol to produce a proof is *complete*
     if Peggy can use it to prove to Victor that she knows the witness. If she can’t
     use it to prove what she knows, then the scheme is useless, right?
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 在理论上，我们说用于生成证明的协议如果*完备*，那么佩姬可以使用它向维克多证明她知道见证。如果她无法使用它证明自己所知，那么这个方案就是无用的，对吧？
 - en: In cryptography, we’re mostly interested in proofs of knowledge that don’t divulge
     the witness to the verifier. Such proofs are called *zero-knowledge proofs* (ZKPs).
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 在密码学中，我们主要关注不向验证者泄露见证的知识证明。这样的证明被称为*零知识证明*（ZKP）。
 - en: '7.2.1 Schnorr identification protocol: An interactive zero-knowledge proof'
+  id: totrans-60
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 7.2.1 Schnorr 身份验证协议：一个交互式零知识证明
 - en: In the next pages, I will build a ZKP incrementally from broken protocols to
     show you how Alice can prove that she knows *x* without revealing *x*.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 在接下来的页面中，我将逐步从破损的协议构建一个 ZKP，以向您展示爱丽丝如何证明她知道*x*而不泄露*x*。
 - en: 'The typical way to approach this kind of problem in cryptography is to “hide”
     the value with some randomness (for example, by encrypting it). But we’re doing
     more than just hiding: we also want to prove that it is there. To do that, we
     need an algebraic way to hide it. A simple solution is to simply add a randomly
     generated value *k* to the witness:'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
 - en: '*s* = *k* + *x*'
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
 - en: Peggy can then send the hidden witness *s* along with the random value *k* to
@@ -317,48 +447,59 @@
     hide the witness in *s*. Indeed, if she doesn’t know the witness *x* then *s*
     is probably just some random value. What Victor does know is that the witness
     *x* is hiding in the exponent of *g* because he knows *Y* = *g*^x.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
 - en: 'To see if Peggy really knows the witness, Victor can check if what she gave
     him matches what he knows, and this has to be done in the exponent of *g* as well
     (as this is where the witness is). In other words, Victor checks that these two
     numbers are equal:'
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
 - en: '*g*^s (= *g*^(*k*+*x*))'
+  id: totrans-66
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Y* × *g*^k (= *g*^x × *g*^k = *g*^(*x*+*k*))'
+  id: totrans-67
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The idea is that only someone who knows the witness *x* could have constructed
     a “blinded” witness *s* that satisfies this equation. And as such, it’s a proof
     of knowledge. I recapitulate this ZKP system in figure 7.4.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/07_04.jpg)'
+  id: totrans-69
   prefs: []
   type: TYPE_IMG
 - en: Figure 7.4 In order to prove to Victor that she knows a witness *x*, Peggy hides
     it (by adding it to a random value *k*) and sends the hidden witness *s* instead.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
 - en: 'Not so fast. There’s one problem with this scheme—it’s obviously not secure!
     Indeed, because the equation hiding the witness *x* only has one unknown (*x*
     itself), Victor can simply reverse the equation to retrieve the witness:'
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
 - en: '*x* = *s* – *k*'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
 - en: 'To fix this, Peggy can hide the random value *k* itself! This time, she has
     to hide the random value in the exponent (instead of adding it to another random
     value) to make sure that Victor’s equation still works:'
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
 - en: '*R* = *g*^k'
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
 - en: This way, Victor does not learn the value *k* (this is the discrete logarithm
@@ -366,160 +507,213 @@
     he still has enough information to verify that Peggy knows *x*! Victor simply
     has to check that *g*^s (= *g*^(*k*+*x*) = *g*^k × *g*^x) is equal to *Y* × *R*
     (= *g*^x × *g*^k). I review this second attempt at a ZKP protocol in figure 7.5.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/07_05.jpg)'
+  id: totrans-76
   prefs: []
   type: TYPE_IMG
 - en: Figure 7.5 To make a knowledge proof *zero-knowledge*, the prover can hide the
     witness *x* with a random value *k* and then hide the random value itself.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
 - en: 'There is one last issue with our scheme—Peggy can cheat. She can convince Victor
     that she knows *x* without knowing *x*! All she has to do is to reverse the step
     in which she computes her proof. She first generates a random value *s* and then
     calculates the value *R* based on *s*:'
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
 - en: '*R* = *g*^s × *Y*^(–1)'
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
 - en: Victor then computes *Y* × *R* = *Y* × *g*^s × *Y*^(–1), which indeed matches
     *g*^s. (Peggy’s trick of using an inverse to compute a value is used in many attacks
     in cryptography.)
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 维克托然后计算*Y* × *R* = *Y* × *g*^s × *Y*^(–1)，这确实与*g*^s匹配。（佩吉使用逆来计算值的技巧在密码学中的许多攻击中都有所应用。）
 - en: Note In theoretical terms, we say that the scheme is “sound” if Peggy cannot
     cheat (if she doesn’t know *x*, then she can’t fool Victor).
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 在理论上，我们说方案“可靠”，如果佩吉无法作弊（如果她不知道*x*，那么她无法愚弄维克托）。
 - en: 'To make the ZKP protocol sound, Victor must ensure that Peggy computes *s*
     from *R* and not the inverse. To do this, Victor makes the protocol *interactive*:'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了使ZKP协议可靠，维克托必须确保佩吉从*R*计算出*s*而不是反向计算。为此，维克托使协议*交互式*：
 - en: Peggy must commit to her random value *k* so that she cannot change it later.
+  id: totrans-83
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 佩吉必须对她的随机值*k*进行承诺，以便以后无法更改。
 - en: After receiving Peggy’s commitment, Victor introduces some of his own randomness
     in the protocol. He generates a random value *c* (called a *challenge*) and sends
     it to Peggy.
+  id: totrans-84
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 在收到佩吉的承诺后，维克托在协议中引入了一些自己的随机性。他生成一个随机值*c*（称为*挑战*）并将其发送给佩吉。
 - en: Peggy can then compute her hidden commit based on the random value *k* and the
     challenge *c*.
+  id: totrans-85
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 佩吉随后可以根据随机值*k*和挑战*c*计算她的隐藏承诺。
 - en: Note You learned about commitment schemes in chapter 2 where we used a hash
     function to commit to a value that we can later reveal. But commitment schemes
     based on hash functions do not allow us to do interesting arithmetic on the hidden
     value. Instead, we can simply raise our generator to the value, *g*^k, which we’re
     already doing.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 在第2章中，您学习了承诺方案，我们使用哈希函数对我们可以稍后揭示的值进行承诺。但基于哈希函数的承诺方案不允许我们对隐藏值进行有趣的算术运算。相反，我们可以简单地将我们的生成器提升到该值，*g*^k，这是我们已经在做的事情。
 - en: Because Peggy cannot perform the last step without Victor’s challenge *c*, and
     Victor won’t send that to her without seeing a commitment on the random value
     *k*, Peggy is forced to compute *s* based on *k*. The obtained protocol, which
     I illustrate in figure 7.6, is often referred to as the *Schnorr identification
     protocol*.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 因为佩吉无法在没有维克托的挑战*c*的情况下执行最后一步，而维克托又不会在看到随机值*k*的承诺之前发送挑战给她，所以佩吉被迫根据*k*计算*s*。获得的协议，我在图7.6中说明，通常被称为*Schnorr身份验证协议*。
 - en: '![](../Images/07_06.jpg)'
+  id: totrans-88
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/07_06.jpg)'
 - en: Figure 7.6 The Schnorr identification protocol is an interactive ZKP that is
     *complete* (Peggy can prove she knows some witness), *sound* (Peggy cannot prove
     anything if she doesn’t know the witness), and *zero-knowledge* (Victor learns
     nothing about the witness).
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 图7.6 Schnorr身份验证协议是一个*完备的*（佩吉可以证明她知道某个见证人）、*可靠的*（如果佩吉不知道见证人，她无法证明任何事情）和*零知识的*（维克托对见证人一无所知）交互式ZKP。
 - en: So-called *interactive ZKP systems* that follow a three-movement pattern (commitment,
     challenge, and proof) are often referred to as *Sigma protocols* in the literature
     and are sometimes written as Σ protocols (due to the illustrative shape of the
     Greek letter). But what does that have to do with digital signatures?
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 所谓的*交互式ZKP系统*遵循三个步骤（承诺、挑战和证明）的模式，在文献中通常被称为*Sigma协议*，有时写作Σ协议（因为希腊字母的形状具有说明性）。但这与数字签名有什么关系呢？
 - en: 'Note The Schnorr identification protocol works in the *honest verifier zero-knowledge*
     (HVZK) *model* : if the verifier (Victor) acts dishonestly and does not choose
     a challenge randomly, they can learn something about the witness. Some stronger
     ZKP schemes are zero-knowledge even when the verifier is malicious.'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 Schnorr身份验证协议在*诚实验证者零知识*（HVZK）*模型*中运作：如果验证者（维克托）表现不诚实并且不随机选择挑战，他们可以了解见证人的一些信息。一些更强大的ZKP方案在验证者恶意时仍然是零知识的。
 - en: 7.2.2 Signatures as non-interactive zero-knowledge proofs
+  id: totrans-92
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 7.2.2 签名作为非交互式零知识证明
 - en: The problem with the previous interactive ZKP is that, well, it’s *interactive*,
     and real-world protocols are, in general, not fond of interactivity. Interactive
     protocols add some non-negligible overhead as they require several messages (potentially
     over the network) and add unbounded delays, unless the two participants are online
     at the same time. Due to this, interactive ZKPs are mostly absent from the world
     of applied cryptography.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 以前的交互式ZKP的问题在于，嗯，它是*交互式*的，而现实世界的协议通常不喜欢交互性。交互式协议会增加一些不可忽略的开销，因为它们需要多个消息（可能通过网络）并且会增加无限延迟，除非两个参与者同时在线。由于这个原因，交互式ZKP在应用密码学领域中大多缺席。
 - en: All of this discussion is not for nothing though! In 1986, Amos Fiat and Adi
     Shamir published a technique that allowed one to easily convert an interactive
     ZKP into a non-interactive ZKP. The trick they introduced (referred to as the
     *Fiat-Shamir heuristic* or *Fiat-Shamir transformation*) was to make the prover
     compute the challenge themselves, in a way they can’t control.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有这些讨论都不是毫无意义的！在1986年，Amos Fiat和Adi Shamir发表了一种技术，允许将一个交互式的零知识证明（ZKP）轻松转换为一个非交互式的ZKP。他们引入的技巧（称为*费曼-沙米尔启发式*或*费曼-沙米尔变换*）是让证明者自己计算挑战，以一种他们无法控制的方式。
 - en: Here’s the trick—compute the challenge as a hash of all the messages sent and
     received as part of the protocol up to that point (which we call the *transcript*).
     If we assume that the hash function gives outputs that are indistinguishable from
     truly-random numbers (in other words, it looks random), then it can successfully
     simulate the role of the verifier.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个诀窍——将挑战计算为到目前为止协议中发送和接收的所有消息的哈希（我们称之为*转录*）。如果我们假设哈希函数产生的输出与真正的随机数不可区分（换句话说，看起来是随机的），那么它可以成功模拟验证者的角色。
 - en: Schnorr went a step further. He noticed that anything can be included in that
     hash! For example, what if we included a message in there? What we obtain is not
     only a proof that we know some witness *x*, but a commitment to a message that
     is cryptographically linked to the proof. In other words, if the proof is correct,
     then only someone with the knowledge of the witness (which becomes the signing
     key) could have committed that message.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: Schnorr更进一步。他注意到任何东西都可以包含在那个哈希中！例如，如果我们在其中包含一条消息会怎样？我们得到的不仅是一个证明我们知道某个见证者*x*的证据，而且还是与证据密切相关的密码学链接的消息承诺。换句话说，如果证据是正确的，那么只有知道见证者的人（它变成签名密钥）才能承诺那条消息。
 - en: '*That’s a signature!* Digital signatures are just non-interactive ZKPs. Applying
     the Fiat-Shamir transform to the Schnorr identification protocol, we obtain the
     *Schnorr signature scheme*, which I illustrate in figure 7.7.'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: '*这就是一个签名！*数字签名只是非交互式ZKP。将Fiat-Shamir转换应用到Schnorr识别协议，我们得到了*Schnorr签名方案*，我在图7.7中进行了说明。'
 - en: '![](../Images/07_07.jpg)'
+  id: totrans-98
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/07_07.jpg)'
 - en: Figure 7.7 The left protocol is the Schnorr identification protocol previously
     discussed, which is an interactive protocol. The right protocol is a Schnorr signature,
     which is a non-interactive version of the left protocol (where the verifier message
     is replaced by a call to a hash function on the transcript).
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 图7.7 左边的协议是之前讨论过的Schnorr识别协议，这是一个交互式协议。右边的协议是Schnorr签名，是左边协议的非交互式版本（其中验证者消息被替换为对转录进行哈希的调用）。
 - en: To recapitulate, a Schnorr signature is essentially two values, *R* and *s*,
     where *R* is a commitment to some secret random value (which is often called a
     *nonce* as it needs to be unique per signature), and *s* is a value computed with
     the help of the commitment *R*, the private key (the witness *x*), and a message.
     Next, let’s look at the modern standards for signature algorithms.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 总结一下，Schnorr签名基本上是两个值，*R*和*s*，其中*R*是对某个秘密随机值的承诺（通常称为*nonce*，因为它每个签名需要是唯一的），而*s*是通过承诺*R*、私钥（见证者*x*）和一条消息的帮助计算得出的值。接下来，让我们看一下签名算法的现代标准。
 - en: 7.3 The signature algorithms you should use (or not)
+  id: totrans-101
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 7.3 你应该使用（或不使用）的签名算法
 - en: 'Like other fields in cryptography, digital signatures have many standards,
     and it is sometimes hard to understand which one to use. This is why I’m here!
     Fortunately, the types of algorithms for signatures are similar to the ones for
     key exchanges: there are algorithms based on arithmetic modulo a large number
     like Diffie-Hellman (DH) and RSA, and there are algorithms based on elliptic curves
     like Elliptic Curve Diffie-Hellman (ECDH).'
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 像密码学中的其他领域一样，数字签名有许多标准，有时很难理解应该使用哪一个。这就是我在这里的原因！幸运的是，签名算法的类型与密钥交换的类型类似：有基于大数算术模的算法，如Diffie-Hellman（DH）和RSA，也有基于椭圆曲线的算法，如椭圆曲线Diffie-Hellman（ECDH）。
 - en: 'Be sure you understand the algorithms in chapter 5 and chapter 6 well enough
     as we’re now going to build on those. Interestingly, the paper that introduced
     the DH key exchange also proposed the concept of digital signatures (without giving
     a solution):'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 请确保你对第5章和第6章的算法了解足够深入，因为我们现在要基于这些内容进行讨论。有趣的是，引入DH密钥交换的论文也提出了数字签名的概念（没有给出解决方案）：
 - en: '*In order to develop a system capable of replacing the current written contract
     with some purely electronic form of communication, we must discover a digital
     phenomenon with the same properties as a written signature. It must be easy for
@@ -527,16 +721,23 @@
     than the legitimate signer to produce it. We will call any such technique one-way
     authentication. Since any digital signal can be copied precisely, a true digital
     signature must be recognizable without being known*.'
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: '*为了开发一种能够用一些纯电子形式的通信替代当前书面合同的系统，我们必须发现一个具有与书面签名相同属性的数字现象。 任何人都必须能够轻松识别签名的真实性，但除了合法签署者之外，任何其他人都不可能产生签名。
+    我们将称这样的技术为单向认证。 由于任何数字信号都可以精确复制，真正的数字签名必须在不被知道的情况下识别*。'
 - en: —Diffie and Hellman (“New Directions in Cryptography,” 1976)
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: ——Diffie 和 Hellman（《密码学的新方向》，1976 年）
 - en: A year later (in 1977), the first signature algorithm (called RSA) was introduced
     along with the RSA asymmetric encryption algorithm (which you learned about in
     chapter 6). RSA for signing is the first algorithm we’ll learn about.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 一年后（1977 年），第一个签名算法（称为 RSA）与 RSA 非对称加密算法一起被引入（您在第 6 章中学到了）。 RSA 用于签名是我们将学习的第一个算法。
 - en: In 1991, NIST proposed the *Digital Signature Algorithm (DSA)* as an attempt
     to avoid the patents on Schnorr signatures. For this reason, DSA is a weird variant
     of Schnorr signatures, published without a proof of security (although no attacks
@@ -545,8 +746,12 @@
     Algorithm), the same way Elliptic Curve Diffie-Hellman (ECDH) replaced Diffie-Hellman
     (DH), thanks to its smaller keys (see chapter 5). ECDSA is the second signature
     algorithm I will talk about in this section.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 1991 年，NIST 提出了*数字签名算法（DSA）*，试图避开 Schnorr 签名的专利。 出于这个原因，DSA 是 Schnorr 签名的一种奇怪的变体，发布时没有安全性证明（尽管目前尚未发现任何攻击）。
+    该算法被许多人采用，但很快被一个称为*ECDSA*（代表椭圆曲线数字签名算法）的椭圆曲线版本取代，就像椭圆曲线 Diffie-Hellman（ECDH）取代
+    Diffie-Hellman（DH）一样，由于其更小的密钥（请参见第 5 章）。 ECDSA 是我将在本节中讨论的第二种签名算法。
 - en: After the patents on Schnorr signatures expired in 2008, Daniel J. Bernstein,
     the inventor of ChaCha20-Poly1305 (covered in chapter 4) and X25519 (covered in
     chapter 5), introduced a new signature scheme called *EdDSA* (for Edwards-curve
@@ -554,12 +759,18 @@
     EdDSA has quickly gained adoption and is nowadays considered state-of-the-art
     in terms of a digital signature for real-world applications. EdDSA is the third
     and last signature algorithm I will talk about in this section.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 2008 年，Schnorr 签名的专利过期后，Daniel J. Bernstein，也就是 ChaCha20-Poly1305（在第 4 章中介绍）和
+    X25519（在第 5 章中介绍）的发明者，推出了一种新的签名方案，称为*EdDSA*（代表 Edwards 曲线数字签名算法），基于 Schnorr 签名。
+    自推出以来，EdDSA 迅速获得了采用，并且现在被认为是实际应用中数字签名的最新技术。 EdDSA 是我将在本节中讨论的第三种也是最后一种签名算法。
 - en: '7.3.1 RSA PKCS#1 v1.5: A bad standard'
+  id: totrans-109
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 7.3.1 RSA PKCS#1 v1.5：一个糟糕的标准
 - en: 'RSA signatures are currently used everywhere, even though they shouldn’t be
     (as you will see in this section, they present many issues). This is due to the
     algorithm being the first signature scheme to be standardized as well as real-world
@@ -569,105 +780,149 @@
     say that if you understood how RSA encryption works in chapter 6, then this section
     should be straightforward because signing with RSA is the opposite of encrypting
     with RSA:'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: RSA 签名目前被广泛应用，尽管它们不应该被使用（正如您将在本节中看到的，它们存在许多问题）。 这是因为该算法是第一个被标准化的签名方案，并且实际应用领域迟迟未能转向更新更好的算法。
+    因此，在您的学习过程中很可能会遇到 RSA 签名，我无法避免解释它们的工作原理和采用的标准。 但让我说，如果您理解了第 6 章中 RSA 加密的工作原理，那么本节应该很简单，因为使用
+    RSA 进行签名与使用 RSA 进行加密相反：
 - en: To sign, you *encrypt* the message with the private key (instead of the public
     key), which produces a signature (a random element in the group).
+  id: totrans-111
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 要进行签名，您需要使用私钥（而不是公钥）对消息进行*加密*，这将生成一个签名（组中的随机元素）。
 - en: To verify a signature, you *decrypt* the signature with the public key (instead
     of the private key). If it gives you back the original message, then the signature
     is valid.
+  id: totrans-112
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 要验证签名，您需要使用公钥（而不是私钥）对签名进行*解密*。 如果它将原始消息还原出来，则签名有效。
 - en: Note In reality, a message is often hashed before being signed as it’ll take
     less space (RSA can only sign messages that are smaller than its modulus). The
     result is also interpreted as a large number so that it can be used in mathematical
     operations.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 实际上，在签名之前，消息通常会被散列，因为这样会占用更少的空间（RSA只能签署比其模数小的消息）。结果也被解释为一个大数，以便可以在数学运算中使用。
 - en: If your private key is the private exponent *d*, and your public key is the
     public exponent *e* and public modulus *N*, you can
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你的私钥是私钥指数*d*，公钥是公钥指数*e*和公共模数*N*，你可以
 - en: Sign a message by computing *signature* = *message*^d mod *N*
+  id: totrans-115
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通过计算*signature* = *message*^d mod *N*来签署消息
 - en: Verify a signature by computing *signature*^e mod *N* and check that it is equal
     to the message
+  id: totrans-116
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通过计算*signature*^e mod *N*来验证签名，并检查它是否等于消息
 - en: I illustrate this visually in figure 7.8.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 我在图7.8中以图示方式说明了这一点。
 - en: '![](../Images/07_08.jpg)'
+  id: totrans-118
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/07_08.jpg)'
 - en: 'Figure 7.8 To sign with RSA, we simply do the inverse of the RSA encryption
     algorithm: we exponentiate the message with the private exponent, then to verify,
     we exponentiate the signature with the public exponent, which returns to the message.'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 图7.8 要使用RSA签名，我们只需对RSA加密算法进行逆操作：我们使用私钥指数对消息进行指数运算，然后进行验证，我们使用公钥指数对签名进行指数运算，返回到消息。
 - en: This works because only the one knowing about the private exponent *d* can produce
     a signature over a message. And, as with RSA encryption, the security is tightly
     linked with the hardness of the factorization problem.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 这样做的原因是只有了解私钥指数*d*的人才能对消息产生签名。与RSA加密一样，安全性与因子分解问题的难度紧密相连。
 - en: 'What about the standards to use RSA for signatures? Luckily, they follow the
     same pattern as does RSA encryption:'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 那么用RSA进行签名的标准是什么？幸运的是，它们遵循与RSA加密相同的模式：
 - en: '*RSA for encryption was loosely standardized in the PKCS#1 v1.5 document.*
     The same document contained a specification for signing with RSA (without a security
     proof).'
+  id: totrans-122
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*RSA用于加密在PKCS#1 v1.5文档中松散标准化。*同一文档还包含了RSA签名的规范（没有安全证明）。'
 - en: '*RSA was then standardized again in the PKCS#1 v2 document with a better construction
     (called RSA-OAEP).* The same happened for RSA signatures with RSA-PSS being standardized
     in the same document (with a security proof).'
+  id: totrans-123
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*然后在PKCS#1 v2文档中对RSA进行了重新标准化，采用了更好的构造方法（称为RSA-OAEP）。*同一文档中也对RSA签名进行了标准化，RSA-PSS方案也在其中标准化（附带安全证明）。'
 - en: I talked about RSA PKCS#1 v1.5 in chapter 6 on asymmetric encryption. The signature
     scheme standardized in that document is pretty much the same as the encryption
     scheme. To sign, first hash the message with a hash function of your choice, then
     pad it according to PKCS#1 v1.5’s padding for signatures (which is similar to
     the padding for encryption in the same standard). Next, encrypt the padded and
     hashed message with your private exponent. I illustrate this in figure 7.9.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 我在第6章关于非对称加密中讨论了RSA PKCS#1 v1.5。在该文档中标准化的签名方案与加密方案几乎相同。要签名，首先使用所选的哈希函数对消息进行哈希，然后根据PKCS#1
+    v1.5的签名填充进行填充（这与相同标准中的加密填充类似）。接下来，使用私钥指数对填充和散列消息进行加密。我在图7.9中说明了这一点。
 - en: '![](../Images/07_09.jpg)'
+  id: totrans-125
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/07_09.jpg)'
 - en: Figure 7.9 RSA PKCS#1 v1.5 for signatures. To sign, hash then pad the message
     with the PKCS#1 v1.5 padding scheme. The final step exponentiates the padded hashed
     message with the private key *d* modulo *N*. To verify, simply exponentiate the
     signature with the public exponent *e* modulo *N* and verify that it matches the
     padded and hashed message.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 图7.9 RSA PKCS#1 v1.5用于签名。要签名，先使用PKCS#1 v1.5填充方案对消息进行哈希和填充。最后一步使用私钥指数*d*对填充的哈希消息进行指数运算取模*N*。要验证，只需使用公钥指数*e*对签名进行指数运算取模*N*，并验证它是否与填充的哈希消息匹配。
 - en: The many RSAs
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 多个RSAs
 - en: By the way, don’t get confused by the different terms surrounding RSA. There
     is RSA (the *asymmetric encryption primitive*) and RSA (the *signature primitive*).
     On top of that, there is also RSA (the company), founded by the inventors of RSA.
     When mentioning encryption with RSA, most people refer to the schemes RSA PKCS#1
     v1.5 and RSA-OAEP. When mentioning signatures with RSA, most people refer to the
     schemes RSA PKCS#1 v1.5 and RSA-PSS.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 顺便说一句，不要被RSA周围的不同术语搞混了。有RSA（*非对称加密原语*）和RSA（*签名原语*）。此外，还有RSA（*公司*），由RSA的发明者创立。提到用RSA加密时，大多数人指的是RSA
+    PKCS#1 v1.5和RSA-OAEP方案。提到用RSA签名时，大多数人指的是RSA PKCS#1 v1.5和RSA-PSS方案。
 - en: I know this can be confusing, especially for the PKCS#1 v1.5 standard. While
     there are official names to distinguish the encryption from the signing algorithm
     in PKCS#1 v1.5 (RSAES-PKCS1-v1_5 for encryption and RSASSA-PKCS1-v1_5 for signature),
     I rarely see those used.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 我知道这可能会让人感到困惑，特别是对于PKCS#1 v1.5标准。 尽管在PKCS#1 v1.5中有官方名称来区分加密和签名算法（RSAES-PKCS1-v1_5用于加密，RSASSA-PKCS1-v1_5用于签名），但我很少看到这些名称被使用。
 - en: In chapter 6, I mentioned that there were damaging attacks on RSA PKCS#1 v1.5
     for encryption; the same is unfortunately true for RSA PKCS#1 v1.5 signatures.
     In 1998, after Bleichenbacher found a devastating attack on RSA PKCS#1 v1.5 for
@@ -678,8 +933,12 @@
     algorithm directly, the second attack was an implementation attack. This meant
     that if the signature scheme was implemented correctly (according to the specification),
     the attack did not work.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第6章中，我提到了对RSA PKCS#1 v1.5进行加密的破坏性攻击；不幸的是，对于RSA PKCS#1 v1.5签名也是如此。 1998年，Bleichenbacher发现了对RSA
+    PKCS#1 v1.5加密的毁灭性攻击后，他决定看看签名标准。 Bleichenbacher在2006年提出了对RSA PKCS#1 v1.5的*签名伪造*攻击，这是对签名的最灾难性的攻击类型之一——攻击者可以在不知道私钥的情况下伪造签名！
+    与直接破解加密算法的第一次攻击不同，第二次攻击是一种实现攻击。 这意味着如果签名方案按照规范正确实现，攻击就不会奏效。
 - en: 'An implementation flaw doesn’t sound as bad as an algorithm flaw, that is,
     if it’s easy to avoid and doesn’t impact many implementations. Unfortunately,
     it was shown in 2019 that an embarrassing number of open source implementations
@@ -687,57 +946,82 @@
     the standard (see “Analyzing Semantic Correctness with Symbolic Execution: A Case
     Study on PKCS#1 v1.5 Signature Verification” by Chau et al.) The various implementation
     flaws ended up enabling different variants of Bleichenbacher’s forgery attack.'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 实现缺陷听起来不像算法缺陷那么糟糕，也就是说，如果很容易避免并且不影响许多实现。 不幸的是，2019年已经表明，尴尬的是，许多开源实现的RSA PKCS#1
+    v1.5签名实际上陷入了这个陷阱，并且错误地实现了标准（参见Chau等人的“使用符号执行分析语义正确性的案例研究：PKCS#1 v1.5签名验证”）。 各种实现缺陷最终导致了不同变体的Bleichenbacher的伪造攻击。
 - en: Unfortunately, RSA PKCS#1 v1.5 for signatures is still widely used. Be aware
     of these issues if you really *have to* use this algorithm for backward compatibility
     reasons. Having said that, this does not mean that RSA for signatures is insecure.
     The story does not end here.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 不幸的是，RSA PKCS#1 v1.5签名仍然被广泛使用。 如果您真的*必须*出于向后兼容性原因使用此算法，请注意这些问题。 话虽如此，这并不意味着RSA签名是不安全的。
+    故事并没有在这里结束。
 - en: '7.3.2 RSA-PSS: A better standard'
+  id: totrans-133
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 7.3.2 RSA-PSS：更好的标准
 - en: 'RSA-PSS was standardized in the updated PKCS#1 v2.1 and included a proof of
     security (unlike the signature scheme standardized in the previous PKCS#1 v1.5).
     The newer specification works like this:'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: RSA-PSS在更新的PKCS#1 v2.1中标准化，并包括了安全性证明（与之前的PKCS#1 v1.5中标准化的签名方案不同）。 新规范的工作方式如下：
 - en: Encode the message using the PSS encoding algorithm
+  id: totrans-135
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用PSS编码算法对消息进行编码
 - en: Sign the encoded message using RSA (as was done in the PKCS#1 v1.5 standard)
+  id: totrans-136
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用RSA对编码消息进行签名（就像在PKCS#1 v1.5标准中所做的那样）
 - en: The PSS encoding is a bit more involved and similar to OAEP (Optimal Asymmetric
     Encryption Padding). I illustrate this in figure 7.10.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: PSS编码稍微复杂，类似于OAEP（Optimal Asymmetric Encryption Padding）。 我在图7.10中进行了说明。
 - en: '![](../Images/07_10.jpg)'
+  id: totrans-138
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/07_10.jpg)'
 - en: Figure 7.10 The RSA-PSS signature scheme encodes a message using a mask generation
     function (MGF) like the RSA-OAEP algorithm you learned about in chapter 6 before
     signing it in the usual RSA way.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 图7.10 RSA-PSS签名方案使用掩码生成函数（MGF）对消息进行编码，就像你在第6章中学到的RSA-OAEP算法一样，然后以通常的RSA方式进行签名。
 - en: Verifying a signature produced by RSA-PSS is just a matter of inverting the
     encoding once the signature has been raised to the public exponent modulo the
     public modulus.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 验证由RSA-PSS产生的签名只是在将签名提升到公共模数的公共指数模下，反转编码的问题。
 - en: Provable security for PSS
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: PSS的可证明安全性
 - en: 'PSS (for *Probabilistic Signature Scheme*) is provably secure, meaning that
     no one should be able to forge a signature without knowledge of the private key.
     Instead of proving that if RSA is secure then RSA-PSS is secure, RSA-PSS proves
     the contrapositive: if someone can break RSA-PSS then that someone can also break
     RSA. That’s a common way to prove things in cryptography. Of course, this only
     works if RSA is secure, which we assume in the proof.'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
 - en: If you remember, I also talked about a third algorithm in chapter 6 for RSA
@@ -747,6 +1031,7 @@
     pretty much nobody uses; it’s called *Full Domain Hash* (FDH). FDH works by simply
     hashing a message and then signing it (by interpreting the digest as a number)
     using RSA.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
 - en: Despite the fact that both RSA-PSS and FDH come with proofs of security and
@@ -757,9 +1042,11 @@
     algorithms. Think of users that do not update applications, vendors that do not
     provide new versions of their softwares, hardware devices that cannot be updated,
     and so on. Next, let’s take a look at a more modern algorithm.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
 - en: 7.3.3 The Elliptic Curve Digital Signature Algorithm (ECDSA)
+  id: totrans-145
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -768,6 +1055,7 @@
     scheme is specified in many standards including ISO 14888-3, ANSI X9.62, NIST’s
     FIPS 186-2, IEEE P1363, and so on. Not all standards are compatible, and applications
     that want to interoperate have to make sure that they use the same standard.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
 - en: 'Unfortunately, ECDSA, like DSA, does not come with a proof of security, while
@@ -775,22 +1063,27 @@
     of the most used signature schemes. In this section, I will explain how ECDSA
     works and how it can be used. As with all such schemes, the public key is pretty
     much always generated according to the same formula:'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
 - en: The private key is a large number *x* generated randomly.
+  id: totrans-148
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The public key is obtained by viewing *x* as an index in a group created by
     a generator (called *base point* in elliptic curve cryptography).
+  id: totrans-149
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: More specifically, in ECDSA the public key is computed using [*x*]*G*, which
     is a scalar multiplication of the scalar *x* with the base point *G*.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
 - en: Additive or multiplicative notation?
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
 - en: Notice that I use the *additive notation* (with the elliptic curve syntax of
@@ -800,33 +1093,40 @@
     care about the underlying nature of the group are written using the multiplicative
     notation, whereas protocols that are defined specifically in elliptic curve-based
     groups tend to be written using the additive notation.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
 - en: 'To compute an ECDSA signature, you need the same inputs required by a Schnorr
     signature: a hash of the message you’re signing (*H*(*m*)), your private key *x*,
     and a random number *k* that is unique per signature. An ECDSA signature is two
     integers, *r* and *s*, computed as follows:'
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
 - en: '*r* is the x-coordinate of [*k*] *G*'
+  id: totrans-154
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*s* equals *k*^(–1) (*H*(*m*) + *xr*) mod *p*'
+  id: totrans-155
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: To verify an ECDSA signature, a verifier needs to use the same hashed message
     *H*(*m*), the signer’s public key, and the signature values *r* and *s*. The verifier
     then
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
 - en: Computes [*H*(*m*) *s*^(–1)]*G* + [*rs*^(–1)]*public_key*
+  id: totrans-157
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Validates that the x-coordinate of the point obtained is the same as the value
     *r* of the signature
+  id: totrans-158
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
@@ -834,16 +1134,19 @@
     The random number *k* is sometimes called a *nonce* because it is a number that
     must only be used once, and is also sometimes called an *ephemeral key* because
     it must remain secret.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
 - en: 'Warning I’ll reiterate this: *k* must never be repeated nor be predictable!
     Without that, it is trivial to recover the private key.'
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
 - en: In general, cryptographic libraries perform the generation of this nonce (the
     *k* value) behind the scenes, but sometimes they don’t and let the caller provide
     it. This is, of course, a recipe for disaster. For example, in 2010, Sony’s Playstation
     3 was found using ECDSA with repeating nonces (which leaked their private keys).
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
 - en: Warning Even more subtle, if the nonce *k* is not picked uniformly and at random
@@ -852,6 +1155,7 @@
     In theory, we call these kinds of key retrieval attacks *total breaks* (because
     they break everything!). Such total breaks are quite rare in practice, which makes
     ECDSA an algorithm that can fail in spectacular ways.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
 - en: Attempts at avoiding issues with nonces exist. For example, RFC 6979 specifies
@@ -859,6 +1163,7 @@
     the private key. This means that signing the same message twice involves the same
     nonce twice and, as such, produces the same signature twice (which is obviously
     not a problem).
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
 - en: 'The elliptic curves that tend to be used with ECDSA are pretty much the same
@@ -868,51 +1173,64 @@
     written by the Standards for Efficient Cryptography Group (SECG). It gained a
     lot of traction after Bitcoin decided to use it instead of the more popular NIST
     curves, due to the lack of trust in the NIST curves I mentioned in chapter 5.'
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
 - en: 'Secp256k1 is a type of elliptic curve called a *Koblitz curve*. A Koblitz curve
     is just an elliptic curve with some constraints in its parameters that allow implementations
     to optimize some operations on the curve. The elliptic curve has the following
     equation:'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
 - en: '*y*² = *x*³ + *ax* + *b*'
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
 - en: 'where *a* = 0 and *b* = 7 are constants, and *x* and *y* are defined over the
     numbers modulo the prime *p*:'
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
 - en: '*p* = 2^(192) – 2^(32) – 2^(12) – 2⁸ – 2⁷ – 2⁶ – 2³ – 1'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
 - en: 'This defines a group of prime order, like the NIST curves. Today, we have efficient
     formulas to compute the number of points on an elliptic curve. Here is the prime
     number that is the number of points in the Secp256k1 curve (including the point
     at infinity):'
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
 - en: '115792089237316195423570985008687907852837564279074904382605163141518161494337'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
 - en: And we use as a generator (or base point) the fixed-point *G* of coordinates
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
 - en: '*x* = 55066263022277343669578718895168534326250603453777594175500187360389116729240'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
 - en: and
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
 - en: '*y* = 32670510020758816978083085130507043184471273380659243275938904335757337482424'
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
 - en: Nonetheless, today ECDSA is mostly used with the NIST curve P-256 (sometimes
     referred to as *Secp256r1*; note the difference). Next let’s look at another widely
     popular signing scheme.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
 - en: 7.3.4 The Edwards-curve Digital Signature Algorithm (EdDSA)
+  id: totrans-176
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -923,12 +1241,14 @@
     like ECDSA is, but this is deceptive. EdDSA is actually based on Schnorr signatures,
     which is possible due to the patent on Schnorr signatures expiring earlier in
     2008.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
 - en: One particularity of EdDSA is that the scheme does not require new randomness
     for every signing operation. EdDSA produces signatures *deterministically*. This
     has made the algorithm quite attractive, and it has since been adopted by many
     protocols and standards.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
 - en: 'EdDSA is on track to be included in NIST’s upcoming update for its FIPS 186-5
@@ -936,6 +1256,7 @@
     8032, which defines two curves of different security levels to be used with EdDSA.
     Both of the defined curves are *twisted Edwards curves* (a type of elliptic curve
     enabling interesting implementation optimizations):'
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
 - en: '*Edwards25519 is based on Daniel J. Bernstein’s Curve25519 (covered in chapter
@@ -944,11 +1265,13 @@
     after Curve25519, the key exchange X25519 based on Curve25519 did not benefit
     from these speed improvements. As with Curve25519, Edwards25519 provides 128-bit
     security.'
+  id: totrans-180
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Edwards448 is based on Mike Hamburg’s Ed448-Goldilocks curve.* It provides
     224-bit security.'
+  id: totrans-181
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -959,6 +1282,7 @@
     used to derive the actual signing key and another key that we call the nonce key.
     That nonce key is important! It is the one used to deterministically generate
     the required per signature nonce.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
 - en: 'Note Depending on the cryptographic library you’re using, you might be storing
@@ -966,35 +1290,43 @@
     that this matters, but if you don’t know this, you might get confused if you run
     into Ed25519 secret keys being stored as 32 bytes or 64 bytes, depending on the
     implementation used.'
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
 - en: 'To sign, EdDSA first deterministically generates the nonce by hashing the nonce
     key with the message to sign. After that, a process similar to Schnorr signatures
     follows:'
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
 - en: Compute the nonce as *HASH*(*nonce key* || *message*)
+  id: totrans-185
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Compute the commitment *R* as [*nonce*]*G*, where *G* is the base point of the
     group
+  id: totrans-186
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Compute the challenge as *HASH*(*commitment* || *public key* || *message*)
+  id: totrans-187
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Compute the proof *S* as *nonce* + *challenge* × *signing key*
+  id: totrans-188
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: The signature is (*R*, *S*). I illustrate the important parts of EdDSA in figure
     7.11.
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/07_11.jpg)'
+  id: totrans-190
   prefs: []
   type: TYPE_IMG
 - en: Figure 7.11 EdDSA key generation produces a secret key that is then used to
@@ -1004,6 +1336,7 @@
     are then like Schnorr signatures with the exception that (1) the nonce is generated
     deterministically from the nonce key and the message, and (2) the public key of
     the signer is included as part of the challenge.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
 - en: 'Notice how the nonce (or ephemeral key) is derived deterministically and not
@@ -1013,64 +1346,80 @@
     with ECDSA). Signing the same message twice produces the same nonce twice, which
     then produces the same signature twice as well. This is obviously not a problem.
     A signature can be verified by computing the following two equations:'
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
 - en: '[*S* ]*G*'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
 - en: '*R* + [*HASH*(*R* || *public key* || *message*)] *public key*'
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
 - en: The signature is valid if the two values match. This is exactly how Schnorr
     signatures work, except that we are now in an elliptic curve group and I use the
     additive notation here.
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
 - en: 'The most widely used instantiation of EdDSA, Ed25519, is defined with the Edwards25519
     curve and the SHA-512 as a hash function. The Edwards25519 curve is defined with
     all the points satisfying this equation:'
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
 - en: –*x*² + *y*² = 1 + *d* × *x*² × *y*² mod *p*
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
 - en: where the value *d* is the large number
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
 - en: '37095705934669439343138083508754565189542113879843219016388785533085940283555'
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
 - en: and the variables *x* and *y* are taken modulo *p* the large number 2^(255)
     – 19 (the same prime used for Curve25519). The base point is *G* of coordinate
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
 - en: '*x* = 15112221349535400772501151409588531511454012693041857206046113283949847762202'
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
 - en: and
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
 - en: '*y* = 46316835694926478169428394003475163141307993866256225615783033603165251855960'
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
 - en: 'RFC 8032 actually defines three variants of EdDSA using the Edwards25519 curve.
     All three variants follow the same key generation algorithm but with different
     signing and verification algorithms:'
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
 - en: '*Ed25519 (or pureEd25519)*—That’s the algorithm that I explained previously.'
+  id: totrans-205
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Ed25519ctx*—This algorithm introduces a mandatory customization string and
     is rarely implemented, if even used, in practice. The only difference is that
     some user-chosen prefix is added to every call to the hash function.'
+  id: totrans-206
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Ed25519ph (or HashEd25519)*—This allows applications to prehash the message
     before signing it (hence the *ph* in the name). It also builds on Ed25519ctx,
     allowing the caller to include an optional custom string.'
+  id: totrans-207
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1083,41 +1432,49 @@
     sign and send a message that looks like a transaction to your evil friend Eve,
     she could try to republish it as a valid transaction if there’s no way to distinguish
     the two types of payload you’re signing.
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
 - en: Ed25519ph was introduced solely to please callers that need to sign large messages.
     As you saw in chapter 2, hash functions often provide an “init-update-finalize”
     interface that allows you to continuously hash a stream of data without having
     to keep the whole input in memory.
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
 - en: 'You are now done with your tour of the signature schemes used in real-world
     applications. Next, let’s look at how you can possibly shoot yourself in the foot
     when using these signature algorithms. But first, a recap:'
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
 - en: RSA PKCS#1 v1.5 is still widely in use but is hard to implement correctly and
     many implementations have been found to be broken.
+  id: totrans-211
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: RSA-PSS has a proof of security, is easier to implement, but has seen poor adoption
     due to newer schemes based on elliptic curves.
+  id: totrans-212
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: ECDSA is the main competition to RSA PKCS#1 v1.5 and is mostly used with NIST’s
     curve P-256, except in the cryptocurrency world where Secp256k1 seems to dominate.
+  id: totrans-213
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Ed25519 is based on Schnorr signatures, has received wide adoption, and it is
     easier to implement compared to ECDSA; it does not require new randomness for
     every signing operation. This is the algorithm you should use if you can.
+  id: totrans-214
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 7.4 Subtle behaviors of signature schemes
+  id: totrans-215
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -1125,37 +1482,46 @@
     While they might not matter in most protocols, not being aware of these “gotchas”
     can end up biting you when working on more complex and nonconventional protocols.
     The end of this chapter focuses on known issues with digital signatures.
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
 - en: 7.4.1 Substitution attacks on signatures
+  id: totrans-217
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: '*A digital signature does not uniquely identify a key or a message*.'
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
 - en: —Andrew Ayer (“Duplicate Signature Key Selection Attack in Let’s Encrypt,” 2015)
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
 - en: '*Substitution attacks*, also referred to as *duplicate signature key selection*
     (DSKS), are possible on both RSA PKCS#1 v1.5 and RSA-PSS. Two DSKS variants exist:'
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
 - en: '*Key substitution attacks*—A different key pair or public key is used to validate
     a given signature over a given message.'
+  id: totrans-221
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Message key substitution attacks*—A different key pair or public key is used
     to validate a given signature over a *new* message.'
+  id: totrans-222
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'One more time: the first attack fixes both the message and the signature; the
     second one only fixes the signature. I recapitulate this in figure 7.12.'
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/07_12.jpg)'
+  id: totrans-224
   prefs: []
   type: TYPE_IMG
 - en: Figure 7.12 Signature algorithms like RSA are vulnerable to key substitution
@@ -1164,9 +1530,11 @@
     to craft a new key pair that validates the original signature. A variant called
     *message key substitution* allows an attacker to create a new key pair and a new
     message that validates under the original signature.
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
 - en: Existential unforgeability under adaptive chosen message attack (EUF-CMA)
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
 - en: Substitution attacks are a syndrome of a gap between theoretical cryptography
@@ -1178,24 +1546,29 @@
     message I hadn’t requested before. Unfortunately, this EUF-CMA model doesn’t seem
     to encompass every edge case, and dangerous subtleties like the substitution ones
     are not taken into account.
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
 - en: 7.4.2 Signature malleability
+  id: totrans-228
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: '*In February 2014 MtGox, once the largest Bitcoin exchange, closed and filed
     for bankruptcy claiming that attackers used malleability attacks to drain its
     accounts*.'
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
 - en: —Christian Decker and Roger Wattenhofer (“Bitcoin Transaction Malleability and
     MtGox,” 2014)
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
 - en: 'Most signature schemes are *malleable*: if you give me a valid signature, I
     can modify the signature so that it becomes a different, but still valid signature.
     I have no clue what the signing key was, yet I managed to create a new valid signature.'
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
 - en: 'Non-malleability does not necessarily mean that signatures are unique: if I’m
@@ -1204,9 +1577,11 @@
     you’ll see later in chapter 8) rely on signature uniqueness, and so they must
     deal with this or use signature schemes that have unique signatures (like the
     Boneh–Lynn–Shacham, or BLS, signatures).'
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
 - en: The strong EUF-CMA
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
 - en: A newer security model called SUF-CMA (for strong EUF-CMA) attempts to include
@@ -1215,6 +1590,7 @@
     include mitigations against malleability attacks. Because these mitigations are
     not always present or common, you should never rely on signatures being non-malleable
     in your protocols.
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
 - en: What to do with all of this information? Rest assured, signature schemes are
@@ -1222,21 +1598,25 @@
     is not too out-of-the-box. But if you’re designing cryptographic protocols or
     if you’re implementing a protocol that’s more complicated than everyday cryptography,
     you might want to keep these subtle properties in the back of your mind.
+  id: totrans-235
   prefs: []
   type: TYPE_NORMAL
 - en: Summary
+  id: totrans-236
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: Digital signatures are similar to pen-and-paper signatures but are backed with
     cryptography, making them unforgeable by anyone who does not control the signing
     (private) key.
+  id: totrans-237
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Digital signatures can be useful to authenticate origins (for example, one side
     of a key exchange) as well as providing transitive trust (if I trust Alice and
     she trusts Bob, I can trust Bob).
+  id: totrans-238
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1244,15 +1624,18 @@
     piece of information (called a witness), without revealing that something. Signatures
     can be seen as non-interactive ZKPs as they do not require the verifier to be
     online during the signing operation.
+  id: totrans-239
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'You can use many standards to sign:'
+  id: totrans-240
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: RSA PKCS#1 v1.5 is widely used today but not recommended as it is hard to implement
     correctly.
+  id: totrans-241
   prefs:
   - PREF_IND
   - PREF_UL
@@ -1261,6 +1644,7 @@
     proof of security. Unfortunately, it is not popular nowadays due to elliptic curve
     variants that support shorter keys and are, thus, more attractive for network
     protocols.
+  id: totrans-242
   prefs:
   - PREF_IND
   - PREF_UL
@@ -1268,12 +1652,14 @@
 - en: 'The most popular signature schemes currently are based on elliptic curves:
     ECDSA and EdDSA. ECDSA is often used with NIST’s curve P-256, and EdDSA is often
     used with the Edwards25519 curve (this combination is referred to as Ed25519).'
+  id: totrans-243
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Some subtle properties can be dangerous if signatures are used in a nonconventional
     way:'
+  id: totrans-244
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1281,6 +1667,7 @@
     are vulnerable to key substitution attacks. External actors can create a new key
     pair that would validate an already existing signature over a message or create
     a new key pair and a new message that would validate a given signature.
+  id: totrans-245
   prefs:
   - PREF_IND
   - PREF_UL
@@ -1289,6 +1676,7 @@
     the signer can create an arbitrary amount of signatures for the same message.
     Second, most signature schemes are *malleable*, meaning that external actors can
     take a signature and create another valid signature for the same message.
+  id: totrans-246
   prefs:
   - PREF_IND
   - PREF_UL

@@ -309,15 +309,18 @@
   id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 混合加密在实践中与非对称加密具有相同的接口（见图6.6）。人们可以使用公钥加密消息，拥有相关私钥的人可以解密加密的消息。真正的区别在于您可以加密的消息的大小限制。
 - en: '![](../Images/06_06.jpg)'
   id: totrans-43
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_06.jpg)'
 - en: Figure 6.6 Hybrid encryption has the same interface as asymmetric encryption
     except that messages that can be encrypted are much larger in size.
   id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.6 混合加密与非对称加密具有相同的接口，只是可以加密的消息大小要大得多。
 - en: Under the cover, hybrid encryption is simply the combination of an *asymmetric*
     cryptographic primitive with a *symmetric* cryptographic primitive (hence the
     name). Specifically, it is a non-interactive key exchange with the recipient,
@@ -325,6 +328,7 @@
   id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 在幕后，混合加密只是一个*非对称*加密原语与一个*对称*加密原语的结合（因此得名）。具体来说，它是与接收者进行的非交互式密钥交换，然后使用经过身份验证的加密算法加密消息。
 - en: Warning You could also use a simple symmetric encryption primitive instead of
     an authenticated encryption primitive, but symmetric encryption does not protect
     against someone tampering with your encrypted messages. This is why we never use
@@ -332,22 +336,26 @@
   id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 您也可以使用简单的对称加密原语，而不是经过身份验证的加密原语，但对称加密无法防止有人篡改您的加密消息。这就是为什么在实践中我们从不单独使用对称加密的原因（如第4章所示）。
 - en: Let’s learn about how hybrid encryption works! If you want to encrypt a message
     to Alice, you first generate a symmetric key and encrypt your message with it
     and then use an authenticated encryption algorithm as figure 6.7 illustrates.
   id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们了解一下混合加密的工作原理！如果您想将消息加密给爱丽丝，您首先生成一个对称密钥并使用它加密您的消息，然后使用一个经过身份验证的加密算法，正如图6.7所示。
 - en: '![](../Images/06_07.jpg)'
   id: totrans-48
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_07.jpg)'
 - en: Figure 6.7 To encrypt a message to Alice using hybrid encryption with asymmetric
     encryption, you (1) generate a symmetric key for an authenticated encryption algorithm,
     then you (2) use the symmetric key to encrypt your message to Alice.
   id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.7 使用混合加密和非对称加密将消息加密给爱丽丝，您（1）为经过身份验证的加密算法生成对称密钥，然后您（2）使用对称密钥将消息加密给爱丽丝。
 - en: Once you have encrypted your message, Alice still cannot decrypt it without
     the knowledge of the symmetric key. How do we provide Alice with that symmetric
     key? Asymmetrically encrypt the symmetric key with Alice’s public key as in figure
@@ -355,38 +363,46 @@
   id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 一旦您加密了您的消息，爱丽丝仍然无法在不知道对称密钥的情况下解密它。我们如何向爱丽丝提供对称密钥？使用爱丽丝的公钥对对称密钥进行非对称加密，就像图6.8中所示的那样。
 - en: '![](../Images/06_08.jpg)'
   id: totrans-51
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_08.jpg)'
 - en: Figure 6.8 Building on figure 6.7, you (3) encrypt the symmetric key itself
     by using Alice’s public key and an asymmetric encryption algorithm.
   id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.8 在图6.7的基础上，（3）你使用爱丽丝的公钥和非对称加密算法加密对称密钥本身。
 - en: Finally, you can send both results to Alice. These include
   id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，你可以将两个结果都发送给爱丽丝。这些包括
 - en: The asymmetrically encrypted symmetric key
   id: totrans-54
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '**非对称加密的对称密钥**'
 - en: The symmetrically encrypted message
   id: totrans-55
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对称加密的消息
 - en: This is enough information for Alice to decrypt the message. I illustrate the
     full flow in figure 6.9.
   id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 这对于爱丽丝解密消息已经足够了。我在图6.9中详细说明了整个流程。
 - en: '![](../Images/06_09.jpg)'
   id: totrans-57
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_09.jpg)'
 - en: Figure 6.9 Building on figure 6.8, (4) after you send both the encrypted symmetric
     key and the encrypted message to Alice, (5) Alice decrypts the symmetric key using
     her private key. (6) She then uses the symmetric key to decrypt the encrypted
@@ -395,6 +411,7 @@
   id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.9 在图6.8的基础上，（4）在你将加密的对称密钥和加密的消息都发送给爱丽丝后，（5）爱丽丝使用她的私钥解密对称密钥。（6）然后她使用对称密钥解密加密的消息。（请注意，如果在步骤4时通信被中间人攻击者篡改，步骤5和6都可能失败并返回错误。）
 - en: 'And this is how we can use the best of both worlds: mixing asymmetric encryption
     and symmetric encryption to encrypt large amounts of data to a public key. We
     often call the first asymmetric part of the algorithm a *key encapsulation mechanism*
@@ -402,6 +419,7 @@
   id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是我们如何利用两者之间的最佳特性：将非对称加密和对称加密混合以向公钥加密大量数据。我们通常将算法的第一个非对称部分称为*密钥封装机制*（KEM），将第二个对称部分称为*数据封装机制*（DEM）。
 - en: Before we move to the next section and learn about the different algorithms
     and standards that exist for both asymmetric encryption and hybrid encryption,
     let’s see (in practice) how you can use a cryptographic library to perform hybrid
@@ -550,40 +568,48 @@
   id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 不幸的是，自从1977年首次发布以来，RSA一直受到了相当大的诟病。流行的理论之一是RSA太容易理解和实现，因此许多人自行实施，这导致了许多易受攻击的实现。这是一个有趣的想法，但它没有抓住整个故事的要点。尽管RSA的概念（通常称为*教科书RSA*）如果被天真地实现是不安全的，但甚至标准也被发现是不安全的！但是不要那么快，要理解这些问题，您首先需要了解RSA的工作原理。
 - en: 'Remember the multiplicative group of numbers modulo a prime *p*? (We talked
     about it in chapter 5.) It is the set of strictly positive integers:'
   id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 还记得模素数*p*的乘法群吗？（我们在第5章中谈论过。）它是严格正整数的集合：
 - en: 1, 2, 3, 4, ···, *p* – 1
   id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 1, 2, 3, 4, ···, *p* – 1
 - en: Let’s imagine that one of these numbers is our message. For *p* large enough,
     let’s say 4,096 bits, our message can contain around 500 characters tops.
   id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们假设其中一个数字是我们的消息。对于足够大的*p*，比如4,096位，我们的消息最多可以包含约500个字符。
 - en: Note For computers, a message is just a series of bytes, which can also be interpreted
     as a number.
   id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意对于计算机来说，一条消息只是一系列字节，也可以解释为一个数字。
 - en: We have seen that by exponentiating a number (let’s say our message), we can
     generate other numbers that form a *subgroup*. I illustrate this in figure 6.10.
   id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经看到通过对一个数字进行幂运算（比如我们的消息），我们可以生成其他形成一个*子群*的数字。我在图6.10中进行了说明。
 - en: '![](../Images/06_10.jpg)'
   id: totrans-86
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_10.jpg)'
 - en: Figure 6.10 Integers modulo a prime (here 5) are divided in different subgroups.
     By picking an element as a generator (let’s say the number 2) and exponentiating
     it, we can generate a subgroup. For RSA, the generator is the message.
   id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.10 对于模素数（这里为5）的整数被划分为不同的子群。通过选择一个元素作为生成器（假设是数字2）并对其进行指数运算，我们可以生成一个子群。对于RSA，生成器就是消息。
 - en: This is useful for us when defining how to encrypt with RSA. To do this, we
     publish a public exponent *e* (for *encryption*) and a prime number *p*. (In reality
     *p* cannot be prime, but we’ll ignore that for a moment.) To encrypt a message
@@ -591,38 +617,46 @@
   id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 当我们定义如何使用RSA加密时，这对我们很有用。为此，我们发布一个公共指数*e*（用于*加密*）和一个素数*p*。（实际上*p*不能是素数，但我们暂时忽略这一点。）要加密一个消息*m*，需要计算
 - en: ciphertext = *m*^e mod *p*
   id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 密文 = *m*^e mod *p*
 - en: For example, to encrypt the message *m* = 2 with *e* = 2 and *p* = 5, we compute
   id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，要使用*e* = 2和*p* = 5加密消息*m* = 2，我们计算
 - en: ciphertext = 2² mod 5 = 4
   id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 密文 = 2² mod 5 = 4
 - en: And this is the idea behind encryption with RSA!
   id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是使用RSA加密的理念背后的想法！
 - en: Note Usually, a small number is chosen as the public exponent *e* so that encryption
     is fast. Historically, standards and implementations seem to have settled on the
     prime number 65,537 for the public exponent.
   id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意通常情况下，会选择一个小的数作为公共指数*e*，以便加密速度更快。从历史上看，标准和实现似乎已经确定了素数65,537作为公共指数。
 - en: This is great! You now have a way for people to encrypt messages to you. But
     how do you decrypt those? Remember, if you continue to exponentiate a generator,
     you actually go back to the original number (see figure 6.11).
   id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 太棒了！现在你有了一种让人们向你加密消息的方法。但是如何解密呢？记住，如果你继续对一个生成器进行幂运算，你实际上会回到原始数字（见图6.11）。
 - en: '![](../Images/06_11.jpg)'
   id: totrans-95
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_11.jpg)'
 - en: Figure 6.11 Let’s say that our message is the number 2\. By exponentiating it,
     we can obtain other numbers in our group. If we exponentiate it enough, we go
     back to our original message, 2\. We say that the group is *cyclic*. This property
@@ -630,6 +664,7 @@
   id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.11 假设我们的消息是数字2。通过对其进行幂运算，我们可以获得我们群中的其他数字。如果我们对其进行足够多次幂运算，我们将回到我们的原始消息2。我们称该群是*循环的*。这个属性可以用来在将消息提升到某个幂之后恢复消息。
 - en: 'This should give you an idea of how to implement decryption: find out how much
     you need to exponentiate a ciphertext in order to recover the original generator
     (which is the message). Let’s say that you know such a number, which we’ll call
@@ -637,14 +672,17 @@
   id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 这应该让你有一个实现解密的思路：找出你需要对密文进行多少次幂运算才能恢复原始生成器（即消息）。假设你知道这样一个数字，我们将其称为*私有指数d*（*d*表示*解密*）。如果你收到
 - en: ciphertext = message^e mod *p*
   id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 密文 = 消息^e mod *p*
 - en: 'you should be able to raise it to the power *d* to recover the message:'
   id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 你应该能够将其提升到幂次*d*以恢复消息：
 - en: ciphertext^d = (message^e)^d = message^(*e*×*d*) = message mod *p*
   id: totrans-100
   prefs: []
@@ -1105,10 +1143,12 @@
   id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 在OAEP内部，*MGF*代表*掩码生成函数*。在实践中，MGF是一个可扩展输出函数（XOF）；你在第2章已经了解了XOF。由于MGF是在XOF之前发明的，因此它们是使用散列函数反复散列输入与计数器的输入来构建的（见图6.17）。这就是OAEP的工作原理！
 - en: '![](../Images/06_17.jpg)'
   id: totrans-167
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_17.jpg)'
 - en: Figure 6.17 A mask generation function (MGF) is simply a function that takes
     an arbitrary length input and produces a random-looking arbitrary length output.
     It works by hashing an input and a counter, concatenating the digests together,
@@ -1116,10 +1156,12 @@
   id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.17 掩码生成函数（MGF）只是一个接受任意长度输入并产生随机外观任意长度输出的函数。它通过对输入和计数器进行散列，将摘要连接在一起，并截断结果以获得所需长度来工作。
 - en: Manger’s padding oracle attack
   id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: Manger的填充预言攻击
 - en: Only three years after the release of the OAEP standard, James Manger found
     a timing attack similar to Bleichenbacher’s million message attack (but much more
     practical) on OAEP if not implemented correctly. Fortunately, it is much simpler
@@ -1128,6 +1170,8 @@
   id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: OAEP标准发布仅三年后，James Manger发现了一个与Bleichenbacher的百万消息攻击类似但更加实用的OAEP定时攻击，如果实现不正确的话。幸运的是，与PKCS#1
+    v1.5相比，安全地实现OAEP要简单得多，并且对该方案实现中的漏洞要少得多。
 - en: Furthermore, the design of OAEP is not perfect; better constructions have been
     proposed and standardized over the years. One example is RSA-KEM, which has stronger
     proofs of security and is much simpler to implement securely. You can observe
@@ -1135,10 +1179,12 @@
   id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，OAEP的设计并不完美；多年来已经提出并标准化了更好的构造。一个例子是RSA-KEM，它具有更强的安全性证明，并且要安全地实现要简单得多。您可以观察到设计在图6.18中更加优雅。
 - en: '![](../Images/06_18.jpg)'
   id: totrans-172
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_18.jpg)'
 - en: Figure 6.18 RSA-KEM is an encryption scheme that works by simply encrypting
     a random number under RSA. No padding is needed. We can pass the random number
     through a key derivation function (KDF) to obtain a symmetric key. We then use
@@ -1146,12 +1192,14 @@
   id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.18 RSA-KEM是一种通过简单地使用RSA加密随机数来工作的加密方案。不需要填充。我们可以通过密钥派生函数（KDF）传递随机数以获得对称密钥。然后，我们使用对称密钥通过身份验证加密算法加密消息。
 - en: Note the key derivation function (KDF) in use here. It is another cryptographic
     primitive that can be replaced with an MGF or a XOF. I’ll talk more about what
     KDFs are in chapter 8 on randomness and secrets.
   id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意这里使用的密钥派生函数（KDF）。这是另一个可以用MGF或XOF替换的加密原语。我将在第8章关于随机性和机密性中更多地谈到KDF是什么。
 - en: Nowadays, most protocols and applications that use RSA either still implement
     the insecure PKCS#1 v1.5 or OAEP. On the other hand, more and more protocols are
     moving away from RSA encryption in favor of Elliptic Curve Diffie-Hellman (ECDH)
@@ -1161,11 +1209,13 @@
   id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 如今，大多数使用RSA的协议和应用程序仍然实现不安全的PKCS#1 v1.5或OAEP。另一方面，越来越多的协议正在摒弃RSA加密，转而采用椭圆曲线Diffie-Hellman（ECDH）进行密钥交换和混合加密。这是可以理解的，因为ECDH提供更短的公钥，并且通常从更好的标准和更安全的实现中受益。
 - en: 6.4 Hybrid encryption with ECIES
   id: totrans-176
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.4 使用ECIES进行混合加密
 - en: While there exist many hybrid encryption schemes, the most widely adopted standard
     is *Elliptic Curve Integrated Encryption Scheme* (ECIES). The scheme has been
     specified to be used with ECDH and is included in many standards like ANSI X9.63,
@@ -1175,6 +1225,8 @@
   id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然存在许多混合加密方案，但最广泛采用的标准是*椭圆曲线整合加密方案*（ECIES）。该方案已被指定用于与ECDH一起使用，并包含在许多标准中，如ANSI
+    X9.63，ISO/IEC 18033-2，IEEE 1363a和SECG SEC 1。不幸的是，每个标准似乎都实现了不同的变体，并且不同的加密库以不同的方式实现混合加密，部分原因是如此。
 - en: For this reason, I rarely see two similar implementations of hybrid encryption
     in the wild. It is important to understand that while this is annoying, if all
     the participants of the protocol use the same implementation or document the details
@@ -1183,12 +1235,14 @@
   id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 出于这个原因，在野外我很少看到两个相似的混合加密实现。重要的是要理解，虽然这很烦人，但如果协议的所有参与者使用相同的实现或记录了他们实现的混合加密方案的详细信息，那么就不会有问题。
 - en: ECIES works similarly to the hybrid encryption scheme explained in section 6.2\.
     The difference is that we implement the KEM part with an ECDH key exchange instead
     of with an asymmetric encryption primitive. Let’s explain this step by step.
   id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: ECIES的工作方式与第6.2节中解释的混合加密方案类似。不同之处在于，我们使用ECDH密钥交换实现了KEM部分，而不是使用非对称加密原语。让我们逐步解释这一点。
 - en: First, if you want to encrypt a message to Alice, you use an (EC)DH-based key
     exchange with Alice’s public key and a key pair that you generate for the occasion
     (this is called an *ephemeral key pair*). You can then use the obtained shared
@@ -1197,10 +1251,12 @@
   id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，如果你想将消息加密给Alice，你使用基于(EC)DH的密钥交换与Alice的公钥以及你为此生成的密钥对（这称为*临时密钥对*）。然后你可以使用获得的共享秘密与像AES-GCM这样的认证对称加密算法加密一个更长的消息给她。图6.19说明了这一点。
 - en: '![](../Images/06_19.jpg)'
   id: totrans-181
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_19.jpg)'
 - en: Figure 6.19 To encrypt a message to Alice using hybrid encryption with (EC)DH,
     you (1) generate an ephemeral (elliptic curve) DH key pair. Then (2) perform a
     key exchange with your ephemeral private key and Alice’s public key. (3) Use the
@@ -1209,6 +1265,7 @@
   id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.19 使用混合加密将消息加密给Alice，使用(EC)DH，你（1）生成一个临时（椭圆曲线）DH密钥对。然后（2）使用你的临时私钥和Alice的公钥进行密钥交换。（3）使用生成的共享秘密作为对称密钥，使用认证加密算法加密你的消息。
 - en: After this, you can send the ephemeral public key and the ciphertext to Alice.
     Alice can use your ephemeral public key to perform a key exchange with her own
     key pair. She can then use the result to decrypt the ciphertext and retrieve the
@@ -1218,10 +1275,12 @@
   id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 之后，你可以将临时公钥和密文发送给Alice。Alice可以使用你的临时公钥与自己的密钥对进行密钥交换。然后她可以使用结果来解密密文并恢复原始消息。结果要么是原始消息，要么是错误，如果公钥或加密消息在传输中被篡改。图6.20说明了完整的流程。
 - en: '![](../Images/06_20.jpg)'
   id: totrans-184
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_20.jpg)'
 - en: Figure 6.20 Building on figure 6.19, (4) after you send your ephemeral public
     key and your encrypted message to Alice, (5) Alice can perform a key exchange
     with her private key and your ephemeral public key. (6) She finally uses the resulting
@@ -1230,16 +1289,19 @@
   id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.20 在图6.19的基础上构建，（4）在你将你的临时公钥和你的加密消息发送给Alice后，（5）Alice可以使用她的私钥和你的临时公钥进行密钥交换。（6）最后，她使用生成的共享秘密作为对称密钥，使用相同的认证加密算法解密加密消息。
 - en: And this is pretty much how ECIES work. There also exists a variant of ECIES
     using Diffie-Hellman, called IES, that works pretty much the same way, but not
     many people seem to use it.
   id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 这基本上就是ECIES的工作原理。还有一种使用Diffie-Hellman的ECIES变体，称为IES，工作方式基本相同，但似乎没有多少人使用它。
 - en: Removing bias in a key exchange output
   id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 消除密钥交换输出中的偏差
 - en: Note that I simplified figure 6.20\. Most authenticated encryption primitives
     expect an uniformly random symmetric key. Because the output of a key exchange
     is generally *not* uniformly random, we need to pass the shared secret through
@@ -1248,20 +1310,24 @@
   id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，我简化了图6.20。大多数认证加密原语期望一个均匀随机的对称密钥。因为密钥交换的输出通常*不*是均匀随机的，所以我们需要先通过KDF或XOF（在第2章中见过）传递共享秘密。你将在第8章中了解更多相关内容。
 - en: '*Not uniformly random* here means that statistically, some of the bits of the
     key exchange result might be 0 more often than 1, or the opposite. The first bits
     might always be set to 0, for example.'
   id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: '*这里的*不是均匀随机*意味着从统计上看，密钥交换结果的某些比特可能更多地是0，或者相反。例如，前几位可能总是被设置为0。'
 - en: Exercise
   id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 练习
 - en: Do you see why you can’t use the key exchange output right away?
   id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 你看出为什么不能立即使用密钥交换输出了吗？
 - en: And that’s it for the different standards you can use. In the next chapter,
     you’ll learn about signatures, which will be the last, and perhaps most important,
     public key cryptography algorithm of part 1\.

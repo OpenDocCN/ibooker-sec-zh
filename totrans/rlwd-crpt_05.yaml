@@ -3,25 +3,30 @@
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 4 认证加密
 - en: This chapter covers
   id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: Symmetric encryption vs. authenticated encryption
   id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对称加密与认证加密的区别
 - en: Popular authenticated encryption algorithms
   id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 流行的认证加密算法
 - en: Other types of symmetric encryption
   id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 其他类型的对称加密
 - en: Confidentiality is about hiding data from unwanted eyes and encryption is the
     way to achieve this. Encryption is what the science of cryptography was initially
     invented for; it’s what preoccupied most of the early cryptographers. They would
@@ -35,25 +40,30 @@
   id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 保密性是关于隐藏数据不被未经授权的人看到，而加密是实现这一目标的方法。加密是密码学最初被发明的目的；它是早期密码学家最关心的问题。他们会问自己，“我们如何防止观察者理解我们的对话？”虽然最初科学及其进展是在闭门之后蓬勃发展的，只有政府和军队受益，但现在已经向全世界开放。今天，加密在现代生活的各个方面被广泛使用以增加隐私和安全性。在本章中，我们将了解加密的真正含义，它解决了哪些问题，以及当今的应用程序如何大量使用这种密码原语。
 - en: Note For this chapter, you’ll need to have read chapter 3 on message authentication
     codes.
   id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 对于本章，您需要已经阅读了第3章关于消息认证码的内容。
 - en: 4.1 What’s a cipher?
   id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 4.1 什么是密码？
 - en: '*It’s like when you use slang to talk to your siblings about what you’ll do
     after school so your mom doesn’t know what you’re up to*.'
   id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: '*就像当你用俚语与兄弟姐妹谈论放学后要做什么，这样你的妈妈就不知道你在干什么*。'
 - en: —Natanael L. (2020, [https://twitter.com/Natanael_L](https://twitter.com/Natanael_L))
   id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: —Natanael L. (2020, [https://twitter.com/Natanael_L](https://twitter.com/Natanael_L))
 - en: Let’s imagine that our two characters, Alice and Bob, want to exchange some
     messages privately. In practice, they have many mediums at their disposal (the
     mail, phones, the internet, and so on), and each of these mediums are by default
@@ -64,6 +74,7 @@
   id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们想象一下我们的两个角色，爱丽丝和鲍勃，想要私下交换一些消息。在实践中，他们有许多可供选择的媒介（邮件、电话、互联网等），每个媒介默认都是不安全的。邮递员可能会打开他们的信件；电信运营商可以窥探他们的通话和短信；互联网服务提供商或者在爱丽丝和鲍勃之间的网络中的任何服务器都可以访问正在交换的数据包的内容。
 - en: 'Without further ado, let’s introduce Alice and Bob’s savior: the *encryption
     algorithm* (also called a *cipher*). For now, let’s picture this new algorithm
     as a black box that Alice can use to encrypt her messages to Bob. By *encrypting*
@@ -72,6 +83,7 @@
   id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 不再拖延，让我们介绍一下爱丽丝和鲍勃的救星：*加密算法*（也称为*密码*）。现在，让我们把这个新算法想象成爱丽丝可以用来加密她发送给鲍勃的消息的黑匣子。通过对消息进行*加密*，爱丽丝将其转换为看起来随机的内容。这个加密算法需要
 - en: '*A secret key*—It is crucial that this element is unpredictable, random, and
     well protected because the security of the encryption algorithm relies directly
     on the secrecy of the key. I will talk more about this in chapter 8 on secrets
@@ -80,12 +92,14 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*一个秘钥*—这个元素的不可预测性、随机性和良好的保护至关重要，因为加密算法的安全性直接依赖于密钥的保密性。我将在第8章关于秘密和随机性中更多地讨论这一点。'
 - en: '*Some plaintext*—This is what you want to encrypt. It can be some text, an
     image, a video, or anything that can be translated into bits.'
   id: totrans-13
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*一些明文*—这是你想要加密的内容。它可以是一些文本、一张图片、一个视频，或者任何可以转换为比特的东西。'
 - en: This encryption process produces a *ciphertext*, which is the encrypted content.
     Alice can safely use one of the mediums listed previously to send that ciphertext
     to Bob. The ciphertext will look random to anyone who does not know the secret
@@ -95,6 +109,7 @@
   id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个加密过程产生了一个*密文*，即加密后的内容。爱丽丝可以安全地使用之前列出的媒介之一将该密文发送给鲍勃。对于不知道秘钥的任何人来说，密文看起来是随机的，消息内容（明文）的任何信息都不会泄露。一旦鲍勃收到这个密文，他可以使用一个*解密算法*将密文恢复为原始明文。解密需要
 - en: '*A secret key*—This is the same secret key that Alice used to create the ciphertext.
     Because the same key is used for both algorithms, we sometimes call the key a
     *symmetric key*. This is also why we also sometimes specify that we are using
@@ -103,20 +118,24 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*一个秘密密钥* — 这是艾丽丝用于创建密文的相同秘密密钥。因为同一密钥用于两种算法，所以我们有时将密钥称为*对称密钥*。这也是为什么我们有时指定我们使用*对称加密*而不仅仅是*加密*。'
 - en: '*Some ciphertext*—This is the encrypted message Bob receives from Alice.'
   id: totrans-16
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*一些密文* — 这是鲍勃从艾丽丝那里收到的加密消息。'
 - en: The process then reveals the original plaintext. Figure 4.1 illustrates this
     flow.
   id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 然后该过程显示出原始明文。图4.1说明了此流程。
 - en: '![](../Images/04_01.jpg)'
   id: totrans-18
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_01.jpg)'
 - en: Figure 4.1 Alice (top right) encrypts the plaintext *hello* with the key `0x8866...`
     (an abbreviated hexadecimal). Then Alice sends the ciphertext to Bob. Bob (bottom
     right) decrypts the received ciphertext by using the same key and a decryption
@@ -124,6 +143,7 @@
   id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.1 艾丽丝（右上）用密钥 `0x8866...`（一个缩写的十六进制数）加密明文 *hello*，然后将密文发送给鲍勃。鲍勃（右下）使用相同的密钥和解密算法解密收到的密文。
 - en: Encryption allows Alice to transform her message into something that looks random
     and that can be safely transmitted to Bob. Decryption allows Bob to revert the
     encrypted message back to the original message. This new cryptographic primitive
@@ -131,6 +151,7 @@
   id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 加密允许艾丽丝将她的消息转换成看起来随机的内容，并可以安全地传输给鲍勃。解密允许鲍勃将加密消息还原为原始消息。这种新的加密原语为他们的消息提供了保密性（或秘密性或隐私性）。
 - en: Note How do Alice and Bob agree to use the same symmetric key? For now, we’ll
     assume that one of them had access to an algorithm that generates unpredictable
     keys, and that they met in person to exchange the key. In practice, how to bootstrap
@@ -139,6 +160,7 @@
   id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 艾丽丝和鲍勃如何同意使用相同的对称密钥？现在，我们假设其中一个人有权访问一个生成不可预测密钥的算法，并且他们亲自见面交换密钥。实际上，如何用共享的秘密来启动这样的协议通常是公司需要解决的重大挑战之一。在本书中，您将看到许多解决这个问题的不同方法。
 - en: 'Notice that I have yet to introduce what the title of this chapter, “Authenticated
     encryption,” refers to. I’ve only talked about encryption alone so far. While
     encryption alone is not secure (more about that later), I have to explain how
@@ -148,11 +170,13 @@
   id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: '请注意，我尚未介绍本章标题“认证加密”指的是什么。到目前为止，我只谈到了单独的加密。虽然单独的加密并不安全（稍后再说），但我必须先解释它是如何工作的，然后才能介绍认证加密原语。所以请容我先讲解加密的主要标准：*高级加密标准*（AES）。 '
 - en: 4.2 The Advanced Encryption Standard (AES) block cipher
   id: totrans-23
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 4.2 高级加密标准（AES）块密码
 - en: In 1997, NIST started an open competition for an *Advanced Encryption Standard*
     (AES), aimed at replacing the Data Encryption Standard (DES) algorithm, their
     previous standard for encryption that was starting to show signs of age. The competition
@@ -166,11 +190,14 @@
   id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 1997年，NIST启动了一个旨在取代数据加密标准（DES）算法的*高级加密标准*（AES）的公开竞赛，他们以前的加密标准开始显露老化迹象。竞赛持续了三年，期间，来自不同国家的密码学家团队提交了15种不同的设计。竞赛结束时，只有一个提交作品，由文森特·赖曼和约翰·达曼设计的
+    Rijndael 被提名为获胜者。2001年，NIST发布了AES作为FIPS（联邦信息处理标准）197出版物的一部分。 AES，即FIPS标准中描述的算法，仍然是今天主要使用的密码。在本节中，我将解释AES的工作原理。
 - en: 4.2.1 How much security does AES provide?
   id: totrans-25
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.2.1 AES提供了多少安全性？
 - en: 'AES offers three different versions: AES-128 takes a key of 128 bits (16 bytes),
     AES-192 takes a key of 192 bits (24 bytes), and AES-256 takes a key of 256 bits
     (32 bytes). The length of the key dictates the level of security—*the bigger,
@@ -179,6 +206,8 @@
   id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: AES 提供了三个不同版本：AES-128 使用 128 位（16 字节）密钥，AES-192 使用 192 位（24 字节）密钥，AES-256 使用
+    256 位（32 字节）密钥。密钥的长度决定了安全级别—*越大越强*。尽管如此，大多数应用都使用 AES-128，因为它提供足够的安全性（128 位安全性）。
 - en: The term *bit security* is commonly used to indicate the security of cryptographic
     algorithms. For example, AES-128 specifies that the best attack we know of would
     take around 2128 operations. This number is gigantic, and it is the security level
@@ -186,10 +215,12 @@
   id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 术语 *位安全性* 常用来指示密码算法的安全性。例如，AES-128 指定我们已知的最佳攻击需要大约 2^128 次操作。这个数字是巨大的，它是大多数应用所追求的安全级别。
 - en: Bit security is an upper bound
   id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 位安全性是一个上限
 - en: The fact that a 128-bit key provides 128 bits of security is specific to AES;
     it is not a golden rule. A 128-bit key used in some other algorithm could theoretically
     provide less than 128-bit security. While a 128-bit key can provide less than
@@ -199,6 +230,9 @@
   id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 128 位密钥提供 128 位安全性的事实是特定于 AES 的；这不是一个黄金法则。在某些其他算法中使用的 128 位密钥理论上可能提供的安全性不到 128
+    位。虽然 128 位密钥可以提供不到 128 位的安全性，但永远不会提供更多（总是有暴力破解攻击）。尝试所有可能的密钥最多需要 2^128 次操作，将安全性至少降低到
+    128 位。
 - en: How big is 2^(128)? Notice that the amount between two powers of 2 is doubled.
     For example 2³ is twice as much as 2². If 2^(100) operations are pretty much impossible
     to reach, imagine achieving double that (2^(101)). To reach 2^(128), you have
@@ -212,42 +246,51 @@
   id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 2^(128) 有多大？注意两个 2 的幂之间的数量加倍。例如，2³ 是 2² 的两倍。如果说 2^100 次操作几乎是不可能实现的，想象一下达到其两倍（2^101）。要达到
+    2^128，你需要将你的初始数量加倍 128 次！简单来说，2^128 是 340 个无法想象的无穷大。这个数字是相当巨大的，但你可以假设我们在实践中永远不可能达到这样的数字。我们也没有考虑到任何大规模复杂攻击所需的空间量，实际上同样是巨大的。
 - en: It is foreseeable that AES-128 will remain secure for a long time. That is unless
     advances in cryptanalysis find a yet undiscovered vulnerability that would reduce
     the number of operations needed to attack the algorithm.
   id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 可预见的是，AES-128 将在很长一段时间内保持安全。除非密码分析方面的进展发现尚未发现的漏洞，这会减少攻击算法所需的操作数。
 - en: 4.2.2 The interface of AES
   id: totrans-32
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.2.2 AES 的接口
 - en: 'Looking at the interface of AES for encryption, we see the following:'
   id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 查看 AES 加密的接口，我们可以看到以下内容：
 - en: The algorithm takes a variable-length key as discussed previously.
   id: totrans-34
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 正如前面讨论过的，该算法接受可变长度的密钥。
 - en: It also takes a plaintext of exactly 128 bits.
   id: totrans-35
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它还需要准确的 128 位纯文本。
 - en: It outputs a ciphertext of exactly 128 bits.
   id: totrans-36
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 它输出准确的 128 位密文。
 - en: Because AES encrypts a fixed-size plaintext, we call it a *block cipher*. Some
     other ciphers can encrypt arbitrarily length plaintexts as you will see later
     in this chapter.
   id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 因为 AES 加密了固定大小的纯文本，我们称其为 *分组密码*。后面你将在本章中看到，一些其他密码可以加密任意长度的纯文本。
 - en: 'The decryption operation is exactly the reverse of this: it takes the same
     key, a ciphertext of 128 bits, and returns the original 128-bit plaintext. Effectively,
     decryption reverts the encryption. This is possible because the encryption and
@@ -256,6 +299,8 @@
   id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 解密操作恰好与此相反：它使用相同的密钥，一个 128 位密文，并返回原始的 128 位纯文本。实际上，解密是加密的逆过程。这是因为加密和解密操作是 *确定性*
+    的；无论你调用它们多少次，它们都会产生相同的结果。
 - en: 'In technical terms, a block cipher with a key is a *permutation*: it maps all
     the possible plaintexts to all the possible ciphertexts (see the example in figure
     4.2). Changing the key changes that mapping. A permutation is also reversible.
@@ -264,15 +309,18 @@
   id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 从技术上讲，具有密钥的分组密码是一种*置换*：它将所有可能的明文映射到所有可能的密文（请参见图 4.2 中的示例）。更改密钥会更改该映射。置换也是可逆的。从密文，您可以得到回到其相应明文的映射（否则，解密将无法工作）。
 - en: '![](../Images/04_02.jpg)'
   id: totrans-40
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_02.jpg)'
 - en: 'Figure 4.2 A cipher with a key can be seen as a permutation: it maps all the
     possible plaintexts to all the possible ciphertexts.'
   id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4.2 具有密钥的密码可以被视为一种置换：它将所有可能的明文映射到所有可能的密文。
 - en: Of course, we do not have the room to list all the possible plaintexts and their
     associated ciphertexts. That would be 2128 mappings for a 128-bit block cipher.
     Instead, we design constructions like AES, which behave like permutations and
@@ -280,27 +328,32 @@
   id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，我们没有空间列出所有可能的明文及其相关的密文。对于 128 位分组密码，这将是 2^128 个映射。相反，我们设计像 AES 这样的结构，它们的行为类似于置换，并由密钥随机化。我们说它们是*伪随机置换*（PRPs）。
 - en: 4.2.3 The internals of AES
   id: totrans-43
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.2.3 AES 的内部结构
 - en: Let’s dig a bit deeper into the guts of AES to see what’s inside. Note that
     AES sees the *state* of the plaintext during the encryption process as a 4-by-4
     matrix of bytes (as you can see in figure 4.3).
   id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们深入了解 AES 的内部。请注意，在加密过程中，AES 将明文的*状态*视为一个 4×4 字节矩阵（正如您在图 4.3 中所看到的）。
 - en: '![](../Images/04_03.jpg)'
   id: totrans-45
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_03.jpg)'
 - en: Figure 4.3 When entering the AES algorithm, a plaintext of 16 bytes gets transformed
     into a 4-by-4 matrix. This state is then encrypted and finally transformed into
     a 16-byte ciphertext.
   id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4.3 当进入 AES 算法时，16 字节的明文被转换为一个 4×4 矩阵。然后将对此状态进行加密，最终将其转换为 16 字节的密文。
 - en: This doesn’t really matter in practice, but this is how AES is defined. Under
     the hood, AES works like many similar symmetric cryptographic primitives called
     *block ciphers*, which are ciphers that encrypt fixed-sized blocks. AES also has
@@ -309,16 +362,20 @@
   id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 实际上这并不重要，但这就是 AES 的定义方式。在幕后，AES 的工作方式类似于许多类似的对称密码原语，称为*分组密码*，它们是加密固定大小的块的密码。AES
+    还有一个*轮函数*，它会多次迭代，从原始输入（明文）开始。我在图 4.4 中对此进行了说明。
 - en: '![](../Images/04_04.jpg)'
   id: totrans-48
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_04.jpg)'
 - en: Figure 4.4 AES iterates a round function over a state in order to encrypt it.
     The round function takes several arguments including a secret key. (These are
     missing from the diagram for simplicity.)
   id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4.4 AES 通过对状态迭代一个轮函数来对其进行加密。轮函数接受多个参数，包括一个秘密密钥。（这些参数在图表中被省略以简化。）
 - en: Each call to the round function transforms the state further, eventually producing
     the ciphertext. Each round uses a different *round key*, which is derived from
     the main symmetric key (during what is called a *key schedule*). This allows the
@@ -327,6 +384,7 @@
   id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 每次调用轮函数都会进一步转换状态，最终产生密文。每个轮使用一个不同的*轮密钥*，它是从主对称密钥派生的（在所谓的*密钥调度*期间）。这允许对对称密钥位的细微更改产生完全不同的加密（这被称为*扩散*原理）。
 - en: The round function consists of multiple operations that mix and transform the
     bytes of the state. The round function of AES specifically makes use of four different
     subfunctions. While we will shy away from explaining exactly how the subfunctions
@@ -339,10 +397,14 @@
   id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 轮函数由多个操作组成，这些操作混合和转换状态的字节。AES 的轮函数特别使用了四种不同的子函数。虽然我们会避免详细解释子函数的工作原理（您可以在任何关于
+    AES 的书籍中找到这些信息），但它们被命名为`SubBytes`、`ShiftRows`、`MixColumns`和`AddRoundKey`。前三者是容易可逆的（您可以从操作的输出中找到输入），但最后一个不是。它执行轮密钥和状态的异或（XOR）操作，因此需要轮密钥的知识才能反转。我在图
+    4.5 中说明了轮函数的内部。
 - en: '![](../Images/04_05.jpg)'
   id: totrans-52
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_05.jpg)'
 - en: Figure 4.5 A typical round of AES. (The first and last rounds omit some operations.)
     Four different functions transform the state. Each function is reversible as decryption
     wouldn’t work otherwise. The addition sign inside a circle (⊕) is the symbol for
@@ -350,6 +412,8 @@
   id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4.5 AES 的典型轮次。（第一轮和最后一轮省略了一些操作。）四种不同的函数转换状态。每个函数都是可逆的，否则解密就不起作用。圆圈内的加法符号（⊕）是
+    XOR 操作的符号。
 - en: The number of iterations of the round function in AES, which are usually practical
     on a reduced number of rounds, was chosen to thwart cryptanalysis. For example,
     extremely efficient *total breaks* (attacks that recover the key) exist on three
@@ -360,6 +424,8 @@
   id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 AES 中，轮函数的迭代次数，通常在减少的轮次上是实用的，被选择用来阻止密码分析。例如，在 AES-128 的三轮变种上存在非常有效的 *总破解*（恢复密钥的攻击）。通过多次迭代，密码将明文转换为看起来与原始明文完全不同的东西。明文中最微小的变化也会返回完全不同的密文。这个原则被称为
+    *雪崩效应*。
 - en: Note Real-world cryptographic algorithms are typically compared by the security,
     size, and speed they provide. We already talked about the security and size of
     AES; its security depends on the key size, and it can encrypt 128-bit blocks of
@@ -370,16 +436,21 @@
   id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 现实世界中的加密算法通常通过它们提供的安全性、大小和速度进行比较。我们已经讨论了 AES 的安全性和大小；它的安全性取决于密钥大小，并且可以一次加密
+    128 位的数据块。就速度而言，许多 CPU 厂商已经在硬件中实现了 AES。例如，AES 新指令（AES-NI）是一组可在英特尔和 AMD CPU 中使用的指令，可用于有效地实现
+    AES 的加密和解密。这些特殊指令使 AES 在实践中变得极快。
 - en: One question that you might still have is how do I encrypt more or less than
     128 bits with AES? I’ll answer this next.
   id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能仍然有一个问题，那就是如何用 AES 加密超过或少于 128 位的内容？我下面会回答这个问题。
 - en: 4.3 The encrypted penguin and the CBC mode of operation
   id: totrans-57
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 4.3 加密企鹅和 CBC 操作模式
 - en: Now that we have introduced the AES block cipher and explained a bit about its
     internals, let’s see how to use it in practice. The problem with a block cipher
     is that it can only encrypt a block by itself. To encrypt something that is not
@@ -388,6 +459,8 @@
   id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们已经介绍了 AES 分组密码并解释了它的内部工作原理，让我们看看如何在实践中使用它。分组密码的问题在于它只能单独加密一个块。要加密不是完全 128
+    位的内容，我们必须使用 *填充* 以及 *操作模式*。所以让我们看看这两个概念是什么。
 - en: Imagine that you want to encrypt a long message. Naively, you could divide the
     message into blocks of 16 bytes (the block size of AES). Then if the last block
     of plaintext is smaller than 16 bytes, you could append some more bytes at the
@@ -395,6 +468,8 @@
   id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象一下，你想加密一条长消息。天真地，你可以将消息分成 16 字节的块（AES 的块大小）。然后，如果明文的最后一个块小于 16 字节，你可以在末尾添加一些字节，直到明文变成
+    16 字节长。这就是填充的目的！
 - en: There are several ways to specify how to choose these *padding bytes*, but the
     most important aspect of padding is that it must be reversible. Once we decrypt
     ciphertext, we should be able to remove the padding to retrieve the original unpadded
@@ -403,6 +478,7 @@
   id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 有几种方式可以指定如何选择这些 *填充字节*，但填充的最重要方面是它必须是可逆的。一旦我们解密了密文，我们应该能够去除填充以检索原始的未填充消息。例如，简单地添加随机字节是行不通的，因为你无法辨别随机字节是否是原始消息的一部分。
 - en: 'The most popular padding mechanism is often referred to as *PKCS#7 padding*,
     which first appeared in the PKCS#7 standard published by RSA (a company) at the
     end of the 1990s. PKCS#7 padding specifies one rule: the value of each padding
@@ -580,12 +656,15 @@
   id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4.10 拦截 AES-CBC 密文的攻击者可以执行以下操作：（1）因为 IV 是公开的，所以将 IV 的位（例如从 1 到 0）进行翻转，也会（2）翻转第一个明文块的位。
+    （3）密文块上也可能发生位的修改。 （4）这样的更改会影响解密后的下一个明文块。 （5）请注意，篡改密文块会直接影响到该块的解密。
 - en: Consequently, a cipher or a mode of operation must not be used as-is. They lack
     some sort of integrity protection to ensure that a ciphertext and its associated
     parameters (here the IV) cannot be modified without triggering some alarms.
   id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，密码或操作模式不能直接使用。它们缺乏某种完整性保护，以确保密文及其关联参数（这里是 IV）在没有触发警报的情况下无法修改。
 - en: To prevent modifications on the ciphertext, we can use the *message authentication
     codes* (MACs) that we saw in chapter 3\. For AES-CBC, we usually use HMAC (for
     *hash-based MAC* ) in combination with the SHA-256 hash function to provide integrity.
@@ -595,28 +674,35 @@
   id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了防止对密文的修改，我们可以使用我们在第3章中看到的 *消息认证码*（MAC）。对于 AES-CBC，我们通常使用 HMAC（用于 *基于哈希的 MAC*
+    ）与 SHA-256 哈希函数结合使用来提供完整性。然后我们在对明文进行填充并将其加密后，将 MAC 应用于密文和 IV 上；否则，攻击者仍然可以修改 IV
+    而不被发现。
 - en: Warning This construction is called *Encrypt-then-MAC*. The alternatives (like
     *MAC-then-Encrypt*) can sometimes lead to clever attacks (like the famous Vaudenay
     padding oracle attack) and are thus avoided in practice.
   id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 这种构造称为 *加密后进行认证*。替代方案（如 *认证后进行加密*）有时可能会导致巧妙的攻击（如著名的 Vaudenay 填充预言攻击），因此在实践中要避免使用。
 - en: The created authentication tag can be transmitted along with the IV and the
     ciphertext. Usually, all are concatenated together as figure 4.11 illustrates.
     In addition, it is best practice to use different keys for AES-CBC and HMAC.
   id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建的认证标签可以与 IV 和密文一起传输。通常，它们全部连接在一起，如图 4.11 所示。此外，最佳实践是为 AES-CBC 和 HMAC 使用不同的密钥。
 - en: '![](../Images/04_11.jpg)'
   id: totrans-87
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_11.jpg)'
 - en: 'Figure 4.11 The AES-CBC-HMAC construction produces three arguments that are
     usually concatenated in the following order: the public IV, the ciphertext, and
     the authentication tag.'
   id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4.11 AES-CBC-HMAC 构造产生三个参数，通常按以下顺序连接：公共 IV、密文和认证标签。
 - en: Prior to decryption, the tag needs to be verified (in constant time as you saw
     in chapter 3). The combination of all of these algorithms is referred to as *AES-CBC-HMAC*
     and was one of the most widely used authenticated encryption modes until we started
@@ -624,6 +710,7 @@
   id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 在解密之前，需要验证标签（正如您在第3章中看到的那样，以恒定时间）。所有这些算法的组合被称为 *AES-CBC-HMAC*，直到我们开始采用更现代的一体化构造为止，它是最广泛使用的经过身份验证的加密模式之一。
 - en: Warning AES-CBC-HMAC is not the most developer-friendly construction. It is
     often poorly implemented and has some dangerous pitfalls when not used correctly
     (for example, the IV of each encryption *must* be unpredictable). I have spent
@@ -633,11 +720,13 @@
   id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 AES-CBC-HMAC 不是最开发者友好的构造。它经常实现不良，而且在使用不正确时存在一些危险的陷阱（例如，每次加密的 IV *必须* 是不可预测的）。我花了几页的篇幅介绍这个算法，因为它仍然被广泛使用且仍然有效，但我建议不要使用它，而是使用我接下来介绍的更现代的构造。
 - en: '4.5 All-in-one constructions: Authenticated encryption'
   id: totrans-91
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 4.5 一体化构造：经过身份验证的加密
 - en: 'The history of encryption is not pretty. Not only has it been poorly understood
     that encryption without authentication is dangerous, but misapplying authentication
     has also been a systemic mistake made by developers. For this reason, a lot of
@@ -647,11 +736,13 @@
   id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 加密的历史并不美好。不仅人们很少意识到没有认证的加密是危险的，而且错误地应用认证也是开发人员经常犯的系统性错误。因此，出现了大量研究，旨在标准化简化开发人员使用加密的全合一构造。在本节的其余部分，我将介绍这个新概念以及两种广泛采用的标准：AES-GCM和ChaCha20-Poly1305。
 - en: 4.5.1 What’s authenticated encryption with associated data (AEAD)?
   id: totrans-93
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.5.1 什么是带有关联数据的认证加密（AEAD）？
 - en: The most current way of encrypting data is to use an all-in-one construction
     called *authenticated encryption with associated data* (AEAD). The construction
     is extremely close to what AES-CBC-HMAC provides as it also offers confidentiality
@@ -661,6 +752,7 @@
   id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 目前加密数据的最新方式是使用一种名为*带有关联数据的认证加密*（AEAD）的全合一构造。该构造与AES-CBC-HMAC提供的内容极为接近，因为它在保护明文的同时检测可能发生在密文上的任何修改。此外，它提供了一种验证*关联数据*的方法。
 - en: The associated data argument is optional and can be empty or it can also contain
     metadata that is relevant to the encryption and decryption of the plaintext. This
     data will not be encrypted and is either implied or transmitted along with the
@@ -670,6 +762,7 @@
   id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 关联数据参数是可选的，可以为空，也可以包含与明文的加密和解密相关的元数据。这些数据不会被加密，要么是隐含的，要么与密文一起传输。此外，密文的大小比明文大，因为现在它包含了一个额外的认证标签（通常附加在密文的末尾）。
 - en: To decrypt the ciphertext, we are required to use the same implied or transmitted
     associated data. The result is either an error, indicating that the ciphertext
     was modified in transit, or the original plaintext. I illustrate this new primitive
@@ -677,10 +770,12 @@
   id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 要解密密文，我们需要使用相同的隐含或传输的关联数据。结果要么是错误，表示密文在传输过程中被修改，要么是原始明文。我在图4.12中说明了这个新的原语。
 - en: '![](../Images/04_12.jpg)'
   id: totrans-97
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_12.jpg)'
 - en: Figure 4.12 Both Alice and Bob meet in person to agree on a shared key. Alice
     can then use an AEAD encryption algorithm with the key to encrypt her messages
     to Bob. She can optionally authenticate some associated data (`ad`); for example,
@@ -690,6 +785,7 @@
   id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.12 Alice和Bob亲自会面以达成共享密钥。然后Alice可以使用密钥使用AEAD加密算法将她的消息加密给Bob。她可以选择验证一些关联数据（`ad`）；例如，消息的发送者。收到密文和认证标签后，Bob可以使用相同的密钥和关联数据解密。如果关联数据不正确或密文在传输过程中被修改，解密将失败。
 - en: Let’s see how to use a *cryptographic library* to encrypt and decrypt with an
     authenticated encryption primitive. For this, we’ll use the JavaScript programming
     language and the Web Crypto API (an official interface supported by most browsers
@@ -697,10 +793,12 @@
   id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看如何使用*加密库*来使用认证加密原语进行加密和解密。为此，我们将使用JavaScript编程语言和Web Crypto API（大多数浏览器支持的官方接口，提供低级加密功能），如下列表所示。
 - en: Listing 4.1 Authenticated encryption with AES-GCM in JavaScript
   id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表4.1 在JavaScript中使用AES-GCM进行认证加密
 - en: '[PRE0]'
   id: totrans-101
   prefs: []
@@ -710,20 +808,24 @@
   id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 生成一个128位密钥，提供128位的安全性
 - en: ❷ Generates a 12-byte IV randomly
   id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 随机生成一个12字节的IV
 - en: ❸ Uses some associated data to encrypt our plaintext. Decryption must use the
     same IV and associated data.
   id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 使用一些关联数据来加密我们的明文。解密必须使用相同的IV和关联数据。
 - en: ❹ Decryption throws an exception if the IV, ciphertext, or associated data are
     tampered with.
   id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 如果IV、密文或关联数据被篡改，解密将抛出异常。
 - en: Note that Web Crypto API is a low-level API, and as such, does not help the
     developer to avoid mistakes. For example, it lets us specify an IV, which is a
     dangerous pattern. In this listing, I used AES-GCM, which is the most widely used
@@ -731,17 +833,22 @@
   id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，Web Crypto API 是一个低级 API，因此并不会帮助开发人员避免错误。例如，它让我们指定 IV，这是一种危险的模式。在此列表中，我使用了
+    AES-GCM，这是最广泛使用的 AEAD。接下来，让我们更多地了解 AES-GCM。
 - en: 4.5.2 The AES-GCM AEAD
   id: totrans-107
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.5.2 AES-GCM AEAD
 - en: The most widely used AEAD is AES with the *Galois/Counter Mode* (also abbreviated
     AES-GCM). It was designed for high performance by taking advantage of hardware
     support for AES and by using a MAC (GMAC) that can be implemented efficiently.
   id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 最广泛使用的 AEAD 是 *Galois/Counter Mode* (缩写为 AES-GCM) 的 AES。它通过利用 AES 的硬件支持以及使用可以有效实现的
+    MAC（GMAC），被设计为高性能。
 - en: AES-GCM has been included in NIST’s Special Publication (SP 800-38D) since 2007,
     and it is the main cipher used in cryptographic protocols, including several versions
     of the TLS protocol that is used to secure connections to websites on the internet.
@@ -749,16 +856,21 @@
   id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: AES-GCM 自 2007 年起已被包括在 NIST 的特殊出版物（SP 800-38D）中，它是用于加密协议的主要密码，包括 TLS 协议的多个版本，该协议用于安全连接到互联网上的网站。实际上，我们可以说
+    AES-GCM 加密了网络。
 - en: AES-GCM combines the Counter (CTR) mode of operation with the GMAC message authentication
     code. First, let’s see how CTR mode works with AES. Figure 4.13 shows how AES
     is used with CTR mode.
   id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: AES-GCM 结合了 AES 中的 Counter (CTR) 模式和 GMAC 消息认证码。首先，让我们看看 CTR 模式如何与 AES 结合使用。图
+    4.13 展示了 AES 如何与 CTR 模式一起使用。
 - en: '![](../Images/04_13.jpg)'
   id: totrans-111
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_13.jpg)'
 - en: Figure 4.13 The AES-CTR algorithm combining the AES cipher with the Counter
     mode of operation (CTR mode). A unique nonce is concatenated with a counter and
     encrypted to produce a keystream. The keystream is then XORed with the actual
@@ -766,6 +878,7 @@
   id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4.13 将 AES 密码与操作模式 Counter（CTR 模式）结合使用的 AES-CTR 算法。将唯一的随机数与计数器串联，并加密以产生密钥流。然后，将密钥流与实际的明文字节进行异或运算以产生加密。
 - en: 'AES-CTR uses AES to encrypt a nonce concatenated with a number (starting at
     1) instead of the plaintext. This additional argument, “a nonce for number once,”
     serves the same purpose as an IV: it allows the mode of operation to randomize
@@ -776,6 +889,8 @@
   id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: AES-CTR 使用 AES 来加密一个随机数和一个数字（从 1 开始），而不是明文。这个额外的参数，“一个用于数字一次的随机数”，起到与 IV 相同的作用：它允许操作模式对
+    AES 加密进行随机化。然而，其要求与 CBC 模式的 IV 有些不同。一个随机数需要是唯一的，但*不*需要是不可预测的。一旦这个 16 字节的块被加密，结果被称为*密钥流*，它与实际的明文进行异或运算以产生加密结果。
 - en: Note Like IVs, nonces are a common term in cryptography, and they are found
     in different cryptographic primitives. Nonces can have different requirements,
     although the name often indicates that it should not repeat. But, as usual, what
@@ -784,6 +899,8 @@
   id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 非分裂密钥 (IVs) 一样，随机数（nonces）是密码学中常见的术语，在不同的密码学原语中都有出现。随机数可能有不同的要求，尽管其名称通常暗示着不应该重复使用。但通常情况下，重要的是手册上说了什么，而不是参数名称暗示了什么。事实上，AES-GCM
+    的随机数有时被称为 IV。
 - en: The nonce in AES-CTR is 96 bits (12 bytes) and takes most of the 16 bytes to
     be encrypted. The 32 bits (4 bytes) left serves as a counter, starting from 1
     and incremented for each block encryption until it reaches its maximum value at
@@ -792,6 +909,9 @@
   id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: AES-CTR 中的随机数为 96 位（12 字节），大部分用于加密 16 字节的内容。剩下的 32 位（4 字节）作为计数器，从 1 开始，并在每个块加密时递增，直到达到其最大值为
+    2^(4×8) – 1 = 4,294,967,295\. 这意味着，最多可以使用相同的随机数加密 4,294,967,295 个 128 位块（少于 69
+    GB）。
 - en: If the same nonce is used twice, the same keystream is created. By XORing the
     two ciphertexts together, the keystream is canceled and one can recover the XOR
     of the two plaintexts. This can be devastating, especially if you have some information
@@ -799,10 +919,12 @@
   id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果相同的随机数被使用两次，将创建相同的密钥流。通过对两个密文进行异或运算，可以取消密钥流，并且可以恢复两个明文的异或结果。这可能是毁灭性的，特别是如果你对两个明文的内容有一些了解。
 - en: '![](../Images/04_14.jpg)'
   id: totrans-117
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_14.jpg)'
 - en: Figure 4.14 If the keystream of AES-CTR is longer than the plaintext, it is
     truncated to the length of the plaintext prior to XORing it with the plaintext.
     This permits AES-CTR to work without padding.
@@ -894,12 +1016,14 @@
   id: totrans-132
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_17.jpg)'
 - en: Figure 4.17 AES-GCM works by using AES-CTR with a symmetric key *K* to encrypt
     the plaintext and by using GMAC to authenticate the associated data and the ciphertext
     using an authentication key *H*.
   id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.17 AES-GCM通过使用对称密钥*K*的AES-CTR来加密明文，并使用GMAC来使用认证密钥*H*对相关数据和密文进行认证。
 - en: The counter starts at 1 for encryption, leaving the 0 counter for encrypting
     the authentication tag created by GHASH. GHASH, in turn, takes an independent
     key *H*, which is the encryption of the all-zero block with a key *K*. This way
@@ -908,6 +1032,7 @@
   id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 计数器从1开始加密，将0计数器留给由GHASH创建的加密标签。GHASH反过来使用独立密钥*H*，这是使用密钥*K*对全零块进行加密。这样，一个密钥*K*就足以派生另一个密钥，不需要携带两个不同的密钥。
 - en: As I said previously, the 12-byte nonce of AES-GCM needs to be unique and, thus,
     to never repeat. Notice that it doesn’t need to be random. Consequently, some
     people like to use it as a *counter*, starting it at 1 and incrementing it for
@@ -918,6 +1043,8 @@
   id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我之前所说，AES-GCM的12字节nonce需要是唯一的，因此永远不会重复。请注意，它不需要是随机的。因此，一些人喜欢将其用作*计数器*，从1开始逐个加密。在这种情况下，必须使用一个允许用户选择nonce的加密库。这样可以在达到nonce的最大值之前加密
+    2^(12×8) - 1 条消息。可以说，这是一个在实践中无法达到的消息数量。
 - en: On the other hand, having a counter means that one needs to keep *state*. If
     a machine crashes at the wrong time, it is possible that nonce reuse could happen.
     For this reason, it is sometimes preferred to have a *random nonce*. Actually,
@@ -930,10 +1057,13 @@
   id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一方面，拥有计数器意味着需要保持*状态*。如果一台机器在错误的时间崩溃，可能会发生nonce重用。因此，有时候更倾向于使用*随机nonce*。实际上，一些库不允许开发人员选择nonce，并会随机生成nonce。这样做可以避免高概率重复，实际上不应该发生这种情况。然而，加密的消息越多，使用的nonce越多，发生碰撞的几率就越高。由于我们在第2章讨论的生日界限，建议在随机生成nonce时不要使用相同密钥加密超过
+    2^(92/3) ≈ 2^(30) 条消息。
 - en: Beyond birthday-bound security
   id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 超越生日界限安全性
 - en: 2^(30) messages is quite a large number of messages. It might never be reached
     in many scenarios, but real-world cryptography often pushes the limit of what
     is considered reasonable. Some long-lived systems need to encrypt many, many messages
@@ -946,11 +1076,14 @@
   id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 2^(30) 条消息是相当大量的消息。在许多情况下可能永远不会达到这个数量，但现实世界的加密通常会推动被认为是合理的极限。一些长期存在的系统需要每秒加密许多消息，最终达到这些极限。例如，Visa每天处理1.5亿笔交易。如果需要用唯一密钥加密这些交易，它将在仅一周内达到
+    2^(30) 条消息的限制。在这些极端情况下，*重新生成密钥*（更改用于加密的密钥）可能是一个解决方案。还存在一个名为*超越生日界限安全性*的研究领域，旨在提高可以使用相同密钥加密的最大消息数量。
 - en: 4.5.3 ChaCha20-Poly1305
   id: totrans-139
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.5.3 ChaCha20-Poly1305
 - en: 'The second AEAD I will talk about is *ChaCha20-Poly1305*. It is the combination
     of two algorithms: the ChaCha20 stream cipher and the Poly1305 MAC. Both designed
     separately by Daniel J. Bernstein to be fast when used in software, contrary to
@@ -961,6 +1094,9 @@
   id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 我将要讨论的第二个AEAD是*ChaCha20-Poly1305*。它是两个算法的组合：ChaCha20流密码和Poly1305 MAC。这两个算法分别由Daniel
+    J. Bernstein设计，用于在软件中快速使用，与AES相反，当硬件支持不可用时速度较慢。2013年，Google标准化了ChaCha20-Poly1305
+    AEAD，以便在依赖低端处理器的Android手机中使用。如今，它被广泛应用于像OpenSSH、TLS和Noise这样的互联网协议中。
 - en: ChaCha20 is a modification of the Salsa20 stream cipher, which was originally
     designed by Daniel J. Bernstein around 2005\. It was one of the nominated algorithms
     in the ESTREAM competition ([https://www.ecrypt.eu.org/stream/](https://www.ecrypt.eu.org/stream/)).
@@ -972,10 +1108,12 @@
   id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: ChaCha20是Salsa20流密码的修改版，最初由Daniel J. Bernstein在2005年左右设计。它是ESTREAM竞赛中的提名算法之一（[https://www.ecrypt.eu.org/stream/](https://www.ecrypt.eu.org/stream/)）。与所有流密码一样，该算法生成一个*密钥流*，一个与明文长度相同的随机字节序列。然后将其与明文进行异或运算以创建密文。要解密，使用相同的算法生成相同的密钥流，将其与密文进行异或运算以还原明文。我在图4.18中说明了这两个流程。
 - en: '![](../Images/04_18.jpg)'
   id: totrans-142
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_18.jpg)'
 - en: Figure 4.18 ChaCha20 works by taking a symmetric key and a unique nonce. It
     then generates a keystream that is XORed with the plaintext (or ciphertext) to
     produce the ciphertext (or plaintext). The encryption is length-preserving as
@@ -983,57 +1121,68 @@
   id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.18 ChaCha20通过使用对称密钥和唯一随机数生成密钥流，然后将其与明文（或密文）进行异或运算以生成密文（或明文）。加密是保持长度不变的，因为密文和明文长度相同。
 - en: Under the hood, ChaCha20 generates a keystream by repeatedly calling a *block
     function* to produce many 64-byte blocks of keystream. The block function takes
   id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 在内部，ChaCha20通过反复调用*块函数*生成许多64字节的密钥流块来生成密钥流。
 - en: A 256-bit (32-byte) key like AES-256
   id: totrans-145
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个256位（32字节）的类似AES-256的密钥
 - en: A 92-bit (12-byte) nonce like AES-GCM
   id: totrans-146
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个92位（12字节）的类似AES-GCM的随机数
 - en: A 32-bit (4-byte) counter like AES-GCM
   id: totrans-147
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个32位（4字节）的类似AES-GCM的计数器
 - en: The process to encrypt is the same as with AES-CTR. (I illustrate this flow
     in figure 4.19.)
   id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 加密过程与AES-CTR相同。（我在图4.19中说明了这个流程。）
 - en: Run the block function, incrementing the counter every time, until enough keystream
     is produced
   id: totrans-149
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 运行块函数，每次递增计数器，直到产生足够的密钥流
 - en: Truncate the keystream to the length of the plaintext
   id: totrans-150
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将密钥流截断到与明文长度相同
 - en: XOR the keystream with the plaintext
   id: totrans-151
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将密钥流与明文进行异或运算
 - en: '![](../Images/04_19.jpg)'
   id: totrans-152
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_19.jpg)'
 - en: Figure 4.19 ChaCha20’s keystream is created by calling an internal block function
     until enough bytes are produced. One block function call creates 64 bytes of random
     keystream.
   id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.19 ChaCha20的密钥流是通过调用内部块函数生成足够的字节而创建的。一个块函数调用会创建64字节的随机密钥流。
 - en: Due to the upper bound on the counter, you can use ChaCha20 to encrypt as many
     messages as with AES-GCM (as it is parameterized by a similar nonce). Because
     the output created by this block function is much larger, the size of a message
@@ -1045,10 +1194,13 @@
   id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于计数器的上限，你可以使用ChaCha20加密与AES-GCM相同数量的消息（因为它是由类似的随机数参数化的）。由于这个块函数创建的输出要大得多，你可以加密的消息大小也会受到影响。你可以加密大小为232
+    × 64字节 ≈ 274 GB的消息。如果重复使用一个随机数来加密明文，会出现与AES-GCM类似的问题。观察者可以通过对两个密文进行异或运算来获取两个明文的异或结果，并且还可以恢复随机数的认证密钥。这些是严重的问题，可能导致攻击者能够伪造消息！
 - en: The size of nonces and counters
   id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 随机数和计数器的大小
 - en: The size of the nonces and the counters are (actually) not always the same everywhere
     (both for AES-GCM and ChaCha20-Poly1305), but they are the recommended values
     from the adopted standards. Still, some cryptographic libraries accept different
@@ -1058,6 +1210,8 @@
   id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: Nonce 和计数器的大小实际上并不总是相同（对于 AES-GCM 和 ChaCha20-Poly1305 都是如此），但它们是采用的标准推荐值。尽管如此，一些加密库接受不同大小的
+    nonce，一些应用程序增加计数器（或 nonce）的大小以允许加密更大的消息（或更多的消息）。增加一个组件的大小必然会减少另一个组件的大小。
 - en: To prevent this, while allowing a large number of messages to be encrypted under
     a single key, other standards like XChaCha20-Poly1305 are available. These standards
     increase the size of the nonce while keeping the rest intact, which is important
@@ -1066,15 +1220,19 @@
   id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了防止这种情况，同时允许在单个密钥下加密大量消息，还有其他标准可用，例如 XChaCha20-Poly1305。这些标准增加了 nonce 的大小，同时保持其余部分不变，这在需要随机生成
+    nonce 而不是在系统中跟踪计数器的情况下很重要。
 - en: Inside the ChaCha20 block function, a state is formed. Figure 4.20 illustrates
     this state.
   id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 ChaCha20 块函数内部，形成一个状态。图 4.20 说明了这个状态。
 - en: '![](../Images/04_20.jpg)'
   id: totrans-159
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_20.jpg)'
 - en: Figure 4.20 The state of the ChaCha20 block function. It is formed by 16 words
     (represented as squares) of 32 bytes each. The first line stores a constant, the
     second and third lines store the 32-byte symmetric key, the following word stores
@@ -1082,6 +1240,8 @@
   id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4.20 ChaCha20 块函数的状态。它由 16 个字（每个字 32 字节）组成。第一行存储一个常量，第二和第三行存储 32 字节的对称密钥，接下来的一个字存储一个
+    4 字节的计数器，最后 3 个字存储 12 字节的 nonce。
 - en: This state is then transformed into 64 bytes of keystream by iterating a round
     function 20 times (hence the 20 in the name of the algorithm). This is similar
     to what was done with AES and its round function. The round function is itself
@@ -1091,10 +1251,13 @@
   id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个状态然后通过将一个轮函数迭代 20 次（因此算法名称中有 20）转换为 64 字节的密钥流。这类似于 AES 及其轮函数的处理方式。轮函数本身每轮调用一次
+    *Quarter Round*（QR）*函数*，每次在内部状态的不同字上操作，具体取决于轮数是奇数还是偶数。图 4.21 展示了这个过程。
 - en: '![](../Images/04_21.jpg)'
   id: totrans-162
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_21.jpg)'
 - en: Figure 4.21 A round in ChaCha20 affects all the words contained in a state.
     As the Quarter Round (QR) function only takes 4 arguments, it must be called at
     least 4 times on different words (grayed in the diagram) to modify all 16 words
@@ -1102,21 +1265,26 @@
   id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4.21 ChaCha20 中的一轮影响状态中包含的所有字。由于 Quarter Round (QR) 函数只接受 4 个参数，所以必须至少在不同的字上调用
+    4 次（在图表中显示为灰色）才能修改状态的所有 16 个字。
 - en: The QR function takes four different arguments and updates them using only Add,
     Rotate, and XOR operations. We say that it is an *ARX* stream cipher. This makes
     ChaCha20 extremely easy to implement and fast in software.
   id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: QR 函数接受四个不同的参数，并仅使用加法、旋转和异或操作来更新它们。我们说这是一个 *ARX* 流密码。这使得 ChaCha20 在软件中非常容易实现且速度快。
 - en: '*Poly1305* is a MAC created via the Wegman-Carter technique, much like the
     GMAC we previously talked about. Figure 4.22 illustrates this cryptographic MAC.'
   id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Poly1305* 是通过 Wegman-Carter 技术创建的 MAC，与我们之前讨论的 GMAC 类似。图 4.22 说明了这个加密 MAC。'
 - en: '![](../Images/04_22.jpg)'
   id: totrans-166
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_22.jpg)'
 - en: Figure 4.22 Poly1305’s core function absorbs an input one block at a time by
     taking an additional accumulator set to 0 initially and an authentication key
     *r*. The output is fed as an accumulator to the next call of the core function.
@@ -1125,18 +1293,22 @@
   id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4.22 Poly1305 的核心函数通过每次接收一个输入块并取一个额外的累加器（最初设置为 0）和一个认证密钥 *r* 来吸收输入。输出被作为累加器馈送到下一个核心函数的调用。最终输出加上一个随机值
+    *s* 以成为认证标签。
 - en: In the figure, *r* can be seen as the authentication key of the scheme, like
     the authentication key *H* of GMAC. And *s* makes the MAC secure for multiple
     uses by encrypting the result, thus it must be unique for each usage.
   id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 在图中，*r* 可以看作是方案的认证密钥，就像 GMAC 的认证密钥 *H* 一样。而 *s* 通过加密结果使得 MAC 对多次使用具有安全性，因此它必须对每次使用都是唯一的。
 - en: The *Poly1305 core function* mixes the key with the accumulator (set to 0 in
     the beginning) and the message to authenticate. The operations are simple multiplications
     modulo a constant *P*.
   id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Poly1305核心函数*将密钥与累加器（初始设置为0）和要认证的消息混合在一起。操作是简单的乘法，对一个常数*P*取模。'
 - en: Note Obviously, a lot of details are missing from our description. I seldom
     mention how to encode data or how some arguments should be padded before being
     acted on. These are all implementation specificities that do not matter for us
@@ -1144,22 +1316,26 @@
   id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 显然，我们的描述中缺少很多细节。我很少提到如何对数据进行编码或如何在执行之前对某些参数进行填充。这些都是实现特定的细节，对我们来说并不重要，因为我们正在努力理解这些事物的工作原理。
 - en: Eventually, we can use ChaCha20 and a counter set to 0 to generate a keystream
     and derive the 16-byte *r* and 16-byte *s* values we need for Poly1305\. I illustrate
     the resulting AEAD cipher in figure 4.23.
   id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 最终，我们可以使用ChaCha20和计数器设置为0来生成一个密钥流，并推导出我们需要的16字节*r*和16字节*s*值，以用于Poly1305。我在图4.23中展示了结果的AEAD密码。
 - en: '![](../Images/04_23.jpg)'
   id: totrans-172
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_23.jpg)'
 - en: Figure 4.23 ChaCha20-Poly1305 works by using ChaCha20 to encrypt the plaintext
     and to derive the keys required by the Poly1305 MAC. Poly1305 is then used to
     authenticate the ciphertext as well as the associated data.
   id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.23 ChaCha20-Poly1305通过使用ChaCha20加密明文并推导出Poly1305 MAC所需的密钥来工作。然后Poly1305用于认证密文以及相关数据。
 - en: The normal ChaCha20 algorithm is first used to derive the authentication secrets
     *r* and *s* needed by Poly1305\. The counter is then incremented, and ChaCha20
     is used to encrypt the plaintext. After that, the associated data and the ciphertext
@@ -1168,34 +1344,40 @@
   id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先使用普通的ChaCha20算法推导出Poly1305所需的认证密钥*r*和*s*。然后，计数器递增，并使用ChaCha20加密明文。之后，相关数据和密文（以及它们各自的长度）被传递给Poly1305以创建认证标签。
 - en: To decrypt, the exact same process is applied. ChaCha20 first verifies the authentication
     of the ciphertext and the associated data via the tag received. It then decrypts
     the ciphertext.
   id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 要解密，将应用完全相同的过程。ChaCha20首先通过收到的标签验证密文和相关数据的认证。然后解密密文。
 - en: 4.6 Other kinds of symmetric encryption
   id: totrans-176
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 4.6 其他类型的对称加密
 - en: 'Let’s pause for a moment and review the symmetric encryption algorithms you
     have learned so far:'
   id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们暂停一下，回顾一下你迄今学到的对称加密算法：
 - en: '*Non-authenticated encryption*—AES with a mode of operation but without a MAC.
     This is insecure in practice as ciphertexts can be tampered with.'
   id: totrans-178
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*非认证加密*—带有操作模式但不带MAC的AES。在实践中不安全，因为密文可能会被篡改。'
 - en: '*Authenticated encryption*—AES-GCM and ChaCha20-Poly1305 are the two most widely
     adopted ciphers.'
   id: totrans-179
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*认证加密*—AES-GCM和ChaCha20-Poly1305是两种最广泛采用的密码。'
 - en: The chapter could end here and it would be fine. Yet, real-world cryptography
     is not always about the agreed standards; it is also about *constraints* in size,
     in speed, in format, and so on. To that end, let me give you a brief overview
@@ -1204,11 +1386,13 @@
   id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 章节到此结束也没有问题。然而，现实世界的密码学并不总是遵循约定的标准；它还涉及到大小、速度、格式等方面的*限制*。因此，让我简要介绍一下当AES-GCM和ChaCha20-Poly1305不适用时可以有用的其他类型的对称加密。
 - en: 4.6.1 Key wrapping
   id: totrans-181
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.6.1 密钥包装
 - en: 'One of the problems of nonce-based AEADs is that they all require a nonce,
     which takes additional space. Notice that when encrypting a key, you might not
     necessarily need randomization because what is encrypted is already random and
@@ -1221,11 +1405,15 @@
   id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: '基于Nonce的AEAD的问题之一是它们都需要一个Nonce，这需要额外的空间。注意，当加密密钥时，您可能并不一定需要随机化，因为加密的内容已经是随机的，并且不会以高概率重复（或者如果它确实重复，这并不重要）。一个众所周知的密钥包装标准是NIST的Special
+    Publication 800-38F：“Recommendation for Block Cipher Modes of Operation: Methods
+    for Key Wrapping。”这些密钥包装算法不需要额外的Nonce或IV，并且根据它们加密的内容进行随机化。由于这一点，它们不必在密文旁边存储额外的Nonce或IV。'
 - en: 4.6.2 Nonce misuse-resistant authenticated encryption
   id: totrans-183
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.6.2 防止滥用Nonce的认证加密
 - en: In 2006, Phillip Rogaway published a new key wrapping algorithm called *synthetic
     initialization vector* (SIV). As part of the proposal, Rogaway notes that SIV
     is not only useful to encrypt keys, but also as a general AEAD scheme that is
@@ -1236,6 +1424,7 @@
   id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: 2006年，菲利普·罗加韦（Phillip Rogaway）发布了一种名为*合成初始化向量*（SIV）的新密钥包装算法。作为提案的一部分，罗加韦指出，SIV不仅对加密密钥有用，而且作为一种更能容忍重复nonce的通用AEAD方案。正如你在本章中学到的那样，在AES-GCM或ChaCha20-Poly1305中重复的nonce可能会导致灾难性后果。它不仅会揭示两个明文的异或，还允许攻击者恢复身份验证密钥并伪造消息的有效加密。
 - en: 'The point of a nonce misuse-resistant algorithm is that encrypting two plaintexts
     with the same nonce only reveals if the two plaintexts are equal or not, and that’s
     it. It’s not great, but it’s obviously not as bad as leaking an authentication
@@ -1247,11 +1436,14 @@
   id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 防止nonce误用的算法的要点是，使用相同的nonce加密两个明文只会显示两个明文是否相等，仅此而已。这并不理想，但显然不像泄漏身份验证密钥那样糟糕。该方案引起了很多关注，并且自那时起已被标准化为RFC
+    8452：“AES-GCM-SIV：防止nonce误用的身份验证加密”。SIV背后的诀窍是AEAD中使用的nonce是从明文本身生成的，这使得两个不同的明文最终被加密为相同的nonce的可能性极小。
 - en: 4.6.3 Disk encryption
   id: totrans-186
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.6.3磁盘加密
 - en: 'Encrypting the storage of a laptop or a mobile phone has some hefty constraints:
     it has to be fast (otherwise the user will notice) and you can only do it in place
     (saving space is important for a large number of devices). Because the encryption
@@ -1260,6 +1452,7 @@
   id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 加密笔记本电脑或手机的存储有一些严重的限制：它必须快速（否则用户会注意到），而且只能在原地执行（对于大量设备来说，节省空间很重要）。由于加密不能扩展，需要一个nonce和身份验证标签的AEAD并不适合。相反，使用未经身份验证的加密。
 - en: To protect against *bitflip attacks*, large blocks (think thousands of bytes)
     of data are encrypted in a way that a single bitflip would scramble the decryption
     of the whole block. This way, an attack has more of a chance of crashing the device
@@ -1268,6 +1461,7 @@
   id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了防止*位翻转攻击*，大块（数千字节）数据的加密方式是，单个位翻转会使整个块的解密混乱。这样一来，攻击更有可能导致设备崩溃而不是达到其目标。这些构造被称为*宽块密码*，尽管这种方法也被称为*穷人的身份验证*。
 - en: 'Linux systems and some Android devices have adopted this approach using Adiantum,
     a wide-block construction wrapping the ChaCha cipher and standardized by Google
     in 2019\. Still, most devices use non-ideal solutions: both Microsoft and Apple
@@ -1275,11 +1469,13 @@
   id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: Linux系统和一些Android设备采用了这种方法，使用了Adiantum，这是一种包装ChaCha密码的宽块构造，并于2019年由Google标准化。尽管如此，大多数设备仍然使用非理想的解决方案：微软和苹果都使用AES-XTS，这是未经身份验证的，也不是宽块密码。
 - en: 4.6.4 Database encryption
   id: totrans-190
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.6.4数据库加密
 - en: Encrypting data in a database is tricky. As the whole point is to prevent database
     breaches from leaking data, the key used to encrypt and decrypt the data must
     be stored away from the database server. Because clients don’t have the data themselves,
@@ -1287,6 +1483,7 @@
   id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 在数据库中加密数据很棘手。因为整个目的是防止数据库泄漏数据，所以用于加密和解密数据的密钥必须远离数据库服务器。因为客户端没有数据本身，所以它们在查询数据的方式上受到严重限制。
 - en: The simplest solution is called *transparent data encryption* (TDE) and simply
     encrypts selected columns. This works well in some scenarios, although one needs
     to be careful to authenticate associated data identifying the row and the column
@@ -1295,6 +1492,7 @@
   id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 最简单的解决方案称为*透明数据加密*（TDE），只需加密选择的列。在某些情况下，这种方法效果很好，尽管需要小心对待用于标识正在加密的行和列的相关数据进行认证；否则，加密内容可能会被替换。但是，不能通过加密的数据进行搜索，因此查询必须使用未加密的列。
 - en: '*Searchable encryption* is the field of research that aims at solving this
     problem. A lot of different schemes have been proposed, but it seems like there
     is no silver bullet. Different schemes propose different levels of “searchability”
@@ -1305,11 +1503,13 @@
   id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: '*可搜索加密*是旨在解决此问题的研究领域。已经提出了许多不同的方案，但似乎没有灵丹妙药。不同的方案提出了不同级别的“可搜索性”以及不同程度的安全降级。例如，盲目索引仅允许您搜索完全匹配，而保序和透露排序的加密允许您对结果进行排序。总的来说，这些解决方案的安全性需要仔细考虑，因为它们确实是一种权衡。'
 - en: Summary
   id: totrans-194
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 摘要
 - en: Encryption (or symmetric encryption) is a cryptographic primitive that can be
     used to protect the confidentiality of data. The security relies on a symmetric
     key that needs to remain secret.
@@ -1317,12 +1517,14 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 加密（或对称加密）是一种加密原语，可用于保护数据的机密性。安全性依赖于一个需要保密的对称密钥。
 - en: Symmetric encryption needs to be authenticated (after which we call it authenticated
     encrption) to be secure, as otherwise, ciphertexts can be tampered with.
   id: totrans-196
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对称加密需要经过身份验证（之后我们称之为认证加密）才能确保安全，否则密文可能会被篡改。
 - en: Authenticated encryption can be constructed from a symmetric encryption algorithm
     by using a message authentication code. But best practice is to use an authenticated
     encryption with associated data (AEAD) algorithm as they are all-in-one constructions
@@ -1331,18 +1533,22 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 认证加密可以通过使用消息认证码从对称加密算法构建。但最佳做法是使用关联数据认证加密（AEAD）算法，因为它们是一体化构造，更难被误用。
 - en: Two parties can use authenticated encryption to hide their communications, as
     long as they both have knowledge of the same symmetric key.
   id: totrans-198
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 两个参与方可以使用认证加密来隐藏他们的通信，只要他们都知道相同的对称密钥。
 - en: AES-GCM and ChaCha20-Poly1305 are the two most widely adopted AEADs. Most applications
     nowadays use either one of these.
   id: totrans-199
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: AES-GCM 和 ChaCha20-Poly1305 是目前广泛采用的两种 AEAD（Authenticated Encryption with Associated
+    Data）。如今大多数应用程序都使用其中一种。
 - en: Reusing nonces breaks the authentication of AES-GCM and ChaCha20-Poly1305\.
     Schemes like AES-GCM-SIV are nonce misuse resistant, while encryption of keys
     can avoid that problem as nonces are not necessary.
@@ -1350,6 +1556,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 重用一次性密码会破坏 AES-GCM 和 ChaCha20-Poly1305 的认证。诸如 AES-GCM-SIV 这样的方案是免受一次性密码误用的，而加密密钥可以避免该问题，因为一次性密码不是必需的。
 - en: Real-world cryptography is about constraints, and AEADs cannot always fit every
     scenario. This is the case for database or disk encryption, for example, that
     require the development of new constructions.
@@ -1357,3 +1564,4 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 现实世界的密码学涉及到约束，AEAD 并不总能适用于每种情况。例如，数据库或磁盘加密就需要开发新的构造。

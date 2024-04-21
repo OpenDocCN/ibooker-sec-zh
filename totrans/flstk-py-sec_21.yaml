@@ -1,18 +1,26 @@
 - en: 18 Clickjacking
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 18 点击劫持
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章包括
 - en: Configuring the `X-Frame-Options` header
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 配置`X-Frame-Options`头部
 - en: Configuring the `frame-ancestors` CSP directive
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 配置`frame-ancestors`CSP指令
 - en: This short chapter explores clickjacking and wraps up the book. The term *clickjacking*
     is a blend of the words *click* and *hijacking*. Clickjacking is initiated by
     luring the victim to a malicious web page. The victim is then baited into clicking
@@ -21,24 +29,35 @@
     they are about to win an iPhone, but they are actually sending a request to another
     site they previously logged in to. The state change of this unintentional request
     is the attacker’s motive.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 这一简短的章节探讨了点击劫持并结束了本书。术语*点击劫持*是*点击*和*劫持*两个词的结合。点击劫持是通过诱骗受害者进入恶意网页来启动的。受害者被引诱点击一个看似无害的链接或按钮。点击事件被攻击者劫持并传播到另一个来自另一个站点的
+    UI 控件。受害者可能认为他们即将赢得一部 iPhone，但实际上他们正在向之前登录过的另一个站点发送请求。这个无意中的请求的状态变化是攻击者的动机。
 - en: Suppose Charlie has just finished charlie.mil, a top-secret website for high-ranking
     military officials. This site serves the web page in listing 18.1, launch-missile.html.
     As the name indicates, this page enables military officials to launch missiles.
     Charlie has taken all of the necessary precautions to ensure that only authorized
     personnel can access and use this form.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设查理刚刚完成了 charlie.mil，一个为高级军官设计的绝密网站。该网站提供列表 18.1 中的网页，launch-missile.html。正如名称所示，该页面使军官能够发射导弹。查理采取了一切必要的预防措施，确保只有授权人员能够访问和使用此表单。
 - en: Listing 18.1 Charlie’s site uses an ordinary HTML form to launch missiles
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 18.1 查理的网站使用普通的 HTML 表单发射导弹
 - en: '[PRE0]'
+  id: totrans-7
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: ❶ A simple button used to launch a missile
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 一个简单的按钮用于发射导弹
 - en: Mallory wants to trick Charlie into launching a missile. She lures him to win-iphone.mallory.com,
     where his browser renders the HTML in listing 18.2\. The body of this page contains
     a button as bait, enticing Charlie with a new iPhone. An iframe loads charlie.mil/launch-missile.html.
@@ -46,339 +65,502 @@
     property to `0`. The iframe is also stacked on top of the bait control via z-index
     properties. This ensures that the transparent control, not the bait control, receives
     the click event.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 玛洛瑞想要诱骗查理发射导弹。她引诱他访问 win-iphone.mallory.com，他的浏览器渲染列表 18.2 中的 HTML。此页面的正文包含一个作为诱饵的按钮，以全新的
+    iPhone 吸引查理。一个 iframe 加载 charlie.mil/launch-missile.html。内联样式表通过将`opacity`属性设置为`0`透明地渲染
+    iframe。该 iframe 也通过 z-index 属性叠放在诱饵控件之上。这确保了透明控件而不是诱饵控件接收点击事件。
 - en: Listing 18.2 Mallory’s site embeds a web page from Charlie’s site
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 18.2 玛洛瑞的网站嵌入了查理网站的一个网页
 - en: '[PRE1]'
+  id: totrans-11
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: ❶ Places the bait control below the transparent control
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 将诱饵控件放在透明控件下方
 - en: ❷ Hides and stacks the transparent control on top of the bait control
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 将透明控件隐藏并堆叠在诱饵控件之上
 - en: ❸ The bait control
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 诱饵控件
 - en: ❹ Loads a page containing the transparent control
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 加载包含透明控件的页面
 - en: Charlie takes the bait. He clicks what appears to be a Win an iPhone! button.
     The click event is hijacked by the submit button of the missile launch form. A
     valid but unintentional POST request is sent from Charlie’s browser to charlie.mil.
     This attack is depicted in figure 18.1.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 查理上了钩。他点击了一个看似赢得 iPhone 的按钮。点击事件被导弹发射表单的提交按钮劫持。从查理的浏览器发送了一个有效但是无意的 POST 请求到
+    charlie.mil。这个攻击在图 18.1 中被描述。
 - en: '![CH18_F01_Byrne](Images/CH18_F01_Byrne.png)'
+  id: totrans-17
   prefs: []
   type: TYPE_IMG
+  zh: '![CH18_F01_Byrne](Images/CH18_F01_Byrne.png)'
 - en: Figure 18.1 Mallory tricks Charlie into inadvertently launching a missile.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 18.1 玛洛瑞让查理无意中发射导弹。
 - en: 'Unfortunately, Charlie’s POST request isn’t blocked by the same-origin policy;
     CORS is irrelevant. Why? Because it simply isn’t a cross-origin request. The origin
     of the request is derived from the origin (charlie.mil) of the page loaded by
     the iframe, not the origin (win-iphone.mallory.com) of the page containing the
     iframe. This story is corroborated by the `Host`, `Origin`, and `Referer` headers
     of the request, shown here in bold font:'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 不幸的是，查理的 POST 请求没有被同源策略阻止；CORS 也无关紧要。为什么？因为它根本不是跨源请求。请求的来源是通过 iframe 加载的页面（charlie.mil）的来源，而不是包含
+    iframe 的页面（win-iphone.mallory.com）的来源。这个故事得到了请求的`Host`、`Origin`和`Referer`头部的证实，如下所示（加粗显示）：
 - en: '[PRE2]'
+  id: totrans-20
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: Every same-origin request is by definition a same-site request. Charlie’s unintentional
     request is therefore regrettably misinterpreted as intentional by the server’s
     CSRF checks. After all, the `Referer` header is valid, and the `Cookie` header
     carries the CSRF token.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个同源请求在定义上都是同站点请求。Charlie 的无意请求因此被服务器的 CSRF 检查错误地解释为有意的。毕竟，`Referer` 头是有效的，而
+    `Cookie` 头携带了 CSRF 令牌。
 - en: The `Cookie` header also carries Charlie’s session ID. The server consequently
     processes the request with Charlie’s access privileges, launching the missile.
     Attackers in the real world use clickjacking to accomplish many other kinds of
     goals. This includes tricking the user into buying something, transferring money,
     or escalating the attacker’s privileges.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Cookie` 头还携带了 Charlie 的会话 ID。因此，服务器会使用 Charlie 的访问权限处理请求，发射导弹。现实世界中的攻击者使用点击劫持来实现许多其他目标。这包括欺骗用户购买东西、转账或提升攻击者的权限。'
 - en: Clickjacking is a specific kind of UI redress attack. UI redress attacks are
     designed to hijack all kinds of user actions, not just clicks. This includes keystrokes,
     swipes, and taps. Clickjacking is the most common type of UI redress attack. The
     next two sections teach you how to prevent it.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 点击劫持是一种特定类型的 UI 重定向攻击。UI 重定向攻击旨在劫持各种用户操作，而不仅仅是点击。这包括按键、滑动和轻触。点击劫持是最常见的 UI 重定向攻击类型。接下来的两节将教你如何防止它。
 - en: 18.1 The X-Frame-Options header
+  id: totrans-24
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 18.1 X-Frame-Options 头
 - en: Sites traditionally use the `X-Frame-Options` response header to resist clickjacking.
     This header is served by a site such as charlie.mil for a resource such as launch-missile.html.
     This informs the browser about whether it is allowed to embed the resource in
     an iframe, frame, object, or embed element.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 网站传统上使用 `X-Frame-Options` 响应头来抵抗点击劫持。此头由 charlie.mil 等站点为 launch-missile.html
+    等资源提供。这告知浏览器是否允许将资源嵌入到 iframe、frame、object 或 embed 元素中。
 - en: The value of this header is either `DENY` or `SAMEORIGIN`. Both of these settings
     behave intuitively. `DENY` forbids the browser from embedding the response anywhere;
     `SAMEORIGIN` permits the browser to embed the response in a page from the same
     origin.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 此头的值为 `DENY` 或 `SAMEORIGIN`。这两个设置的行为直观。`DENY` 禁止浏览器在任何地方嵌入响应；`SAMEORIGIN` 允许浏览器在来自相同源的页面中嵌入响应。
 - en: 'By default, every Django project adds the `X-Frame-Options` header to each
     response. The default value for this header was changed from `SAMEORIGIN` to `DENY`
     with the release of Django 3\. This behavior is configured by the `X_FRAME_OPTIONS`
     setting:'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，每个 Django 项目都会向每个响应添加 `X-Frame-Options` 头。该头的默认值在 Django 3 发布时从 `SAMEORIGIN`
+    更改为 `DENY`。这种行为由 `X_FRAME_OPTIONS` 设置配置：
 - en: '[PRE3]'
+  id: totrans-28
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: 18.1.1 Individualized responses
+  id: totrans-29
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 18.1.1 个性化响应
 - en: Django supports a few decorators to modify the `X-Frame-Options` header on a
     per view basis. The `xframe_options_sameorigin` decorator, shown here in bold
     font, sets the value of `X-Frame-Options` to `SAMEORIGIN` for an individual view.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: Django 支持一些装饰器，以便根据每个视图基础上修改 `X-Frame-Options` 头。这里以粗体显示的 `xframe_options_sameorigin`
+    装饰器为例，为单个视图设置 `X-Frame-Options` 的值为 `SAMEORIGIN`。
 - en: Listing 18.3 Allowing browsers to embed a single same-origin resource
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 18.3 允许浏览器嵌入单个同源资源
 - en: '[PRE4]'
+  id: totrans-32
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: ❶ Ensures the X-Frame-Options header is SAMEORIGIN
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 确保 X-Frame-Options 头为 SAMEORIGIN
 - en: Django also ships with an `xframe_options_deny` decorator. This utility behaves
     analogously to `xframe_options_sameorigin`.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: Django 还附带了一个 `xframe_options_deny` 装饰器。此实用程序的行为类似于 `xframe_options_sameorigin`。
 - en: The `xframe_options_exempt` decorator omits the `X-Frame-Options` header from
     the response on a per view basis, as shown in the following listing. This is useful
     only if the response is intended to be loaded in an iframe on a page from different
     origins.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: '`xframe_options_exempt` 装饰器会根据每个视图基础上省略响应中的 `X-Frame-Options` 头，如下列表所示。只有当响应打算在来自不同源的页面上的
+    iframe 中加载时才有用。'
 - en: Listing 18.4 Allowing browsers to embed a single resource anywhere
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 18.4 允许浏览器在任何地方嵌入单个资源
 - en: '[PRE5]'
+  id: totrans-37
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: ❶ Omits the X-Frame-Options header
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 省略 X-Frame-Options 头
 - en: Each of these decorators accommodates class-based views and function-based views
     alike.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些装饰器都适用于基于类的视图和基于函数的视图。
 - en: In a previous chapter, you learned how to resist cross-site scripting and man-in-the-middle
     attacks with the Content Security Policy. CSP makes one more final appearance
     in the next section.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 在之前的章节中，你学会了如何通过内容安全策略来抵抗跨站脚本和中间人攻击。CSP 在下一节中再次出现。
 - en: 18.2 The Content-Security-Policy header
+  id: totrans-41
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 18.2 内容安全策略头
 - en: 'The `Content-Security-Policy` response header supports a directive named `frame-ancestors`.
     This directive is the modern way to prevent clickjacking. Like the `X-Frame-Options`
     header, the `frame-ancestors` directive is designed to inform the browser about
     whether a resource may be embedded in an iframe, frame, object, applet, or embed
     element. Like other CSP directives, it supports one or more sources:'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Content-Security-Policy` 响应头部支持一个名为 `frame-ancestors` 的指令。这个指令是防止点击劫持的现代方式。像
+    `X-Frame-Options` 头部一样，`frame-ancestors` 指令旨在通知浏览器一个资源是否可以嵌入到 iframe、frame、object、applet
+    或 embed 元素中。像其他 CSP 指令一样，它支持一个或多个来源：'
 - en: '[PRE6]'
+  id: totrans-43
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: 'The `CSP_FRAME_ANCESTORS` setting configures `django-csp` (a library covered
     in a previous chapter) to add `frame-ancestors` to the CSP header. This setting
     accepts a tuple or list of strings, representing one or more sources. The following
     configuration is the equivalent to setting `X-Frame-Options` to `DENY`. The ''`none''`
     source forbids the response from being embedded anywhere, even in a resource from
     the same origin as the response. The single quotes are required:'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: '`CSP_FRAME_ANCESTORS` 设置配置了 `django-csp`（前一章节介绍的一个库）来向 CSP 头部添加 `frame-ancestors`。这个设置接受一个字符串的元组或列表，代表一个或多个来源。下面的配置等同于将
+    `X-Frame-Options` 设置为 `DENY`。`''none''` 来源禁止响应被嵌入到任何地方，即使是在与响应相同来源的资源中也是如此。单引号是必须的：'
 - en: '[PRE7]'
+  id: totrans-45
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: 'The following configuration allows the response to be embedded in a resource
     from the same origin. This source is the equivalent to setting `X-Frame-Options`
     to `SAMEORIGIN`:'
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的配置允许响应被嵌入到与相同来源的资源中。这个来源等同于将 `X-Frame-Options` 设置为 `SAMEORIGIN`：
 - en: '[PRE8]'
+  id: totrans-47
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 'A host source shares the resource with a specific origin. A response with the
     following header is allowed to be embedded only in a page from bob.com over port
     8001 using HTTPS:'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 主机来源与特定起源共享资源。具有以下标头的响应只允许在使用 HTTPS 的 8001 端口上的 bob.com 页面中嵌入：
 - en: '[PRE9]'
+  id: totrans-49
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: The `frame-ancestors` directive is a navigation directive. Unlike fetch directives
     such as `img-src` and `font-src`, navigation directives are independent of `default-src`.
     This means if a CSP header lacks a `frame-ancestors` directive, the browser does
     not fall back to the `default-src` directive.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '`frame-ancestors` 指令是一个导航指令。与 `img-src` 和 `font-src` 等获取指令不同，导航指令与 `default-src`
+    无关。这意味着如果 CSP 头部缺少 `frame-ancestors` 指令，浏览器不会回退到 `default-src` 指令。'
 - en: 18.2.1 X-Frame-Options versus CSP
+  id: totrans-51
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 18.2.1 X-Frame-Options 与 CSP 的比较
 - en: The CSP `frame-ancestors` directive is safer and more flexible than `X-Frame-Options`.
     The `frame-ancestors` directive provides a more fine-grained level of control.
     Multiple sources allow you to manage content by protocol, domain, or port. A single
     content security policy can accommodate multiple hosts.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: CSP 的 `frame-ancestors` 指令比 `X-Frame-Options` 更安全、更灵活。`frame-ancestors` 指令提供了更精细的控制级别。多个来源允许您通过协议、域或端口来管理内容。单个内容安全策略可以适应多个主机。
 - en: 'The CSP specification ([www.w3.org/TR/CSP2/](https://www.w3.org/TR/CSP2/))
     compares the two options explicitly:'
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: CSP 规范（[www.w3.org/TR/CSP2/](https://www.w3.org/TR/CSP2/)）明确比较了这两种选项：
 - en: The major difference is that many user agents implement `SAMEORIGIN` such that
     it only matches against the top-level document’s location. This directive checks
     each ancestor. If any ancestor doesn’t match, the load is cancelled.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 主要区别在于许多用户代理实现了 `SAMEORIGIN`，以便仅匹配顶级文档的位置。此指令检查每个祖先。如果任何祖先不匹配，则加载被取消。
 - en: '`X-Frame-Options` has only one advantage: it is supported by older browsers.
     These headers are compatible, though. Using them together can only make a site
     safer:'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: '`X-Frame-Options` 只有一个优势：它被老版本的浏览器支持。但是这些头部是兼容的。一起使用它们只会让网站更安全：'
 - en: The `frame-ancestors` directive obsoletes the `X-Frame-Options` header. If a
     resource has both policies, the `frame-ancestors` policy should be enforced and
     the `X-Frame-Options` policy should be ignored.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: '`frame-ancestors` 指令已经废弃了 `X-Frame-Options` 头部。如果一个资源同时拥有这两种策略，应该执行 `frame-ancestors`
+    策略，而忽略 `X-Frame-Options` 策略。'
 - en: By now, you’ve learned everything you need to know about clickjacking. You’ve
     learned a lot about many other forms of attack as well. Rest assured, there will
     always be a new attack to learn about; attackers don’t rest. The next section
     provides you with three ways to stay current in the ever-changing world of cybersecurity.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 到现在为止，你已经学会了关于点击劫持的一切需要知道的知识。你也学到了很多其他形式的攻击。请放心，总会有新的攻击方式需要学习；攻击者不会停歇。下一节将为您提供在不断变化的网络安全世界中保持更新的三种方法。
 - en: 18.3 Keeping up with Mallory
+  id: totrans-58
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 18.3 跟上 Mallory 的步伐
 - en: 'Staying current can be daunting at first. Why? In addition to a steady stream
     of new attacks and vulnerabilities, there is also a steady stream of new information
     resources in the cybersecurity space. Seriously, nobody has enough time to digest
     every blog, podcast, and social media post. Furthermore, some of the resources
     out there amount to nothing more than clickbait and alarmism. In this section,
     I reduce this space to three categories:'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 保持时效性一开始可能会让人望而却步。为什么？除了源源不断的新攻击和漏洞外，在网络安全领域还有大量新的信息资源。说真的，没有人有足够的时间去消化每篇博客、播客和社交媒体帖子。此外，一些资源仅仅是标题党和危言耸听。在本节中，我将这个领域简化为三个类别：
 - en: Influencers
+  id: totrans-60
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 影响者
 - en: News feeds
+  id: totrans-61
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 新闻源
 - en: Advisories
+  id: totrans-62
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 警报
 - en: For each category, I present three options hereafter. I’m challenging you to
     subscribe to at least one option from each category.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于每个类别，我在此提供三个选项。我挑战你至少订阅每个类别中的一个选项。
 - en: First, subscribe to at least one cybersecurity influencer. These individuals
     deliver news and advice, wearing hats such as researcher, author, blogger, hacker,
     and podcast host. You can’t go wrong with any of the influencers listed here.
     My preference is Bruce Schneier.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，至少订阅一个网络安全影响者。这些个人提供新闻和建议，担任研究员、作者、博主、黑客和播客主持人等角色。你可以选择以下列出的任何影响者。我更喜欢Bruce
+    Schneier。
 - en: Bruce Schneier, @schneierblog
+  id: totrans-65
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Bruce Schneier，@schneierblog
 - en: Brian Krebs, @briankrebs
+  id: totrans-66
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Brian Krebs，@briankrebs
 - en: Graham Cluley, @gcluley
+  id: totrans-67
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Graham Cluley，@gcluley
 - en: Second, subscribe to a good cybersecurity news source. Any of the following
     resources will keep you up-to-date with current events such as big breaches, new
     tools, and cybersecurity law. These resources are conveniently available via RSS.
     I recommend joining the /r/netsec community on Reddit.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二，订阅一个好的网络安全新闻来源。以下任何资源都会让你了解当前事件，如大规模泄露、新工具和网络安全法律。这些资源可以通过RSS方便地获取。我建议加入Reddit上的/r/netsec社区。
 - en: '[www.reddit.com/r/netsec/](https://www.reddit.com/r/netsec/)—Information security
     news and discussion'
+  id: totrans-69
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[www.reddit.com/r/netsec/](https://www.reddit.com/r/netsec/)—信息安全新闻和讨论'
 - en: '[https://nakedsecurity.sophos.com/](https://nakedsecurity.sophos.com/)—News,
     opinion, advice, and research'
+  id: totrans-70
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[https://nakedsecurity.sophos.com/](https://nakedsecurity.sophos.com/)—新闻、观点、建议和研究'
 - en: '[https://threatpost.com/](https://threatpost.com/)—News, original stories,
     videos, and feature reports'
+  id: totrans-71
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[https://threatpost.com/](https://threatpost.com/)—新闻、原创故事、视频和特写报道'
 - en: 'Third, subscribe to risk-advisory notifications. These resources are focused
     primarily on recent exploits and newly discovered vulnerabilities. At a bare minimum,
     you should visit [https://haveibeenpwned.com](https://haveibeenpwned.com) and
     subscribe to breach notifications. The site will send you an email next time one
     of your accounts is compromised:'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三，订阅风险警报通知。这些资源主要关注最近的攻击和新发现的漏洞。至少，你应该访问[https://haveibeenpwned.com](https://haveibeenpwned.com)并订阅泄露通知。该网站会在你的帐户受到侵害时给你发送电子邮件：
 - en: '[https://haveibeenpwned.com/NotifyMe](https://haveibeenpwned.com/NotifyMe)—Alerts
     for compromised personal accounts'
+  id: totrans-73
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[https://haveibeenpwned.com/NotifyMe](https://haveibeenpwned.com/NotifyMe)—警报已被个人帐户泄露'
 - en: '[https://us-cert.cisa.gov/ncas/alerts](https://us-cert.cisa.gov/ncas/alerts)—Current
     security issues and exploits'
+  id: totrans-74
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[https://us-cert.cisa.gov/ncas/alerts](https://us-cert.cisa.gov/ncas/alerts)—当前安全问题和攻击'
 - en: '[https://nvd.nist.gov/vuln/data-feeds](https://nvd.nist.gov/vuln/data-feeds)—Common
     Vulnerabilities and Exposures (CVE)'
+  id: totrans-75
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '[https://nvd.nist.gov/vuln/data-feeds](https://nvd.nist.gov/vuln/data-feeds)—通用漏洞和暴露（CVE）'
 - en: Congratulations on finishing this book. I enjoyed writing it and I hope you
     enjoyed reading it. Luckily for you, Python and security are both going to be
     around for a very long time.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 恭喜你完成了这本书。我很享受写作，希望你也喜欢阅读。幸运的是，Python和安全性都将长期存在。
 - en: Summary
+  id: totrans-77
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 摘要
 - en: The same-origin policy does not apply to clickjacking because the request isn’t
     cross-origin.
+  id: totrans-78
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 同源策略不适用于点击劫持，因为请求并非跨源。
 - en: Cross-site request forgery checks cannot prevent clickjacking because the request
     isn’t cross-site.
+  id: totrans-79
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 跨站请求伪造检查无法防止点击劫持，因为请求并非跨站点。
 - en: The `X-Frame-Options` and `Content-Security-Policy` response headers effectively
     resist clickjacking.
+  id: totrans-80
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`X-Frame-Options`和`Content-Security-Policy`响应头有效地抵抗点击劫持。'
 - en: '`X-Frame-Options` has been obsoleted by `Content-Security-Policy`.'
+  id: totrans-81
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`X-Frame-Options`已被`Content-Security-Policy`所取代。'
 - en: Subscribe to influencers, news feeds, and advisories to keep your skills current.
+  id: totrans-82
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 订阅有影响力的人、新闻源和警报，以保持你的技能与时俱进。

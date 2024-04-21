@@ -964,6 +964,7 @@
   id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Access-Control-Allow-Credentials` *允许*浏览器发送cookies；它不会*强制*浏览器执行任何操作。换句话说，服务器和浏览器都必须选择加入。`Access-Control-Allow-Credentials`旨在与`fetch(credentials)`或`XmlHttpRequest.withCredentials`一起使用。最后，Bob在www.bob.com添加了一行JavaScript代码，如下所示，用粗体字显示。问题解决：'
 - en: '[PRE21]'
   id: totrans-145
   prefs: []
@@ -973,43 +974,51 @@
   id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 一个用于发送和接收cookies的选择性设置
 - en: I chose to isolate CORS and CSRF from each other in this book. I also chose
     to present these topics back-to-back because CORS and CSRF resistance are often
     confused for each other. Despite some overlap, these subjects are not the same.
   id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 我选择在本书中将CORS和CSRF相互隔离。我还选择连续呈现这些主题，因为CORS和CSRF抵抗经常被混淆。尽管有些重叠，但这些主题并不相同。
 - en: 17.6 CORS and CSRF resistance
   id: totrans-148
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 17.6 CORS和CSRF抵抗
 - en: 'Some of the confusion between CORS and CSRF is to be expected. Both topics
     fall under web security; both topics apply to traffic between websites. These
     similarities are overshadowed by many differences:'
   id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: CORS和CSRF之间的一些混淆是可以预料的。这两个主题都属于Web安全；这两个主题都适用于网站之间的流量。这些相似之处被许多差异所掩盖：
 - en: CORS headers cannot resist common forms of CSRF.
   id: totrans-150
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: CORS标头不能抵抗常见形式的CSRF。
 - en: CSRF resistance cannot relax the same-origin policy.
   id: totrans-151
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: CSRF抵抗不能放宽同源策略。
 - en: CORS is a W3C Recommendation; CSRF protection is unstandardized.
   id: totrans-152
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: CORS是W3C推荐；CSRF保护未标准化。
 - en: Request forgery requires a session ID; resource sharing does not.
   id: totrans-153
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 请求伪造需要会话ID；资源共享不需要。
 - en: CORS is no substitute for CSRF resistance. In chapter 16, you saw Mallory trick
     Alice into submitting a hidden form from mallory.com to admin.alice.com. The SOP
     does not regulate this kind of request. There is no way to stop attacks like this
@@ -1017,12 +1026,14 @@
   id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: CORS不能替代CSRF抵抗。在第16章中，你看到Mallory欺骗Alice从mallory.com提交一个隐藏表单到admin.alice.com。SOP不规范这种请求。没有办法用CORS标头阻止这种攻击。CSRF抵抗是唯一的方法。
 - en: Likewise, CSRF resistance is no substitute for CORS. In this chapter, you saw
     Bob use CORS to relax the SOP, sharing a /trending/ resource with https:/./alice.com.
     Conversely, no form of CSRF resistance would have allowed Bob to relax the SOP.
   id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 同样，CSRF抵抗不能替代CORS。在本章中，你看到Bob使用CORS来放宽SOP，与https:/./alice.com分享/trending/资源。相反，任何形式的CSRF抵抗都不会允许Bob放宽SOP。
 - en: Furthermore, CORS is a W3C Recommendation. This standard has been implemented
     in a relatively uniform manner by every browser and countless server-side frameworks,
     including `django-cors-headers`. There is no equivalent for CSRF resistance. Django,
@@ -1031,6 +1042,8 @@
   id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 此外，CORS是W3C推荐。这个标准已经被每个浏览器和无数服务器端框架（包括`django-cors-headers`）相对统一地实现。对于CSRF抵抗没有相应的标准。Django、Ruby
+    on Rails、ASP.NET和每个其他Web框架都可以以自己独特的方式抵抗CSRF。
 - en: Finally, a successful forged request must bear a valid session ID; the user
     must be logged in. Conversely, many successful CORS requests do not, and should
     not, bear a session ID. In this chapter, you saw Google share a font with Alice
@@ -1039,6 +1052,7 @@
   id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，一个成功的伪造请求必须携带有效的会话ID；用户必须已登录。相反，许多成功的CORS请求不需要，也不应该携带会话ID。在本章中，你看到Google与Alice分享字体，即使她没有登录到Google。Bob最初与www.bob.com用户分享/trending/，即使其中许多用户没有登录到social.bob.com。
 - en: In short, the purpose of CSRF resistance is to reject unintentional malicious
     requests for the sake of safety. The purpose of CORS is to accept intentional
     requests to support feature functionality. In the next chapter, I cover clickjacking,
@@ -1046,26 +1060,31 @@
   id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 简而言之，CSRF抵抗的目的是为了拒绝不经意的恶意请求以确保安全。CORS的目的是接受有意的请求以支持功能功能。在下一章中，我将涵盖点击劫持，这是另一个与CSRF和CORS混淆的主题。
 - en: Summary
   id: totrans-159
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 摘要
 - en: The internet would be a very dangerous place without the SOP.
   id: totrans-160
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 没有SOP，互联网将是一个非常危险的地方。
 - en: CORS can be thought of as a way to relax the SOP.
   id: totrans-161
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: CORS可以被视为放宽SOP的一种方式。
 - en: Simple CORS use cases are accommodated by `Access-Control-Allow-Origin`.
   id: totrans-162
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 简单的CORS使用情况由`Access-Control-Allow-Origin`处理。
 - en: The browser precedes a potentially harmful CORS request with a preflight request.
   id: totrans-163
   prefs:

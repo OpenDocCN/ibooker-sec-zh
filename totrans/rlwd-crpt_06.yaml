@@ -845,39 +845,49 @@
   id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于所有这些问题，更新的协议和库已经趋于要么弃用DH以支持椭圆曲线Diffie-Hellman（ECDH），要么使用更好的标准RFC 7919（[https://www.rfc-editor.org/info/rfc7919](https://www.rfc-editor.org/info/rfc7919)）定义的群。因此，现在的最佳实践是使用RFC
+    7919，它定义了几种不同大小和安全性的群。例如，ffdhe2048是由2,048位素数模定义的群：
 - en: '*p*   =  3231700607131100730015351347782516336248805713348907517458843413926980683413621000279205636264016468'
   id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: '*p*   =  3231700607131100730015351347782516336248805713348907517458843413926980683413621000279205636264016468'
 - en: '54585563579353308169288290230805734726252735547424612457410262025279165729728627063003252634282131457669'
   id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: '54585563579353308169288290230805734726252735547424612457410262025279165729728627063003252634282131457669'
 - en: '31414223654220941111348629991657478268034230553086349050635557712219187890332729569696129743856241741236'
   id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: '31414223654220941111348629991657478268034230553086349050635557712219187890332729569696129743856241741236'
 - en: '23722519734640269185579776797682301462539793305801522685873076119753243646747585546071504389684494036613'
   id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: '23722519734640269185579776797682301462539793305801522685873076119753243646747585546071504389684494036613'
 - en: 04976978128542959586595975670512838521327844685229255045682728791137200989318739591433741758378260002780
   id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 04976978128542959586595975670512838521327844685229255045682728791137200989318739591433741758378260002780
 - en: '34973198552060607533234122603254684088120031105907484281003994966956119696956248629032338072839127039'
   id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: '34973198552060607533234122603254684088120031105907484281003994966956119696956248629032338072839127039'
 - en: and with generator *g* = 2
   id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 以及生成器*g* = 2
 - en: Note It is common to choose the number 2 for the generator as computers are
     quite efficient at multiplying with 2 using a simple left shift (`<<`) instruction.
   id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 选择生成器的数字2是很常见的，因为计算机在使用简单的左移（`<<`）指令与2相乘时非常高效。
 - en: The group size (or *order*) is also specified as *q* = (*p* – 1)/2\. This implies
     that both private keys and public keys will be around 2,048 bits size-wise. In
     practice, these are quite large sizes for keys (compare that with symmetric keys,
@@ -887,11 +897,13 @@
   id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 群大小（或*order*）也被指定为*q* = (*p* – 1)/2。这意味着私钥和公钥在大小上都会在2,048位左右。实际上，对于密钥来说，这些都是相当大的尺寸（例如，与通常为128位长的对称密钥相比）。您将在下一节中看到，通过定义椭圆曲线上的群，我们可以在相同的安全性下获得更小的密钥。
 - en: 5.3 The Elliptic Curve Diffie-Hellman (ECDH) key exchange
   id: totrans-122
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 5.3 椭圆曲线Diffie-Hellman（ECDH）密钥交换
 - en: It turns out that the DH algorithm, which we just discussed, can be implemented
     in different types of groups, not just the multiplicative groups modulo a prime
     number. It also turns out that a group can be made from elliptic curves, a type
@@ -901,6 +913,8 @@
   id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 结果证明，我们刚刚讨论的DH算法可以在不同类型的群中实现，而不仅仅是模素数的乘法群。事实证明，一个群可以由数学中研究的一种曲线——椭圆曲线构成。这个想法是由Neal
+    Koblitz和Victor S. Miller在1985年独立提出的，而在2000年，当基于椭圆曲线的加密算法开始标准化时，这个想法得到了采纳。
 - en: The world of applied cryptography quickly adopted elliptic curve cryptography
     as it provided much smaller keys than the previous generation of public key cryptography.
     Compared to the recommended 2,048-bit parameters in DH, parameters of 256 bits
@@ -908,11 +922,13 @@
   id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 应用密码学领域很快就采用了椭圆曲线密码学，因为它提供的密钥比上一代公钥密码学要小得多。与DH中建议的2,048位参数相比，椭圆曲线变体算法可以使用256位的参数。
 - en: 5.3.1 What’s an elliptic curve?
   id: totrans-125
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5.3.1 什么是椭圆曲线？
 - en: Let’s now explain how elliptic curves work. First and foremost, it is good to
     understand that elliptic curves are just curves! Meaning that they are defined
     by all the coordinates *x* and *y* that solves an equation. Specifically, this
@@ -920,19 +936,23 @@
   id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们解释一下椭圆曲线是如何工作的。首先，首要的是要理解椭圆曲线只是曲线！这意味着它们由解方程的所有坐标*x*和*y*定义。具体来说，这个方程
 - en: '*y*² + *a*[1]*xy* + *a*[3]*y* = *x*³ + *a*[2]*x*² + *a*[4]*x* + *a*[6]'
   id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: '*y*² + *a*[1]*xy* + *a*[3]*y* = *x*³ + *a*[2]*x*² + *a*[4]*x* + *a*[6]'
 - en: 'for some *a*[1], *a*[2], *a*[3], *a*[4], and *a*[6]. Note that for most practical
     curves today, this equation can be simplified as the *short Weierstrass equation*:'
   id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于一些*a*[1]、*a*[2]、*a*[3]、*a*[4]和*a*[6]。注意，对于今天的大多数实用曲线，这个方程可以简化为*短Weierstrass方程*：
 - en: '*y*² = *x*³ + *ax* + *b* (where 4*a*³ + 27*b*² ≠ 0)'
   id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: '*y*² = *x*³ + *ax* + *b*（其中4*a*³ + 27*b*² ≠ 0）'
 - en: While the simplification is not possible for two types of curves (called *binary
     curves* and *curves of characteristic 3*), these are used rarely enough that we
     will use the Weierstrass form in the rest of this chapter. Figure 5.8 shows an
@@ -940,14 +960,17 @@
   id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然对于两种类型的曲线（称为*二进制曲线*和*特征3的曲线*），这种简化是不可能的，但这些曲线的使用频率很低，因此在本章的其余部分中我们将使用Weierstrass形式。图5.8显示了一个随机选取两个点的椭圆曲线示例。
 - en: '![](../Images/05_08.jpg)'
   id: totrans-131
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/05_08.jpg)'
 - en: Figure 5.8 One example of an elliptic curve defined by an equation.
   id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 图5.8 一个由方程定义的椭圆曲线示例。
 - en: At some point in the history of elliptic curves, it was found that a *group*
     could be constructed over them. From there, implementing DH on top of these groups
     was straightforward. I will use this section to explain the intuition behind elliptic
@@ -955,11 +978,13 @@
   id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 在椭圆曲线的历史上的某个时候，人们发现可以在其上构建一个*群*。从那时起，在这些群上实现DH就变得简单了。我将利用这一节来解释椭圆曲线密码学背后的直觉。
 - en: Groups over elliptic curves are often defined as *additive groups*. Unlike multiplicative
     groups defined in the previous section, the + sign is used instead.
   id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 椭圆曲线上的群通常被定义为*加法群*。与前一节中定义的乘法群不同，这里使用的是+号。
 - en: Note Using an addition or a multiplication does not matter much in practice,
     it is just a matter of preference. While most of cryptography uses a multiplicative
     notation, the literature around elliptic curves has gravitated around an additive
@@ -968,49 +993,58 @@
   id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 在实践中，使用加法或乘法都没有太大关系，这只是一种偏好。虽然大多数密码学使用乘法符号，但围绕椭圆曲线的文献更倾向于使用加法符号，因此，在本书中提及椭圆曲线群时，我将使用这种表示法。
 - en: This time, I will define the operation before defining the elements of the group.
     Our *addition operation* is defined in the following way. Figure 5.9 illustrates
     this process.
   id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 这一次，我会在定义群的元素之前定义操作。我们的*加法操作*定义如下。图5.9说明了这个过程。
 - en: Draw a line going through two points that you want to add. The line hits the
     curve at another point.
   id: totrans-137
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 画一条穿过你想要相加的两个点的直线。这条直线在曲线上又碰到另一个点。
 - en: Draw a vertical line from this newly found point. The vertical line hits the
     curve in yet another point.
   id: totrans-138
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 从这个新找到的点画一条垂直线。垂直线在曲线上又碰到另一个点。
 - en: This point is the result of adding the original two points together.
   id: totrans-139
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 这一点是将原始两点相加的结果。
 - en: '![](../Images/05_09.jpg)'
   id: totrans-140
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/05_09.jpg)'
 - en: Figure 5.9 An addition operation can be defined over points of an elliptic curve
     by using geometry.
   id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 图5.9 通过几何方法可以在椭圆曲线的点上定义加法操作。
 - en: 'There are two special cases where this rule won’t work. Let’s define these
     as well:'
   id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 有两种特殊情况，这个规则不适用。我们也定义一下这两种情况：
 - en: '*How do we add a point to itself ?* The answer is to draw the tangent to that
     point (instead of drawing a line between two points).'
   id: totrans-143
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*我们如何将一个点加到自身？*答案是画出该点的切线（而不是在两点之间画一条线）。'
 - en: '*What happens if the line we draw in step 1 (or step 2) does not hit the curve
     at any other point?* Well, this is embarrassing, and we need this special case
     to work and produce a result. The solution is to define the result as a made-up
@@ -1021,16 +1055,19 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*如果我们在第1步（或第2步）画的线不在曲线上碰到任何其他点会发生什么？*嗯，这很尴尬，我们需要这种特殊情况来产生一个结果。解决方案是将结果定义为一个虚构的点（我们自己编造的）。这个新发明的点称为*无穷远点*（通常用大写字母*O*表示）。图5.10说明了这些特殊情况。'
 - en: '![](../Images/05_10.jpg)'
   id: totrans-145
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/05_10.jpg)'
 - en: Figure 5.10 Building on figure 5.9, addition on an elliptic curve is also defined
     when adding a point to itself or when two points cancel each other to result in
     the point at infinity (*O*).
   id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 图5.10 在图5.9的基础上构建，当将一个点与自身相加或当两个点相互抵消以得到无穷远点（*O*）时，也定义了在椭圆曲线上的加法。
 - en: 'I know this point at infinity is some next-level weirdness, but don’t worry
     too much about it. It is really just something we came up with in order to make
     the addition operation work. Oh, and by the way, it behaves like a zero, and it
@@ -1038,38 +1075,46 @@
   id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 我知道这个无穷点有些超级奇怪，但不要太担心。它实际上只是我们为了使加法运算有效而想出来的东西。哦，顺便说一下，它的行为就像一个零，它是我们的恒等元素：
 - en: '*O* + *O* = *O*'
   id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: '*O* + *O* = *O*'
 - en: and for any point *P* on the curve
   id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于曲线上的任意点*P*
 - en: '*P* + *O* = *P*'
   id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: '*P* + *O* = *P*'
 - en: All good. So far, we saw that to create a group on top of an elliptic curve,
     we need
   id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 一切都很好。到目前为止，我们看到要在椭圆曲线上创建一个群，我们需要
 - en: An elliptic curve equation that defines a set of valid points.
   id: totrans-152
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 定义一组有效点的椭圆曲线方程。
 - en: A definition of what addition means in this set.
   id: totrans-153
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在这个集合中定义加法的定义。
 - en: An imaginary point called a point at infinity.
   id: totrans-154
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个称为无穷点的虚拟点。
 - en: I know this is a lot of information to unpack, but we are missing one last thing.
     Elliptic curve cryptography makes use of the previously-discussed type of group
     defined over a *finite field*. In practice, what this means is that our coordinates
@@ -1080,10 +1125,13 @@
   id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 我知道这是很多需要理解的信息，但我们还缺少最后一点。椭圆曲线密码学利用之前讨论过的在*有限域*上定义的一种群类型。在实践中，这意味着我们的坐标是数字1、2、···、*p*
+    – 1，其中*p*是某个大素数。这应该听起来很熟悉！因此，当考虑椭圆曲线密码学时，您应该想象一个图形，它看起来更像图5.11右侧的图形。
 - en: '![](../Images/05_11.jpg)'
   id: totrans-156
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/05_11.jpg)'
 - en: Figure 5.11 Elliptic curve cryptography (ECC), in practice, is mostly specified
     with elliptic curves in coordinates modulo a large prime number *p*. This means
     that what we use in cryptography looks much more like the right graph than the
@@ -1091,6 +1139,7 @@
   id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 图5.11 椭圆曲线密码学（ECC）在实践中，主要是通过模一个大素数*p*的坐标椭圆曲线来指定。这意味着在密码学中使用的内容更像右图而不是左图。
 - en: And that’s it! We now have a group we can do cryptography on, the same way we
     had a group made with the numbers (excluding 0) modulo a prime number and a multiplication
     operation for Diffie-Hellman. How can we do Diffie-Hellman with this group defined
@@ -1098,6 +1147,7 @@
   id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 就是这样！我们现在有了一个可以进行密码学运算的群，就像我们之前使用的是模一个素数的数字（排除0）和Diffie-Hellman的乘法运算一样。我们如何在椭圆曲线上定义的这个群上进行Diffie-Hellman呢？现在让我们来看看在这个群中*离散对数*是如何工作的。
 - en: Let’s take a point *G* and add it to itself *x* times to produce another point
     *P* via the addition operation we defined. We can write that as *P* = *G* + ···
     + *G* (*x* times) or use some mathematical syntactic sugar to write that as *P*
@@ -1106,21 +1156,26 @@
   id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们取一个点*G*，并将其加上自身*x*次以通过我们定义的加法操作产生另一个点*P*。我们可以写成*P* = *G* + ··· + *G*（*x*次）或者使用一些数学上的糖来写成*P*
+    = [*x*]*G*，读作*x*倍的*G*。椭圆曲线离散对数问题（ECDLP）就是要从仅知道*P*和*G*的情况下找到数字*x*。
 - en: Note We call [*x*]*G* scalar multiplication as *x* is usually called a scalar
     in such groups.
   id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 注释 我们将[*x*]*G*标量乘法称为在这种群中通常称为标量的*x*。
 - en: 5.3.2 How does the Elliptic Curve Diffie-Hellman (ECDH) key exchange work?
   id: totrans-161
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5.3.2 椭圆曲线Diffie-Hellman（ECDH）密钥交换如何工作？
 - en: 'Now that we built a group on elliptic curves, we can instantiate the same Diffie-Hellman
     key exchange algorithm on it. To generate a key pair in ECDH:'
   id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们在椭圆曲线上构建了一个群，我们可以在其上实例化相同的Diffie-Hellman密钥交换算法。要在ECDH中生成密钥对：
 - en: All the participants agree on an elliptic curve equation, a finite field (most
     likely a prime number), and a generator *G* (usually called a *base point* in
     elliptic curve cryptography).
@@ -1128,33 +1183,39 @@
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 所有参与者都同意一个椭圆曲线方程，一个有限域（很可能是一个素数），以及一个生成元*G*（在椭圆曲线密码学中通常称为*基点*）。
 - en: Each participant generates a random number *x*, which becomes their private
     key.
   id: totrans-164
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 每个参与者生成一个随机数*x*，这个随机数成为他们的私钥。
 - en: Each participant derives their public key as [*x*]*G*.
   id: totrans-165
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 每个参与者将他们的公钥派生为[*x*]*G*。
 - en: Because the elliptic curve discrete logarithm problem is hard, you guessed it,
     no one should be able to recover your private key just by looking at your public
     key. I illustrate this in figure 5.12.
   id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 因为椭圆曲线离散对数问题很困难，你猜对了，没有人应该能够仅仅通过查看你的公钥就恢复出你的私钥。我在图5.12中有例证。
 - en: '![](../Images/05_12.jpg)'
   id: totrans-167
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/05_12.jpg)'
 - en: Figure 5.12 Choosing a private key in ECDH is like choosing an index in a list
     of numbers produced by a generator (or base point) *G*. The Elliptic Curve Discrete
     Logarithm Problem (ECDLP) is to find the index from the number alone.
   id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 5.12 在 ECDH 中选择一个私钥就像在由生成器（或基点）*G* 产生的数字列表中选择一个索引一样。椭圆曲线离散对数问题（ECDLP）是仅通过数字找到索引。
 - en: All of this might be a bit confusing as the operation we defined for our DH
     group was the multiplication, and for an elliptic curve, we now use addition.
     Again, these distinctions do not matter at all because they are equivalent. You
@@ -1162,15 +1223,19 @@
   id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有这些可能有点令人困惑，因为我们为 DH 群定义的操作是乘法，而对于椭圆曲线，我们现在使用加法。再次强调，这些区别完全不重要，因为它们是等价的。您可以在图
+    5.13 中看到比较。
 - en: '![](../Images/05_13.jpg)'
   id: totrans-170
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/05_13.jpg)'
 - en: Figure 5.13 Some comparisons between the group used in Diffie-Hellman and the
     group used in Elliptic Curve Diffie-Hellman (ECDH).
   id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 5.13 比较了在 Diffie-Hellman 中使用的群与在椭圆曲线 Diffie-Hellman（ECDH）中使用的群。
 - en: You should now be convinced that the only thing that matters for cryptography
     is that we have a group defined with its operation, and that the discrete logarithm
     for this group is hard. For completion, figure 5.14 shows the difference between
@@ -1178,10 +1243,12 @@
   id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在你应该相信，对于密码学来说唯一重要的是我们有一个定义了操作的群，并且该群的离散对数是困难的。为了完整起见，图 5.14 展示了我们所见过的两种类型群中离散对数问题的差异。
 - en: '![](../Images/05_14.jpg)'
   id: totrans-173
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/05_14.jpg)'
 - en: Figure 5.14 A comparison between the discrete logarithm problem modulo large
     primes and the discrete logarithm problem in elliptic curve cryptography (ECC).
     They both relate to the DH key exchange, as the problem is to find the private
@@ -1189,6 +1256,7 @@
   id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 5.14 在大质数模下的离散对数问题与椭圆曲线密码学（ECC）中的离散对数问题的比较。它们都与 DH 密钥交换有关，因为问题是从公钥中找到私钥。
 - en: A last note on the theory, the group we formed on top of elliptic curves differs
     with the group we formed with the strictly positive integers modulo a prime number.
     Due to some of these differences, the strongest attacks known against DH (known
@@ -1198,20 +1266,25 @@
   id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于理论的最后一点说明，我们在椭圆曲线之上形成的群与我们在严格正整数模素数之上形成的群不同。由于一些差异，已知的对 DH 的最强攻击（称为*索引演算法*或*数域筛*攻击）在椭圆曲线群上并不起作用。这是为什么
+    ECDH 的参数可以远远低于相同安全级别下 DH 的参数的主要原因。
 - en: OK, we are done with the theory. Let’s go back to defining ECDH. Imagine that
   id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 好了，我们已经结束了理论部分。让我们回到定义 ECDH。想象一下
 - en: Alice has a private key *a* and a public key *A* = [*a*]*G*.
   id: totrans-177
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Alice 有一个私钥 *a* 和一个公钥 *A* = [*a*]*G*。
 - en: Bob has a private key *b* and a public key *B* = [*b*]*G*.
   id: totrans-178
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Bob 有一个私钥 *b* 和一个公钥 *B* = [*b*]*G*。
 - en: 'With the knowledge of Bob’s public key, Alice can compute the shared secret
     as [*a*]*B*. Bob can do a similar computation with Alice’s public key and his
     own private key: [*b*]*A*. Naturally, we can see that these two calculations end
@@ -1219,20 +1292,24 @@
   id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 拥有 Bob 的公钥知识后，Alice 可以计算出共享密钥为 [*a*]*B*。Bob 可以用 Alice 的公钥和他自己的私钥进行类似的计算：[*b*]*A*。自然地，我们可以看到这两个计算最终得到相同的数字：
 - en: '[*a*]*B* = [*a*][*b*]*G* = [*ab*]*G* = [*b*][*a*]*G* = [*b*]*A*'
   id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: '[*a*]*B* = [*a*][*b*]*G* = [*ab*]*G* = [*b*][*a*]*G* = [*b*]*A*'
 - en: No passive adversary should be able to derive the shared point just from observing
     the public keys. Looks familiar, right? Next, let’s talk about standards.
   id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 没有被动的对手应该能够仅通过观察公钥来推导出共享点。听起来很熟悉，对吧？接下来，让我们谈谈标准。
 - en: 5.3.3 The standards for Elliptic Curve Diffie-Hellman
   id: totrans-182
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5.3.3 椭圆曲线 Diffie-Hellman 的标准
 - en: '*Elliptic curve cryptography has remained at its full strength since it was
     first presented in 1985\. [. . .] The United States, the UK, Canada and certain
     other NATO nations have all adopted some form of elliptic curve cryptography for
@@ -1241,10 +1318,12 @@
   id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: '*自 1985 年首次提出以来，椭圆曲线密码学一直保持着它的完整性。[...] 美国、英国、加拿大和某些其他北约国家都已经采用了某种形式的椭圆曲线密码学来保护政府之间和之内的机密信息*。'
 - en: —NSA (“The Case for Elliptic Curve Cryptography,” 2005)
   id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: —NSA（《椭圆曲线密码学的理由》，2005 年）
 - en: The standardization of ECDH has been pretty chaotic. Many standardization bodies
     have worked to specify a large number of different curves, which was then followed
     by many flame wars over which curve was more secure or more efficient. A large
@@ -1254,21 +1333,26 @@
   id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: ECDH 的标准化过程相当混乱。许多标准化机构努力指定许多不同的曲线，然后引发了许多关于哪个曲线更安全或更高效的争论。由 Daniel J. Bernstein
+    领导的大量研究指出了 NIST 标准化的一些曲线可能属于 NSA 所知的更弱的曲线类别。
 - en: '*I no longer trust the constants. I believe the NSA has manipulated them through
     their relationships with industry*.'
   id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: '*我不再相信这些常数。我相信美国国家安全局通过与行业的关系来操纵它们*。'
 - en: —Bruce Schneier (“The NSA Is Breaking Most Encryption on the Internet,” 2013)
   id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: ——Bruce Schneier（“美国国家安全局正在破解互联网上的大多数加密”，2013）
 - en: 'Nowadays, most of the curves in use come from a couple standards, and most
     applications have fixated on two curves: P-256 and Curve25519\. In the rest of
     this section, I will go over these curves.'
   id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 如今，大多数使用的曲线都来自一对标准，大多数应用都固定在两条曲线上：P-256 和 Curve25519。在本节的其余部分，我将介绍这些曲线。
 - en: 'NIST FIPS 186-4, “Digital Signature Standard,” initially published as a standard
     for signatures in 2000, contains an appendix specifying 15 curves for use in ECDH.
     One of these curves, P-256, is the most widely used curve on the internet. The
@@ -1278,44 +1362,56 @@
   id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: NIST FIPS 186-4，“数字签名标准”，最初作为 2000 年签名的标准发布，其中包含一个附录，指定了15个用于 ECDH 的曲线。其中一条曲线，P-256，在互联网上是最广泛使用的曲线。该曲线还在
+    2010 年以不同名称 secp256r1 发布的 “高效密码标准” (SEC) 2，v2 中指定。P-256 使用短 Weierstrass 方程定义：
 - en: '*y*² = *x*³ + *ax* + *b* mod *p*'
   id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: '*y*² = *x*³ + *ax* + *b* mod *p*'
 - en: where *a* = –3 and
   id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中 *a* = –3，而
 - en: '*b* = 41058363725152142129326129780047268409114441015993725554835256314039467401291'
   id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: '*b* = 41058363725152142129326129780047268409114441015993725554835256314039467401291'
 - en: and
   id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 和
 - en: '*p* = 2^(256) – 2^(224) + 2^(192) + 2^(96) – 1'
   id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: '*p* = 2^(256) – 2^(224) + 2^(192) + 2^(96) – 1'
 - en: 'This defines a curve of prime order:'
   id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: 这定义了一个素数阶的曲线：
 - en: '*n* = 115792089210356248762697446949407573529996955224135760342422259061068512044369'
   id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: '*n* = 115792089210356248762697446949407573529996955224135760342422259061068512044369'
 - en: meaning that there are exactly *n* points on the curve (including the point
     at infinity). The base point is specified as
   id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 这意味着曲线上确切有 *n* 个点（包括无穷远处的点）。基点被指定为
 - en: '*G* = (48439561293906451759052585252797914202762949526041747995844080717082404635286,
     36134250956749795798585127919587881956611106672985015071877198253568414405109)'
   id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: '*G* = (48439561293906451759052585252797914202762949526041747995844080717082404635286,
+    36134250956749795798585127919587881956611106672985015071877198253568414405109)'
 - en: The curve provides 128 bits of security. For applications that are using other
     cryptographic algorithms providing 256-bit security instead of 128 bits of security
     (for example, AES with a 256-bit key), P-521 is available in the same standard
@@ -1323,19 +1419,24 @@
   id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 该曲线提供了128位的安全性。对于使用其他提供256位安全性而不是128位安全性的密码算法（例如，具有256位密钥的 AES）的应用程序，同样标准中还提供了
+    P-521，以匹配安全级别。
 - en: Can we trust P-256?
   id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们能相信 P-256 吗？
 - en: Interestingly, P-256 and other curves defined in FIPS 186-4 are said to be generated
     from a *seed*. For P-256, the seed is known to be the byte string
   id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 有趣的是，FIPS 186-4 中定义的 P-256 和其他曲线据说是从一个 *seed* 生成的。对于 P-256，种子已知为字节字符串
 - en: '0xc49d360886e704936a6678e1139d26b7819f7e90'
   id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: '0xc49d360886e704936a6678e1139d26b7819f7e90'
 - en: I talked about this notion of “nothing-up-my-sleeve” numbers before—constants
     that aim to prove that there was no room for backdooring the design of the algorithm.
     Unfortunately, there isn’t much explanation behind the P-256 seed other than the
@@ -1343,6 +1444,7 @@
   id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 我之前谈过“什么都没有藏在我袖子里”的概念——旨在证明算法设计没有后门的常数。不幸的是，除了指定沿曲线参数的事实之外，对 P-256 种子几乎没有解释。
 - en: 'RFC 7748, “Elliptic Curves for Security,” which was published in 2016, specifies
     two curves: Curve25519 and Curve448\. Curve25519 offers approximately 128 bits
     of security, while Curve448 offers around 224 bits of security for protocols that
@@ -1352,35 +1454,44 @@
   id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: RFC 7748，“用于安全的椭圆曲线”，于2016年发布，规定了两个曲线：Curve25519 和 Curve448。Curve25519 提供了大约128位的安全性，而
+    Curve448 则提供了大约224位的安全性，用于协议希望对椭圆曲线的攻击潜力进行防范。我这里只会谈论 Curve25519，它是由以下方程定义的蒙哥马利曲线：
 - en: '*y*² = *x*³ + 486662 *x*² + *x* mod *p*, where *p* = 2^(255) – 19'
   id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: '*y*² = *x*³ + 486662 *x*² + *x* mod *p*，其中 *p* = 2^(255) – 19'
 - en: Curve25519 has an order
   id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: Curve25519 的阶数为
 - en: '*n* = 2^(252) + 27742317777372353535851937790883648493'
   id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: '*n* = 2^(252) + 27742317777372353535851937790883648493'
 - en: and the base point used is
   id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用的基点为
 - en: '*G* = (9, 14781619447589544791020593568409986887264606134616475288964881837755586237401)'
   id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: '*G* = (9, 14781619447589544791020593568409986887264606134616475288964881837755586237401)'
 - en: The combination of ECDH with Curve25519 is often dubbed *X25519*.
   id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: ECDH 与 Curve25519 的结合常被称为 *X25519*。
 - en: 5.4 Small subgroup attacks and other security considerations
   id: totrans-211
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 5.4 小子群攻击和其他安全考虑
 - en: Today, *I would advise you to use ECDH over DH* due to the size of the keys,
     the lack of known strong attacks, the quality of the available implementations,
     and the fact that elliptic curves are fixed and well standardized (as opposed
@@ -1392,6 +1503,9 @@
   id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 今天，*我建议您使用 ECDH 而不是 DH*，原因是密钥的大小、已知强攻击的缺乏、可用实现的质量，以及椭圆曲线的固定性和良好的标准化（与 DH 群相反，后者随处可见）。后者一点非常重要！使用
+    DH 可能意味着使用破损的标准（如前面提到的 RFC 5114），过于松散的协议（许多协议，如较旧版本的 TLS，不强制使用什么样的 DH 群），使用破损的自定义
+    DH 群的软件（前面提到的 socat 问题），等等。
 - en: 'If you do have to use Diffie-Hellman, make sure to *stick to the standards*.
     The standards I mentioned previously make use of safe primes as modulus: primes
     of the form *p* = 2*q* + 1 where *q* is another prime number. The point is that
@@ -1403,18 +1517,23 @@
   id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您确实必须使用 Diffie-Hellman，请确保*遵循标准*。我之前提到的标准使用安全素数作为模数：形式为 *p* = 2*q* + 1 的素数，其中
+    *q* 是另一个素数。关键是，这种形式的群只有两个子群：大小为2的小子群（由–1生成）和大小为 *q* 的大子群。（顺便说一句，这是您能得到的最好的结果；在
+    DH 中不存在素数阶群。）小子群的稀缺性防止了一种被称为*小子群攻击*的攻击（稍后详细说明）。安全素数创建了安全群，因为有两个因素：
 - en: The order of a multiplicative group modulo a prime *p* is calculated as p –
     1.
   id: totrans-214
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 模素数 *p* 的乘法群的阶数计算为 p – 1。
 - en: The order of a group’s subgroups are the factors of the group’s order (this
     is the Lagrange theorem).
   id: totrans-215
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个群的子群的阶数是该群的阶数的因数（这就是拉格朗日定理）。
 - en: Hence, the order of our multiplicative group modulo a safe prime is *p* – 1
     = (2*q* + 1) – 1 = 2*q* that has factors 2 and *q*, which means that its subgroups
     can only be of order 2 or *q*. In such groups, small subgroup attacks are not
@@ -1425,6 +1544,8 @@
   id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，我们模素数的乘法群的阶数是 *p* – 1 = (2*q* + 1) – 1 = 2*q*，它的因数为2和 *q*，这意味着它的子群只能是阶数为2或
+    *q* 的子群。在这样的群中，小子群攻击是不可能的，因为没有足够的小子群。*小子群攻击* 是一种针对密钥交换的攻击，攻击者会逐渐发送几个无效的公钥来逐渐泄漏您的私钥的位，而无效的公钥是小子群的生成器。
 - en: For example, an attacker could choose –1 (the generator of a subgroup of size
     2) as public key and send it to you. By doing your part of the key exchange, the
     resulting shared secret is an element of the small subgroup (–1 or 1). This is
@@ -1435,6 +1556,7 @@
   id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，攻击者可以选择–1（大小为2的子群的生成器）作为公钥，并将其发送给你。通过执行你的密钥交换部分，结果的共享密钥是小子群的一个元素（–1或1）。这是因为你只是将小子群的生成器（攻击者的公钥）提升到你的私钥的幂。根据你对共享密钥的处理方式，攻击者可以猜测它是什么，并泄露关于你的私钥的一些信息。
 - en: 'With our example of malicious public key, if your private key was even, the
     shared secret would be 1, and if your private key was odd, the shared secret would
     be –1\. As a result, the attacker learned one bit of information: the least significant
@@ -1444,16 +1566,19 @@
   id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于我们恶意公钥的示例，如果你的私钥是偶数，则共享密钥将为1，如果你的私钥是奇数，则共享密钥将为–1。因此，攻击者了解了一个信息位：你的私钥的最低有效位。许多不同大小的子群可以导致攻击者有更多机会了解你的私钥，直到整个密钥被恢复。我在图5.15中说明了这个问题。
 - en: '![](../Images/05_15.jpg)'
   id: totrans-219
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/05_15.jpg)'
 - en: Figure 5.15 A small subgroup attack impacts DH groups that have many subgroups.
     By choosing generators of small subgroups as public keys, an attacker can leak
     bits of someone’s private key little by little.
   id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: 图5.15小子群攻击影响具有许多子群的DH群。通过选择小子群的生成器作为公钥，攻击者可以逐渐泄露某人的私钥的位。
 - en: While it is always a good idea to verify if the public key you receive is in
     the correct subgroup, not all implementations do that. In 2016, a group of researchers
     analyzed 20 different DH implementations and found that none were validating public
@@ -1464,6 +1589,8 @@
   id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然始终验证接收到的公钥是否位于正确的子群中是一个好主意，但并不是所有的实现都这样做。2016年，一组研究人员分析了20种不同的DH实现，并发现没有一个在验证公钥（参见
+    Valenta等人的“Measuring small subgroup attacks against Diffie-Hellman”）。确保你正在使用的DH实现是这样做的！你可以通过将公钥提升到子群的阶，如果它是该子群的元素，那么应该返回恒等元。
 - en: On the other hand, elliptic curves allow for groups of prime order. That is,
     they have no small subgroups (besides the subgroup of size 1 generated by the
     identity element), and thus, they are secure against small subgroup attacks. Well,
@@ -1473,6 +1600,7 @@
   id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一方面，椭圆曲线允许素数阶的群。也就是说，它们没有小子群（除了由恒等元素生成的大小为1的子群），因此它们对小子群攻击是安全的。好吧，不要那么快……在2000年，Biehl、Meyer和Muller发现即使在这样的素数阶椭圆曲线群中，也可能发生小子群攻击，原因是一种被称为*无效曲线攻击*的攻击。
 - en: 'The idea behind invalid curve attacks is the following. First, the formulas
     to implement scalar multiplication for elliptic curves that use the short Weierstrass
     equation *y*² = *x*³ + *ax* + *b* (like NIST’s P-256) are independent of the variable
@@ -1486,6 +1614,7 @@
   id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 无效曲线攻击背后的思想是这样的。首先，为了实现使用短 Weierstrass 方程*y*² = *x*³ + *ax* + *b*（如NIST的P-256）的椭圆曲线的标量乘法，与变量*b*无关。这意味着攻击者可以找到具有相同方程的不同曲线，除了值*b*之外，其中一些曲线将具有许多小的子群。你可能知道这将导致什么：攻击者选择另一个曲线中具有小子群的点，并将其发送到目标服务器。服务器通过对给定点执行标量乘法来继续进行密钥交换，从而有效地在不同的曲线上进行密钥交换。这个技巧最终重新启用了小子群攻击，即使在素数阶曲线上也是如此。
 - en: The obvious way to fix this is to, again, validate public keys. This can be
     done easily by checking if the public key is not the point at infinity and by
     plugging the received coordinates into the curve equation to see if it describes
@@ -1498,6 +1627,9 @@
   id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: 修复这个问题的明显方法是再次验证公钥。这可以通过检查公钥不是无穷远点，并将接收到的坐标插入曲线方程中来轻松完成。看看它是否描述了定义曲线上的一个点。不幸的是，在
+    2015 年，Jager、Schwenk 和 Somorovsky 在“Practical Invalid Curve Attacks on TLS-ECDH”中展示了几个流行实现没有执行这些检查。如果使用
+    ECDH，我建议你使用 X25519 密钥交换，因为它考虑了无效曲线攻击，可用实现的质量以及设计上对抗时序攻击的抵抗力。
 - en: 'Curve25519 has one caveat though—it is not a prime-order group. The curve has
     two subgroups: a small subgroup of size 8 and a large subgroup used for ECDH.
     On top of that, the original design did not prescribe validating received points,
@@ -1508,6 +1640,8 @@
   id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: Curve25519 有一个警告，即它不是一个素数阶群。该曲线有两个子群：一个大小为 8 的小子群和一个用于 ECDH 的大子群。此外，原始设计没有规定验证接收到的点，并且库也没有实现这些检查。这导致在使用原语的不同类型协议中发现问题。
+    （其中一个我在 Matrix 消息协议中发现的问题，在第 11 章中有讨论。）
 - en: 'Not verifying public keys can have unexpected behaviors with X25519\. The reason
     is that the key exchange algorithm does not have *contributory behavior*: it does
     not allow both parties to contribute to the final result of the key exchange.
@@ -1521,6 +1655,8 @@
   id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: 不验证公钥可能会导致与 X25519 不符合预期的行为。原因在于密钥交换算法没有*贡献行为*：它不允许双方共同为密钥交换的最终结果做出贡献。具体来说，参与者之一可以通过发送一个小子群中的点作为公钥，强制密钥交换的结果为全零。RFC
+    7748确实提到了这个问题，并建议检查生成的共享秘钥不是全零输出，但让实现者决定是否进行检查！我建议确保你的实现执行这个检查，尽管除非你以非标准方式使用 X25519，否则不太可能遇到任何问题。
 - en: Because many protocols rely on Curve25519, this has been an issue for more than
     just key exchanges. *Ristretto*, the internet draft soon-to-be RFC, is a construction
     that adds an extra layer of encoding to Curve25519, effectively simulating a curve
@@ -1531,11 +1667,15 @@
   id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于许多协议依赖于 Curve25519，这不仅仅是密钥交换的问题。*Ristretto*，即将成为 RFC 的互联网草案，是一种为 Curve25519
+    添加额外编码层的构造，有效模拟了一个素数阶曲线（参见 [https://tools.ietf.org/html/draft-hdevalence-cfrg-ristretto-01](https://tools.ietf.org/html/draft-hdevalence-cfrg-ristretto-01)）。这种构造已经开始受到关注，因为它简化了其他类型的加密原语对
+    Curve25519 的安全假设，但又希望得到素数阶域的好处。
 - en: Summary
   id: totrans-228
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 概要
 - en: Unauthenticated key exchanges allow two parties to agree on a shared secret,
     while preventing any passive man-in-the-middle (MITM) attacker from being able
     to derive it as well.
@@ -1543,6 +1683,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 未经身份验证的密钥交换允许两方达成共享秘钥，同时阻止任何被动中间人攻击者能够推导出它。
 - en: An authenticated key exchange prevents an active MITM from impersonating one
     side of the connection, while a mutually authenticated key exchange prevents an
     active MITM from impersonating both sides.
@@ -1550,6 +1691,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 身份验证的密钥交换阻止主动中间人攻击者冒充连接的一方，而双向身份验证的密钥交换阻止主动中间人攻击者冒充双方。
 - en: One can perform an authenticated key exchange by knowing the other party’s public
     key, but this doesn’t always scale and signatures will unlock more complex scenarios
     (see chapter 7).
@@ -1557,18 +1699,21 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通过了解对方的公钥，可以执行经过身份验证的密钥交换，但这并不总是可扩展的，而签名将解锁更复杂的场景（见第7章）。
 - en: Diffie-Hellman (DH) is the first key exchange algorithm invented and is still
     widely used.
   id: totrans-232
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 迪菲-赫尔曼（DH）是第一个发明的密钥交换算法，仍然被广泛使用。
 - en: The recommended standard to use for DH is RFC 7919, which includes several parameters
     to choose from. The smallest option is the recommended 2,048-bit prime parameter.
   id: totrans-233
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 用于DH的推荐标准是RFC 7919，其中包括几个可供选择的参数。最小选项是推荐的2,048位素数参数。
 - en: Elliptic Curve Diffie-Hellman (ECDH) has much smaller key sizes than DH. For
     128 bits of security, DH needs 2,048-bit parameters, whereas ECDH needs 256-bit
     parameters.
@@ -1576,6 +1721,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 椭圆曲线迪菲-赫尔曼（ECDH）的密钥尺寸比DH小得多。对于128位的安全性，DH需要2,048位的参数，而ECDH只需要256位的参数。
 - en: The most widely used curves for ECDH are P-256 and Curve25519\. Both provide
     128 bits of security. For 256-bit security, P-521 and Curve448 are available in
     the same standards.
@@ -1583,9 +1729,11 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: ECDH最广泛使用的曲线是P-256和Curve25519。两者都提供128位的安全性。对于256位的安全性，同一标准中还提供了P-521和Curve448。
 - en: Make sure that implementations verify the validity of public keys you receive
     as invalid keys are the source of many bugs.
   id: totrans-236
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 确保实现验证你接收到的公钥的有效性，因为无效的密钥是许多错误的源头。

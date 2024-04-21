@@ -1,94 +1,132 @@
 - en: 6 Asymmetric encryption and hybrid encryption
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 6 非对称加密和混合加密
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章内容包括
 - en: Asymmetric encryption to encrypt secrets to a public key
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对秘密信息进行加密的非对称加密方法
 - en: Hybrid encryption to encrypt data to a public key
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对数据进行加密到公钥的混合加密方法
 - en: The standards for asymmetric and hybrid encryption
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 非对称和混合加密的标准
 - en: In chapter 4, you learned about authenticated encryption, a cryptographic primitive
     used to encrypt data but limited by its symmetry (both sides of a connection had
     to share the same key). In this chapter, I’ll lift this restriction by introducing
     asymmetric encryption, a primitive to encrypt to someone else’s key without knowing
     the key. Without surprise, asymmetric encryption makes use of key pairs and encryption
     will use public keys instead of symmetric keys.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第4章中，您了解到了认证加密，这是一种用于加密数据的加密原语，但受到对称性的限制（连接的两侧必须共享相同的密钥）。在本章中，我将通过介绍非对称加密来解除此限制，这是一种加密到其他人的密钥而无需知道密钥的原语。毫不奇怪，非对称加密利用密钥对，加密将使用公钥而不是对称密钥。
 - en: Halfway through this chapter, you will see that asymmetric encryption is limited
     by the size of the data it can encrypt and by the rate at which it can encrypt
     it. To remove this obstacle, I’ll show you how to mix asymmetric encryption with
     authenticated encryption to form what we call *hybrid encryption*. Let’s get started!
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章的中间部分，您将看到非对称加密受其可以加密的数据量以及加密速率的限制。为了消除这一障碍，我将向您展示如何将非对称加密与认证加密混合在一起，形成我们所称的*混合加密*。让我们开始吧！
 - en: Note For this chapter, you’ll need to have read chapter 4 on authenticated encryption
     and chapter 5 on key exchanges.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 对于本章，您需要已经阅读过第4章关于认证加密和第5章关于密钥交换。
 - en: 6.1 What is asymmetric encryption?
+  id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.1 什么是非对称加密？
 - en: 'The first step in knowing how to encrypt a message is understanding *asymmetric
     encryption* (also called *public key encryption*). In this section, you will learn
     about this cryptographic primitive and its properties. Let’s take a look at the
     following real-world scenario: *encrypted emails*.'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 了解如何加密消息的第一步是理解*非对称加密*（也称为*公钥加密*）。在本节中，您将了解此加密原语及其属性。让我们看一个以下真实场景：*加密电子邮件*。
 - en: You probably know that all the emails you send are sent “in the clear” for anyone
     sitting in between you and your recipient’s email provider to read. That’s not
     great. How do you fix this? You could use a cryptographic primitive like AES-GCM,
     which you learned about in chapter 4\. To do that, you would need to set up a
     different shared symmetric secret for each person that wants to message you.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可能知道，您发送的所有电子邮件都是“明文”发送的，任何坐在您和您收件人的电子邮件提供商之间的人都可以阅读。这不太好。你该怎么解决这个问题？您可以使用像AES-GCM这样的加密原语，这是您在第4章学到的。为此，您需要为想要给您发消息的每个人设置一个不同的共享对称密钥。
 - en: Exercise
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 练习
 - en: Using the same shared secret with everyone would be very bad; can you see why?
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用相同的共享密钥与所有人将非常糟糕；您能理解为什么吗？
 - en: But you can’t expect to know in advance who’ll want to message you, and generating
     and exchanging new symmetric keys will get tedious as more and more people want
     to encrypt messages to you. This is where asymmetric encryption helps by allowing
     anyone in possession of your public key to encrypt messages to you. Furthermore,
     you are the only one who can decrypt these messages using the associated private
     key that only you own. See figure 6.1 for an illustration of asymmetric encryption.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 但是您不能指望提前知道谁会给您发送消息，随着越来越多的人想要给您加密消息，生成和交换新的对称密钥会变得繁琐。这就是非对称加密的帮助所在，它允许拥有您公钥的任何人向您加密消息。此外，您是唯一能够使用您拥有的相关私钥解密这些消息的人。请参见图6.1，了解非对称加密的示意图。
 - en: '![](../Images/06_01.jpg)'
+  id: totrans-14
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_01.jpg)'
 - en: Figure 6.1 With asymmetric encryption, anyone can use Alice’s public key to
     send her encrypted messages. Only Alice, who owns the associated private key,
     can decrypt these messages.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.1 使用非对称加密，任何人都可以使用爱丽丝的公钥向她发送加密消息。只有拥有相关私钥的爱丽丝才能解密这些消息。
 - en: To set up asymmetric encryption, you first need to generate a key pair via some
     algorithm. As with any setup function for cryptographic algorithms, the key generation
     algorithm accepts a security parameter. This security parameter usually translates
     to “how big do you want your keys to be?” where bigger means more secure. Figure
     6.2 illustrates this step.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 要设置非对称加密，首先需要通过某种算法生成一对密钥。与任何加密算法的设置函数一样，密钥生成算法接受一个安全参数。这个安全参数通常被翻译为“你想要多大的密钥？”更大意味着更安全。图6.2说明了这一步骤。
 - en: '![](../Images/06_02.jpg)'
+  id: totrans-17
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_02.jpg)'
 - en: Figure 6.2 To use asymmetric encryption, you first need to generate a key pair.
     Depending on the security parameters you provide, you can generate keys of different
     security strengths.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.2 要使用非对称加密，首先需要生成一对密钥。根据您提供的安全参数，您可以生成不同安全强度的密钥。
 - en: 'The *key generation algorithm* generates a key pair comprised of two different
     parts: the public key part (as the name indicates) can be published and shared
     without much concerns, while the private key must remain secret. Similar to the
@@ -97,101 +135,142 @@
     then use the public key part to encrypt messages, and you can use the private
     key part to decrypt as figure 6.3 illustrates. And similar to authenticated decryption,
     decryption can fail if presented with incoherent ciphertext.'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '*密钥生成算法*生成由两个不同部分组成的密钥对：公钥部分（如名称所示）可以在不太担心的情况下发布和共享，而私钥必须保持秘密。与其他加密原语的密钥生成算法类似，需要一个安全参数来决定算法的位安全性。然后任何人都可以使用公钥部分加密消息，您可以使用私钥部分解密，就像图6.3所示。与经过认证的解密类似，如果提供不一致的密文，解密可能会失败。'
 - en: '![](../Images/06_03.jpg)'
+  id: totrans-20
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_03.jpg)'
 - en: Figure 6.3 Asymmetric encryption allows one to encrypt a message (*plaintext*)
     using a recipient’s public key. The recipient can then use a different algorithm
     to decrypt the encrypted message (*ciphertext*) using a private key that’s related
     to the public key used previously.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.3 非对称加密允许使用接收者的公钥加密消息（*明文*）。接收者随后可以使用与先前使用的公钥相关的私钥使用不同的算法解密加密的消息（*密文*）。
 - en: 'Note that so far we haven’t talked about authentication. Consider both sides
     of the wire:'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，到目前为止我们还没有讨论认证问题。考虑电线的两侧：
 - en: You are encrypting to a public key which you think is owned by Alice.
+  id: totrans-23
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 您正在使用您认为是Alice拥有的公钥进行加密。
 - en: Alice does not know for sure who sent this message.
+  id: totrans-24
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Alice并不确定是谁发送了这条消息。
 - en: 'For now, we will imagine that we obtained Alice’s public key in a really secure
     way. In chapter 7, which covers digital signatures, you will learn how real-world
     protocols solve this bootstrapping issue in practice. You will also learn in chapter
     7 how you can communicate to Alice who you really are, in a cryptographic way.
     Spoiler alert: you’ll be signing your messages.'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，我们将假设我们以一种非常安全的方式获得了Alice的公钥。在涵盖数字签名的第7章中，您将了解现实世界协议如何解决这个实践中的引导问题。您还将在第7章中学习如何以加密方式向Alice传达您的真实身份。剧透警告：您将签署您的消息。
 - en: Let’s move on to the next section where you’ll learn about how asymmetric encryption
     is used in practice (and also why it’s rarely used as-is in practice).
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们继续下一节，您将了解非对称加密在实践中的应用（以及为什么在实践中很少直接使用）。
 - en: 6.2 Asymmetric encryption in practice and hybrid encryption
+  id: totrans-27
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.2 实践中的非对称加密和混合加密
 - en: You might be thinking asymmetric encryption is probably enough to start encrypting
     your emails. In reality, asymmetric encryption is quite limited due to the restricted
     length of messages it can encrypt. The speed of asymmetric encryption and decryption
     is also slow in comparison to symmetric encryption. This is due to asymmetric
     constructions implementing math operations, as opposed to symmetric primitives
     that often just manipulate bits.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可能认为非对称加密可能足以开始加密您的电子邮件。实际上，由于它可以加密的消息长度受限，非对称加密相当受限。与对称加密相比，非对称加密和解密的速度也较慢。这是由于非对称构造实施数学运算，而对称原语通常只是操作位。
 - en: 'In this section, you will learn about these limitations, what asymmetric encryption
     is actually used for in practice, and finally, how cryptography overcomes these
     impediments. This section is divided in two parts for the two main use cases of
     asymmetric encryption:'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，你将了解这些限制，实际上非对称加密用于什么，最后，密码学是如何克服这些障碍的。本节分为两个部分，分别介绍了非对称加密的两个主要用例：
 - en: '*Key exchanges*—You will see that it is quite natural to perform a key exchange
     (or key agreement) with an asymmetric encryption primitive.'
+  id: totrans-30
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*密钥交换* —— 你会发现使用非对称加密原语执行密钥交换（或密钥协商）是相当自然的。'
 - en: '*Hybrid encryption*—You will see that the use cases for asymmetric encryption
     are quite limited due to the maximum size of what you can encrypt. To encrypt
     larger messages, you will learn about a more useful primitive called *hybrid encryption*.'
+  id: totrans-31
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*混合加密* —— 你会发现由于你可以加密的最大大小的限制，非对称加密的用例相当有限。为了加密更大的消息，你将了解到一种更有用的原语，称为 *混合加密*。'
 - en: 6.2.1 Key exchanges and key encapsulation
+  id: totrans-32
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6.2.1 密钥交换和密钥封装
 - en: It turns out that asymmetric encryption can be used to perform a key exchange—the
     same kind as the ones we saw in chapter 5! In order to do this, you can start
     by generating a symmetric key and encrypt it with Alice’s public key—what we also
     call *encapsulating a key*—as figure 6.4 demonstrates.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 原来非对称加密可以用于执行密钥交换——与我们在第 5 章中看到的一样！为了做到这一点，你可以开始生成一个对称密钥，并用 Alice 的公钥对其进行加密——我们也称之为
+    *封装密钥* ——就像图 6.4 所示。
 - en: '![](../Images/06_04.jpg)'
+  id: totrans-34
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_04.jpg)'
 - en: Figure 6.4 To use asymmetric encryption as a key exchange primitive, you (1)
     generate a symmetric key and then (2) encrypt it with Alice’s public key.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 6.4 要将非对称加密用作密钥交换原语，你需要（1）生成一个对称密钥，然后（2）用 Alice 的公钥对其进行加密。
 - en: You can then send the ciphertext to Alice, who will be able to decrypt it and
     learn the symmetric key. Subsequently, you will have both a shared secret! Figure
     6.5 illustrates the complete flow.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 你随后可以将密文发送给 Alice，她将能够解密它并学习对称密钥。接下来，你们将有一个共享的秘密！图 6.5 展示了完整的流程。
 - en: '![](../Images/06_05.jpg)'
+  id: totrans-37
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_05.jpg)'
 - en: Figure 6.5 To use asymmetric encryption as a key exchange primitive, you can
     (1) generate a symmetric key and (2) encrypt it with Alice’s public key. After
     (3) sending it to Alice, she can (4) decrypt it with her associated private key.
     At the end of the protocol, you both have the shared secret, while no one else
     is able to derive it from observing the encrypted symmetric key alone.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 6.5 要将非对称加密用作密钥交换原语，你可以（1）生成一个对称密钥，然后（2）用 Alice 的公钥对其进行加密。之后（3）将其发送给 Alice，她可以（4）用她关联的私钥对其进行解密。在协议结束时，你们都拥有共享的秘密，而其他人无法仅从观察到的加密对称密钥中推导出它。
 - en: Using asymmetric encryption to perform a key exchange is usually done with an
     algorithm called *RSA* (following the names of its inventors Rivest, Shamir, and
     Adleman) and used in many internet protocols. Today, RSA is often *not* the preferred
@@ -199,12 +278,17 @@
     favor of Elliptic Curve Diffie-Hellman (ECDH). This is mostly due to historical
     reasons (many vulnerabilities have been discovered with RSA implementations and
     standards) and the attractiveness of the smaller parameter sizes offered by ECDH.
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用非对称加密执行密钥交换通常使用一种称为 *RSA* 的算法（按照其发明者 Rivest、Shamir 和 Adleman 的名字命名），并在许多互联网协议中使用。今天，RSA通常*不是*进行密钥交换的首选方式，并且在协议中的使用越来越少，而更偏爱椭圆曲线
+    Diffie-Hellman（ECDH）。这主要是出于历史原因（发现了许多与 RSA 实现和标准相关的漏洞）和 ECDH 提供的更小参数大小的吸引力。
 - en: 6.2.2 Hybrid encryption
+  id: totrans-40
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6.2.2 混合加密
 - en: In practice, asymmetric encryption can only encrypt messages up to a certain
     length. For example, the size of plaintext messages that can be encrypted by RSA
     are limited by the security parameters that were used during the generation of
@@ -213,75 +297,94 @@
     ASCII characters—pretty small. Therefore, most applications make use of hybrid
     encryption, whose limitation is tied to the encryption limits of the authenticated
     encryption algorithm used.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 实际上，非对称加密只能加密长度不超过一定限制的消息。例如，可以通过 RSA 加密的明文消息的大小受到生成密钥对时使用的安全参数的限制（更具体地说，是模数的大小）。现今，使用的安全参数（4,096
+    位模数），限制约为 500 个 ASCII 字符 —— 相当小。因此，大多数应用程序使用混合加密，其限制与使用的认证加密算法的加密限制相关联。
 - en: Hybrid encryption has the same interface as asymmetric encryption in practice
     (see figure 6.6). People can encrypt messages with a public key, and the one who
     owns the associated private key can decrypt the encrypted messages. The real difference
     is in the size limitations of the messages that you can encrypt.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/06_06.jpg)'
+  id: totrans-43
   prefs: []
   type: TYPE_IMG
 - en: Figure 6.6 Hybrid encryption has the same interface as asymmetric encryption
     except that messages that can be encrypted are much larger in size.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
 - en: Under the cover, hybrid encryption is simply the combination of an *asymmetric*
     cryptographic primitive with a *symmetric* cryptographic primitive (hence the
     name). Specifically, it is a non-interactive key exchange with the recipient,
     followed by the encryption of a message with an authenticated encryption algorithm.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
 - en: Warning You could also use a simple symmetric encryption primitive instead of
     an authenticated encryption primitive, but symmetric encryption does not protect
     against someone tampering with your encrypted messages. This is why we never use
     symmetric encryption alone in practice (as seen in chapter 4).
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s learn about how hybrid encryption works! If you want to encrypt a message
     to Alice, you first generate a symmetric key and encrypt your message with it
     and then use an authenticated encryption algorithm as figure 6.7 illustrates.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/06_07.jpg)'
+  id: totrans-48
   prefs: []
   type: TYPE_IMG
 - en: Figure 6.7 To encrypt a message to Alice using hybrid encryption with asymmetric
     encryption, you (1) generate a symmetric key for an authenticated encryption algorithm,
     then you (2) use the symmetric key to encrypt your message to Alice.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
 - en: Once you have encrypted your message, Alice still cannot decrypt it without
     the knowledge of the symmetric key. How do we provide Alice with that symmetric
     key? Asymmetrically encrypt the symmetric key with Alice’s public key as in figure
     6.8.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/06_08.jpg)'
+  id: totrans-51
   prefs: []
   type: TYPE_IMG
 - en: Figure 6.8 Building on figure 6.7, you (3) encrypt the symmetric key itself
     by using Alice’s public key and an asymmetric encryption algorithm.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
 - en: Finally, you can send both results to Alice. These include
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
 - en: The asymmetrically encrypted symmetric key
+  id: totrans-54
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The symmetrically encrypted message
+  id: totrans-55
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: This is enough information for Alice to decrypt the message. I illustrate the
     full flow in figure 6.9.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/06_09.jpg)'
+  id: totrans-57
   prefs: []
   type: TYPE_IMG
 - en: Figure 6.9 Building on figure 6.8, (4) after you send both the encrypted symmetric
@@ -289,12 +392,14 @@
     her private key. (6) She then uses the symmetric key to decrypt the encrypted
     message. (Note that steps 5 and 6 can both fail and return errors if the communications
     are tampered with by a MITM attacker at step 4.)
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
 - en: 'And this is how we can use the best of both worlds: mixing asymmetric encryption
     and symmetric encryption to encrypt large amounts of data to a public key. We
     often call the first asymmetric part of the algorithm a *key encapsulation mechanism*
     (KEM) and the second symmetric part a *data encapsulation mechanism* (DEM).'
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
 - en: Before we move to the next section and learn about the different algorithms
@@ -306,64 +411,97 @@
     were made and sane functions were exposed in order to prevent developers from
     misusing cryptographic primitives. In addition, Tink is available in several programming
     languages ( Java, C++, Obj-C, and Golang).
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们转向下一节并学习存在的不同算法和标准以及非对称加密和混合加密的方法之前，让我们看看（实践中）如何使用加密库执行混合加密。为此，我选择了 Tink
+    加密库。Tink 是由 Google 的一组密码学家开发的，以支持公司内外的大型团队。由于项目的规模，进行了有意识的设计选择，并暴露了健全的功能，以防止开发人员误用密码原语。此外，Tink
+    可在几种编程语言中使用（Java、C++、Obj-C 和 Golang）。
 - en: Listing 6.1 Hybrid encryption in Java
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 6.1 Java 中的混合加密
 - en: '[PRE0]'
+  id: totrans-62
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: ❶ Generates keys for a specific hybrid encryption scheme
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 为特定混合加密方案生成密钥
 - en: ❷ Obtains the public key part that we can publish or share
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 获取我们可以发布或共享的公钥部分
 - en: ❸ Anyone who knows this public key can use it to encrypt plaintext and can authenticate
     some associated data.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 任何知道此公钥的人都可以用它加密明文，并可以验证一些关联数据。
 - en: ❹ Decrypts an encrypted message using the same associated data. If the decryption
     fails, it throws an exception.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 使用相同的关联数据解密加密消息。如果解密失败，它会抛出异常。
 - en: 'One note to help you understand the `ECIES_P256_HKDF_HMAC_SHA256_AES128_GCM`
     string: ECIES (for Elliptic Curve Integrated Encryption Scheme) is the hybrid
     encryption standard to use. You’ll learn about this later in this chapter. The
     rest of the string lists the algorithms used to instantiate ECIES:'
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了帮助你理解`ECIES_P256_HKDF_HMAC_SHA256_AES128_GCM`字符串：ECIES（椭圆曲线集成加密方案）是要使用的混合加密标准。你将在本章后面学到这一点。字符串的其余部分列出了用于实例化
+    ECIES 的算法：
 - en: P256 is the NIST standardized elliptic curve you learned about in chapter 5.
+  id: totrans-68
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: P256 是你在第 5 章学到的 NIST 标准化椭圆曲线。
 - en: HKDF is a key derivation function you will learn about in chapter 8.
+  id: totrans-69
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: HKDF 是一个密钥派生函数，你将在第 8 章学习它。
 - en: HMAC is the message authentication code you learned about in chapter 3.
+  id: totrans-70
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: HMAC 是你在第 3 章学到的消息认证码。
 - en: SHA-256 is the hash function you learned about in chapter 2.
+  id: totrans-71
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: SHA-256 是你在第 2 章学到的哈希函数。
 - en: AES-128-GCM is the AES-GCM authenticated encryption algorithm using a 128-bit
     key you learned about in chapter 4.
+  id: totrans-72
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: AES-128-GCM 是你在第 4 章学到的使用 128 位密钥的 AES-GCM 验证加密算法。
 - en: See how everything is starting to fit together? In the next section, you will
     learn about RSA and ECIES, the two widely adopted standards for asymmetric encryption
     and hybrid encryption.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 看到一切是如何开始拼凑在一起的了吗？在下一节中，你将学习 RSA 和 ECIES，这两种广泛采用的非对称加密和混合加密标准。
 - en: '6.3 Asymmetric encryption with RSA: The bad and the less bad'
+  id: totrans-74
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.3 使用 RSA 进行非对称加密：好的和不那么好的
 - en: 'It is time for us to look at the standards that define asymmetric encryption
     and hybrid encryption in practice. Historically, both of these primitives have
     not been spared by cryptanalysts, and many vulnerabilities and weaknesses have
@@ -371,26 +509,37 @@
     section with an introduction to the RSA asymmetric encryption algorithm and how
     not to use it. The rest of the chapter will go through the actual standards you
     can follow to use asymmetric and hybrid encryptions:'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 是时候让我们来看一下在实践中定义了非对称加密和混合加密的标准了。在历史上，这两个原语都未能幸免于密码分析家的手，许多漏洞和弱点都被发现在这些标准和实现中。这就是为什么我将从介绍
+    RSA 非对称加密算法及其不正确使用方式开始这一节。本章的其余部分将介绍你可以遵循的实际标准来使用非对称和混合加密：
 - en: '*RSA-OAEP*—The main standard to perform asymmetric encryption with RSA'
+  id: totrans-76
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*RSA-OAEP* — 使用 RSA 进行非对称加密的主要标准'
 - en: '*ECIES*—The main standard to perform hybrid encryption with Elliptic Curve
     Diffie-Hellman (ECDH)'
+  id: totrans-77
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*ECIES* — 使用椭圆曲线 Diffie-Hellman（ECDH）进行混合加密的主要标准'
 - en: 6.3.1 Textbook RSA
+  id: totrans-78
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6.3.1 教科书 RSA
 - en: In this section, you will learn about the RSA public key encryption algorithm
     and how it has been standardized throughout the years. This is useful to understand
     other secure schemes based on RSA.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，你将了解 RSA 公钥加密算法及其在多年来的标准化。这对理解基于 RSA 的其他安全方案很有用。
 - en: Unfortunately, RSA has caught quite some bad rap since it was first published
     in 1977\. One of the popular theories is that RSA is too easy to understand and
     implement, and thus, many people do it themselves, which leads to a lot of vulnerable
@@ -398,268 +547,378 @@
     the concept of RSA (often called *textbook RSA*) is insecure if implemented naively,
     even standards have been found to be broken! But not so fast, to understand these
     issues, you will first need to learn how RSA works.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
 - en: 'Remember the multiplicative group of numbers modulo a prime *p*? (We talked
     about it in chapter 5.) It is the set of strictly positive integers:'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
 - en: 1, 2, 3, 4, ···, *p* – 1
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s imagine that one of these numbers is our message. For *p* large enough,
     let’s say 4,096 bits, our message can contain around 500 characters tops.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
 - en: Note For computers, a message is just a series of bytes, which can also be interpreted
     as a number.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
 - en: We have seen that by exponentiating a number (let’s say our message), we can
     generate other numbers that form a *subgroup*. I illustrate this in figure 6.10.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/06_10.jpg)'
+  id: totrans-86
   prefs: []
   type: TYPE_IMG
 - en: Figure 6.10 Integers modulo a prime (here 5) are divided in different subgroups.
     By picking an element as a generator (let’s say the number 2) and exponentiating
     it, we can generate a subgroup. For RSA, the generator is the message.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
 - en: This is useful for us when defining how to encrypt with RSA. To do this, we
     publish a public exponent *e* (for *encryption*) and a prime number *p*. (In reality
     *p* cannot be prime, but we’ll ignore that for a moment.) To encrypt a message
     *m*, one computes
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
 - en: ciphertext = *m*^e mod *p*
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
 - en: For example, to encrypt the message *m* = 2 with *e* = 2 and *p* = 5, we compute
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
 - en: ciphertext = 2² mod 5 = 4
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
 - en: And this is the idea behind encryption with RSA!
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
 - en: Note Usually, a small number is chosen as the public exponent *e* so that encryption
     is fast. Historically, standards and implementations seem to have settled on the
     prime number 65,537 for the public exponent.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
 - en: This is great! You now have a way for people to encrypt messages to you. But
     how do you decrypt those? Remember, if you continue to exponentiate a generator,
     you actually go back to the original number (see figure 6.11).
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/06_11.jpg)'
+  id: totrans-95
   prefs: []
   type: TYPE_IMG
 - en: Figure 6.11 Let’s say that our message is the number 2\. By exponentiating it,
     we can obtain other numbers in our group. If we exponentiate it enough, we go
     back to our original message, 2\. We say that the group is *cyclic*. This property
     can be used to recover a message after it has been raised to some power.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
 - en: 'This should give you an idea of how to implement decryption: find out how much
     you need to exponentiate a ciphertext in order to recover the original generator
     (which is the message). Let’s say that you know such a number, which we’ll call
     the *private exponent d* (*d* for *decryption*). If you receive'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
 - en: ciphertext = message^e mod *p*
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
 - en: 'you should be able to raise it to the power *d* to recover the message:'
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
 - en: ciphertext^d = (message^e)^d = message^(*e*×*d*) = message mod *p*
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 密文^d = (消息^e)^d = 消息^(*e*×*d*) = 模*p*的消息
 - en: 'The actual mathematics behind finding this private exponent *d* is a bit tricky.
     Simply put, you compute the inverse of the public exponent modulo the order (number
     of elements) of the group:'
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 找到这个私有指数*d*的实际数学有点棘手。简单来说，你计算群的阶（元素数量）对公共指数取模的逆元：
 - en: '*d* = *e*^(–1) mod order'
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: '*d* = *e*^(–1) mod order'
 - en: We have an efficient algorithm to compute modular inverses (like the Extended
     Euclidean algorithm), and so this is not a problem. We do have another problem
     though! For a prime *p*, the order is simply *p* – 1, and thus, *it’s easy for
     anyone to calculate the private exponent*. This is because every element in this
     equation besides *d* is public.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们有一个有效的算法来计算模反函数（如扩展欧几里得算法），所以这不是问题。不过我们有另一个问题！对于一个素数*p*，阶很简单，就是*p* – 1，因此，*任何人都可以很容易地计算出私有指数*。这是因为除了*d*之外，这个方程中的每个元素都是公开的。
 - en: Euler’s theorem
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 欧拉的定理
 - en: 'How did we obtain the previous equation to compute the private exponent *d*?
     Euler’s theorem states that for *m* co-prime with *p* (meaning that they have
     no common factors):'
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们如何得到前述方程以计算私有指数*d*？欧拉定理说明，对于与*p*互质的*m*（意味着它们没有公共因数）：
 - en: '*m*^(order) = 1 mod *p*'
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: '*m*^(order) = 1 mod *p*'
 - en: For *order*, the number of elements in the multiplicative group created by the
     integers modulo *p*. This implies, in turn, that for any integer *multiple*
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于*order*，即整数对*p*取模创建的乘法群中的元素数。这又意味着，对于任何整数*multiple*
 - en: '*m*^(1+)^(*multiple*×*order*) = *m* × (*m*^(order))^(multiple) mod *p* = *m*
     mod *p*'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: '*m*^(1+)^(*multiple*×*order*) = *m* × (*m*^(order))^(multiple) mod *p* = *m*
+    mod *p*'
 - en: This tells us that the equation we are trying to solve
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 这告诉我们我们要解决的方程
 - en: '*m*^(e × d) = *m* mod *p*'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: '*m*^(e × d) = *m* mod *p*'
 - en: can be reduced to
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 可以简化为
 - en: '*e* × *d* = 1 + *multiple* × *order*'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: '*e* × *d* = 1 + *multiple* × *order*'
 - en: which can be rewritten as
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 这可以重写为
 - en: '*e* × *d* = 1 mod *order*'
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: '*e* × *d* = 1 mod *order*'
 - en: This, by definition, means that *d* is the inverse of *e* modulo *order*.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 这意味着*d*是模*order*下的*e*的逆元。
 - en: 'One way we could prevent others from computing the private exponent from the
     public exponent is to hide the order of our group. This is the brilliant idea
     behind RSA: if our modulus is not a prime anymore but a product of a prime *N*
     = *p* × *q* (where *p* and *q* are large primes known only to you), then the order
     of our multiplicative group is not easy to compute as long as we don’t know *p*
     and *q*!'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以防止他人从公共指数计算私有指数的一种方法是隐藏我们群的阶。这是RSA背后的精妙思想：如果我们的模数不再是一个素数而是一个素数*p* × *q*的乘积（其中*p*和*q*是只有你知道的大素数），那么我们的乘法群的阶就不容易计算，只要我们不知道*p*和*q*！
 - en: The order of an RSA group
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: RSA群的阶
 - en: You can calculate the order of the multiplicative group modulo a number *N*
     with Euler’s totient function ϕ(*N*), which returns the count of numbers that
     are *co-prime* with *N*. For example, 5 and 6 are co-prime because the only positive
     integer that divides both of them is 1\. On the other hand, 10 and 15 are not
     because 1 and 5 divide each of them. The order of a multiplicative group modulo
     an RSA modulus *N* = *p* × *q* is
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以用欧拉的欧拉函数ϕ(*N*)计算模数*N*的乘法群的阶，它返回与*N*互质的数字的计数。例如，5和6是互质的，因为唯一能够同时整除它们的正整数是1。另一方面，10和15不是，因为1和5分别能整除它们。对于RSA模数*N*
+    = *p* × *q*的乘法群的阶是
 - en: ϕ(*N*) = (*p* – 1) × (*q* – 1)
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: ϕ(*N*) = (*p* – 1) × (*q* – 1)
 - en: which is too hard to calculate unless you know the factorization of *N*.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 这太难计算了，除非你知道*N*的因数。
 - en: 'We’re all good! To recapitulate, this is how RSA works:'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们都搞定了！总结一下，这就是RSA的工作原理：
 - en: For key generation
+  id: totrans-122
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 用于密钥生成
 - en: 1) Generate two large prime numbers *p* and *q*.
+  id: totrans-123
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: 1) 生成两个大素数*p*和*q*。
 - en: 2) Choose a random public exponent *e* or a fixed one like *e* = 65537.
+  id: totrans-124
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: 2) 选择一个随机的公共指数*e*或一个固定的像*e* = 65537这样的。
 - en: 3) Your public key is the public exponent *e* and the public modulus *N* = *p*
     × *q*.
+  id: totrans-125
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: 3) 你的公钥是公共指数*e*和公共模数*N* = *p* × *q*。
 - en: 4) Derive your private exponent *d* = *e*^(–1) mod (*p* – 1) (*q* – 1).
+  id: totrans-126
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: 4) 求得你的私有指数*d* = *e*^(–1) mod (*p* – 1) (*q* – 1)。
 - en: 5) Your private key is the private exponent *d*.
+  id: totrans-127
   prefs:
   - PREF_IND
   type: TYPE_NORMAL
+  zh: 5) 你的私钥是私有指数*d*。
 - en: For encryption, compute message^e mod *N*.
+  id: totrans-128
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 用于加密，计算消息^e mod *N*。
 - en: For decryption of the ciphertext, compute ciphertext^d mod *N*.
+  id: totrans-129
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 用于密文的解密，计算密文^d mod *N*。
 - en: Figure 6.12 reviews how RSA works in practice.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.12回顾了RSA如何在实践中工作。
 - en: '![](../Images/06_12.jpg)'
+  id: totrans-131
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_12.jpg)'
 - en: Figure 6.12 RSA encryption works by exponentiating a number (our message) with
     the public exponent *e* modulo the public modulus *N* = *p* × *q*. RSA decryption
     works by exponentiating the encrypted number with the private exponent *d* modulo
     the public modulus *N*.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.12 RSA加密通过使用公共指数 *e* 对消息进行模公共模数 *N* = *p* × *q* 进行指数运算。RSA解密通过使用私有指数 *d*
+    对加密数字进行模公共模数 *N* 进行指数运算。
 - en: We say that RSA relies on the *factorization problem*. Without the knowledge
     of *p* and *q*, no one can compute the order; thus, no one but you can compute
     the private exponent from the public exponent. This is similar to how Diffie-Hellman
     was based on the discrete logarithm problem (see figure 6.13).
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们说RSA依赖于*因子分解问题*。没有 *p* 和 *q* 的知识，没有人可以计算出顺序；因此，除了你之外，没有人可以从公共指数计算出私有指数。这类似于迪菲-赫尔曼基于离散对数问题的方式（见图6.13）。
 - en: '![](../Images/06_13.jpg)'
+  id: totrans-134
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_13.jpg)'
 - en: Figure 6.13 Diffie-Hellman (DH), Elliptic Curve Diffie-Hellman (ECDH), and RSA
     are asymmetric algorithms that rely on three distinct problems in mathematics
     that we believe to be hard. *Hard* meaning that we do not know efficient algorithms
     to solve them when instantiated with large numbers.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.13 迪菲-赫尔曼（DH）、椭圆曲线迪菲-赫尔曼（ECDH）和RSA是依赖于数学中三个我们认为难以解决的问题的非对称算法。*难以解决* 意味着我们不知道如何用大数实例化时解决它们的高效算法。
 - en: Thus, textbook RSA works modulo a composite number *N* = *p* × *q*, where *p*
     and *q* are two large primes that need to remain secret. Now that you understand
     how RSA works, let’s see how insecure it is in practice and what standards do
     to make it secure.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，教科书上的RSA在一个复合数 *N* = *p* × *q* 上运行，其中 *p* 和 *q* 是两个需要保持秘密的大素数。现在你了解了RSA的工作原理，让我们看看它在实践中有多不安全以及标准如何使其安全。
 - en: 6.3.2 Why not to use RSA PKCS#1 v1.5
+  id: totrans-137
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6.3.2 为什么不使用RSA PKCS#1 v1.5
 - en: You learned about “textbook RSA,” which is insecure by default for many reasons.
     Before you can learn about the secure version of RSA, let’s see what you need
     to avoid.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 你了解了“教科书上的RSA”，由于许多原因，默认情况下是不安全的。在学习RSA的安全版本之前，让我们看看你需要避免的内容。
 - en: There are many reasons why you cannot use textbook RSA directly. One example
     is that if you encrypt small messages (for example *m* = 2), then some malicious
     actor can encrypt all the small numbers between 0 and 100, for example, and quickly
     observe if any of their encrypted numbers match your ciphertext. If it does, they
     will know what you encrypted.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 有许多原因导致你不能直接使用教科书上的RSA。一个例子是，如果你加密小消息（例如 *m* = 2），那么一些恶意行为者可以加密0到100之间的所有小数字，然后迅速观察他们的加密数字是否与你的密文匹配。如果匹配，他们将知道你加密了什么。
 - en: Standards fix this issue by making your messages too big to be brute-forced
     in such a way. Specifically, they maximize the size of a message (before encryption)
     with a *nondeterministic* padding. For example, the RSA PKCS#1 v1.5 standard defines
     a padding that adds a number of random bytes to the message. I illustrate this
     in figure 6.14.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 标准通过使你的消息变得过大，以至于无法以这种方式暴力破解来解决这个问题。具体来说，它们通过添加一个 *非确定性* 填充来最大化消息（加密前）的大小。例如，RSA
+    PKCS#1 v1.5标准定义了一个填充，向消息添加一些随机字节。我在图6.14中进行了说明。
 - en: '![](../Images/06_14.jpg)'
+  id: totrans-141
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_14.jpg)'
 - en: Figure 6.14 The RSA PKCS#1 v1.5 standard specifies a padding to apply to a message
     prior to encryption. The padding must be reversible (so that decryption can get
     rid of it) and must add enough random bytes to the message in order to avoid brute
     force attacks.
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.14 RSA PKCS#1 v1.5标准指定了在加密之前应用于消息的填充。填充必须是可逆的（以便解密可以去除它），并且必须向消息添加足够的随机字节，以避免暴力破解攻击。
 - en: The PKCS#1 standard is actually the first standard based on RSA, published as
     part of a series of Public Key Cryptography Standard (PKCS) documents written
     by the RSA company in the early 90s. While the PKCS#1 standard fixes some known
@@ -669,41 +928,59 @@
     attack*. Mitigations were later found, but interestingly, over the years, the
     attack has been rediscovered again and again as researchers found that the mitigations
     were too hard to implement securely (if at all).
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: PKCS#1 标准实际上是基于 RSA 的第一个标准，是 RSA 公司在 90 年代初撰写的一系列公钥密码标准（PKCS）文件的一部分。尽管 PKCS#1
+    标准修复了一些已知问题，但在 1998 年，Bleichenbacher 发现了对 PKCS#1 v1.5 的实际攻击，允许攻击者解密使用标准指定的填充加密的消息。由于需要百万条消息，因此这个攻击被恶名昭彰地称为*百万消息攻击*。后来找到了一些缓解方法，但有趣的是，多年来，攻击一再被重新发现，因为研究人员发现这些缓解方法过于难以安全地实现（如果可能的话）。
 - en: Adaptive chosen-ciphertext attacks
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 自适应选择密文攻击
 - en: Bleichenbacher’s million message attack is a type of attack called an *adaptive
     chosen ciphertext attack* (CCA2) in theoretical cryptography. CCA2 means that
     to perform this attack, an attacker can submit arbitrary RSA encrypted messages
     (*chosen ciphertext*), observe how it influences the decryption, and continue
     the attack based on previous observations (the *adaptive* part). CCA2 is often
     used to model attackers in cryptographic security proofs.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: Bleichenbacher 的百万消息攻击是理论密码学中一种称为*自适应选择密文攻击*（CCA2）的攻击类型。CCA2 意味着为了执行此攻击，攻击者可以提交任意的
+    RSA 加密消息（*选择密文*），观察它如何影响解密，并根据先前的观察继续攻击（*自适应*部分）。CCA2 经常用于模拟密码学安全证明中的攻击者。
 - en: 'To understand why the attack was possible, you need to understand that RSA
     ciphertexts are *malleable* : you can tamper with an RSA ciphertext without invalidating
     its decryption. If I observe the ciphertext *c* = *m*^e mod *N*, then I can submit
     the following ciphertext:'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 要理解攻击为何可能，您需要了解 RSA 密文是*可塑*的：您可以篡改 RSA 密文而不使其解密无效。如果我观察到密文 *c* = *m*^e mod *N*，那么我可以提交以下密文：
 - en: 3^e × *m*^e = (3*m*)^e mod *N*
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 3^e × *m*^e = (3*m*)^e mod *N*
 - en: which will decrypt as
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 解密结果将为
 - en: ((3*m*)^e)^d = (3*m*)^(*e*×*d*) = 3*m* mod *N*
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: ((3*m*)^e)^d = (3*m*)^(*e*×*d*) = 3*m* mod *N*
 - en: I used the number 3 as an example here, but I can multiply the original message
     with whatever number I want. In practice, a message must be well-formed (due to
     the padding), and thus, tampering with a ciphertext should break the decryption.
     Nevertheless, it happens that sometimes, even after the malicious modification,
     the padding is accepted after decryption.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 我在这里以数字 3 作为示例，但我可以用任意数字乘以原始消息。在实践中，消息必须格式良好（由于填充），因此，篡改密文应该会破坏解密。然而，有时，即使在恶意修改之后，解密后仍然接受填充。
 - en: Bleichenbacher made use of this property in his million message attack on RSA
     PKCS#1 v1.5\. His attack works by intercepting an encrypted message, modifying
     it, and sending it to the person in charge of decrypting it. By observing if that
@@ -711,100 +988,136 @@
     about the message range. Because the first two bytes are 0x0002, we know that
     the decryption is smaller than some value. By doing this iteratively, we can narrow
     that range down to the original message itself.
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: Bleichenbacher 在他对 RSA PKCS#1 v1.5 的百万消息攻击中利用了这个属性。他的攻击是通过截获加密消息，修改它，并发送给负责解密的人。通过观察那个人是否能解密它（填充仍然有效），我们可以获得关于消息范围的一些信息。因为前两个字节是
+    0x0002，所以我们知道解密结果小于某个值。通过迭代执行此操作，我们可以将该范围缩小到原始消息本身。
 - en: Even though the Bleichenbacher attack is well-known, there are still many systems
     in use today that implement RSA PKCS#1 v1.5 for encryption. As part of my work
     as a security consultant, I found many applications that were vulnerable to this
     attack—so be careful!
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管 Bleichenbacher 攻击是众所周知的，但今天仍然有许多系统使用 RSA PKCS#1 v1.5 进行加密。作为安全顾问工作的一部分，我发现许多应用程序容易受到此攻击的影响——所以要小心！
 - en: 6.3.3 Asymmetric encryption with RSA-OAEP
+  id: totrans-153
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6.3.3 使用 RSA-OAEP 进行非对称加密
 - en: In 1998, version 2.0 of the same PKCS#1 standard was released with a new padding
     scheme for RSA called *Optimal Asymmetric Encryption Padding* (OAEP). Unlike its
     predecessor, PKCS#1 v1.5, OAEP is not vulnerable to Bleichenbacher’s attack and
     is, thus, a strong standard to use for RSA encryption nowadays. Let’s see how
     OAEP works and prevents the previously discussed attacks.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 1998年，同一PKCS#1标准的2.0版本发布了一个名为*Optimal Asymmetric Encryption Padding*（OAEP）的RSA新填充方案。与其前身PKCS#1
+    v1.5不同，OAEP不容易受到Bleichenbacher的攻击，因此是目前用于RSA加密的强标准。让我们看看OAEP是如何工作并防止先前讨论的攻击。
 - en: First, let’s mention that like most cryptographic algorithms, OAEP comes with
     a key generation algorithm. This takes a security parameter as figure 6.15 illustrates.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，让我们提到，像大多数加密算法一样，OAEP带有一个密钥生成算法。这需要一个安全参数，如图6.15所示。
 - en: '![](../Images/06_15.jpg)'
+  id: totrans-156
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_15.jpg)'
 - en: Figure 6.15 RSA-OAEP, like many public key algorithms, first needs to generate
     a key pair that can be used later in the other algorithms provided by the cryptographic
     primitive.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.15 RSA-OAEP，像许多公钥算法一样，首先需要生成一个密钥对，以便后来在加密原语提供的其他算法中使用。
 - en: This algorithm takes a security parameter, which is a number of bits. As with
     Diffie-Hellman, operations happen in the set of numbers modulo a large number.
     When we talk about the security of an instantiation of RSA, we usually refer to
     the size of that large modulus. This is similar to Diffie-Hellman if you remember.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 此算法需要一个安全参数，即位数。与Diffie-Hellman一样，操作发生在模一个大数的数字集合中。当我们谈论RSA的一个实例的安全性时，我们通常指的是那个大模数的大小。如果你记得的话，这与Diffie-Hellman类似。
 - en: Currently, most guidelines (see [https://keylength.com](https://keylength.com))
     estimate a modulus between 2,048 and 4,096 bits to provide 128-bit security. As
     these estimations are quite different, most applications seem to conservatively
     settle on 4,096-bit parameters.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 目前，大多数指南（参见[https://keylength.com](https://keylength.com)）估计模数在2,048到4,096位之间，以提供128位安全性。由于这些估计相当不同，大多数应用程序似乎保守地选择了4,096位参数。
 - en: Note We saw that RSA’s large modulus is not a prime but a product *N* = *p*
     × *q* of two large prime numbers *p* and *q*. For a 4,096-bit modulus, the key
     generation algorithm typically splits things in the middle and generates both
     *p* and *q* of size approximately 2,048 bits.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意我们看到RSA的大模数不是一个素数，而是两个大素数*p*和*q*的乘积*N* = *p* × *q*。对于4,096位模数，密钥生成算法通常将事情一分为二，并生成大约2,048位大小的*p*和*q*。
 - en: To encrypt, the algorithm first pads the message and mixes it with a random
     number generated per encryption. The result is then encrypted with RSA. To decrypt
     the ciphertext, the process is reversed as figure 6.16 shows.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 加密时，算法首先对消息进行填充，并与每次加密生成的随机数混合。然后使用RSA对结果进行加密。解密密文时，过程与图6.16所示相反。
 - en: '![](../Images/06_16.jpg)'
+  id: totrans-162
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/06_16.jpg)'
 - en: Figure 6.16 RSA-OAEP works by mixing the message with a random number prior
     to encryption. The mixing can be reverted after decryption. At the center of the
     algorithm, a mask generation function (MGF) is used to randomize and enlarge or
     reduce an input.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.16 RSA-OAEP通过在加密之前将消息与随机数混合来工作。混合可以在解密后恢复。在算法的中心，使用掩码生成函数（MGF）来随机化和扩大或缩小输入。
 - en: RSA-OAEP uses this mixing in order to make sure that if a few bits of what is
     encrypted with RSA leak, no information on the plaintext can be obtained. Indeed,
     to reverse the OAEP padding, you need to obtain (close to) all the bytes of the
     OAEP padded plaintext! In addition, Bleichenbacher’s attack should not work anymore
     because the scheme makes it impossible to obtain well-formed plaintext by modifying
     a ciphertext.
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: RSA-OAEP使用这种混合方式，以确保如果RSA加密的几位泄漏，就无法获取有关明文的任何信息。实际上，要撤销OAEP填充，您需要获取（接近）OAEP填充明文的所有字节！此外，Bleichenbacher的攻击不应再起作用，因为该方案使得通过修改密文无法获得格式良好的明文。
 - en: Note *Plaintext-awareness* is the property that makes it too difficult for an
     attacker to create a ciphertext that will successfully decrypt (of course without
     the help of encryption). Due to the plaintext-awareness provided by OAEP, Bleichenbacher’s
     attack does not work on the scheme.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意*明文感知性*是一种属性，使得攻击者很难创建一个成功解密的密文（当然没有加密的帮助）。由于OAEP提供的明文感知性，Bleichenbacher的攻击对该方案不起作用。
 - en: Inside of OAEP, *MGF* stands for *mask generation function*. In practice, an
     MGF is an extendable output function (XOF); you learned about XOFs in chapter
     2\. As MGFs were invented before XOFs, they are built using a hash function that
     hashes the input repeatedly with a counter (see figure 6.17). And this is how
     OAEP works!
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/06_17.jpg)'
+  id: totrans-167
   prefs: []
   type: TYPE_IMG
 - en: Figure 6.17 A mask generation function (MGF) is simply a function that takes
     an arbitrary length input and produces a random-looking arbitrary length output.
     It works by hashing an input and a counter, concatenating the digests together,
     and truncating the result to obtain the length desired.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
 - en: Manger’s padding oracle attack
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
 - en: Only three years after the release of the OAEP standard, James Manger found
@@ -812,26 +1125,31 @@
     practical) on OAEP if not implemented correctly. Fortunately, it is much simpler
     to securely implement OAEP compared to PKCS#1 v1.5, and vulnerabilities in this
     scheme’s implementation are much more rare.
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
 - en: Furthermore, the design of OAEP is not perfect; better constructions have been
     proposed and standardized over the years. One example is RSA-KEM, which has stronger
     proofs of security and is much simpler to implement securely. You can observe
     how much more elegant the design is in figure 6.18.
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/06_18.jpg)'
+  id: totrans-172
   prefs: []
   type: TYPE_IMG
 - en: Figure 6.18 RSA-KEM is an encryption scheme that works by simply encrypting
     a random number under RSA. No padding is needed. We can pass the random number
     through a key derivation function (KDF) to obtain a symmetric key. We then use
     the symmetric key to encrypt a message via an authenticated encryption algorithm.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
 - en: Note the key derivation function (KDF) in use here. It is another cryptographic
     primitive that can be replaced with an MGF or a XOF. I’ll talk more about what
     KDFs are in chapter 8 on randomness and secrets.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
 - en: Nowadays, most protocols and applications that use RSA either still implement
@@ -840,9 +1158,11 @@
     for both key exchanges and hybrid encryption. This is understandable as ECDH provides
     shorter public keys and benefits, in general, from much better standards and much
     safer implementations.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
 - en: 6.4 Hybrid encryption with ECIES
+  id: totrans-176
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -852,6 +1172,7 @@
     ISO/IEC 18033-2, IEEE 1363a, and SECG SEC 1\. Unfortunately, every standard seems
     to implement a different variant, and different cryptographic libraries implement
     hybrid encryption differently, in part due to this.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
 - en: For this reason, I rarely see two similar implementations of hybrid encryption
@@ -859,11 +1180,13 @@
     the participants of the protocol use the same implementation or document the details
     of the hybrid encryption scheme they have implemented, then there would be no
     issues.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
 - en: ECIES works similarly to the hybrid encryption scheme explained in section 6.2\.
     The difference is that we implement the KEM part with an ECDH key exchange instead
     of with an asymmetric encryption primitive. Let’s explain this step by step.
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
 - en: First, if you want to encrypt a message to Alice, you use an (EC)DH-based key
@@ -871,9 +1194,11 @@
     (this is called an *ephemeral key pair*). You can then use the obtained shared
     secret with an authenticated symmetric encryption algorithm like AES-GCM to encrypt
     a longer message to her. Figure 6.19 illustrates this.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/06_19.jpg)'
+  id: totrans-181
   prefs: []
   type: TYPE_IMG
 - en: Figure 6.19 To encrypt a message to Alice using hybrid encryption with (EC)DH,
@@ -881,6 +1206,7 @@
     key exchange with your ephemeral private key and Alice’s public key. (3) Use the
     resulting shared secret as a symmetric key to an authenticated encryption algorithm
     to encrypt your message.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
 - en: After this, you can send the ephemeral public key and the ciphertext to Alice.
@@ -889,9 +1215,11 @@
     original message. The result is either the original message or an error if the
     public key or the encrypted message are tampered with in transit. Figure 6.20
     illustrates the full flow.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/06_20.jpg)'
+  id: totrans-184
   prefs: []
   type: TYPE_IMG
 - en: Figure 6.20 Building on figure 6.19, (4) after you send your ephemeral public
@@ -899,14 +1227,17 @@
     with her private key and your ephemeral public key. (6) She finally uses the resulting
     shared secret as a symmetric key to decrypt the encrypted message with the same
     authenticated encryption algorithm.
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
 - en: And this is pretty much how ECIES work. There also exists a variant of ECIES
     using Diffie-Hellman, called IES, that works pretty much the same way, but not
     many people seem to use it.
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
 - en: Removing bias in a key exchange output
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
 - en: Note that I simplified figure 6.20\. Most authenticated encryption primitives
@@ -914,51 +1245,69 @@
     is generally *not* uniformly random, we need to pass the shared secret through
     a KDF or a XOF (as seen in chapter 2) beforehand. You will learn more about this
     in chapter 8.
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
 - en: '*Not uniformly random* here means that statistically, some of the bits of the
     key exchange result might be 0 more often than 1, or the opposite. The first bits
     might always be set to 0, for example.'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
 - en: Exercise
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
 - en: Do you see why you can’t use the key exchange output right away?
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
 - en: And that’s it for the different standards you can use. In the next chapter,
     you’ll learn about signatures, which will be the last, and perhaps most important,
     public key cryptography algorithm of part 1\.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是你可以使用的不同标准。在下一章中，你将学习关于签名的内容，这将是第一部分中最后，也许是最重要的公钥密码算法。
 - en: Summary
+  id: totrans-193
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 摘要
 - en: We rarely use asymmetric encryption to encrypt messages directly. This is due
     to the relatively low size limitations of the data that asymmetric encryption
     can encrypt.
+  id: totrans-194
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 我们很少使用非对称加密直接加密消息。这是因为非对称加密可以加密的数据相对较小。
 - en: Hybrid encryption can encrypt much larger messages by combining asymmetric encryption
     (or a key exchange) with a symmetric authenticated encryption algorithm.
+  id: totrans-195
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 混合加密可以通过将非对称加密（或密钥交换）与对称认证加密算法结合来加密更大的消息。
 - en: The RSA PKCS#1 version 1.5 standard for asymmetric encryption is broken in most
     settings. Prefer the RSA-OAEP algorithm standardized in RSA PKCS#1 version 2.2.
+  id: totrans-196
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: RSA PKCS#1版本1.5标准用于非对称加密在大多数情况下已经被破解。建议使用在RSA PKCS#1版本2.2中标准化的RSA-OAEP算法。
 - en: ECIES is the most widely used hybrid encryption scheme. It is preferred over
     RSA-based schemes due to its parameter sizes and its reliance on solid standards.
+  id: totrans-197
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: ECIES是最广泛使用的混合加密方案。由于其参数大小和对坚实标准的依赖，它比基于RSA的方案更受青睐。
 - en: Different cryptographic libraries might implement hybrid encryption differently.
     This is not a problem in practice if interoperable applications use the same implementations.
+  id: totrans-198
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 不同的加密库可能以不同的方式实现混合加密。如果可互操作的应用程序使用相同的实现，这在实践中并不是问题。

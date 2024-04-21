@@ -3,30 +3,36 @@
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 10 可变长度分数化
 - en: This chapter covers
   id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: Ciphers based on Morse code
   id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 基于摩尔斯电码的密码
 - en: Mixed letters and bigrams
   id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 混合字母和双字母
 - en: Variable-length binary codewords
   id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 可变长度二进制码字
 - en: Ciphers based on text compression
   id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 基于文本压缩的密码
 - en: This chapter covers a broad range of fractionation ciphers where the plaintext
     groups and/or the ciphertext groups have variable lengths. These include monom-binom
     (section 10.2), Huffman substitution (section 10.4) and Post tag systems (section
@@ -34,6 +40,7 @@
   id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖了一系列广泛的分数化密码，其中明文组和/或密文组具有可变长度。 这些包括单体-双体（第10.2节）、哈夫曼替代（第10.4节）和Post标签系统（第10.5节）。
 - en: In section 4.4 I illustrated the concept of fractionation by describing two
     versions of M. E. Ohaver’s Fractionated Morse cipher. Fractionated Morse is an
     example of variable-length fractionation because it uses 1-, 3- and 4-symbol Morse
@@ -43,11 +50,14 @@
   id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第4.4节中，我用M. E. Ohaver的分数化摩尔斯密码的两个版本描述了分数化的概念。 分数化摩尔斯是可变长度分数化的示例，因为它使用1、3和4个符号的摩尔斯组。
+    让我用一个类似于第9.9节中描述的三重密码的不同形式的摩尔斯分数化来开始可变长度分数化的更广泛讨论。 让我们称之为Morse3。
 - en: 10.1 Morse3
   id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 10.1 Morse3
 - en: '*Morse3* is a cipher that operates in 4 steps. (1) Replace the letters of the
     messages by Morse code groups. You can use either the standard Morse code, or
     a mixed Morse alphabet like the one in section 4.4\. (2) Separate the Morse groups
@@ -59,6 +69,9 @@
   id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Morse3*是一个分为4步的密码。（1）用摩尔斯码组替换消息的字母。 您可以使用标准摩尔斯码，也可以使用第4.4节中的混合摩尔斯字母。 （2）使用**/**符号分隔摩尔斯组。
+    使用双**//**来分隔单词并标记消息的结束。 （3）将符号分成3个组。 如果需要，附加额外的**·**或**··**以完成最后一个3个符号的组。 收件人将忽略在最后**//**之后的这些额外点。
+    （4）使用第二个混合字母表为每个3个符号组替换一个字母。'
 - en: To illustrate I will use the mixed Morse alphabet from section 4.4 (shown here
     on the left) to form the Morse groups. This uses only groups of 1, 3 and 4 symbols,
     but groups of 2 symbols may also be used, perhaps as nulls or homophones. The
@@ -69,29 +82,37 @@
   id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了说明，我将使用第4.4节中的混合摩尔斯字母（在这里显示在左侧）来形成摩尔斯组。 这仅使用1、3和4个符号的组，但也可以使用2个符号的组，例如作为空或同音字。
+    从摩尔斯符号到字母的替换使用了一种类似于三合一密码的混合字母表，只是使用了摩尔斯符号**· - /**，而不是数字0 1 2\. 请注意，**///**永远不会出现，因此不必提供它的字母替代。
+    因此，只需要26个替代品。
 - en: '![10-unnumb-1](../Images/10-unnumb-1.png)'
   id: totrans-11
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-1](../Images/10-unnumb-1.png)'
 - en: Let’s encipher the sample message SEND AMMO.
   id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们对样本消息SEND AMMO进行加密。
 - en: '![10-unnumb-2](../Images/10-unnumb-2.png)'
   id: totrans-13
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-2](../Images/10-unnumb-2.png)'
 - en: If a well-mixed keyed alphabet is used for both substitution steps this cipher
     is rated Five. One disadvantage of Morse3 is that the ciphertext is longer than
     the plaintext. In this example an 8-letter plaintext became an 11-letter ciphertext.
   id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果在替换步骤中使用了混合的键入字母表，则此密码被评为五。 Morse3的一个缺点是密文比明文要长。 在此示例中，8个字母的明文变成了11个字母的密文。
 - en: 10.2 Monom-Binom
   id: totrans-15
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 10.2 单体-双体
 - en: '*Monom-Binom*, or *Monome-Binome*, is a class of ciphers in which each letter
     is replaced by either a single digit or a pair of digits. The most famous of these
     ciphers is the *VIC* cipher used by Russian spies from about 1920 to 1960\. The
@@ -101,6 +122,8 @@
   id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Monom-Binom*，或*Monome-Binome*，是一类密码，其中每个字母都被单个数字或一对数字替换。 这些密码中最著名的是*VIC*密码，由俄罗斯间谍于大约1920年至1960年使用。
+    名称来自于联邦调查局给予克格勃间谍Reino Häyhänen的代号VICTOR。 VIC密码直到1957年Häyhänen叛逃到美国并泄露其细节之前从未被破解过。'
 - en: 'The VIC cipher has two parts, the monom-binom substitution, and the modulo-10
     addition of a random sequence of digits. Let’s begin with the monom-binom substitution.
     Each letter of the alphabet is replaced by 1 or 2 decimal digits. In order for
@@ -293,32 +316,39 @@
   id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我用一个小例子来演示。有三个用于2、3和4比特块的替代表。在实际密码中，我会使用3、4、5和6比特块，但如果你有存储空间，你可以增加到16比特，甚至更长。
 - en: For this simple demonstration I have used a standard alphabet, filling it out
     to 32 characters by taking symbols from the top row of the keyboard going straight
     left to right.
   id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于这个简单的演示，我使用了一个标准字母表，通过从键盘的顶部行开始直接从左到右填充它到32个字符。
 - en: '![10-unnumb-5](../Images/10-unnumb-5.png)'
   id: totrans-43
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-5](../Images/10-unnumb-5.png)'
 - en: The 3 substitution tables are
   id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 这三个替代表是
 - en: '![10-unnumb-6](../Images/10-unnumb-6.png)'
   id: totrans-45
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-6](../Images/10-unnumb-6.png)'
 - en: 'Here is a sample encipherment using the repeating key 3,2,2,4,2:'
   id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里是使用重复密钥3,2,2,4,2的样本加密：
 - en: '![10-unnumb-7](../Images/10-unnumb-7.png)'
   id: totrans-47
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-7](../Images/10-unnumb-7.png)'
 - en: This version, which I will call *BitBlock SA* for Standard Alphabet, has modest
     strength. There is one key for mixing each of the substitution tables, and one
     additional key for the sequence of block sizes. When there are just a few substitution
@@ -327,17 +357,21 @@
   id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个版本，我将其称为*BitBlock SA*，标准字母表，具有适度的强度。每个替代表的混合都有一个密钥，块大小序列还有一个额外的密钥。当只有少数替代表，所有块大小都很小，并且块大小序列很小时，BitBlock
+    SA 被评为三级。否则评为四级。
 - en: One way to strengthen this cipher is to use well-mixed keyed alphabets for converting
     the letters to bits and the resulting bits back to letters. Let’s call the mixed-alphabet
     version *BitBlock MA*. It is rated Seven.
   id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 强化这种密码的一种方法是使用混合密钥字母表将字母转换为比特，并将结果比特重新转换为字母。让我们将混合字母表版本称为*BitBlock MA*。它被评为七级。
 - en: 10.4 Huffman Substitution
   id: totrans-50
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 10.4 霍夫曼替代
 - en: Section 4.2 describes how you can use Huffman codes for text compression. *Huffman
     Substitution* is a way that you can use Huffman codes for encryption. Huffman
     substitution uses two sets of codes. The codes from the second set are substituted
@@ -346,6 +380,7 @@
   id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 第4.2节描述了如何使用霍夫曼编码进行文本压缩。*霍夫曼替代*是一种可以使用霍夫曼编码进行加密的方式。霍夫曼替代使用两组编码。第二组的编码替换第一组的编码。这些可能是相同的编码集，但是顺序不同。
 - en: The message is represented as a string of bits, for example by using one of
     the standard computer representations such as UTF-8 or Unicode. This bit string
     is separated into a string of codes from the first set of Huffman codes, then
@@ -356,6 +391,7 @@
   id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 消息被表示为比特串，例如通过使用标准的计算机表示之一，如UTF-8或Unicode。这个比特串被分割成来自第一组霍夫曼编码的代码串，然后这些代码被第二组的代码替换。霍夫曼替代并不压缩消息，尽管消息的长度（以比特为单位）可能会因为第一组中的代码与第二组中的替代代码的长度不同而发生变化。
 - en: Recall that a set of Huffman codes must have the prefix property. That is, no
     Huffman code in a set can begin with another Huffman code from that same set.
     For instance, you could not have both **1101** and **1101****1** because, if the
@@ -365,15 +401,18 @@
   id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 请回忆一下，一组霍夫曼编码必须具有前缀属性。也就是说，一组中的霍夫曼编码不能以另一组中的霍夫曼编码开始。例如，你不能同时有**1101**和**11011**，因为如果你正在解码的字符串以**11011**开头，你就不知道第一个编码是4比特还是5比特。有了前缀属性，就不需要像摩尔斯码组那样在编码之间有一个分隔符。
 - en: Let’s look at how to construct a set of Huffman codes with the prefix property.
     Begin by listing the single bits in either order, namely 0,1 or 1,0\. For example,
   id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看如何构建具有前缀属性的一组霍夫曼编码。首先列出单个比特，无论顺序是0,1还是1,0。例如，
 - en: '![10-unnumb-8](../Images/10-unnumb-8.png)'
   id: totrans-55
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-8](../Images/10-unnumb-8.png)'
 - en: 'For each item on this list, either accept it as a complete code, or extend
     it to make two longer codes by appending a 0 to one copy and a 1 to the other
     copy, again in either order. For example, we could accept the code 1 as complete,
@@ -676,6 +715,7 @@
   id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于计算机使用，建议使用标准的8位表示，如UTF-8，对消息中的字母、数字和特殊字符进行编码。使用40到80对标签，每个标签4到8位，64位块和32次替换步骤。使用32步足以确保通过块的3次。在进行后标签替换之前，在字符上执行混合的关键替换，并在完成后标签替换后，在结果字节上进行第二个独立的关键替换。这个密码，称为*Post64*，将被评为十。它将有4个单独的密钥用于混合初始替换、最终替换、后标签及其替代物。
 - en: Another way to use Post tag substitution is to use short overlapping blocks.
     Start with the first 4 bytes of the message and perform 2 Post substitutions.
     Assuming the tags are 4 to 8 bits each, this is sufficient to assure that all
@@ -687,11 +727,13 @@
   id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用后标签替换的另一种方法是使用短重叠块。从消息的前4个字节开始，并执行2次后标签替换。假设标签每个为4到8位，这足以确保所有第一个字节中的位都已被替换。然后向右移动1字节。消息的下一个4字节块是字节2、3、4和5。再次对这个块执行2次后标签替换。以此类推，直到消息的最后一个4字节块。最后的3个块将会回绕到消息的前面。这种方法称为*PostOv*，评级为六。
 - en: 10.5.2 Different-length tags
   id: totrans-91
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 10.5.2 不同长度的标签
 - en: When the substitute for each tag is not the same length you get into a variety
     of complexities, the length of each block can change, and the blocks may not end
     up aligned on byte boundaries. For example, a 32-bit block could become a 35-bit
@@ -700,6 +742,7 @@
   id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 当每个标签的替代物长度不同时，会涉及到各种复杂性，每个块的长度可能会发生变化，并且块可能不会对齐在字节边界上。例如，一个32位的块可能会变成一个35位的块。这意味着Riva需要一种方法来分隔这些块。最简单的方法是传输每个块的长度。
 - en: It might seem feasible simply to perform Post tag substitutions on a block until
     its length becomes a multiple of 8 bits again. Unfortunately, this potentially
     could take thousands or even millions of substitution steps—or it might never
@@ -707,6 +750,7 @@
   id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 简单地对一个块执行后标签替换，直到其长度再次成为8位的倍数，似乎是可行的。不幸的是，这可能需要数千甚至数百万次替换步骤，甚至可能永远不会发生。
 - en: The simplest solution is to encipher the entire message as a single block. The
     length of the message tells Riva the number of bytes in the block. Sandra just
     needs to add a 3-bit field to tell Riva how many bits are in the last byte, ranging
@@ -715,15 +759,18 @@
   id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 最简单的解决方案是将整个消息作为一个单独的块进行编码。消息的长度告诉Riva块中有多少个字节。Sandra只需要在消息中添加一个3位字段，告诉Riva最后一个字节有多少位，范围从1到8位。这可以放在消息的开头，也可以是最后一个字节的最后3位。长度字段可能需要额外的一个字节。
 - en: Here is an example of different-length Post tag encipherment. Each prefix tag
     and its resulting suffix tag have matching underlines.
   id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里有一个不同长度的后标签编码的示例。每个前缀标签及其相应的后缀标签都有匹配的下划线。
 - en: '![10-unnumb-14](../Images/10-unnumb-14.png)'
   id: totrans-96
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-14](../Images/10-unnumb-14.png)'
 - en: '*****It might look like you will need to shift the entire message each time
     a tag gets removed from the front. These shifts can be eliminated by keeping pointers
     to the first and last bit of the message. Each pointer will simply be an integer
@@ -734,6 +781,7 @@
   id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: '*****看起来好像每次从前面删除标记时都需要移动整个消息。通过保持对消息的第一个位和最后一个位的指针来消除这些移位。每个指针只是一个整数，给出每个端点的位置。指针的低3位将给出字节内的位位置，高位将给出字节位置。分配一个长度为消息长度4倍的空间。将消息放在此空间的开头，并将其余部分清零。'
 - en: To delete a tag from the front of the string, just increment the front pointer
     by the length of the prefix tag. To append a tag to the end, just shift the tag
     to the required bit position and OR it with the last 2 bytes of the string, then
@@ -743,6 +791,8 @@
   id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 要从字符串的前面删除一个标记，只需将前指针递增标记前缀的长度。要在末尾附加标记，只需将标记移动到所需的位位置，并与字符串的最后2个字节进行OR运算，然后递增结束指针。继续这个过程直到到达空间的末尾。这意味着
+    Post 替换步骤的数量取决于消息本身。
 - en: That leaves just one shift to perform at the end to get the bit string onto
     an even byte boundary. However, this long shift can also be eliminated by telling
     your correspondent both the starting and ending bit positions in the first and
@@ -754,6 +804,8 @@
   id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就只剩下一个移位操作要在最后执行，将位字符串放在偶字节边界上。然而，这个长移位也可以通过在消息的第一个字节和最后一个字节中告诉你的对方起始和结束位位置来消除。这仅需要6位，可以打包到一个字节中，并放在消息的开头。我建议用简单的替换对这个字节进行加密，以免给
+    Emily 起始和结束位置。还要确保用随机位填充消息的第一个字节和最后一个字节的未使用部分。
 - en: 'One question remains: since Riva does not know the original length of the message,
     and hence does not know the original size of the enciphering space, how can she
     know when to stop deciphering? Riva does not know how many substitution steps
@@ -762,6 +814,7 @@
   id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 仍然有一个问题：因为 Riva 不知道消息的原始长度，因此也不知道加密空间的原始大小，她如何知道何时停止解密？Riva 不知道进行了多少次替换步骤，她不能简单地分配一个长度为接收到的消息长度4倍的空间，因为这可能与发送的消息长度不同。
 - en: 'Here’s how. Riva knows three things: the plaintext message started on a byte
     boundary, the message ended on a byte boundary, and the enciphering space was
     4 times the length of the original message. Riva can begin by placing the received
@@ -773,6 +826,8 @@
   id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是方法。Riva 知道三件事：明文消息从一个字节边界开始，消息在一个字节边界结束，加密空间是原始消息长度的4倍。Riva 可以开始将接收到的消息放在长度为密文消息5倍的空间的末尾。那应该足够了。Riva
+    从后向前工作，直到满足三个条件，特别是直到部分解密消息的开始到解密空间末尾的距离恰好是消息长度的4倍。这只会发生一次。******
 - en: I suggest that you use 50 to 80 pairs of tags, with each tag 4 to 8 bits long.
     The expected length of the original tags should be close in value to the expected
     length of the replacement tags. About 1/3 of the replacement tags should be shorter,
@@ -788,6 +843,7 @@
   id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 我建议您使用50到80对标签，每个标签长4到8位。原始标签的预期长度应该接近于替换标签的预期长度。大约1/3的替换标签应该比原始标签短，1/3应该是相同大小的，1/3的替换标签应该比原始标签长。不要坚持使每个标签与其替代品的长度不同。消息字符应该表示为混合良好的字母表中的8位字节。如果标签的预期长度为T位，消息的长度为L位，则至少应进行3L/T次替换步骤。也就是说，你要对整个消息进行3次或更多次处理。最终的位字符串，包括长度指示器，应该使用第二个、独立的、简单的替换键转换回字符。如果所有这些建议都遵循，则此密码称为*PostDL*，评级为十。
 - en: When you reach section 12.6, you will see that the PostDL cipher does not meet
     all of the criteria that guarantee an unbreakable cipher. The reason it gets a
     Ten rating is that Emily does not know where in the ciphertext any given plaintext
@@ -798,11 +854,13 @@
   id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 当您到达第12.6节时，您将会看到PostDL密码不符合保证不可破解的所有标准。之所以获得十分评级是因为Emily不知道明文位在密文中的任何给定位置。位置将在块与块之间不同。所以Emily不能建立明文位和密文位之间的对应关系，因此不能建立密文位与明文和密钥位之间的方程。
 - en: 10.5.3 Multiple alphabets
   id: totrans-104
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 10.5.3 多字母表
 - en: There are several things you can do to strengthen a Post tag cipher, or a Huffman
     substitution cipher. We have already looked at having multiple rounds of substitution.
     Another trick is to use multiple alphabets. Each alphabet will consist of a set
@@ -814,17 +872,20 @@
   id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 有几种方法可以加强Post标记密码或Huffman替换密码。我们已经讨论过多轮替换的情况。另一个技巧是使用多个字母表。每个字母表将包括一组具有前缀属性的标签和相应的一组替换标签，这些替换标签必须具有后缀属性。你可以简单地轮流使用多个字母表，或者你可以使用关键字来在它们之间进行选择。如果你是手工操作，你不会想要超过2个，或者最多3个这样的字母表，所以我建议使用一个数值密钥，比如01101011。
 - en: These ciphers, which may be called *PolyPost* and *PolyHuff*, are rated Four
     to Eight depending on the number of rounds, the number of alphabets and the key
     length.
   id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些密码，可能称为*PolyPost*和*PolyHuff*，根据轮数、字母表数量和密钥长度的不同评为四到八。
 - en: 10.5.4 Short and long moves
   id: totrans-107
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 10.5.4 短距离和长距离移动
 - en: So far we have assumed that when a Post tag has B bits, these B bits are moved
     to the end of the block. However, it is possible to move fewer than B bits, or
     more than B bits. For example, you could move B-1 bits, leaving 1 bit to be substituted
@@ -834,6 +895,7 @@
   id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，我们假设当一个Post标记有B位时，这些B位被移动到块的末尾。然而，可以移动少于B位，或者多于B位。例如，您可以移动B-1位，留下1位作为下一个标签的一部分再次替换。这使得标签重叠。优点是它隐藏了标签之间的边界。缺点是每轮需要更多的替换步骤，使得密码变慢。
 - en: Conversely, when a Post tag has B bits you could move B+1 bits to the end of
     the block. This leaves one bit unchanged, and that bit is always the last bit
     in the block. This is not a serious problem if the cipher has multiple rounds
@@ -845,6 +907,8 @@
   id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 相反，当后缀标签有B位时，你可以将B+1位移动到块的末尾。这样留下一位不变，而这一位始终是块中的最后一位。如果密码有多轮，那么未更改的比特很可能在其他轮中被替换。仍然有可能某些比特完整地通过这个密码。如果
+    Emily 无法确定哪些是未更改的比特，这不是一个严重的问题。比特是匿名的。关于任何比特都没有说，“这个比特来自明文的第5个字节，第2位”。
 - en: Finally, the number of bits that are moved can be made independent of the length
     of the tag. You could have a table that tells the number of bits to move. This
     can be less than, more than or the same as the length of the tag. You can have
@@ -852,6 +916,7 @@
   id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，移动的比特数可以与标签长度无关。你可以有一个表格告诉你要移动的比特数。这可以少于、多于或等于标签的长度。你可以有多个这样的表格。
 - en: When the number of bits moved is different from the length of the tag, the suffix
     property no longer applies to the set of substitute tags. Instead, the set of
     bit strings that are actually moved must have the suffix property. For example,
@@ -860,11 +925,13 @@
   id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 当移动的比特数与标签长度不同时，后缀属性不再适用于替代标签集。相反，实际移动的比特字符串集必须具有后缀属性。例如，如果标签0110被替换为1101，但移动了5位，则后缀字符串集必须包括**1101**0和**1101**1。
 - en: 10.6 Fractionation in other bases
   id: totrans-112
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 10.6 其他进制中的分数化
 - en: So far, this chapter has discussed monom-binom in base 5, and Huffman and Post
     substitution in base 2\. Variable-length substitution can be done in other bases
     as well. For hand enciphering, it is easier to do Huffman substitution and Post
@@ -874,6 +941,8 @@
   id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，本章已经讨论了五进制中的单-双替换，以及二进制中的 Huffman 替换和 Post 替换。可变长度替换也可以在其他进制中进行。对于手工加密来说，在三进制或四进制中进行
+    Huffman 替换和 Post 替换比在二进制中更容易。然而，可变长度替换可以在任何进制中进行，甚至是奇怪的进制，比如11或13。这可以给你额外的替代品，可以用于同音词或编码二元组。
 - en: When you work in base 13, you can use any 13 of the 16 hexadecimal digits for
     substitution, and leave the other 3 digits as nulls. If done well, so that all
     16 digits have roughly equal frequency and distribution, Emily will not be able
@@ -881,11 +950,14 @@
   id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你使用十三进制时，你可以使用任意十六进制数字中的13个进行替换，将另外3个数字留为空。如果做得好，使得所有16个数字的频率和分布大致相等，Emily
+    将无法区分有效数字和空位。
 - en: 10.7 Text compression
   id: totrans-115
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 10.7 文本压缩
 - en: Section 4.2.1 discusses the use of Huffman codes for compressing text. Several
     strong encryption schemes can be based on text compression. In this section I
     present several more-advanced text compression schemes and some encryption schemes
@@ -894,15 +966,19 @@
   id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 第4.2.1节讨论了使用 Huffman 编码压缩文本的方法。几种强大的加密方案可以基于文本压缩。在本节中，我提出了几种更高级的文本压缩方案和一些基于
+    Huffman 编码的加密方案。第10章的其余部分是可选的。如果在任何时候数学变得太令人畏惧，可以直接跳到下一章。
 - en: '![10-unnumb-15](../Images/10-unnumb-15.png)'
   id: totrans-117
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-15](../Images/10-unnumb-15.png)'
 - en: 10.7.1 Lempel-Ziv
   id: totrans-118
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 10.7.1 Lempel-Ziv
 - en: The *Lempel-Ziv* text compression scheme was developed by Israeli computer scientists
     Abraham Lempel and Jacob Ziv in 1977, called *LZ77*, with an improved version
     in 1978, called *LZ78*. It is based on the same underlying concept as Huffman
@@ -914,6 +990,8 @@
   id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Lempel-Ziv* 文本压缩方案是由以色列计算机科学家亚伯拉罕·莱姆佩尔和雅各布·齐夫在1977年开发的，被称为 *LZ77*，并在1978年改进了一个版本，称为
+    *LZ78*。它基于与赫夫曼编码相同的基本概念，即字母和字母组合由二进制代码表示，即一组比特。然而，莱姆佩尔-齐夫采取了与此相反的方法。赫夫曼使用较短的代码以节省空间。莱姆佩尔-齐夫使用大致相同长度的代码，但有些代码表示较长的字母组合以节省空间。'
 - en: Huffman and Lempel-Ziv are opposite in another sense, too. Huffman bases the
     length of the codes on a fixed preset table of letter frequencies. Lempel-Ziv
     determines the most-frequent letter combinations on the fly, while it is encoding
@@ -926,6 +1004,8 @@
   id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 在另一个意义上，赫夫曼和莱姆佩尔-齐夫是相反的。赫夫曼将代码的长度基于固定的预设字母频率表。莱姆佩尔-齐夫在编码文本时动态确定最常见的字母组合。这被称为
+    *自适应编码*。赫夫曼编码仅适用于单一语言的文本。不同的语言将具有不同的字母频率。即使从大写文本转换为大小写混合文本也需要不同的赫夫曼编码集。相比之下，莱姆佩尔-齐夫可用于任何类型的计算机文件，任何语言或混合语言的文本，计算机代码，图像，遥测，音乐视频等。
 - en: There are several versions of Lempel-Ziv. The version I present here, called
     *Lempel-Ziv-Welch*, or *LZW*, was developed by Terry Welch of Sperry Research
     in 1984\. LZW has both fixed-width and variable-width versions. I am presenting
@@ -933,6 +1013,7 @@
   id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 有几个版本的莱姆佩尔-齐夫。我在这里介绍的版本，称为 *莱姆佩尔-齐夫-韦尔奇*，或 *LZW*，是由斯佩里研究公司的特里·韦尔奇于1984年开发的。LZW具有固定宽度和可变宽度版本。我展示的是可变宽度版本，易于用于加密。
 - en: All versions of Lempel-Ziv use a list of letters and letter combinations called
     a *dictionary*. The dictionary is built on the fly as the algorithm progresses
     through the file. In the LZ77 and LZ78 versions the dictionary starts empty. The
@@ -940,6 +1021,7 @@
   id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有版本的莱姆佩尔-齐夫都使用称为 *字典* 的字母和字母组合列表。字典随着算法在文件中的进行而实时构建。在LZ77和LZ78版本中，字典起始为空。给定任何字母组合的代码是它在字典中的位置。
 - en: LZW begins by assigning a code to each of the single characters in the file.
     LZW codes all have the same number of bits. For example, if the file were a message
     in English, all in uppercase without punctuation or word divisions, then you would
@@ -948,6 +1030,7 @@
   id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: LZW首先为文件中的每个单个字符分配一个代码。LZW的所有代码都具有相同数量的比特。例如，如果文件是一条用英语写成的消息，全为大写且没有标点或单词分隔，则您将需要26个代码，因此您可以使用5位代码。更常见的是从256个代码开始，每个代码对应一个8位字节的256个可能值之一。
 - en: As the algorithm progresses through the file it looks for letter combinations
     that are not already in the dictionary. When it finds one, it adds that combination
     to the dictionary. For example, suppose that the algorithm has found THE in the
@@ -958,6 +1041,7 @@
   id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 随着算法在文件中进行，它寻找尚未在字典中的字母组合。找到一个后，将该组合添加到字典中。例如，假设算法在文件中找到了THE，并且THE已经在字典中。假设文件中的下一个字母是M，并且THEM不在字典中。它输出THE的代码，后跟M的代码，并将THEM添加到字典中。THEM的代码是字典中的下一个可用位置，假设是248。
 - en: Since THE was already in the dictionary, the algorithm will not look at combinations
     starting with HE or E. It will start at M looking for another combination that
     is not in the dictionary. If that combination is MOR, then MOR is put in dictionary
@@ -967,6 +1051,7 @@
   id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于THE已经在字典中，算法不会查找以HE或E开头的组合。它将从M开始查找另一个不在字典中的组合。如果该组合是MOR，则将MOR放入字典条目249中，并具有代码249。算法下次在文件中找到THEM时，将被编码为248，并且下一个MOR的出现将被编码为249。
 - en: When the algorithm has filled up all 256 dictionary entries for 8-bit codes,
     the next assigned code will need to have 9 bits. At that point the algorithm will
     switch from 8-bit codes to 9-bit codes. THEM will still have the code 248, but
@@ -982,6 +1067,7 @@
   id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 当算法填满了所有256个8位代码的字典条目时，下一个分配的代码将需要9位。此时，算法将从8位代码切换到9位代码。THEM仍然具有代码248，但它将是9位代码011111000，而不是8位代码11111000。当算法填满了所有512个9位代码的字典槽时，THEM的代码变为10位代码0011111000，仍然是248。请注意这些操作的顺序。当前字母组合的代码首先以旧大小输出，然后将新组合添加到字典中，并增加代码大小。Sandra和Riva必须使用相同的顺序，否则消息将无法正确解压缩。通常在12位停止扩展代码。将代码大小从12位增加到13位通常不会改善压缩，并且甚至可能使其恶化。
 - en: Let’s look at an example. Let’s encode the word TETE-A-TETE using this algorithm.
     Suppose the dictionary starts off with the single letters A, E and T using 2-bit
     codes. Let’s follow the dictionary as it gets built. At each stage the bit strings
@@ -990,10 +1076,12 @@
   id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看一个例子。让我们使用此算法对单词TETE-A-TETE进行编码。假设字典以单个字母A、E和T以2位代码开头。让我们跟随字典的构建过程。每个阶段左边的位字符串显示编码的单词，右边的字母显示剩余部分的单词。
 - en: '![10-unnumb-16](../Images/10-unnumb-16.png)'
   id: totrans-128
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-16](../Images/10-unnumb-16.png)'
 - en: When Riva decompresses the message, the dictionary must be built up exactly
     the same way. Note that the bit string **10** **01** **011** **000** **011** **011**
     by itself is not enough for Riva to decompress the message. She also needs to
@@ -1002,11 +1090,14 @@
   id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 当Riva解压缩消息时，字典必须以完全相同的方式构建。请注意，仅仅是二进制字符串**10** **01** **011** **000** **011**
+    **011**本身不足以让Riva解压缩消息。她还需要知道代码**00**、**01**和**10**代表字符A、E和T。
 - en: Okay. That’s Lempel-Ziv compression. This is a book about cryptography. How
     can Lempel-Ziv compression be used for encryption?
   id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 好的。这就是Lempel-Ziv压缩。这是一本关于密码学的书。Lempel-Ziv压缩如何用于加密？
 - en: In building the dictionary, Lempel-Ziv assigns codes sequentially. The 43rd
     letter or letter combination will get the code 42 (not 43, since the codes start
     at 0). To use this scheme for encryption, add a second column to the dictionary.
@@ -1016,6 +1107,7 @@
   id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 在构建字典时，Lempel-Ziv按顺序分配代码。第43个字母或字母组合将获得代码42（不是43，因为代码从0开始）。要使用此方案进行加密，请向字典添加第二列。第一列包含字母组合，第二列包含相应的代码。不要使用字典中的位置作为每个字母组合的代码，而是使用字典的第二列中的数字。
 - en: Suppose that the dictionary starts with the 256 single-byte characters. The
     first column will contain the characters. In the second column put the numbers
     from 0 to 255 in some scrambled order. They can be mixed by any of the methods
@@ -1028,12 +1120,15 @@
   id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设字典以256个单字节字符开头。第一列包含字符。在第二列中，以某种乱序方式放置从0到255的数字。它们可以通过第5.2节中描述的任何方法进行混合。桑德拉和瑞娃必须使用相同的顺序，可以由关键字或随机数生成器的种子确定。当需要第一个9位编码时，下一个256个字典条目将以乱序方式获取代码从256到511。同样，当您从9位代码转移到10位代码时，将一次分配下一个512个代码。批量分配代码比逐个分配代码更有效。
 - en: An alternative to assigning the codes in bulk is to assign only the first 256
     codes using a keyword or random number sequence. After that each new code is calculated
     by adding 256 to the code 256 entries earlier. That is, X(N) = X(N-256)+256.
   id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 一种替代批量分配代码的方法是仅使用关键字或随机数序列分配前256个代码。之后，每个新代码通过在256个条目之前的代码上加256来计算。也就是说，X(N)
+    = X(N-256)+256。
 - en: This cipher, which I will call *Lempel-Ziv Substitution*, is rated Three. The
     rating is so low because the first few characters of the message are essentially
     enciphered with simple substitution. Each code will represent a single character
@@ -1045,6 +1140,7 @@
   id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 我将称之为*Lempel-Ziv替换*的这个密码被评为Three。评分很低是因为消息的前几个字符基本上是用简单的替换进行了加密。每个代码将代表一个单字符，直到出现第一个重复的双字母组为止。这可能要等到编码了30、40甚至更多个字符之后才会发生。即使在那之后，大多数的9位代码仍然表示单个字母。这些代码很容易区分，因为它们是以0开头的唯一的9位代码。艾米丽将有很多机会使用字母频率和接触频率来破译消息。
 - en: To make Lempel-Ziv substitution strong you can add a second substitution step.
     This substitution should not be on byte boundaries. I suggest using 7-bit groups.
     These groups will not coincide with the code groups until the codes reach 14 bits.
@@ -1054,11 +1150,13 @@
   id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 要使Lempel-Ziv替换变得强大，您可以添加第二个替换步骤。这个替换不应该在字节边界上进行。我建议使用7位组。这些组将不会与代码组重合，直到代码达到14位。这可能永远不会发生，因为代码通常限制为12位。Lempel-Ziv替换后跟7位替换的评分为Six。这两种替换可以在单向左到右的通道中完成。
 - en: 10.7.2 Arithmetic coding
   id: totrans-136
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 10.7.2 算术编码
 - en: '*Arithmetic Coding* (pronounced “a-rith-MET-ic”) is a text compression method
     that I invented in the 1970s (“Arithmetic Stream Coding Using Fixed Precision
     Registers,” *IEEE Trans. on Info. Theory* vol. 25 (Nov. 1979), pp. 672-675). It
@@ -1066,6 +1164,7 @@
   id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: '*算术编码*（发音为“a-rith-MET-ic”）是一种文本压缩方法，我在1970年代发明的（“使用固定精度寄存器的算术流编码”，*IEEE信息论杂志*第25卷（1979年11月），第672-675页）。它基于麻省理工学院的彼得·伊莱亚斯的一个聪明想法。'
 - en: Elias’s idea was to encode every character string as a fraction. Imagine all
     the possible fractions from .0 through .999... The ellipsis ... means that this
     fraction ends with an infinite sequence of 9’s. Now divide this range up according
@@ -1079,6 +1178,8 @@
   id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 埃利亚斯的想法是将每个字符串编码为分数。想象一下，从0到0.999的所有可能的分数...省略号...表示该分数以无限的9序列结尾。现在根据字符串的第一个字符将此范围分割。为简单起见，假设字母表中有25个字符，就像一个
+    Polybius 方块字母表。每个字母将获得全范围的1/25。那些以A开头的字符串将获得全范围的第1/25，即4%，范围为0到0.04。以B开头的字符串将获得全范围的下一个1/25，即0.04到0.08。以Z开头的字符串将获得全范围的最后1/25，即0.96到0.999...（我使用十进制表示这个例子是为了更容易阅读。在计算机中，将使用二进制分数。）
 - en: For the second character you divide this range again. Strings starting with
     AA would be in the range .0 to .0016\. Strings starting with AB would be in the
     range .0016 to .0032\. Strings starting with BA would be in the range .0400 to
@@ -1087,21 +1188,26 @@
   id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于第二个字符，你再次分割这个范围。以AA开头的字符串将在范围0到0.0016内。以AB开头的字符串将在范围0.0016到0.0032内。以BA开头的字符串将在范围0.0400到0.0416内。以此类推。以ZZ开头的字符串将在范围0.9984到0.9999...内。
 - en: To visualize this, let’s use a miniature 5-letter alphabet with A being .0 to
     .2, B from .2 to .4, C from .4 to .6, D from .6 to .8, and E from .8 to .999...
     . Using this alphabet, let’s encode the word BED.
   id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了可视化，让我们使用一个小型的5个字母的字母表，其中A从0到0.2，B从0.2到0.4，C从0.4到0.6，D从0.6到0.8，E从0.8到0.999...。使用这个字母表，让我们将单词
+    BED 编码。
 - en: '![10-unnumb-17](../Images/10-unnumb-17.png)'
   id: totrans-141
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-17](../Images/10-unnumb-17.png)'
 - en: BED could be encoded as any fraction f with .384 ≤ f < .392\. As more characters
     are added, this interval will continue to shrink.
   id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: BED 可以编码为任何满足 0.384 ≤ f < 0.392 的分数 f。随着添加更多字符，此间隔将继续缩小。
 - en: That’s the concept. However, this encoding of strings as fractions does not
     give any compression. One more idea is needed to get compression. Instead of giving
     each letter of the alphabet the same fraction of the range, make the fraction
@@ -1111,6 +1217,7 @@
   id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是概念。然而，将字符串编码为分数并没有提供任何压缩。需要另一个想法来实现压缩。与其给予字母表中的每个字母相同比例的分数，不如将分数与该字母的频率成比例。A将获得8.12%，B将获得1.49%，依此类推，直到Z，Z将获得0.07%。A的范围为0到0.0812。B的范围为0.0812到0.0961。Z的范围为0.9993到0.9999...。
 - en: In theory this would give optimal compression based on the frequencies of the
     individual letters. Unfortunately, there is a practical problem. The method produces
     fractions that potentially require thousands or even millions of digits. How can
@@ -1119,6 +1226,7 @@
   id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 从理论上讲，这将根据各个字母的频率提供最佳压缩。不幸的是，存在一个实际问题。该方法产生的分数可能需要数千甚至数百万位数。如何在计算机中表示这样的分数？如何对它们进行算术运算？
 - en: So, the method was great in theory, but seemingly infeasible in practice. It
     appeared to require fractions of unbounded precision. The time needed to add and
     multiply long fractions, whether decimal or binary, increases with their length,
@@ -1127,6 +1235,7 @@
   id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，这个方法在理论上很好，但在实践中似乎不可行。它似乎需要无界精度的分数。增加和乘以长分数的时间（无论是十进制还是二进制）都会随着它们的长度增加而增加，所以即使有一种好的方法来表示这些分数，该方法也会变得难以忍受的缓慢。
 - en: The solution I found was to use a moving window where all of the arithmetic
     would be done. That lets you use ordinary 32-bit integers. No floating-point arithmetic
     was required. To keep the integers within the 32-bit size, the letter frequencies
@@ -1137,6 +1246,8 @@
   id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 我找到的解决方法是使用一个移动窗口，在其中进行所有的算术操作。这样可以使用普通的 32 位整数。不需要浮点运算。为了保持整数在 32 位大小内，字母频率被近似为
+    15 位整数，即形式为 N/2^(15) 或 N/32768 的分数。例如，字母 A 的频率是 8.12%。这可以表示为 2660/32768 或 665/8192。发现这个近似没有导致压缩程度的可检测减少。
 - en: Here is a decimal example to show how a letter is encoded and how the moving
     window works. Suppose the first few characters have been encoded, and the range
     is now .784627 to .784632\. The first 4 digits for the start and end of the range
@@ -1145,10 +1256,13 @@
   id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个十进制示例，展示了一个字母如何被编码以及移动窗口的工作原理。假设前几个字符已被编码，并且范围现在为 .784627 到 .784632。范围的起始和结束的前
+    4 位数字是相同的，即 .7846。这 4 位数字将被输出，并且窗口将向右移动 4 个数字以显示范围 .2700 到 .3200。
 - en: '![10-unnumb-18](../Images/10-unnumb-18.png)'
   id: totrans-148
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-18](../Images/10-unnumb-18.png)'
 - en: The width of this range is .0500\. Suppose the next character in the message
     has a frequency of .0300 and its range is .4050 to .4350\. This character gets
     encoded by selecting that fraction of the current range .2700 to .3200\. Its width
@@ -1157,10 +1271,14 @@
   id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个范围的宽度是 .0500。假设消息中的下一个字符的频率是 .0300，其范围是 .4050 到 .4350。这个字符被编码为当前范围 .2700 到
+    .3200 的那一部分。其宽度是 .0500×.0300，即 .0015。它将从 .2700+.0500×.4050 运行到 .2700+.0500×.4350，即
+    .29025 到 .29175。注意这个范围的宽度是 .0015，正如预期的那样。
 - en: '![10-unnumb-19](../Images/10-unnumb-19.png)'
   id: totrans-150
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-19](../Images/10-unnumb-19.png)'
 - en: Since the start and end of this range both begin with the digits .29, these
     digits can be output. The digits that have been output are now 784629\. The window
     can now be moved 2 more digits to the right to make the current range .0250 to
@@ -1168,6 +1286,8 @@
   id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于这个范围的起始和结束都以数字 .29 开头，这些数字可以输出。已输出的数字现在是 784629。窗口现在可以再向右移动 2 个数字，使当前范围为 .0250
+    到 .1750。
 - en: Arithmetic coding is ideally suited for encryption because there are no longer
     discrete codes for each letter or letter combination. There are no boundaries
     where the bit stream can be broken into separate codes. Instead, the code for
@@ -1175,6 +1295,7 @@
   id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 算术编码非常适合用于加密，因为不再有每个字母或字母组合的离散编码。没有边界，可以将比特流分割为单独的代码。相反，每个字母的代码影响如何表示所有后续字母。
 - en: 'Now that we understand how the arithmetic coding method works, the next step
     is to see how to use it for encryption. We do not want to change the percentage
     of the range allotted to each character, because that would lose the compression.
@@ -1184,10 +1305,13 @@
   id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们了解了算术编码方法的工作原理，下一步是看如何将其用于加密。我们不希望改变分配给每个字符的范围的百分比，因为那样会失去压缩。相反，我们可以改变字符的顺序，使得每个字符的范围都落在整个范围中不可预测的部分。也就是说，对于艾米莉来说是不可预测的。例如，仅使用字母
+    A、B、C、D、E，范围可能是：
 - en: '![10-unnumb-20](../Images/10-unnumb-20.png)'
   id: totrans-154
   prefs: []
   type: TYPE_IMG
+  zh: '![10-unnumb-20](../Images/10-unnumb-20.png)'
 - en: These intervals can be used to encode the letters of the message. Let’s call
     this method *Arithmetic Encipherment*. Since Emily does not know either the starting
     point or the ending point of any of the ranges, there is no opening for an attack.
@@ -1197,6 +1321,8 @@
   id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些区间可以用来编码消息的字母。我们将这种方法称为*算术加密*。由于艾米莉不知道任何范围的起始点或结束点，因此没有攻击的机会。艾米莉知道第一个范围从 .0
+    开始，最后一个范围结束于 .999...，但她不知道这些范围代表哪些字符。
 - en: There is one difficulty with arithmetic coding that has not been discussed yet.
     Using the normal alphabet, Riva does not know where the message ends. The same
     code that stands for ROTUND could also stand for ROTUNDA, ROTUNDAA, ROTUNDAAA,
@@ -1208,6 +1334,7 @@
   id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 算术编码存在一个尚未讨论的困难。使用正常的字母表，Riva不知道消息何时结束。代表ROTUND的相同代码也可以代表ROTUNDA、ROTUNDAA、ROTUNDAAA，依此类推，假设A的范围从0开始。使用传统算术编码，可以通过使用各种方法对消息长度进行编码并将该长度码附加到密文中，或者通过向字母表添加特殊的消息结束字符来解决此问题。此前没有讨论过这一点，因为算术加密不需要它。
 - en: With arithmetic encipherment all you need to do is assign a rare character,
     or any character that is seldom found at the end of a message, to the first range,
     that is, to the range starting at .0000\. Then when Riva sees ROTUNDVVV... or
@@ -1215,6 +1342,7 @@
   id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用算术加密时，您只需将罕见的字符分配给第一个范围，即从.0000开始的范围。然后，当Riva看到ROTUNDVVV...或ROTUND###...时，消息的结束就显而易见了。
 - en: As described here, arithmetic encipherment is rated Five using a 26-letter alphabet,
     or Six using a 256-character alphabet. All the usual tricks can be used here,
     nulls, homophones and bigrams. Using nulls would reduce or destroy the compression,
@@ -1227,6 +1355,7 @@
   id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 如本节所述，使用26字母表对算术加密评为Five，或者使用256字符字母表评为Six。这里可以使用所有常用的技巧，如空字符、同音字和双字母组。使用空字符会减少或破坏压缩，因此我不建议使用。使用同音字会将字母的范围分成两个或更多的单独范围。这使得字母的范围更加均匀，这相当于平衡了字母的频率。这可以在不影响压缩程度的情况下提高安全性。有时，使用双字母组甚至三字母组可以提高压缩水平同时提高安全性。使用同音字和双字母组，算术加密评为Eight。
 - en: Since arithmetic encipherment is so strong by itself, it takes very little extra
     to push it up to a Ten rating. I suggest using a general polyalphabetic cipher
     of period 4, that is, a substitution with four independent well-mixed alphabets
@@ -1237,11 +1366,13 @@
   id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于算术加密本身非常强大，所以只需很少的额外工作就可以将其提升到Ten的评级。我建议使用周期为4的一般多表密码，即使用四个独立混合良好的字母表以轮换方式使用的替换。使用周期为4或更高的一般多表加密后的算术加密评为Ten。它让对手毫无线索可循，没有字母频率，没有联系频率，也没有利用可能的单词的方法。
 - en: 10.7.3 Adaptive arithmetic coding
   id: totrans-160
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 10.7.3 自适应算术编码
 - en: Lempel-Ziv gives decent compression for any type of file because it is adaptive.
     Huffman coding and arithmetic coding give better compression, but only for files
     whose character frequencies match the underlying frequency table. There are several
@@ -1251,6 +1382,7 @@
   id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: Lempel-Ziv给任何类型的文件提供了良好的压缩，因为它是自适应的。Huffman编码和算术编码提供了更好的压缩，但只适用于字符频率与基础频率表相匹配的文件。有几种方法可以使Huffman编码和算术编码自适应，所有这些方法都使相应的加密方法更加强大。所有这些方法都涉及对文件中的字符进行计数，然后再对其进行编码。
 - en: The more closely the character counts match the character frequencies in the
     file, the better the compression you get. You might think that you could just
     count all of the characters in the file and then use the actual counts. The problem
@@ -1261,6 +1393,7 @@
   id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 字符计数与文件中的字符频率越接近，获得的压缩效果就越好。你可能会认为你可以简单地计算文件中的所有字符，然后使用实际的计数。问题是Riva不能统计文件中的字符。Riva必须使用与Sandra相同的频率，否则她无法解密文件。解决这个困境的方法是Sandra在加密时计数字符，Riva在解密时计数字符，这样他们在所有阶段都会拥有相同的计数。
 - en: All the character counts start at 1\. If you know the frequencies of the characters
     beforehand, even if they are only rough estimates, you can increase the counts
     for the more frequent characters. For example, if you are using a 256-character
@@ -1273,6 +1406,7 @@
   id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有字符计数从1开始。如果你事先知道字符的频率，即使它们只是粗略的估计，你也可以增加更频繁出现的字符的计数。例如，如果你使用的是256个字符集，并且你预计消息将包含约1%的大写字母E和约10%的小写字母e，那么你可以将E的字符计数增加2，将e的字符计数增加25，即256的约10%。每个字符的初始范围与其初始计数成比例。例如，如果256个字符计数总共为500，并且小写字母e的初始计数为25，那么e的范围将为25/500，即0.05。
 - en: There are two basic methods for adjusting the codes, character mode and batch
     mode. Character mode is practical only for arithmetic coding. In character mode,
     each time a character is found in the file its range and the two adjacent ranges
@@ -1281,6 +1415,7 @@
   id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 调整代码有两种基本方法，字符模式和批处理模式。字符模式只适用于算术编码。在字符模式中，每当在文件中找到一个字符时，它的范围和两个相邻范围都会被调整。（当字符具有第一个或最后一个范围时，有一个相邻范围。对于26个字母的标准字母表，这意味着A或Z。）
 - en: Here is an example. Suppose that the letter T has been encountered, and that
     the adjacent ranges belong to the letters S and U. (This would probably not be
     the case for arithmetic encipherment. The mixed alphabet probably would not contain
@@ -1293,6 +1428,7 @@
   id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里有一个例子。假设已经遇到了字母T，并且相邻范围属于字母S和U。（这可能不适用于算术加密。混合字母表可能不会按顺序包含S、T、U。）假设S、T和U的字符计数分别为15、20和5，因此它们总共为40。假设S、T和U的范围分别为0.062、0.074和0.024，因此它们总共为0.160。这个合并范围按比例重新分配为15:20:5。S获得0.160×15/40，即0.060。T获得0.160×20/40，即0.080。U获得0.160×5/40，即0.020。随着时间的推移，字符的范围将收敛到正确的宽度。
 - en: Character mode works reasonably well with a 26-letter alphabet. It works very
     poorly with a 256-character alphabet. Most of the 256 characters will not be adjacent
     to any of the high-frequency characters, so their frequencies will remain static.
@@ -1301,6 +1437,7 @@
   id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 字符模式在26个字母的字母表中效果还不错。但在256个字符的字母表中效果非常差。大多数256个字符不会与任何高频字符相邻，因此它们的频率将保持不变。这在所有字母都聚集在一起的标准ASCII表示中尤其明显。
 - en: Batch mode works for both arithmetic coding and Huffman coding. In batch mode
     the entire set of ranges is adjusted at specific points during the encoding. For
     example, the ranges could be adjusted after encoding 64 characters, after 128
@@ -1311,6 +1448,7 @@
   id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 批处理模式适用于算术编码和哈夫曼编码。在批处理模式下，在编码过程中的特定点调整整个范围。例如，在编码64个字符后，128个字符后，256个字符后等等可以调整范围。在这些点上，整个范围将根据当前字符计数重新分配。这比字符模式更快地收敛，但在重新分配之间，您正在使用旧的未调整频率。
 - en: In batch mode it is possible to count the frequencies for bigrams, and even
     trigrams. Bigrams or trigrams that occur more than once could be given their own
     Huffman codes or arithmetic code ranges. With this refinement, arithmetic coding
@@ -1318,6 +1456,7 @@
   id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 在批处理模式下，可以计算二元组甚至三元组的频率。出现多次的二元组或三元组可以被赋予自己的哈夫曼代码或算术代码范围。通过这种改进，算术编码几乎总是比Lempel-Ziv提供更好的压缩。
 - en: There is one problem with counting bigram and trigram frequencies, namely storage.
     With a 256-character alphabet there are 65,536 different bigrams and 16,777,216
     different trigrams. If storage is plentiful this might not be a problem. If storage
@@ -1330,6 +1469,7 @@
   id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算二元组和三元组频率存在一个问题，即存储。对于一个256字符的字母表，有65,536个不同的二元组和16,777,216个不同的三元组。如果存储空间充足，这可能不是问题。如果存储空间有限，一个解决方案是仅计算包含最常见字母的二元组和三元组。例如，如果将二元组和三元组限制为最常见的20个字符，则只有400个二元组和8,000个三元组需要计算。为了确定最常见的字符，可以推迟计算二元组和三元组频率，直到编码了一定数量的单个字符，比如256或1024个字符。
 - en: One way to accomplish these restricted counts is to count only single characters
     in the first batch to establish the most frequent characters. Count bigrams in
     the second batch using those high-frequency characters. Count trigrams in the
@@ -1340,6 +1480,7 @@
   id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 实现这些受限制的计数的一种方法是仅在第一个批次中计算单个字符，以确定最常见的字符。在第二批次中使用这些高频字符计算二元组。在第三批次中，仅使用高频二元组加上高频字母计算三元组。一旦选择了高频二元组和三元组，它们将被赋予自己的哈夫曼代码或算术范围。换句话说，它们被视为单个字符处理。
 - en: For arithmetic coding, character mode and batch mode are not mutually exclusive.
     You can balance the ranges for each individual character as soon as it is encountered,
     and balance the extended set of characters plus bigrams and trigrams, at the end
@@ -1347,6 +1488,7 @@
   id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于算术编码，字符模式和批处理模式并不是互斥的。您可以在遇到每个单个字符时平衡各个字符的范围，并在每个批次结束时平衡扩展字符集以及二元组和三元组。
 - en: When doing Huffman encipherment or arithmetic encipherment, at the end of each
     batch the alphabet should be reshuffled before the codes are replaced or the ranges
     are rebalanced. This is particularly needed if bigrams or trigrams have been added
@@ -1357,6 +1499,7 @@
   id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 在进行哈夫曼加密或算术加密时，在每个批次结束时，字母表应在代码被替换或范围重新平衡之前重新洗牌。如果添加或删除了二元组或三元组，则特别需要这样做。这意味着艾米莉在代码改变之前只有有限的材料可以攻击。对于加密，最好使用不规则长度的批次，比如在217个字符后，然后在503个字符后，以此类推，这样艾米莉就不会知道代码何时改变。
 - en: One further refinement to adaptive coding is to divide all of the counts by
     2 after the ranges have been rebalanced. This lets the codes adapt to situations
     where the character frequencies change. Older frequencies will have less influence
@@ -1366,8 +1509,10 @@
   id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 对自适应编码的另一项改进是在重新平衡范围后将所有计数除以 2。这样可以让编码适应字符频率发生变化的情况。较旧的频率对范围的影响会减少，而较新的频率则会增加影响。例如，假设文本是一本由不同作者撰写的故事书。每个作者可能有不同的词汇或不同的主题，甚至用不同的语言书写。
 - en: Of course Sandra and Riva must agree on all of this beforehand so that Riva
     will be able to decipher and decompress the message correctly.
   id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，Sandra 和 Riva 必须事先就所有这些达成一致，这样 Riva 才能正确解密和解压消息。

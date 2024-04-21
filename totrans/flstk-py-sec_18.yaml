@@ -1,48 +1,70 @@
 - en: 15 Content Security Policy
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 15 内容安全策略
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: Composing a content security policy with fetch, navigation, and document directives
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用 fetch、navigation 和 document 指令编写内容安全策略
 - en: Deploying CSP with `django-csp`
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用 `django-csp` 部署 CSP
 - en: Detecting CSP violations with reporting directives
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用报告指令检测 CSP 违规
 - en: Resisting XSS and man-in-the-middle attacks
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 抵抗 XSS 和中间人攻击
 - en: Servers and browsers adhere to a standard known as *Content Security Policy*
     (*CSP*) to interoperably send and receive security policies. A policy restricts
     what a browser can do with a response, in order to protect the user and server.
     Policy restrictions are designed to prevent or mitigate various web attacks. In
     this chapter, you’ll learn how to easily apply CSP with `django-csp`. This chapter
     covers CSP Level 2 and finishes with parts of CSP Level 3.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器和浏览器遵循一个称为*内容安全策略*（*CSP*）的标准，以可互操作地发送和接收安全策略。策略限制了浏览器对响应的操作，以保护用户和服务器。策略的限制旨在防止或减轻各种
+    Web 攻击。在本章中，您将学习如何使用 `django-csp` 轻松应用 CSP。本章涵盖了 CSP 2 级，并以 CSP 3 级的部分结束。
 - en: A policy is delivered from a server to a browser by a `Content-Security-Policy`
     response header. A policy applies to only the response it arrives with. Every
     policy contains one or more directives. For example, suppose bank.alice.com adds
     the CSP header shown in figure 15.1 to each resource. This header carries a simple
     policy composed of one directive, blocking the browser from executing JavaScript.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个策略通过 `Content-Security-Policy` 响应头从服务器传递到浏览器。策略只适用于它所在的响应。每个策略包含一个或多个指令。例如，假设
+    bank.alice.com 对每个资源都添加了图15.1中显示的 CSP 头部。该头部携带了一个简单的策略，由一个指令组成，阻止浏览器执行 JavaScript。
 - en: '![CH15_F01_Byrne](Images/CH15_F01_Byrne.png)'
+  id: totrans-8
   prefs: []
   type: TYPE_IMG
+  zh: '![CH15_F01_Byrne](Images/CH15_F01_Byrne.png)'
 - en: Figure 15.1 A Content-Security-Policy header forbids JavaScript execution with
     a simple policy.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 图15.1 一个内容安全策略头部使用简单的策略禁止了 JavaScript 的执行。
 - en: How does this header resist XSS? Suppose Mallory identifies a reflected XSS
     vulnerability at bank.alice.com. She writes a malicious script to transfer all
     of Bob’s money into her account. Mallory embeds this script in a URL and emails
@@ -51,94 +73,140 @@
     restricted by Alice’s policy, blocks the execution of the script. Mallory’s plan
     fails, amounting to only an error message in the debugging console of Bob’s browser.
     Figure 15.2 illustrates Mallory’s failed reflected XSS attack.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个头部如何抵抗 XSS？假设 Mallory 在 bank.alice.com 发现了一个反射型 XSS 漏洞。她编写了一个恶意脚本将 Bob 的所有资金转移到她的帐户中。Mallory
+    将这个脚本嵌入到一个 URL 中，并将其通过电子邮件发送给 Bob。Bob 又上当了。他无意中将 Mallory 的脚本发送到 bank.alice.com，然后它被反射回来。幸运的是，Bob
+    的浏览器受到 Alice 的策略的限制，阻止了脚本的执行。Mallory 的计划失败了，在 Bob 的浏览器的调试控制台中只有一个错误消息。图15.2 说明了
+    Mallory 的反射型 XSS 攻击失败了。
 - en: '![CH15_F02_Byrne](Images/CH15_F02_Byrne.png)'
+  id: totrans-11
   prefs: []
   type: TYPE_IMG
+  zh: '![CH15_F02_Byrne](Images/CH15_F02_Byrne.png)'
 - en: Figure 15.2 Alice’s site uses CSP to prevent Mallory from pulling off another
     reflected XSS attack.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 图15.2 Alice 的网站使用 CSP 阻止 Mallory 再次进行反射型 XSS 攻击。
 - en: This time, Alice barely stops Mallory with a very simple content security policy.
     In the next section, you compose a more complex policy for yourself.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 这次，Alice 仅通过一个非常简单的内容安全策略勉强阻止了 Mallory。在下一节中，您将为自己编写一个更复杂的策略。
 - en: 15.1 Composing a content security policy
+  id: totrans-14
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.1 编写内容安全策略
 - en: 'In this section, you’ll learn how to build your own content security policy
     with some of the more commonly used directives. These directives follow a simple
     pattern: each is composed of at least one source. A *source* represents an acceptable
     location for the browser to retrieve content from. For example, the CSP header
     you saw in the previous section combined one fetch directive, `script-src`, with
     one source, as shown in figure 15.3.'
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，您将学习如何使用一些常用指令构建自己的内容安全策略。这些指令遵循一个简单的模式：每个指令由至少一个来源组成。一个*来源*代表浏览器可以从中检索内容的可接受位置。例如，您在上一节中看到的
+    CSP 头部将一个 fetch 指令 `script-src` 与一个来源组合在一起，如图15.3所示。
 - en: '![CH15_F03_Byrne](Images/CH15_F03_Byrne.png)'
+  id: totrans-16
   prefs: []
   type: TYPE_IMG
+  zh: '![CH15_F03_Byrne](Images/CH15_F03_Byrne.png)'
 - en: Figure 15.3 The anatomy of Alice’s simple content security policy
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 图15.3 Alice 的简单内容安全策略的解剖。
 - en: Why single quotes?
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 为什么使用单引号？
 - en: Many sources, such as `none`, use single quotes. This is not a convention; it
     is a requirement. The CSP specification requires these characters in the actual
     response header.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 许多来源，如 `none`，使用单引号。这不是一种约定，而是一种要求。CSP 规范要求在实际的响应头中包含这些字符。
 - en: The scope of this policy is very narrow, containing only one directive and one
     source. A policy this simple is not effective in the real world. A typical policy
     is composed of multiple directives, separated by a semicolon, with one or more
     sources, separated by a space.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个策略的范围非常狭窄，只包含一个指令和一个来源。这样简单的策略在现实世界中并不有效。一个典型的策略由多个指令组成，用分号分隔，一个或多个来源，用空格分隔。
 - en: 'How does the browser react when a directive has more than one source? Each
     additional source expands the attack surface. For example, the next policy combines
     `script-src` with a `none` source and a scheme source. A scheme source matches
     resources by protocols such as HTTP or HTTPS. In this case, the protocol is HTTPS
     (the semicolon suffix is required):'
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 浏览器在指令具有多个来源时会做出怎样的反应？每个额外的来源都会扩大攻击面。例如，下一个策略将`script-src`与`none`来源和一个方案来源结合在一起。方案来源通过协议（如HTTP或HTTPS）匹配资源。在这种情况下，协议是HTTPS（分号后缀是必需的）：
 - en: '[PRE0]'
+  id: totrans-22
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: 'A browser processes content matched by *any* source, not *every* source. This
     policy therefore permits the browser to fetch any script over HTTPS, despite the
     `none` source. The policy also fails to resist the following XSS payload:'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 浏览器处理与*任何*来源匹配的内容，而不是*每个*来源。因此，该策略允许浏览器通过HTTPS获取任何脚本，尽管有`none`来源。该策略也无法抵抗以下XSS有效载荷：
 - en: '[PRE1]'
+  id: totrans-24
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 'An effective content security policy must strike a balance between diverse
     forms of attack and the complexity of feature development. CSP accommodates this
     balance with three major directive categories:'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个有效的内容安全策略必须在各种攻击形式和功能开发复杂性之间取得平衡。CSP通过三个主要的指令类别来实现这种平衡：
 - en: Fetch directives
+  id: totrans-26
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 获取指令
 - en: Navigation directives
+  id: totrans-27
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 导航指令
 - en: Document directives
+  id: totrans-28
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 文档指令
 - en: The most commonly used directives are *fetch directives*. This category is the
     largest and arguably most useful.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 最常用的指令是*获取指令*。这个类别是最大的，也可以说是最有用的。
 - en: 15.1.1 Fetch directives
+  id: totrans-30
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 15.1.1 获取指令
 - en: A *fetch directive* limits how a browser fetches content. These directives provide
     many ways to avoid or minimize the impact of XSS attacks. CSP Level 2 supports
     11 fetch directives and 9 source types. For your sake and mine, it doesn’t make
@@ -146,77 +214,113 @@
     to only some directives, so this section covers only the most useful directives
     combined with the most relevant sources. It also covers a few combinations to
     avoid.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: '*获取指令*限制浏览器获取内容的方式。这些指令提供了许多避免或减少XSS攻击影响的方法。CSP Level 2支持11个获取指令和9种来源类型。为了你的利益和我的利益，涵盖所有99种组合是没有意义的。此外，一些来源类型只与一些指令相关，因此本节仅涵盖了与最相关来源结合的最有用指令。它还涵盖了一些要避免的组合。'
 - en: The default-src directive
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认-src指令
 - en: Every good policy begins with a `default-src` directive. This directive is special.
     A browser falls back to `default-src` when it does not receive an explicit fetch
     directive for a given content type. For example, a browser consults the `script-src`
     directive before it loads a script. If `script-src` is absent, the browser substitutes
     the `default-src` directive in its place.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个良好的策略都以`default-src`指令开头。这个指令很特殊。当浏览器没有收到给定内容类型的显式获取指令时，浏览器会退回到`default-src`。例如，浏览器在加载脚本之前会查看`script-src`指令。如果`script-src`不存在，浏览器会用`default-src`指令替代它。
 - en: Combining `default-src` with a `self` source is highly recommended. Unlike `none`,
     `self` permits the browser to process content from a specific place. The content
     must come from wherever the browser obtained the resource. For instance, `self`
     permits a page from Alice’s bank to process JavaScript from the same host.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 将`default-src`与`self`来源结合是非常推荐的。与`none`不同，`self`允许浏览器处理来自特定位置的内容。内容必须来自浏览器获取资源的地方。例如，`self`允许Alice银行的页面处理来自同一主机的JavaScript。
 - en: Specifically, the content must have the same *origin* as the resource. What
     is an origin? An origin is defined by the protocol, host, and port of the resource
     URL. (This concept applies to more than just CSP; you will see it again in chapter
     17.)
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 具体来说，内容必须与资源具有相同的*来源*。什么是来源？来源由资源URL的协议、主机和端口定义。（这个概念不仅适用于CSP；你将在第17章再次看到它。）
 - en: Table 15.1 compares the origin of [https://alice.com/path/](https://alice.com/path/)
     to the origins of six other URLs.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 表15.1比较了[https://alice.com/path/](https://alice.com/path/)的来源与其他六个URL的来源。
 - en: Table 15.1 Comparing origins with [https://alice.com/path/](https://alice.com/path/)
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 表15.1 将来源与[https://alice.com/path/](https://alice.com/path/)进行比较
 - en: '| URL | Matching origin? | Reason |'
+  id: totrans-38
   prefs: []
   type: TYPE_TB
+  zh: '| URL | 匹配的来源？ | 原因 |'
 - en: '| **http**://alice.com/path/ | No | Different protocol |'
+  id: totrans-39
   prefs: []
   type: TYPE_TB
+  zh: '| **http**://alice.com/path/ | No | Different protocol |'
 - en: '| https://**bob**.com/path/ | No | Different host |'
+  id: totrans-40
   prefs: []
   type: TYPE_TB
+  zh: '| https://**bob**.com/path/ | No | Different host |'
 - en: '| https://**bank.**alice.com/path/ | No | Different host |'
+  id: totrans-41
   prefs: []
   type: TYPE_TB
+  zh: '| https://**bank.**alice.com/path/ | No | Different host |'
 - en: '| https://alice.com**:8000**/path/ | No | Different port |'
+  id: totrans-42
   prefs: []
   type: TYPE_TB
+  zh: '| https://alice.com**:8000**/path/ | No | Different port |'
 - en: '| https://alice.com/**different_path**/ | Yes | Path differs |'
+  id: totrans-43
   prefs: []
   type: TYPE_TB
+  zh: '| https://alice.com/**different_path**/ | Yes | Path differs |'
 - en: '| https://alice.com/path/**?param=42** | Yes | Query string differs |'
+  id: totrans-44
   prefs: []
   type: TYPE_TB
+  zh: '| https://alice.com/path/**?param=42** | Yes | Query string differs |'
 - en: 'The following CSP header represents the foundation of your content security
     policy. This policy permits the browser to process only content fetched from the
     same origin as the resource. The browser even rejects inline scripts and stylesheets
     in the body of the response. This can’t prevent malicious content from being injected
     into the page, but it does prevent malicious content in the page from being executed:'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下CSP标头代表您内容安全策略的基础。该策略仅允许浏览器处理与资源相同来源的内容。浏览器甚至会拒绝响应主体中的内联脚本和样式表。这不能防止恶意内容被注入页面，但它确实防止页面中的恶意内容被执行：
 - en: '[PRE2]'
+  id: totrans-46
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: This policy offers a lot of protection but is fairly strict by itself. Most
     programmers want to use inline JavaScript and CSS to develop UI functionality.
     In the next section, I’ll show you how to strike a balance between security and
     feature development with content-specific policy exceptions.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 该策略提供了很多保护，但本身相当严格。大多数程序员希望使用内联JavaScript和CSS来开发UI功能。在下一节中，我将向您展示如何通过内容特定的策略异常在安全性和功能开发之间取得平衡。
 - en: The script-src directive
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: script-src指令
 - en: As its name implies, the `script-src` directive applies to JavaScript. This
     is an important directive because the primary goal of CSP is to provide a layer
     of defense against XSS. Earlier you saw Alice resist Mallory by combining `script-src`
@@ -224,53 +328,75 @@
     source blocks all JavaScript execution, including inline scripts as well as those
     from the same origin as the response. If your goal is to create an extremely secure
     yet boring site, this is the source for you.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如其名称所示，`script-src`指令适用于JavaScript。这是一个重要的指令，因为CSP的主要目标是提供一层防御，防止XSS。之前你看到Alice通过将`script-src`与`none`源结合来抵抗Mallory。这减轻了所有形式的XSS，但是过于保守。`none`源阻止所有JavaScript执行，包括内联脚本以及来自响应的相同来源的脚本。如果您的目标是创建一个极其安全但无聊的站点，这就是您的来源。
 - en: 'The `unsafe-inline` source occupies the opposite end of the risk spectrum.
     This source permits the browser to execute XSS vectors such as inline `<script>`
     tags, javascript: URLs, and inline event handlers. As the name warns, `unsafe-inline`
     is risky, and you should avoid it.'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '`unsafe-inline`来源占据了风险范围的相反端。该来源允许浏览器执行诸如内联`<script>`标签、javascript: URL和内联事件处理程序之类的XSS向量。正如名称所警告的，`unsafe-inline`是有风险的，您应该避免使用它。'
 - en: 'You should also avoid the `unsafe-eval` source. This source permits the browser
     to evaluate and execute any JavaScript expression from a string. This means all
     of the following are potential attack vectors:'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 你还应该避免`unsafe-eval`来源。该来源允许浏览器从字符串中评估和执行任何JavaScript表达式。这意味着以下所有内容都是潜在的攻击向量：
 - en: The `eval(string)` function
+  id: totrans-52
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`eval(string)`函数'
 - en: '`new Function(string)`'
+  id: totrans-53
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`new Function(string)`'
 - en: '`window.setTimeout(string, x)`'
+  id: totrans-54
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`window.setTimeout(string, x)`'
 - en: '`window.setInterval(string, x)`'
+  id: totrans-55
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`window.setInterval(string, x)`'
 - en: 'How do you strike a balance between the boredom of `none` and the risk of `unsafe-inline`
     and `unsafe-eval`? With a *nonce* (*number used once*). A nonce source, shown
     here in bold font, contains a unique random number instead of a static value such
     as `self` or `none`. By definition, this number is different for each response:'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 如何在`none`的无聊和`unsafe-inline`以及`unsafe-eval`的风险之间取得平衡？通过*nonce*（一次性数字）。粗体字体显示的nonce来源包含一个唯一的随机数，而不是`self`或`none`这样的静态值。根据定义，该数字对于每个响应都是不同的：
 - en: '[PRE3]'
+  id: totrans-57
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: 'If a browser receives this policy, it will execute inline scripts, but only
     those with a matching `nonce` attribute. For example, this policy would allow
     a browser to execute the following script because the `nonce` attribute, shown
     in bold is a match:'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果浏览器收到该策略，它将执行内联脚本，但只有带有匹配的`nonce`属性的脚本。例如，该策略将允许浏览器执行以下脚本，因为粗体显示的`nonce`属性是匹配的：
 - en: '[PRE4]'
+  id: totrans-59
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: How does a nonce source mitigate XSS? Suppose Alice adds this layer of defense
     to bank.alice.com. Mallory then finds yet another XSS vulnerability and plans
     to inject a malicious script into Bob’s browser again. To successfully carry out
@@ -279,305 +405,475 @@
     Alice’s server hasn’t even generated it yet. Furthermore, the chance of Mallory
     guessing the correct number is next to nothing; gambling in Las Vegas would give
     her a better chance of getting rich than targeting Alice’s bank.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个 nonce 来源如何缓解 XSS？假设 Alice 为 bank.alice.com 添加了这一层防御。Mallory 然后发现了另一个 XSS
+    漏洞，并计划再次向 Bob 的浏览器注入恶意脚本。要成功执行此攻击，Mallory 必须使用 Alice 将要从 Alice 那里收到的相同 nonce 准备脚本。Mallory
+    事先无法知道 nonce，因为 Alice 的服务器甚至还没有生成它。此外，Mallory 猜对数字的机会几乎为零；在拉斯维加斯赌博会给她比针对 Alice
+    银行更好的发财机会。
 - en: A nonce source mitigates XSS while enabling inline script execution. It is the
     best of both worlds, providing safety like `none` and facilitating feature development
     like `unsafe-inline`.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个 nonce 来源可以缓解 XSS，同时使内联脚本执行。这是最佳选择，既提供了像 `none` 一样的安全性，又像 `unsafe-inline`
+    一样促进了功能开发。
 - en: The style-src directive
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: style-src 指令
 - en: As the name implies, `style-src` controls how the browser processes CSS. Like
     JavaScript, CSS is a standard tool web developers deliver functionality with;
     it may also be weaponized by XSS attacks.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如名称所示，`style-src` 控制浏览器如何处理 CSS。与 JavaScript 一样，CSS 是 Web 开发人员交付功能的标准工具；它也可能被
+    XSS 攻击利用。
 - en: 'Suppose the 2024 US presidential election is underway. The entire election
     boils down to two candidates: Bob and Eve. For the first time ever, voters may
     cast their votes online at Charlie’s new website, ballot.charlie.com. Charlie’s
     content security policy blocks all JavaScript execution but fails to address CSS.'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设 2024 年美国总统选举正在进行中。整个选举只有两个候选人：Bob 和 Eve。有史以来第一次，选民可以在 Charlie 的新网站 ballot.charlie.com
+    上线上投票。Charlie 的内容安全策略阻止了所有 JavaScript 执行，但未解决 CSS 问题。
 - en: Mallory identifies yet another reflected XSS opportunity. She emails Alice a
     malicious link. Alice clicks the link and receives the HTML page shown in listing
     15.1\. This page contains a drop-down list with both candidates, authored by Charlie;
     it also contains an injected stylesheet, authored by Mallory.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: Mallory 发现了另一个反射型 XSS 机会。她给 Alice 发送了一个恶意链接。Alice 点击链接并收到了列表 15.1 中显示的 HTML
+    页面。该页面包含了由 Charlie 撰写的包含两个候选人的下拉列表；它还包含了由 Mallory 植入的样式表。
 - en: Mallory’s stylesheet dynamically sets the background of whichever option Alice
     checks. This event triggers a network request for a background image. Unfortunately,
     the network request also reveals Alice’s vote to Mallory in the form of a query
     string parameter. Mallory now knows who Alice voted for.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: Mallory 的样式表动态设置了 Alice 所选选项的背景。这个事件触发了一个网络请求来获取背景图像。不幸的是，网络请求还以查询字符串参数的形式向
+    Mallory 透露了 Alice 的投票情况。Mallory 现在知道了 Alice 投票给了谁。
 - en: Listing 15.1 Mallory injects a malicious stylesheet into Alice’s browser
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 15.1 Mallory 在 Alice 的浏览器中注入恶意样式表
 - en: '[PRE5]'
+  id: totrans-68
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: ❶ Mallory’s injected stylesheet
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ Mallory 注入的样式表
 - en: ❷ Triggered if Alice votes for Bob
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 如果 Alice 为 Bob 投票，则触发
 - en: ❸ Sends Alice’s choice to Mallory
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 将 Alice 的选择发送给 Mallory
 - en: ❹ Triggered if Alice votes for Eve
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 如果 Alice 为 Eve 投票
 - en: ❺ Sends Alice’s choice to Mallory
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: ❺ 将 Alice 的选择发送给 Mallory
 - en: ❻ Two presidential candidates
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: ❻ 两位总统候选人
 - en: 'Clearly, the `style-src` directive should be taken seriously, like `script-src`.
     The `style-src` directive can be combined with most of the same sources as `script-src`,
     including `self`, `none`, `unsafe-inline`, and a nonce source. For example, the
     following CSP header illustrates a `style-src` directive with a nonce source,
     shown in bold font:'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 显然，`style-src` 指令应该像 `script-src` 一样受到重视。`style-src` 指令可以与大多数与 `script-src`
+    相同的源结合使用，包括 `self`、`none`、`unsafe-inline` 和一个 nonce 来源。例如，以下 CSP 标头说明了一个带有 nonce
+    来源的 `style-src` 指令，如粗体所示：
 - en: '[PRE6]'
+  id: totrans-76
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: 'This header permits a browser to apply the following stylesheet. As shown in
     bold, the `nonce` attribute value is a match:'
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 此标题允许浏览器应用以下样式表。如粗体所示，`nonce` 属性值匹配：
 - en: '[PRE7]'
+  id: totrans-78
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: The img-src directive
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: img-src 指令
 - en: The `img-src` directive determines how the browser fetches images. This directive
     is often useful for sites hosting images and other static content from a third-party
     site known as a *content delivery network* (*CDN*). Hosting static content from
     a CDN can decrease page load times, cut costs, and counteract traffic spikes.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: '`img-src` 指令确定浏览器如何获取图像。对于从第三方站点（称为 *内容交付网络* (*CDN*)）托管图像和其他静态内容的站点，此指令通常很有用。从
+    CDN 托管静态内容可以减少页面加载时间、降低成本并抵消流量峰值。'
 - en: 'The following example demonstrates how to integrate with a CDN. This header
     combines an `img-src` directive with a host source. A host source permits the
     browser to pull content from a specific host or set of hosts:'
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下示例演示了如何与 CDN 集成。此标头结合了一个 `img-src` 指令和一个主机源。主机源允许浏览器从特定主机或一组主机获取内容：
 - en: '[PRE8]'
+  id: totrans-82
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 'The following policy is an example of how complicated host sources can be.
     Asterisks match subdomains and ports. URL schemes and port numbers are optional.
     Hosts can be specified by name or IP address:'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 下面的策略是主机源可以变得多么复杂的一个示例。星号匹配子域和端口。URL 方案和端口号是可选的。主机可以通过名称或 IP 地址指定：
 - en: '[PRE9]'
+  id: totrans-84
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: Many other fetch directives are not as useful as those covered so far. Table
     15.2 summarizes them. In general, I recommend omitting these directives from the
     CSP header. This way, the browser falls back to `default-src`, implicitly combining
     each one with `self`. You, of course, may need to relax some of these limitations
     on a case-by-case basis in the real world.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 许多其他获取指令并不像迄今为止涵盖的那些那么有用。表 15.2 总结了它们。一般来说，我建议将这些指令从 CSP 标头中省略。这样，浏览器会回退到 `default-src`，隐式地将每个指令与
+    `self` 结合起来。当然，在现实世界中，你可能需要根据具体情况放宽一些这些限制。
 - en: Table 15.2 Other fetch directives and the content they govern
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 15.2 其他获取指令及其管辖内容
 - en: '| CSP directive | Relevance |'
+  id: totrans-87
   prefs: []
   type: TYPE_TB
+  zh: '| CSP 指令 | 相关性 |'
 - en: '| object-src | <applet>, <embed>, and <object> |'
+  id: totrans-88
   prefs: []
   type: TYPE_TB
+  zh: '| object-src | <applet>, <embed>, 和 <object> |'
 - en: '| media-src | <audio> and <video> |'
+  id: totrans-89
   prefs: []
   type: TYPE_TB
+  zh: '| media-src | <audio> 和 <video> |'
 - en: '| frame-src | <frame> and <iframe> |'
+  id: totrans-90
   prefs: []
   type: TYPE_TB
+  zh: '| frame-src | <frame> 和 <iframe> |'
 - en: '| font-src | @font-face |'
+  id: totrans-91
   prefs: []
   type: TYPE_TB
+  zh: '| font-src | @font-face |'
 - en: '| connect-src | Various script interfaces |'
+  id: totrans-92
   prefs: []
   type: TYPE_TB
+  zh: '| connect-src | 各种脚本接口 |'
 - en: '| child-src | Web workers and nested contexts |'
+  id: totrans-93
   prefs: []
   type: TYPE_TB
+  zh: '| child-src | Web workers 和嵌套上下文 |'
 - en: Navigation and document directives
+  id: totrans-94
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 导航和文档指令
 - en: There are only two navigation directives. Unlike fetch directives, when a navigation
     directive is absent, the browser does not fall back to `default-src` in any way.
     Your policy should therefore include these directives explicitly.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 导航指令仅有两个。与获取指令不同，当导航指令缺失时，浏览器不会以任何方式回退到 `default-src`。因此，你的策略应该明确包含这些指令。
 - en: The `form-action` directive controls where a user may submit a form. Combining
     this directive with a `self` source is a reasonable default. This allows everyone
     on your team to get their work done while preventing some types of HTML-based
     XSS.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: '`form-action` 指令控制用户可以提交表单的位置。将此指令与 `self` 源结合使用是一个合理的默认值。这样可以使你团队中的每个人都能完成他们的工作，同时防止某些类型的基于
+    HTML 的 XSS 攻击。'
 - en: The `frame-ancestors` directive controls where a user may navigate. I cover
     this directive in chapter 18.
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: '`frame-ancestors` 指令控制用户可以导航的位置。我在第18章中涵盖了这个指令。'
 - en: Document directives are used to limit the properties of a document or web worker.
     These directives are not used often. Table 15.3 lists all three of them and some
     safe default values.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 文档指令用于限制文档或 Web worker 的属性。这些指令并不经常使用。表 15.3 列出了所有三个指令及一些安全默认值。
 - en: Table 15.3 Document directives and the content they govern
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 15.3 文档指令及其管辖内容
 - en: '| CSP directive | Safe default | Relevance |'
+  id: totrans-100
   prefs: []
   type: TYPE_TB
+  zh: '| CSP 指令 | 安全默认值 | 相关性 |'
 - en: '| base-uri | self | <base> |'
+  id: totrans-101
   prefs: []
   type: TYPE_TB
+  zh: '| base-uri | self | <base> |'
 - en: '| plugin-types | Omit and combine object-src with none | <embed>, <object>,
     and <applet> |'
+  id: totrans-102
   prefs: []
   type: TYPE_TB
+  zh: '| plugin-types | 省略并与 none 结合 | <embed>, <object>, 和 <applet> |'
 - en: '| sandbox | (No value) | <iframe> sandbox attribute |'
+  id: totrans-103
   prefs: []
   type: TYPE_TB
+  zh: '| sandbox | (无值) | <iframe> 的 sandbox 属性 |'
 - en: Deploying a content security policy is extremely easy. In the next section,
     you’ll learn how to do this with a lightweight Django extension package.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 部署内容安全策略非常容易。在下一节中，你将学习如何使用一个轻量级的 Django 扩展包来实现这一点。
 - en: 15.2 Deploying a policy with django-csp
+  id: totrans-105
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.2 使用 django-csp 部署策略
 - en: 'You can deploy a content security policy in minutes with `django-csp`. Run
     this command from within your virtual environment to install `django-csp`:'
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可以在几分钟内使用 `django-csp` 部署内容安全策略。从你的虚拟环境中运行以下命令来安装 `django-csp`：
 - en: '[PRE10]'
+  id: totrans-107
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: 'Next, open your setting file and add the following middleware component to
     `MIDDLEWARE`. `CSPMiddleware` is responsible for adding a `Content-Security-Policy`
     header to responses. This component is configured by many settings variables,
     each prefixed with `CSP_`:'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，打开你的设置文件，并将以下中间件组件添加到 `MIDDLEWARE`。`CSPMiddleware` 负责向响应添加一个 `Content-Security-Policy`
+    头。这个组件由许多设置变量配置，每个都以 `CSP_` 为前缀：
 - en: '[PRE11]'
+  id: totrans-109
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: 'The `CSP_DEFAULT_SRC` setting instructs `django-csp` to add a `default-src`
     directive to each `Content-Security-Policy` header. This setting expects a tuple
     or list representing one or many sources. Start your policy by adding this line
     of code to your `settings` module:'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: '`CSP_DEFAULT_SRC` 设置指示 `django-csp` 向每个 `Content-Security-Policy` 头添加一个 `default-src`
+    指令。这个设置期望一个代表一个或多个源的元组或列表。通过在你的 `settings` 模块中添加以下代码来开始你的策略：'
 - en: '[PRE12]'
+  id: totrans-111
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: 'The `CSP_INCLUDE_NONCE_IN` setting defines a tuple or list of fetch directives.
     This collection informs `django-csp` what to combine a nonce source with. This
     means you can permit the browser to process inline scripts and inline stylesheets
     independently. Add the following line of code to your `settings` module. This
     permits the browser to process scripts and stylesheets with matching `nonce` attributes:'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: '`CSP_INCLUDE_NONCE_IN` 设置定义了一个元组或列表的获取指令。这个集合告诉 `django-csp` 与哪些内容结合 `nonce`
+    来使用。这意味着你可以允许浏览器独立处理内联脚本和内联样式表。将以下代码添加到你的 `settings` 模块。这允许浏览器处理具有匹配 `nonce` 属性的脚本和样式表：'
 - en: '[PRE13]'
+  id: totrans-113
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: 'How do you obtain a valid nonce in your template? `django-csp` adds a `csp_nonce`
     property to every request object. Put the following code in any template to exercise
     this feature:'
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 在你的模板中如何获取有效的 nonce？`django-csp` 为每个请求对象添加了一个 `csp_nonce` 属性。将以下代码放入任何模板中以使用这个功能：
 - en: '[PRE14]'
+  id: totrans-115
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: ❶ Dynamically embeds a nonce in the response
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 在响应中动态嵌入一个 nonce
 - en: 'By adding `script-src` and `style-src` directives to a CSP header, the browser
     no longer falls back to `default-src` when encountering a script or style tag.
     For this reason, you must now explicitly tell `django-csp` to send these directives
     with a `self` source in addition to a `nonce` source:'
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过向 CSP 头添加 `script-src` 和 `style-src` 指令，浏览器在遇到脚本或样式标签时不再回退到 `default-src`。因此，你现在必须明确告诉
+    `django-csp` 通过 `self` 源和 `nonce` 源发送这些指令：
 - en: '[PRE15]'
+  id: totrans-118
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 'Next, add the following line of code in your `settings` module to accommodate
     a CDN:'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，在你的 `settings` 模块中添加以下代码以适应 CDN：
 - en: '[PRE16]'
+  id: totrans-120
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: 'Finally, configure both navigation directives with the following configuration
     settings:'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，使用以下配置设置同时导航指令：
 - en: '[PRE17]'
+  id: totrans-122
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: 'Restart your Django project and run the following code in an interactive Python
     shell. This code requests a resource and displays the details of its CSP header.
     The header carries six directives, shown in bold font:'
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 重启你的 Django 项目，并在交互式 Python shell 中运行以下代码。这段代码请求一个资源，并显示其 CSP 头的详细信息。该头部包含了六个指令，以粗体字显示：
 - en: '[PRE18]'
+  id: totrans-124
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: ❶ Requests a resource
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 请求一个资源
 - en: ❷ Programmatically accesses response header
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 以编程方式访问响应头
 - en: ❸ Displays directives
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 显示指令
 - en: Ideally, one policy would fit every resource on your site; in reality, you’re
     probably going to have corner cases. Unfortunately, some programmers accommodate
     every corner case by simply relaxing the global policy. Over time, the policy
     for a large site ends up losing its meaning after accumulating too many exemptions.
     The easiest way to avoid this situation is to individualize the policy for exceptional
     resources.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 理想情况下，一个策略应该适用于站点上的每一个资源；但实际上，你可能会遇到一些特例。不幸的是，一些程序员为了适应每一个特例而简单地放松了全局策略。随着时间的推移，一个大型站点的策略在积累了太多豁免情况后失去了意义。避免这种情况的最简单方法是为异常资源定制策略。
 - en: 15.3 Using individualized policies
+  id: totrans-129
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 使用个性化策略 15.3
 - en: The `django-csp` package features decorators designed to modify or replace the
     `Content-Security-Policy` header for an individual view. These decorators are
     intended to support CSP corner cases for class-based and function-based views
     alike.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: '`django-csp` 包具有旨在修改或替换个别视图的 `Content-Security-Policy` 头的装饰器。这些装饰器旨在支持基于类和基于函数的视图的
+    CSP 特例。'
 - en: Here’s a corner case. Suppose you want to serve the web page shown in the following
     listing. This page links to one of Google’s public stylesheets, shown here in
     bold font. The stylesheet uses one of Google’s custom fonts.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是一个特殊情况。假设你想要提供下面列表中显示的网页。这个页面链接到谷歌的一个公共样式表，以粗体字显示在这里。该样式表使用了谷歌的自定义字体。
 - en: Listing 15.2 A web page embeds a stylesheet and font from Google
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 显示 15.2 网页嵌入了来自谷歌的样式表和字体
 - en: '[PRE19]'
+  id: totrans-133
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: ❶ A public stylesheet hosted by Google
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 由谷歌托管的公共样式表
 - en: ❷ An inline stylesheet
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 一个内联样式表
 - en: 'The global policy defined in the previous section forbids the browser from
     requesting Google’s stylesheet and font. Now suppose you want to create an exception
     for both resources without modifying the global policy. The following code demonstrates
@@ -585,185 +881,286 @@
     This example appends a host source to the `style-src` directive and adds a `font-src`
     directive. Only the response of the `CspUpdateView` is affected; the global policy
     remains intact:'
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 在前一节中定义的全局策略中，禁止浏览器请求 Google 的样式表和字体。现在假设您想要为这两个资源创建一个异常，而不修改全局策略。以下代码演示了如何使用名为
+    `csp_update` 的 `django-csp` 装饰器来适应此场景。此示例将主机源附加到 `style-src` 指令，并添加了一个 `font-src`
+    指令。只有 `CspUpdateView` 的响应会受到影响；全局策略保持不变：
 - en: '[PRE20]'
+  id: totrans-137
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: ❶ Creates decorator dynamically
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 动态创建装饰器
 - en: ❷ Applies decorator to view
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 对视图应用装饰器
 - en: 'The `csp_replace` decorator replaces a directive for a single view. The following
     code tightens a policy by replacing all `script-src` sources with `none`, disabling
     JavaScript execution entirely. All other directives are unaffected:'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: '`csp_replace` 装饰器为单个视图替换了一个指令。以下代码通过将所有 `script-src` 源替换为 `none` 来加强策略，完全禁用了
+    JavaScript 执行。所有其他指令不受影响：'
 - en: '[PRE21]'
+  id: totrans-141
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: ❶ Creates decorator dynamically
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 动态创建装饰器
 - en: ❷ Applies decorator to view
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 对视图应用装饰器
 - en: 'The `csp` decorator replaces the entire policy for a single view. The following
     code overrides the global policy with a simple policy combining `default-src`
     with `self`:'
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: '`csp` 装饰器为单个视图替换了整个策略。以下代码用 `default-src` 和 `self` 结合的简单策略覆盖了全局策略：'
 - en: '[PRE22]'
+  id: totrans-145
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: ❶ Creates and applies decorator
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 创建并应用装饰器
 - en: In all three examples, the keyword argument for the decorator accepts a string.
     This argument can also be a sequence of strings to accommodate multiple sources.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这三个示例中，装饰器的关键字参数接受一个字符串。此参数也可以是一个字符串序列，以适应多个源。
 - en: 'The `csp_exempt` decorator omits the CSP header for an individual view. Obviously,
     this should be used only as a last resort:'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: '`csp_exempt` 装饰器省略了单个视图的 CSP 标头。显然，这只应作为最后的手段使用：'
 - en: '[PRE23]'
+  id: totrans-149
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: ❶ Creates and applies decorator
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 创建并应用装饰器
 - en: 'The `CSP_EXCLUDE_URL_PREFIXES` setting omits the CSP header for a set of resources.
     The value of this setting is a tuple of URL prefixes. `django-csp` ignores any
     request with a URL matching any prefix in the tuple. Obviously, you need to be
     very careful if you have to use this feature:'
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: '`CSP_EXCLUDE_URL_PREFIXES` 设置省略了一组资源的 CSP 标头。此设置的值是 URL 前缀的元组。`django-csp`
+    会忽略与元组中任何前缀匹配的请求。显然，如果必须使用此功能，您需要非常小心：'
 - en: '[PRE24]'
+  id: totrans-152
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: So far, you’ve seen how fetch, document, and navigation directives restrict
     what a browser can do with specific types of content. On the other hand, reporting
     directives are used to create and manage a feedback loop between the browser and
     the server.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，您已经了解了 fetch、document 和 navigation 指令如何限制浏览器对特定类型内容的操作。另一方面，报告指令用于在浏览器和服务器之间创建和管理反馈循环。
 - en: 15.4 Reporting CSP violations
+  id: totrans-154
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.4 报告 CSP 违规行为
 - en: If your policy blocks an active XSS attack, you obviously want to know about
     it immediately. The CSP specification facilitates this with a reporting mechanism.
     CSP is therefore more than just an additional layer of defense; it also informs
     you when other layers such as output escaping have failed.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您的策略阻止了一次活跃的 XSS 攻击，您显然希望立即知道。CSP 规范通过报告机制实现了这一点。因此，CSP 不仅仅是一种额外的防御层；它还在其他层次（如输出转义）失败时通知您。
 - en: 'CSP reporting boils down to a couple of reporting directives and an additional
     response header. The `report-uri` directive, shown here in bold, carries one or
     more reporting endpoint URIs. Browsers respond to this directive by posting CSP
     violation reports to use each endpoint:'
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: CSP 报告归结为几个报告指令和一个附加的响应头。在这里以粗体显示的 `report-uri` 指令携带一个或多个报告端点 URI。浏览器会通过将 CSP
+    违规报告发布到每个端点来响应此指令：
 - en: '[PRE25]'
+  id: totrans-157
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE25]'
 - en: WARNING The `report-uri` directive has been deprecated. This directive is slowly
     being replaced by the `report-to` directive in combination with a `Report-To`
     response header. Unfortunately, `report-to` and `Report-To` are not supported
     by all browsers or `django-csp` at the time of this writing. MDN Web Docs ([http://mng.bz/K4eO](http://mng.bz/K4eO))
     maintains the latest information as to which browsers support this functionality.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：`report-uri` 指令已被弃用。此指令正在逐渐被 `report-to` 指令与 `Report-To` 响应头组合取代。不幸的是，截至本文撰写时，`report-to`
+    和 `Report-To` 并不被所有浏览器或 `django-csp` 支持。MDN Web 文档 ([http://mng.bz/K4eO](http://mng.bz/K4eO))
+    维护着关于哪些浏览器支持此功能的最新信息。
 - en: 'The `CSP_REPORT_URI` setting instructs `django-csp` to add a `report-uri` directive
     to the CSP header. The value of this setting is an iterable of URIs:'
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: '`CSP_REPORT_URI` 设置指示 `django-csp` 在 CSP 头部中添加一个 `report-uri` 指令。这个设置的值是一个
+    URI 的可迭代对象：'
 - en: '[PRE26]'
+  id: totrans-160
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE26]'
 - en: 'Third-party reporting aggregators such as httpschecker.net and report-uri.com
     offer commercial reporting endpoints. These vendors are able to detect malicious
     reporting activity and withstand traffic spikes. They also convert violation reports
     into useful graphs and charts:'
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三方报告聚合商，如 httpschecker.net 和 report-uri.com，提供商业报告端点。这些供应商能够检测到恶意报告活动并抵御流量峰值。他们还将违规报告转换成有用的图表：
 - en: '[PRE27]'
+  id: totrans-162
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE27]'
 - en: 'Here is an example of a CSP violation report generated by Chrome. In this case,
     an image hosted by mallory.com was blocked by a policy served from alice.com:'
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是由 Chrome 生成的一个 CSP 违规报告的示例。在这种情况下，由 mallory.com 托管的图像被来自 alice.com 的策略阻止：
 - en: '[PRE28]'
+  id: totrans-164
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE28]'
 - en: WARNING CSP reporting is a great way to gather feedback, but a single CSP violation
     on a popular page can increase site traffic dramatically. Please don’t execute
     a DOS attack on yourself after reading this book.
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 CSP 报告是收集反馈的一个好方法，但是在一个流行页面上发生的单个 CSP 违规可能会大大增加站点流量。请在阅读本书后不要对自己执行 DOS 攻击。
 - en: 'The `CSP_REPORT_PERCENTAGE` setting is used to throttle browser reporting behavior.
     This setting accepts a float between 0 and 1\. This number represents the percentage
     of responses to receive a `report-uri` directive. For example, assigning this
     to 0 omits the `report-uri` directive from all responses:'
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: '`CSP_REPORT_PERCENTAGE` 设置用于控制浏览器报告行为的节流。此设置接受介于 0 和 1 之间的浮点数。这个数字代表要接收 `report-uri`
+    指令的响应的百分比。例如，将其分配给 0 将从所有响应中省略 `report-uri` 指令：'
 - en: '[PRE29]'
+  id: totrans-167
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE29]'
 - en: 'The `CSP_REPORT_PERCENTAGE` setting requires you to replace `CSPMiddleware`
     with `RateLimitedCSPMiddleware`:'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: '`CSP_REPORT_PERCENTAGE` 设置要求你用 `RateLimitedCSPMiddleware` 替换 `CSPMiddleware`：'
 - en: '[PRE30]'
+  id: totrans-169
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE30]'
 - en: ❶ Removes CSPMiddleware
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 移除了 CSPMiddleware
 - en: ❷ Adds RateLimited-CSPMiddleware
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 添加了 RateLimited-CSPMiddleware
 - en: In some situations, you may want to deploy a policy without enforcing it. For
     example, suppose you are working on a legacy site. You have defined a policy,
     and now you want to estimate how much work it will take to bring the site into
     compliance. To solve this problem, you can deploy your policy with a `Content-Security-Policy-Report-Only`
     header instead of a `Content-Security-Policy` header.
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 在某些情况下，你可能希望部署一个策略而不执行它。例如，假设你正在处理一个旧的站点。你已经定义了一个策略，现在你想估算一下将站点调整到符合规定需要多少工作。为了解决这个问题，你可以使用
+    `Content-Security-Policy-Report-Only` 头部而不是 `Content-Security-Policy` 头部来部署你的策略。
 - en: '[PRE31]'
+  id: totrans-173
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE31]'
 - en: 'The `CSP_REPORT_ONLY` setting informs `django-csp` to deploy the policy with
     a `Content-Security-Policy-Report-Only` header instead of a normal CSP header.
     The browser observes the policy, reports violations if configured to do so, but
     it does not enforce the policy. The `Content-Security-Policy-Report-Only` header
     is useless without a `report-uri` directive:'
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: '`CSP_REPORT_ONLY` 设置告知 `django-csp` 使用 `Content-Security-Policy-Report-Only`
+    头部部署策略，而不是普通的 CSP 头部。浏览器观察策略，如果配置了报告，则报告违规，但不执行策略。`Content-Security-Policy-Report-Only`
+    头部没有 `report-uri` 指令是无用的：'
 - en: '[PRE32]'
+  id: totrans-175
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE32]'
 - en: So far, you’ve learned a lot about CSP Level 2 ([www.w3.org/TR/CSP2/](https://www.w3.org/TR/CSP2/)).
     This document is publicly endorsed by the W3C as a Recommendation. A standard
     must withstand extensive review before it can receive this status. The next section
     covers some of CSP Level 3 ([www.w3.org/TR/CSP3/](https://www.w3.org/TR/CSP3/)).
     At the time of this writing, CSP Level 3 is a W3C Working Draft. A document at
     this stage is still in review.
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，你已经学到了很多关于 CSP Level 2 ([www.w3.org/TR/CSP2/](https://www.w3.org/TR/CSP2/))
+    的知识。这份文档已经被 W3C 公开认可为一项推荐标准。一项标准必须经受严格的审查才能获得这个地位。接下来的部分涵盖了一些 CSP Level 3 ([www.w3.org/TR/CSP3/](https://www.w3.org/TR/CSP3/))。在撰写本文时，CSP
+    Level 3 还处于 W3C 工作草案阶段。这个阶段的文档仍在审查中。
 - en: 15.5 Content Security Policy Level 3
+  id: totrans-177
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 15.5 内容安全策略 Level 3
 - en: This section covers a few of the more stable features of CSP Level 3\. These
     features are the future of CSP and are presently implemented by most browsers.
     Unlike the features covered previously, these address man-in-the-middle threats
     rather than XSS.
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 本节涵盖了 CSP Level 3 的一些比较稳定的特性。这些特性是 CSP 的未来，并且目前被大多数浏览器实现。与之前介绍的特性不同，这些特性解决的是中间人攻击而不是
+    XSS。
 - en: 'The `upgrade-insecure-requests` directive instructs the browser to upgrade
     the protocol of certain URLs from HTTP to HTTPS. This applies to non-navigational
     URLs for resources such as images, stylesheets, and fonts. This also applies to
@@ -771,66 +1168,105 @@
     submissions. The browser will not upgrade the protocol for navigational requests
     to other domains. In other words, on a page from alice.com, the browser will upgrade
     the protocol for a link to alice.com but not bob.com:'
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: '`upgrade-insecure-requests` 指令指示浏览器将某些 URL 的协议从 HTTP 升级到 HTTPS。这适用于资源的非导航 URL，例如图像、样式表和字体。这也适用于页面相同域的导航
+    URL，包括超链接和表单提交。浏览器不会为其他域的导航请求升级协议。换句话说，在 alice.com 的页面上，浏览器将升级到 alice.com 的链接但不会升级到
+    bob.com：'
 - en: '[PRE33]'
+  id: totrans-180
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE33]'
 - en: 'The `CSP_UPGRADE_INSECURE_REQUESTS` setting tells `django-csp` to add the `upgrade-insecure-requests`
     directive to the response. The default value for this setting is `False`:'
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: '`CSP_UPGRADE_INSECURE_REQUESTS` 设置告诉 `django-csp` 在响应中添加 `upgrade-insecure-requests`
+    指令。此设置的默认值为 `False`：'
 - en: '[PRE34]'
+  id: totrans-182
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE34]'
 - en: 'Alternatively, instead of upgrading the protocol, you can block the request
     altogether. The `block-all-mixed-content` directive forbids the browser from fetching
     resources over HTTP from a page requested over HTTPS:'
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者，您可以完全阻止请求，而不是升级协议。 `block-all-mixed-content` 指令禁止浏览器从 HTTPS 请求的页面上的 HTTP
+    获取资源：
 - en: '[PRE35]'
+  id: totrans-184
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE35]'
 - en: The `CSP_BLOCK_ALL_MIXED_CONTENT` setting adds the `block-all-mixed-content`
     directive to the CSP response header. The default value for this setting is `False:`
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: '`CSP_BLOCK_ALL_MIXED_CONTENT` 设置将 `block-all-mixed-content` 指令添加到 CSP 响应头中。此设置的默认值为
+    `False:`'
 - en: '[PRE36]'
+  id: totrans-186
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE36]'
 - en: Browsers ignore `block-all-mixed-content` when `upgrade-insecure-requests` is
     present; these directives are intended to be mutually exclusive. You should therefore
     configure your system to use the one that best suits your needs. If you’re working
     on a legacy site with a lot of HTTP URLs, I recommend `upgrade-insecure-requests`.
     This allows you to migrate URLs to HTTPS without breaking anything in the interim.
     In all other situations, I recommend `block-all-mixed-content`.
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 当 `upgrade-insecure-requests` 存在时，浏览器会忽略 `block-all-mixed-content`；这些指令旨在互斥。因此，你应该配置系统以使用最适合你需求的那一个。如果你正在处理具有大量
+    HTTP URL 的传统网站，我建议使用 `upgrade-insecure-requests`。这样可以让你在过渡期间将 URL 迁移到 HTTPS 而不会破坏任何内容。在其他所有情况下，我建议使用
+    `block-all-mixed-content`。
 - en: Summary
+  id: totrans-188
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 总结
 - en: Policies are composed of directives; directives are composed of sources.
+  id: totrans-189
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 策略由指令组成；指令由源组成。
 - en: Each additional source expands the attack surface.
+  id: totrans-190
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 每个额外的源都会扩大攻击面。
 - en: An origin is defined by the protocol, host, and port of a URL.
+  id: totrans-191
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 源由 URL 的协议、主机和端口定义。
 - en: A nonce source strikes a balance between `none` and `unsafe-inline`.
+  id: totrans-192
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一次性源在 `none` 和 `unsafe-inline` 之间取得平衡。
 - en: CSP is one of the cheapest layers of defense you can invest in.
+  id: totrans-193
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: CSP 是你可以投资的最廉价的防御层之一。
 - en: Reporting directives inform you when other defense layers have failed.
+  id: totrans-194
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 报告指令会在其他防御层失败时通知您。

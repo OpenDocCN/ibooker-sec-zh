@@ -167,16 +167,20 @@
   id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 设计用于共享用户内容的系统特别容易受到这种 XSS 的影响。此类系统包括社交媒体网站、论坛、博客和协作产品。像 Mallory 这样的攻击者通常比这更加激进。例如，这一次
+    Mallory 等待 Alice 无意中陷入陷阱。在现实世界中，攻击者通常会通过电子邮件或聊天主动引诱受害者访问注入的内容。
 - en: In this section, Mallory targeted Alice through Bob’s site. In the next section,
     Mallory targets Bob through one of Alice’s sites.
   id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，Mallory 通过 Bob 的网站攻击了 Alice。在下一节中，Mallory 将通过 Alice 的一个网站攻击 Bob。
 - en: 14.1.2 Reflected XSS
   id: totrans-26
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.1.2 反射型 XSS
 - en: Suppose Bob is a user of Alice’s new website, search.alice.com. Like google.com,
     this site accepts Bob’s search terms via URL query parameters. In return, Bob
     receives an HTML page containing search results. As you would expect, Bob’s search
@@ -184,6 +188,8 @@
   id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设 Bob 是 Alice 新网站 search.alice.com 的用户。与 google.com 一样，该网站通过 URL 查询参数接受 Bob
+    的搜索词。作为回报，Bob 收到一个包含搜索结果的 HTML 页面。正如你所预料的那样，Bob 的搜索词被结果页面反映出来。
 - en: 'Unlike other search sites, the results page for search.alice.com renders the
     user’s search terms without escaping them. Mallory notices this and prepares the
     following URL. The query parameter for this URL carries malicious JavaScript,
@@ -192,6 +198,9 @@
   id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 与其他搜索网站不同，search.alice.com 的结果页面会渲染用户的搜索词而不进行转义。Mallory 注意到了这一点，并准备了以下 URL。此
+    URL 的查询参数携带了恶意 JavaScript，通过 URL 编码进行了混淆。这个脚本旨在将 Bob 从 search.alice.com 带到另一个冒名顶替的网站
+    search.mallory.com：
 - en: '[PRE1]'
   id: totrans-29
   prefs: []
@@ -201,6 +210,7 @@
   id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 嵌入 URL 的脚本
 - en: Mallory sends this URL to Bob in a text message. He takes the bait and taps
     the link, inadvertently sending Mallory’s malicious code to search.alice.com.
     The site immediately reflects Mallory’s malicious code back to Bob. Bob’s browser
@@ -210,6 +220,9 @@
   id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: Mallory 将这个 URL 发送给 Bob 的短信。他上钩了，点击了链接，无意中将 Mallory 的恶意代码发送给了 search.alice.com。网站立即将
+    Mallory 的恶意代码反射给了 Bob。Bob 的浏览器在渲染结果页面时执行了恶意脚本。最后，他被带到了 search.mallory.com，Mallory
+    进一步利用了他。
 - en: This attack is an example of *reflected XSS*. The attacker initiates this form
     of XSS by tricking the victim into sending a malicious payload to a vulnerable
     site. Instead of persisting the payload, the site immediately reflects the payload
@@ -217,15 +230,19 @@
   id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 此攻击是反射型 XSS 的一个例子。攻击者通过诱使受害者向易受攻击的站点发送恶意有效载荷来发起这种形式的 XSS。该站点不会保留有效载荷，而是立即以可执行形式将有效载荷反射给用户。图
+    14.2 描绘了这种攻击。
 - en: '![CH14_F02_Byrne](Images/CH14_F02_Byrne.png)'
   id: totrans-33
   prefs: []
   type: TYPE_IMG
+  zh: '![CH14_F02_Byrne](Images/CH14_F02_Byrne.png)'
 - en: Figure 14.2 Bob reflects Mallory’s malicious JavaScript off Alice’s server,
     unintentionally sending himself to Mallory’s imposter site.
   id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 14.2 Bob 将 Mallory 的恶意 JavaScript 从 Alice 的服务器反射出来，无意中将自己带到了 Mallory 的冒名顶替网站。
 - en: Reflected XSS is obviously not limited to chat. Attackers also bait victims
     through email or malicious websites. In the next section, Mallory targets Charlie
     with a third type of XSS. Like reflected XSS, this type begins with a malicious
@@ -233,11 +250,14 @@
   id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 反射型 XSS 显然不仅限于聊天。攻击者还通过电子邮件或恶意网站引诱受害者。在下一节中，Mallory 用第三种 XSS 类型攻击 Charlie。与反射型
+    XSS 类似，这种类型的攻击也是从恶意 URL 开始的。
 - en: 14.1.3 DOM-based XSS
   id: totrans-36
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.1.3 基于 DOM 的 XSS
 - en: 'After Mallory hacks Bob, Alice is determined to fix her website. She changes
     the results page to display the user’s search terms with client-side rendering.
     The following code illustrates how her new results page does this. Notice that
@@ -247,6 +267,8 @@
   id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 Mallory 黑掉 Bob 后，Alice 决心修复她的网站。她将结果页面更改为使用客户端渲染显示用户的搜索词。以下代码说明了她的新结果页面是如何做到这一点的。请注意，现在浏览器而不是服务器从
+    URL 中提取搜索词。由于搜索词只是不再反映，所以反射型 XSS 漏洞已经不存在：
 - en: '[PRE2]'
   id: totrans-38
   prefs: []
@@ -256,10 +278,12 @@
   id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 从查询参数中提取搜索词
 - en: ❷ Writes search terms to the body of the page
   id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 将搜索词写入页面的正文
 - en: Mallory visits search.alice.com again and notices another opportunity. She sends
     Charlie an email containing a malicious link. The URL for this link is the exact
     same one she used to carry out a reflected XSS attack against Bob.

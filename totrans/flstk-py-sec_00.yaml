@@ -1,0 +1,306 @@
+- en: front matter
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: preface
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Years ago, I searched Amazon for a Python-based application security book. I
+    assumed there would be multiple books to choose from. There were already so many
+    other Python books for topics such as performance, machine learning, and web development.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To my surprise, the book I was searching for didn’t exist. I could not find
+    a book about the everyday problems my colleagues and I were solving. How do we
+    ensure that all network traffic is encrypted? Which frameworks should we use to
+    secure a web application? What algorithms should we hash or sign data with?
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the years to follow, my colleagues and I found the answers to these questions
+    while settling upon a standard set of open source tools and best practices. During
+    this time, we designed and implemented several systems, protecting the data and
+    privacy of millions of new end users. Meanwhile, three competitors were hacked.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Like everyone else in the world, my life changed in early 2020\. Every headline
+    was about COVID-19, and suddenly remote work became the new normal. I think it’s
+    fair to say each person had their own unique response to the pandemic; for myself,
+    it was severe boredom.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Writing this book allowed me to kill two birds with one stone. First, this was
+    an excellent way to stave off boredom during a year of pandemic lockdowns. As
+    a resident of Silicon Valley, this silver lining was amplified in the fall of
+    2020\. At this time, a spate of nearby wildfires destroyed the air quality for
+    most of the state, leaving many residents confined to their homes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Second, and more importantly, it has been very satisfying to write the book
+    I could not buy. Like so many Silicon Valley startups, a lot of books begin for
+    the sole purpose of obtaining a title such as *author* or *founder*. But a startup
+    or book must solve real-world problems if it will ever produce value for others.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I hope this book enables you to solve many of your real-world security problems.
+  prefs: []
+  type: TYPE_NORMAL
+- en: acknowledgments
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Writing entails a great deal of solitary effort. It is therefore easy to lose
+    sight of who has helped you. I’d like to acknowledge the following people for
+    helping me (in the order in which I met them).
+  prefs: []
+  type: TYPE_NORMAL
+- en: To Kathryn Berkowitz, thank you for being the best high-school English teacher
+    in the world. My apologies for being such a troublemaker. To Amit Rathore, my
+    fellow ThoughtQuitter, thank you for introducing me to Manning. I’d like to thank
+    Jay Fields, Brian Goetz, and Dean Wampler for their advice and input while I was
+    searching for a publisher. To Cary Kempston, thank you for endorsing the auth
+    team. Without real-world experience, I would have had no business writing a book
+    like this. To Mike Stephens, thank you for looking at my original “manuscript”
+    and seeing potential. I’d like to thank Toni Arritola, my development editor,
+    for showing me the ropes. Your feedback is greatly appreciated, and with it I’ve
+    learned so much about technical writing. To Michael Jensen, my technical editor,
+    thank you for your thoughtful feedback and quick turnaround times. Your comments
+    and suggestions have helped make this book a success.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Finally, I’d like to thank all the Manning reviewers who gave me their time
+    and feedback during the development phase of this effort: Aaron Barton, Adriaan
+    Beiertz, Bobby Lin, Daivid Morgan, Daniel Vasquez, Domingo Salazar, Grzegorz Mika,
+    Håvard Wall, Igor van Oostveen, Jens Christian Bredahl Madsen, Kamesh Ganesan,
+    Manu Sareena, Marc-Anthony Taylor, Marco Simone Zuppone, Mary Anne Thygesen, Nicolas
+    Acton, Ninoslav Cerkez, Patrick Regan, Richard Vaughan, Tim van Deurzen, Veena
+    Garapaty, and William Jamir Silva, your suggestions helped make this a better
+    book.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: about this book
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: I use Python to teach security, not the other way around. In other words, as
+    you read this book, you will learn much more about security than Python. There
+    are two reasons for this. First, security is complicated, and Python is not. Second,
+    writing volumes of custom security code isn’t the best way to secure a system;
+    the heavy lifting should almost always be delegated to Python, a library, or a
+    tool.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This book covers beginner- and intermediate-level security concepts. These concepts
+    are implemented with beginner-level Python code. None of the material for either
+    security or Python is advanced.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Who should read this book
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: All of the examples in this book simulate the challenges of developing and securing
+    systems in the real world. Programmers who push code to production environments
+    are therefore going to learn the most. Beginner Python skills, or intermediate
+    experience with any other major language, is required. You certainly do not have
+    to be a web developer to learn from this book, but a basic understanding of the
+    web makes it easier to absorb the second half.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Perhaps you don’t build or maintain systems; instead, you test them. If so,
+    you will gain a much deeper understanding of *what* to test, but I do not even
+    try to teach *how* to test. As you know, these are two different skill sets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unlike some security books, none of the examples here assume the attacker’s
+    point of view. This group will therefore learn the least. If it is any consolation
+    to them, in some chapters I let the villains win.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'How this book is organized: A roadmap'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The first chapter of this book sets expectations with a brief tour of security
+    standards, best practices, and fundamentals. The remaining 17 chapters are divided
+    into three parts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Part 1, “Cryptographic foundations,” lays the groundwork with a handful of cryptographic
+    concepts. This material resurfaces repeatedly throughout parts 2 and 3.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Chapter 2 dives straight into cryptography with hashing and data integrity.
+    Along the way, I introduce a small group of characters who appear throughout the
+    book.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Chapter 3 was extracted from chapter 2\. This chapter tackles data authentication
+    with key generation and keyed hashing.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Chapter 4 covers two compulsory topics for any security book: symmetric encryption
+    and confidentiality.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Like chapter 3, chapter 5 was extracted from its predecessor. This chapter covers
+    asymmetric encryption, digital signatures, and nonrepudiation.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Chapter 6 combines many of the main ideas from previous chapters into a ubiquitous
+    networking protocol, Transport Layer Security.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Part 2, “Authentication and authorization,” contains the most commercially useful
+    material in the book. This part is characterized by lots of hands-on instructions
+    for common user workflows related to security.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Chapter 7 covers HTTP session management and cookies, setting the stage for
+    many of the attacks discussed in later chapters.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Chapter 8 is all about identity, introducing workflows for user registration
+    and user authentication.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Chapter 9 covers password management, and was the most fun chapter to write.
+    This material builds heavily upon previous chapters.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Chapter 10 transitions from authentication to authorization with another workflow
+    about permissions and groups.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Chapter 11 closes part 2 with OAuth, an industry standard authorization protocol
+    designed for sharing protected resources.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Readers find part 3, “Attack resistance,” to be the most adversarial portion
+    of the book. This material is easier to digest and more exciting.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Chapter 12 dives into the operating system with topics such as filesystems,
+    external executables, and shells.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Chapter 13 teaches you how to resist numerous injection attacks with various
+    input validation strategies.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Chapter 14 focuses entirely on the most infamous injection attack of all, cross-site
+    scripting. You probably saw this coming.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Chapter 15 introduces Content Security Policy. In some ways, this can be considered
+    an additional chapter on cross-site scripting.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Chapter 16 covers cross-site request forgery. This chapter combines several
+    topics from previous chapters with REST best practices.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Chapter 17 explains the same-origin policy, and why we use Cross-Origin Resource
+    Sharing to relax it from time to time.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Chapter 18 ends the book with content about clickjacking and a few resources
+    to keep your skills up-to-date.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: About the code
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: This book contains many examples of source code both in numbered listings and
+    in line with normal text. In both cases, source code is formatted in a `fixed-width
+    font like this` to separate it from ordinary text. Sometimes code is also **`in
+    bold`** to highlight code that has changed from previous steps in the chapter,
+    such as when a new feature adds to an existing line of code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In many cases, the original source code has been reformatted; we’ve added line
+    breaks and reworked indentation to accommodate the available page space in the
+    book. In rare cases, even this was not enough, and listings include line-continuation
+    markers (➥). Additionally, comments in the source code have often been removed
+    from the listings when the code is described in the text. Code annotations accompany
+    many of the listings, highlighting important concepts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: liveBook discussion forum
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Purchase of *Full Stack Python Security* includes free access to a private web
+    forum run by Manning Publications where you can make comments about the book,
+    ask technical questions, and receive help from the author and from other users.
+    To access the forum, go to [https://livebook.manning.com/book/practical-python-security/welcome/v-4/](https://livebook.manning.com/book/practical-python-security/welcome/v-4/).
+    You can also learn more about Manning’s forums and the rules of conduct at [https://livebook.manning.com/#!/discussion](https://livebook.manning.com/#!/discussion).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Manning’s commitment to our readers is to provide a venue where a meaningful
+    dialogue between individual readers and between readers and the author can take
+    place. It is not a commitment to any specific amount of participation on the part
+    of the author, whose contribution to the forum remains voluntary (and unpaid).
+    We suggest you try asking the author some challenging questions lest his interest
+    stray! The forum and the archives of previous discussions will be accessible from
+    the publisher’s website as long as the book is in print.
+  prefs: []
+  type: TYPE_NORMAL
+- en: about the author
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Dennis Byrne is a member of the 23andMe architecture team, protecting the genetic
+    data and privacy of more than 10 million customers. Prior to 23andMe, Dennis was
+    a software engineer for LinkedIn. Dennis is a bodybuilder and a Global Underwater
+    Explorers (GUE) cave diver. He currently lives in Silicon Valley, far away from
+    Alaska, where he grew up and went to school.
+  prefs: []
+  type: TYPE_NORMAL
+- en: about the cover illustration
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The figure on the cover of *Full Stack Python Security* is captioned “Homme
+    Touralinze,” or Tyumen man of a region in Siberia. The illustration is taken from
+    a collection of dress costumes from various countries by Jacques Grasset de Saint-Sauveur
+    (1757-1810), titled *Costumes de Différents Pays*, published in France in 1797\.
+    Each illustration is finely drawn and colored by hand. The rich variety of Grasset
+    de Saint-Sauveur’s collection reminds us vividly of how culturally apart the world’s
+    towns and regions were just 200 years ago. Isolated from each other, people spoke
+    different dialects and languages. In the streets or in the countryside, it was
+    easy to identify where they lived and what their trade or station in life was
+    just by their dress.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The way we dress has changed since then and the diversity by region, so rich
+    at the time, has faded away. It is now hard to tell apart the inhabitants of different
+    continents, let alone different towns, regions, or countries. Perhaps we have
+    traded cultural diversity for a more varied personal life—certainly for a more
+    varied and fast-paced technological life.
+  prefs: []
+  type: TYPE_NORMAL
+- en: At a time when it is hard to tell one computer book from another, Manning celebrates
+    the inventiveness and initiative of the computer business with book covers based
+    on the rich diversity of regional life of two centuries ago, brought back to life
+    by Grasset de Saint-Sauveur’s pictures.
+  prefs: []
+  type: TYPE_NORMAL

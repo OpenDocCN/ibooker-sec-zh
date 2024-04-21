@@ -1,0 +1,909 @@
+- en: 7 HTTP session management
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Understanding HTTP cookies
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Configuring HTTP sessions in Django
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Choosing an HTTP session-state persistence strategy
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Preventing remote code-execution attacks and replay attacks
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: In the previous chapter, you learned about TLS. In this chapter, you’ll build
+    on top of that knowledge, literally. You’ll learn how HTTP sessions are implemented
+    with cookies. You’ll also learn how to configure HTTP sessions in Django. Along
+    the way, I’ll show you how to safely implement session-state persistence. Finally,
+    you’ll learn how to identify and resist remote code-execution attacks and replay
+    attacks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.1 What are HTTP sessions?
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*HTTP* *sessions* are a necessity for all but the most trivial web applications.
+    Web applications use HTTP sessions to isolate the traffic, context, and state
+    of each user. This is the basis for every form of online transaction. If you’re
+    buying something on Amazon, messaging someone on Facebook, or transferring money
+    from your bank, the server must be able to identify you across multiple requests.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose Alice visits Wikipedia for the first time. Alice’s browser is unfamiliar
+    to Wikipedia, so it creates a session. Wikipedia generates and stores an ID for
+    this session. This ID is sent to Alice’s browser in an HTTP response. Alice’s
+    browser holds on to the session ID, sending it back to Wikipedia in all subsequent
+    requests. When Wikipedia receives each request, it uses the inbound session ID
+    to identify the session associated with the request.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now suppose Wikipedia creates a session for another new visitor, Bob. Like Alice,
+    Bob is assigned a unique session ID. His browser stores his session ID and sends
+    it back with every subsequent request. Wikipedia can now use the session IDs to
+    differentiate between Alice’s traffic and Bob’s traffic. Figure 7.1 illustrates
+    this protocol.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH07_F01_Byrne](Images/CH07_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7.1 Wikipedia manages the sessions of two users, Alice and Bob.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is very important that Alice and Bob’s session IDs remain private. If Eve
+    steals a session ID, she can use it to impersonate Alice or Bob. A request from
+    Eve, containing Bob’s hijacked session ID, will appear no different from a legitimate
+    request from Bob. Many exploits, some of which have entire chapters dedicated
+    to them in this book, hinge upon stealing, or unauthorized control of, session
+    IDs. This is why session IDs should be sent and received confidentially over HTTPS
+    rather than HTTP.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You may have noticed that some websites use HTTP to communicate with anonymous
+    users, and HTTPS to communicate with authenticated users. Malicious network eavesdroppers
+    target these sites by trying to steal the session ID over HTTP, waiting until
+    the user logs in, and hijacking the user’s account over HTTPS. This is known as
+    *session sniffing*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Django, like many web application frameworks, prevents session sniffing by
+    changing the session identifier when a user logs in. To be on the safe side, Django
+    does this regardless of whether the protocol was upgraded from HTTP to HTTPS.
+    I recommend an additional layer of defense: just use HTTPS for your entire website.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Managing HTTP sessions can be a challenge; this chapter covers many solutions.
+    Each solution has a different set of security trade-offs, but they all have one
+    thing in common: HTTP cookies.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.2 HTTP cookies
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A browser stores and manages small amounts of text known as *cookies*. A cookie
+    can be created by your browser, but typically it is created by the server. The
+    server sends the cookie to your browser via a response. The browser echoes back
+    the cookie on subsequent requests to the server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Websites and browsers communicate session IDs with cookies. When a new user
+    session is created, the server sends the session ID to the browser as a cookie.
+    Servers send cookies to browsers with the `Set-Cookie` response header. This response
+    header contains a key-value pair representing the name and value of the cookie.
+    By default, a Django session ID is communicated with a cookie named `sessionid`,
+    shown here in bold font:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Cookies are echoed back to the server on subsequent requests via the `Cookie`
+    request header. This header is a semicolon-delimited list of key-value pairs.
+    Each pair represents a cookie. The following example illustrates a few headers
+    of a request bound for alice.com. The `Cookie` header, shown in bold, contains
+    two cookies:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Sends two cookies back to alice.com
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `Set-Cookie` response header accommodates multiple directives. These directives
+    are highly relevant to security when the cookie is a session ID. I cover the `HttpOnly`
+    directive in chapter 14\. I cover the `SameSite` directive in chapter 16\. In
+    this section, I cover the following three directives:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Secure`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`Domain`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`Max-Age`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 7.2.1 Secure directive
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Servers resist MITM attacks by sending the session ID cookie with the `Secure`
+    directive. An example response header is shown here with a `Secure` directive
+    in bold:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: The `Secure` directive prohibits the browser from sending the cookie back to
+    the server over HTTP. This ensures that the cookie will be transmitted only over
+    HTTPS, preventing a network eavesdropper from intercepting the session ID.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `SESSION_COOKIE_SECURE` setting is a Boolean value that adds or removes
+    the `Secure` directive to the session ID `Set-Cookie` header. It may surprise
+    you to learn that this setting defaults to `False`. This allows new Django applications
+    to immediately support user sessions; it also means the session ID can be intercepted
+    by a MITM attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING You must ensure that `SESSION_COOKIE_SECURE` is set to `True` for all
+    production deployments of your system. Django doesn’t do this for you.
+  prefs: []
+  type: TYPE_NORMAL
+- en: TIP You must restart Django before changes to the `settings` module take effect.
+    To restart Django, press Ctrl-C in your shell to stop the server, and then start
+    it again with `gunicorn`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.2.2 Domain directive
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'A server uses the `Domain` directive to control which hosts the browser should
+    send the session ID to. An example response header is shown here with the `Domain`
+    directive in bold:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: Suppose alice.com sends a `Set-Cookie` header to a browser with no `Domain`
+    directive. With no `Domain` directive, the browser will echo back the cookie to
+    alice.com, but not a subdomain such as sub.alice.com.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now suppose alice.com sends a `Set-Cookie` header with a `Domain` directive
+    set to `alice.com`. The browser will now echo back the cookie to both alice.com
+    and sub.alice.com. This allows Alice to support HTTP sessions across both systems,
+    but it’s less secure. For example, if Mallory hacks sub.alice.com, she is in a
+    better position to compromise alice.com because the session IDs from alice.com
+    are just being handed to her.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `SESSION_COOKIE_DOMAIN` setting configures the `Domain` directive for the
+    session ID `Set-Cookie` header. This setting accepts two values: `None`, and a
+    string representing a domain name like `alice.com`. This setting defaults to `None`,
+    omitting the `Domain` directive from the response header. An example configuration
+    setting is shown here:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Configures the Domain directive from settings.py
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'TIP The `Domain` directive is sometimes confused with the `SameSite` directive.
+    To avoid this confusion, remember this contrast: the `Domain` directive relates
+    to where a cookie *goes to* ; the `SameSite` directive relates to where a cookie
+    *comes from*. I examine the `SameSite` directive in chapter 16.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.2.3 Max-Age directive
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'A server sends the `Max-Age` directive to declare an expiration time for the
+    cookie. An example response header is shown here with a `Max-Age` directive in
+    bold:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: Once a cookie expires, the browser will no longer echo it back to the site it
+    came from. This behavior probably sounds familiar to you. You may have noticed
+    that websites like Gmail don’t force you to log in every time you return. But
+    if you haven’t been back for a long time, you’re forced to log in again. Chances
+    are, your cookie and HTTP session expired.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Choosing the best session length for your site boils down to security versus
+    functionality. An extremely long session provides an attacker with an easy target
+    when the browser is unattended. An extremely short session, on the other hand,
+    forces legitimate users to log back in over and over again.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `SESSION_COOKIE_AGE` setting configures the `Max-Age` directive for the
+    session ID `Set-Cookie` header. This setting defaults to 1,209,600 seconds (two
+    weeks). This value is reasonable for most systems, but the appropriate value is
+    site-specific.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.2.4 Browser-length sessions
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: If a cookie is set without a `Max-Age` directive, the browser will keep the
+    cookie alive for as long as the tab stays open. This is known as a *browser-length
+    session*. These sessions can’t be hijacked by an attacker after a user closes
+    their browser tab. This may seem more secure, but how can you force every user
+    to close every tab when they are done using a site? Furthermore, the session effectively
+    has no expiry when a user doesn’t close their browser tab. Thus, browser-length
+    sessions increase risk overall, and you should generally avoid this feature.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Browser-length sessions are configured by the `SESSION_EXPIRE_AT_BROWSER_ CLOSE`
+    setting. Setting this to `True` will remove the `Max-Age` directive from the session
+    ID `Set-Cookie` header. Django disables browser-length sessions by default.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.2.5 Setting cookies programmatically
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The response header directives I cover in this chapter apply to any cookie,
+    not just the session ID. If you’re programmatically setting cookies, you should
+    consider these directives to limit risk. The following code demonstrates how to
+    use these directives when setting a custom cookie in Django.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 7.1 Programmatically setting a cookie in Django
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ The browser will send this cookie only over HTTPS.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ alice.com and all subdomains will receive this cookie.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ After 42 seconds, this cookie will expire.
+  prefs: []
+  type: TYPE_NORMAL
+- en: By now, you’ve learned a lot about how servers and HTTP clients use cookies
+    to manage user sessions. At a bare minimum, sessions distinguish traffic among
+    users. In addition, sessions serve as a way to manage state for each user. The
+    user’s name, locale, and time zone are common examples of session state. The next
+    section covers how to access and persist session state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.3 Session-state persistence
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Like most web frameworks, Django models user sessions with an API. This API
+    is accessed via the `session` object, a property of the request. The `session`
+    object behaves like a Python dict, storing values by key. Session state is created,
+    read, updated, and deleted through this API; these operations are demonstrated
+    in the next listing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 7.2 Django session state access
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Creates a session state entry
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Reads a session state entry
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Updates a session state entry
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Deletes a session state entry
+  prefs: []
+  type: TYPE_NORMAL
+- en: Django automatically manages session-state persistence. Session state is loaded
+    and deserialized from a configurable data source after the request is received.
+    If the session state is modified during the request life cycle, Django serializes
+    and persists the modifications when the response is sent. The abstraction layer
+    for serialization and deserialization is known as the *session serializer*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.3.1 The session serializer
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Django delegates the serialization and deserialization of session state to
+    a configurable component. This component is configured by the `SESSION_SERIALIZER`
+    setting. Django natively supports two session serializer components:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`JSONSerializer`, the default session serializer'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`PickleSerializer`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`JSONSerializer` transforms session state to and from JSON. This approach allows
+    you to compose session state with basic Python data types such as integers, strings,
+    dicts, and lists. The following code uses `JSONSerializer` to serialize and deserialize
+    a dict, shown in bold font:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Serializes a Python dict
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Serialized JSON
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Deserializes JSON
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Deserialized Python dict
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`PickleSerializer` transforms session state to and from byte streams. As the
+    name implies, `PickleSerializer` is a wrapper for the Python `pickle` module.
+    This approach allows you to store arbitrary Python objects in addition to basic
+    Python data types. An application-defined Python object, defined and created in
+    bold, is serialized and deserialized by the following code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Serializes an application-defined object
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Serialized byte stream
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Deserializes byte stream
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Deserialized object
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The trade-off between `JSONSerializer` and `PickleSerializer` is security versus
+    functionality. `JSONSerializer` is safe, but it cannot serialize arbitrary Python
+    objects. `PickleSerializer` performs this functionality but comes with a severe
+    risk. The `pickle` module documentation gives us the following warning ([https://docs.python.org/3/library/pickle.html](https://docs.python.org/3/library/pickle.html)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The pickle module is not secure. Only unpickle data you trust. It is possible
+    to construct malicious pickle data which will execute arbitrary code during unpickling.
+    Never unpickle data that could have come from an untrusted source, or that could
+    have been tampered with.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`PickleSerializer` can be horrifically abused if an attacker is able to modify
+    the session state. I cover this form of attack later in this chapter; stay tuned.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Django automatically persists serialized session state with a session engine.
+    The *session engine* is a configurable abstraction layer for the underlying data
+    source. Django ships with these five options, each with its own set of strengths
+    and weaknesses:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simple cache-based sessions
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Write-through cache-based sessions
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Database-based sessions, the default option
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: File-based sessions
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Signed-cookie sessions
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 7.3.2 Simple cache-based sessions
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Simple* *cache-based sessions* allow you to store session state in a cache
+    service such as Memcached or Redis. Cache services store data in memory rather
+    than on disk. This means you can store and load data from these services very
+    quickly, but occasionally the data can be lost. For example, if a cache service
+    runs out of free space, it will write new data over the least recently accessed
+    old data. If a cache service is restarted, all data is lost.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The greatest strength of a cache service, speed, complements the typical access
+    pattern for session state. Session state is read frequently (on every request).
+    By storing session state in memory, an entire site can reduce latency and increase
+    throughput while providing a better user experience.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The greatest weakness of a cache service, data loss, does not apply to session
+    state to the same degree as other user data. In the worst case scenario, the user
+    must log back into the site, re-creating the session. This is undesirable, but
+    calling it *data loss* is a stretch. Session state is therefore expendable, and
+    the downside is limited.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The most popular and fastest way to store Django session state is to combine
+    a simple cache-based session engine with a cache service like Memcached. In the
+    `settings` module, assigning `SESSION_ENGINE` to `django.contrib.sessions.backends
+    .cache` configures Django for simple cache-based sessions. Django natively supports
+    two Memcached cache backend types.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Memcached backends
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`MemcachedCache` and `PyLibMCCache` are the fastest and most commonly used
+    cache backends. The `CACHES` setting configures cache service integration. This
+    setting is a dict, representing a collection of individual cache backends. Listing
+    7.3 illustrates two ways to configure Django for Memcached integration. The `MemcachedCache`
+    option is configured to use a local loopback address; the `PyLibMCCache` option
+    is configured to use a UNIX socket.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 7.3 Caching with Memcached
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Local loopback address
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ UNIX socket address
+  prefs: []
+  type: TYPE_NORMAL
+- en: Local loopback addresses and UNIX sockets are secure because traffic to these
+    addresses does not leave the machine. At the time of this writing, TLS functionality
+    is unfortunately described as “experimental” on the Memcached wiki.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Django supports four additional cache backends. These options are either unpopular,
+    insecure, or both, so I cover them here briefly:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Database backend
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Local memory backend, the default option
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Dummy backend
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Filesystem backend
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Database backend
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `DatabaseCache` option configures Django to use your database as a cache
+    backend. Using this option gives you one more reason to send your database traffic
+    over TLS. Without a TLS connection, everything you cache, including session IDs,
+    is accessible to a network eavesdropper. The next listing illustrates how to configure
+    Django to cache with a database backend.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 7.4 Caching with a database
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: The major trade-off between a cache service and a database is performance versus
+    storage capacity. Your database cannot perform as well as a cache service. A database
+    persists data to disk; a cache service persists data to memory. On the other hand,
+    your cache service will never be able to store as much data as a database. This
+    option is valuable in rare situations when the session state is not expendable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Local memory, dummy, and filesystem backends
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`LocMemCache` caches data in local memory, where only a ridiculously well-positioned
+    attacker could access it. `DummyCache` is the only thing more secure than `LocMemCache`
+    because it doesn’t store anything. These options, illustrated by the following
+    listing, are very secure but neither of them are useful beyond development or
+    testing environments. Django uses `LocMemCache` by default.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 7.5 Caching with local memory, or nothing at all
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`FileBasedCache`, as you may have guessed, is unpopular and insecure. `FileBasedCache`
+    users don’t have to worry if their unencrypted data will be sent over the network;
+    it is written to the filesystem instead, as shown in the following listing.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 7.6 Caching with the filesystem
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: 7.3.3 Write-through cache-based sessions
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Write-through cache-based sessions allow you to combine a cache service and
+    a database to manage session state. Under this approach, when Django writes session
+    state to the cache service, the operation will also “write through” to the database.
+    This means the session state is persistent, at the expense of write performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When Django needs to read session state, it reads from the cache service first,
+    using the database as a last resort. Therefore, you’ll take an occasional performance
+    hit on read operations as well.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Setting `SESSION_ENGINE` to `django.contrib.sessions.backends.cache _db` enables
+    write-through cache-based sessions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.3.4 Database-based session engine
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Database-based sessions bypass Django’s cache integration entirely. This option
+    is useful if you’ve chosen to forgo the overhead of integrating your application
+    with a cache service. Database-based sessions are configured by setting `SESSION_ENGINE`
+    to `django.contrib.sessions.backends.db`. This is the default behavior.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Django doesn’t automatically clean up abandoned session state. Systems using
+    persistent sessions will need to ensure that the `clearsessions` subcommand is
+    invoked at regular intervals. This will help you reduce storage costs, but more
+    importantly, it will help you reduce the size of your attack surface if you are
+    storing sensitive data in the session. The following command, executed from the
+    project root directory, demonstrates how to invoke the `clearsessions` subcommand:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: 7.3.5 File-based session engine
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: As you may have guessed, this option is incredibly insecure. Each file-backed
+    session is serialized to a single file. The session ID is in the filename, and
+    session state is stored unencrypted. Anyone with read access to the filesystem
+    can hijack a session or view session state. Setting `SESSION_ENGINE` to `django.contrib.sessions.backends
+    .file` configures Django to store session state in the filesystem.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.3.6 Cookie-based session engine
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: A cookie-based session engine stores session state in the session ID cookie
+    itself. In other words, with this option, the session ID cookie doesn’t just *identify*
+    the session; it *is* the session. Instead of storing the session locally, Django
+    serializes and sends the whole thing to the browser. Django then deserializes
+    the payload when the browser echoes it back on subsequent requests.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Before sending the session state to the browser, the cookie-based session engine
+    hashes the session state with an HMAC function. (You learned about HMAC functions
+    in chapter 3.) The hash value obtained from the HMAC function is paired with the
+    session state; Django sends them to the browser together as the session ID cookie.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the browser echoes back the session ID cookie, Django extracts the hash
+    value and authenticates the session state. Django does this by hashing the inbound
+    session state and comparing the new hash value to the old hash value. If the hash
+    values do not match, Django knows the session state has been tampered with, and
+    the request is rejected. If the hash values match, Django trusts the session state.
+    Figure 7.2 illustrates this round-trip process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH07_F02_Byrne](Images/CH07_F02_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7.2 Django hashes what it sends and authenticates what it receives.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Previously, you learned that HMAC functions require a key. Where does Django
+    get the secret key? From the `settings` module.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The SECRET_KEY setting
+  prefs: []
+  type: TYPE_NORMAL
+- en: Every generated Django application contains a `SECRET_KEY` setting in the `settings`
+    module. This setting is important; it will reappear in several other chapters.
+    Contrary to popular belief, Django does not use the `SECRET_KEY` to encrypt data.
+    Instead, Django uses this parameter to perform keyed hashing. The value of this
+    setting defaults to a unique random string. It is fine to use this value in your
+    development or test environments, but in your production environment, it is important
+    to retrieve a different value from a location that is more secure than your code
+    repository.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING The production value for `SECRET_KEY` should maintain three properties.
+    The value should be unique, random, and sufficiently long. Fifty characters, the
+    length of the generated default value, is sufficiently long. Do not set `SECRET_KEY`
+    to a password or a passphrase; nobody should need to remember it. If someone can
+    remember this value, the system is less secure. At the end of this chapter, I’ll
+    give you an example.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'At first glance, the cookie-based session engine may seem like a decent option.
+    Django uses an HMAC function to authenticate and verify the integrity of the session
+    state for every request. Unfortunately, this option has many downsides, some of
+    which are risky:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cookie size limitations
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Unauthorized access to session state
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Replay attacks
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Remote code-execution attacks
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Cookie size limitations
+  prefs: []
+  type: TYPE_NORMAL
+- en: Filesystems and databases are meant to store large amounts of data; cookies
+    are not. RFC 6265 requires HTTP clients to support “at least 4096 bytes per cookie”
+    ([https://tools.ietf.org/html/rfc6265#section-5.3](https://tools.ietf.org/html/rfc6265#section-5.3)).
+    HTTP clients are free to support cookies larger than this, but they are not obligated
+    to. For this reason, a serialized cookie-based Django session should remain below
+    4 KB in size.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unauthorized access to session state
+  prefs: []
+  type: TYPE_NORMAL
+- en: The cookie-based session engine hashes the outbound session state; it does not
+    encrypt the session state. This guarantees integrity but does not guarantee confidentiality.
+    The session state is therefore readily available to a malicious user via the browser.
+    This renders the system vulnerable if the session contains information the user
+    should not have access to.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose Alice and Eve are both users of social.bob.com, a social media site.
+    Alice is angry at Eve for executing a MITM attack in the previous chapter, so
+    she blocks her. Like other social media sites, social.bob.com doesn’t notify Eve
+    she has been blocked. Unlike other social media sites, social.bob.com stores this
+    information in cookie-based session state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Eve uses the following code to see who has blocked her. First, she programmatically
+    authenticates with the `requests` package. (You learned about the `requests` package
+    in the previous chapter). Next, she extracts, decodes, and deserializes her own
+    session state from the session ID cookie. The deserialized session state reveals
+    Alice has blocked Eve (in bold font):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Eve logs in to Bob’s social media site.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Eve extracts, decodes, and deserializes the session state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Eve sees Alice has blocked her.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Replay attacks
+  prefs: []
+  type: TYPE_NORMAL
+- en: The cookie-based session engine uses an HMAC function to authenticate the inbound
+    session state. This tells the server who the original author of the payload is.
+    This cannot tell the server if the payload it receives is the latest version of
+    the payload. In other words, the browser can’t get away with modifying the session
+    ID cookie, but the browser can replay an older version of it. An attacker may
+    exploit this limitation with a *replay attack*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose ecommerce.alice.com is configured with a cookie-based session engine.
+    The site gives a one-time discount to each new user. A Boolean in the session
+    state represents the user’s discount eligibility. Mallory, a malicious user, visits
+    the site for the first time. As a new user, she is eligible for a discount, and
+    her session state reflects this. She saves a local copy of her session state.
+    She then makes her first purchase, receives a discount, and the site updates her
+    session state as the payment is captured. She is no longer eligible for a discount.
+    Later, Mallory replays her session state copy on subsequent purchase requests
+    to obtain additional unauthorized discounts. Mallory has successfully executed
+    a replay attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A replay attack is any exploit used to undermine a system with the repetition
+    of valid input in an invalid context. Any system is vulnerable to a replay attack
+    if it cannot distinguish between replayed input and ordinary input. Distinguishing
+    replayed input from ordinary input is difficult because at one point in time,
+    replayed input *was* ordinary input.
+  prefs: []
+  type: TYPE_NORMAL
+- en: These attacks are not confined to ecommerce systems. Replay attacks have been
+    used to forge automated teller machine (ATM) transactions, unlock vehicles, open
+    garage doors, and bypass voice-recognition authentication.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Remote code-execution attacks
+  prefs: []
+  type: TYPE_NORMAL
+- en: Combining cookie-based sessions with `PickleSerializer` is a slippery slope.
+    This combination of configuration settings can be severely exploited by an attacker
+    if they have access to the `SECRET_KEY` setting.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Remote code-execution attacks are brutal. Never combine cookie-based
+    sessions with `PickleSerializer`; the risk is too great. This combination is unpopular
+    for good reasons.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Suppose vulnerable.alice.com serializes cookie-based sessions with `PickleSerializer`.
+    Mallory, a disgruntled ex-employee of vulnerable.alice.com, remembers the `SECRET
+    _KEY`. She executes an attack on vulnerable.alice.com with the following plan:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Write malicious code
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Hash the malicious code with an HMAC function and the `SECRET_KEY`
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Send the malicious code and hash value to vulnerable.alice.com as a session
+    cookie
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Sit back and watch as vulnerable.alice.com executes Mallory’s malicious code
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: First, Mallory writes malicious Python code. Her goal is to trick vulnerable.alice.com
+    into executing this code. She installs Django, creates `PickleSerializer`, and
+    serializes the malicious code to a binary format.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Next, Mallory hashes the serialized malicious code. She does this the same way
+    the server hashes session state, using an HMAC function and the `SECRET_KEY`.
+    Mallory now has a valid hash value of the malicious code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finally, Mallory pairs the serialized malicious code with the hash value, disguising
+    them as cookie-based session state. She sends the payload to vulnerable.alice.com
+    as a session cookie in a request header. Unfortunately, the server successfully
+    authenticates the cookie; the malicious code, after all, was hashed with the same
+    `SECRET_KEY` the server uses. After authenticating the cookie, the server deserializes
+    the session state with `PickleSerializer`, inadvertently executing the malicious
+    script. Mallory has successfully carried out a *remote code-execution attack*.
+    Figure 7.3 illustrates Mallory’s attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH07_F03_Byrne](Images/CH07_F03_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 7.3 Mallory uses a compromised SECRET_KEY to execute a remote code-execution
+    attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following example demonstrates how Mallory carries out her remote code-execution
+    attack from an interactive Django shell. In this attack, Mallory tricks vulnerable.alice.com
+    into killing itself by calling the `sys.exit` function. Mallory places a call
+    to `sys.exit` in a method that `PickleSerializer` will call as it deserializes
+    her code. Mallory uses Django’s `signing` module to serialize and hash the malicious
+    code, just like a cookie-based session engine. Finally, she sends the request
+    by using the `requests` package. There is no response to the request; the recipient
+    (in bold font) just dies:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Pickle calls this method as it deserializes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Django kills itself with this line of code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Django’s signing module serializes and hashes Mallory’s malicious code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Sends the request
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❺ Receives no response
+  prefs: []
+  type: TYPE_NORMAL
+- en: Setting `SESSION_ENGINE` to `django.contrib.sessions.backends.signed _cookies`
+    configures Django to use a cookie-based session engine.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Servers set session IDs on browsers with the `Set-Cookie` response header.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Browsers send session IDs to servers with the `Cookie` request header.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Use the `Secure`, `Domain`, and `Max-Age` directives to resist online attacks.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Django natively supports five ways to store session state.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Django natively supports six ways to cache data.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Replay attacks can abuse cookie-based sessions.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Remote code-execution attacks can abuse pickle serialization.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Django uses the `SECRET_KEY` setting for keyed hashing, not encryption.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

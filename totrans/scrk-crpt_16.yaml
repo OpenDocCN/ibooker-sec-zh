@@ -1,0 +1,734 @@
+- en: 16 Three pass protocol
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Three pass protocol based on exponentiation
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Three pass protocol based on matrix multiplication
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Three pass protocol based on 2-sided matrix multiplication
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Sections 2.2 and 2.3 describe how modern cryptography is divided into 3 branches,
+    Secret Key, Public Key and Personal Key. Up to this point, this book has described
+    only methods for Secret Key cryptography. Public Key cryptography is described
+    in many books, so it will not be covered here. This chapter will discuss Personal
+    Key cryptography, the lesser-known third branch of cryptography. Personal Key
+    cryptography is sometimes called *keyless* cryptography, since the parties do
+    not need to transmit or share any keys.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The basic concept of Personal Key cryptography is that each of the two correspondents,
+    Sandra and Riva, has her own personal key. This key is never transmitted or shared
+    with anyone else, not even with one another, so there is no possibility that Emily
+    can learn any of the personal keys through wire-tapping, intercepting broadcasts,
+    or any other form of eavesdropping. The great advantage of Personal Key cryptography
+    is that you don’t need to set anything up in advance. There does not need to be
+    any secret, secure channel for exchanging keys. The messages can be exchanged
+    on public channels. No key servers or other infrastructure are required.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Personal Key cryptography is accomplished by means of the *three pass protocol*,
+    which was invented by Adi Shamir of the Weizmann Institute in Israel, about 1975\.
+    To illustrate the method, I devised a little story:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: There once was a King who loved the Queen of a neighboring country. To woo the
+    Queen, the King wished to send her a precious gem. The King had an impervious
+    strongbox and a pickproof lock. But how could he send the key? If the messenger
+    had both the key and the strongbox, he could open the box and steal the gem. The
+    King could send the key with a second messenger, but he feared the two messengers
+    would arrange to meet up along the route and steal the gem together. The Queen
+    proposed an ingenious solution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The King would put his lock on the strongbox and send it to the Queen. She would
+    then add her own lock and send the strongbox back with both locks. The King would
+    then remove his lock with his key, and send the strongbox back with only the Queen’s
+    lock. She could then unlock the box with her own key and get the gem.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here the two locks are stand-ins for two encryptions, and the two keys represent
+    the corresponding decryptions. The message would be encrypted with the sender’s
+    encryption function, sent to the receiver, encrypted with the receiver’s encryption
+    function, sent back to the sender, decrypted with the sender’s decryption function,
+    sent back to the receiver and decrypted with the receiver’s decryption function.
+    This means the message is sent 3 times, hence the name *three pass protocol*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*****Let’s break that down. Let the message be M, let Sandra’s encryption and
+    decryption functions be S and S'', and let Riva’s encryption and decryption functions
+    be R and R''. On the first pass Sandra encrypts the message M with her encryption
+    function S and sends SM to Riva. On the second pass, Riva encrypts that message
+    SM with her own encryption function R and sends the doubly encrypted message RSM
+    back to Sandra. On the third pass Sandra applies her decryption function S'' to
+    the message RSM to get S''RSM. This is intended to remove the S encryption. It
+    will only do that if either R and S commute, or S'' and R commute. That would
+    mean S''RSM = RS''SM = RM. This lets Riva remove her encryption and read the message.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'So, to get this three-pass scheme to work we need to find a commutative encryption
+    function, or two encryption functions that commute with one another. I can think
+    of 3 commutative encryption functions right off the top of my head: addition,
+    multiplication and exclusive-OR. It is easy to imagine an encryption where there
+    is a key the same length as the message, and encryption consists of adding the
+    key byte by byte to the message, or multiplying the message bytes by the key bytes,
+    or exclusive-ORing the message with the key. These are all simple forms of the
+    one-time pad.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: None of these is secure. If Emily manages to obtain all three encrypted messages,
+    she can easily remove the encryptions. If the function is addition, the 3 messages
+    are M+S, M+S+R and M+R. If Emily adds the first and third messages and subtracts
+    the second message, she gets (M+S)+(M+R)-(M+S+R) = M. The result is exactly M.
+    The same method works when the encryption function is multiplication. The 3 messages
+    are (M×S), (M×R), and (M×S×R). Taking (M×S)×(M×R)÷(M×S×R) again yields M. When
+    the encryption function is exclusive-OR, finding M is even simpler, since exclusive-OR
+    is its own inverse. Simply exclusive-OR the 3 encrypted messages together, and
+    the result is the original message, (M⊕S)⊕(M⊕R)⊕(M⊕S⊕R) = M.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Two encryption functions that commute are substitution and transposition. These
+    are also insecure. Since Emily will see the message both before and after the
+    transposition, she can trivially determine the transposition.
+  prefs: []
+  type: TYPE_NORMAL
+- en: What is required, then, is a pair of encryption functions S and R that commute,
+    and such that Emily cannot determine M even if she has SM, RSM and RM.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.1 Shamir’s method
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Shamir’s solution to this problem was to use exponentiation. Let p be a large
+    prime, say in the range of 300 to 600 decimal digits. Sandra will choose an encryption
+    exponent s. The corresponding decryption exponent is s' such that ss'≡1 (mod p-1).
+    This follows from Fermat’s Little Theorem, if 0<a<p, then a^(p-1)≡1 (mod p). Section
+    14.4.2 describes how to choose the prime p, and section 15.4 describes how to
+    determine s'. In the same way, Riva chooses her encryption and decryption exponents,
+    r and r'. The two encryptions commute because (M^s)^r = M^(sr) = M^(rs) = (M^r)^s.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sandra computes (M^s mod p) and sends it to Riva. Riva computes (M^(sr) mod
+    p) and sends that back to Sandra. Sandra computes (M^(srs)' mod p) = (M^r mod
+    p) and sends it back to Riva, who finally computes (M^(rr)' mod p) = M, which
+    is the original message. The method is believed to be secure because determining
+    s or r requires solving the discrete logarithm problem. As discussed in section
+    14.4, this problem is known to be computationally difficult. No computationally
+    feasible algorithms are known.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This method is very slow. All these exponentiations and modulo reductions of
+    large numbers take a great deal of computing. The next section describes one attempt
+    at a solution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.2 Massey-Omura
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The *Massey-Omura* method was invented by James Massey of ETH Zurich, and Jim
+    K. Omura of UCLA in 1982\. (His name is listed on the patent as Jimmy Omura. He
+    was my classmate at MIT, although I do not remember him.) The Massey-Omura system
+    is essentially the same as the Shamir system, except that the modulus is of the
+    form 2^k. This means that the residue modulo 2^k can be computed simply by taking
+    the low-order k bits of the number. This is much faster than computing the residue
+    modulo p, which is done essentially by long division using these 300- to 600-digit
+    numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The question of which method is faster was hotly debated for several years in
+    Association for Computing Machinery (ACM) and Institute of Electrical and Electronics
+    Engineers (IEEE) publications.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.3 Discrete logarithm
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The security of Diffie-Hellman key exchange, the Shamir three pass protocol
+    and the Massey-Omura method all depend on the difficulty of solving the discrete
+    logarithm problem. Three popular algorithms for this problem are exhaustive enumeration,
+    good up to 10^(12), Daniel Shanks’s baby-step giant-step algorithm, good up to
+    10^(18), and John Pollard’s rho algorithm, good up to 10^(22). However, we need
+    an algorithm suitable for 10^(300). To give some feel for how difficult the discrete
+    logarithm is, let’s look at a composite method for solving it. This is not something
+    you can do at home with a PC. It takes a mainframe with massive storage, or a
+    network of many PCs working cooperatively. Or, you can skip this section and just
+    accept that the discrete logarithm problem is hard.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.3.1 Logarithms
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Start by considering how people computed ordinary logarithms back before computers.
+    One method was to take a number like b = 1.000001 and laboriously take successive
+    powers of it. You would find that b^(693148) was the closest power to 2, and that
+    b^(2302586) was the nearest power to 10\. Then you would know that log[10](2)
+    was very nearly 693148/2302586, which is .3010302\. The correct value is .3010300,
+    so this method gives an excellent approximation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You can do the same thing in a ring such as integers modulo some prime p. Suppose
+    Sandra sends the message 6 mod 13 and Riva returns the message 7 mod 13\. Emily
+    wishes to know what exponent Riva has used for her encipherment. Instead of powers
+    of 1.000001 you would use a primitive root of the modulus 13, for example 2\.
+    With such a small modulus Emily can easily enumerate all the powers of 2 modulo
+    13.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![16-unnumb-1](../Images/16-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Emily now knows that Sandra sent 2⁵ and Riva sent back 2^(11). So (2⁵)^r≡2^(5r)≡2^(11)
+    (mod 13). This means 5r≡11 (mod 12). You can solve this in your head. Just think
+    11+12 = 23, 23+12 = 35\. Since 35 is a multiple of 5, namely 5×7, that means r
+    must be 7\. You can check it with a hand calculator, 6⁷ = 279936≡7 (mod 13). Sandra
+    sent 6, Riva sent back 7, so this checks out.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.3.2 Powers of primes
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Exhaustive enumeration gives Emily one way to search, but that’s not going to
+    work when p is large. Let’s try an idea from John Pollard’s *rho algorithm*. The
+    first step is to generate multiple sequences of powers modulo p, and look for
+    repeats. Emily can do that with several primitive roots simultaneously, one root
+    per core. Now let’s double that. If b is a primitive root modulo p she can compute
+    b², b³, b⁴, b⁵, ... (mod p) on one processor, and b², b⁴, b⁸, b^(16), ... (mod
+    p) on another processor. That gives Emily two separate sequences of powers for
+    each primitive root she uses.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Besides the primitive roots, Emily can also check directly. Sandra sends SM
+    and Riva sends back RSM. Emily can generate the sequences (SM)², (SM)³, (SM)⁴,
+    (SM)⁵, ... and (SM)², (SM)⁴, (SM)⁸, (SM)^(16), ... , and likewise for RSM. This
+    gives Emily four more sequences of powers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In addition to these orderly sequences of powers, she can also generate some
+    disorderly sequences. These are commonly called *random walks* or *drunk walks*.
+    One way to do this is to square the last power that was generated, and then multiply
+    that by one of the earlier powers. Emily can choose the early power at random,
+    or she could use the middle element of the list. For example, suppose she already
+    has the powers x, x², x⁴, x⁸ and x^(16). For the next power she could square x^(16)
+    to get x^(32), then multiply by, say, x² to get x^(34). For the following power
+    she would square x^(34) to get x^(68) and multiply that by another list element,
+    say x⁸, to get x^(76). And so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another form of random walk Emily can generate uses 2 or 3 base primes. Each
+    base prime should be a primitive root. Begin with the product of these primes.
+    To generate the next product, she would choose one of the primes at random and
+    multiply by that. The more sequences Emily has going, the sooner she will start
+    to get results.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.3.3 Crash
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Okay, now Emily has all of these sequences. Then what? She is looking for the
+    same number to show up on two lists. This is called a *collision*, or *crash*.
+    Say she finds 3^(172964)≡103^(4298755) (mod p). This lets her express 103 as a
+    power of 3 (mod p) by solving the congruence 172964r≡4298755 (mod p-1). The method
+    is described in section 15.4\. Once she accumulates enough crashes she can establish
+    a chain such as RSM≡19^a, 19≡773^b, 773≡131^c, ... , 103^y≡(SM)^z. Multiply all
+    of the exponents modulo p-1 and she will get RSM≡(SM)^r (mod p). That exponent
+    r is Riva’s encryption function. Emily has cracked the cipher!
+  prefs: []
+  type: TYPE_NORMAL
+- en: That’s not quite as easy as it sounds. When p is a 300-digit prime, she needs
+    on the order of 10^(150) of these powers before she starts seeing any crashes.
+    If Emily had 1,000,000 processors cranking out these powers at a rate of 1,000,000
+    per second, she could potentially generate 3×10^(19) per year. This would mean
+    it would take about 10^(130) years before she started seeing any results, and
+    far more than that until she could establish such a chain. Also, it would take
+    some multiple of 10^(150) bytes of storage.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.3.4 Factoring
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Instead of searching for crashes, each time a new power is generated Emily could
+    try to factor its residue modulo p. Suppose that she succeeds in factoring the
+    residue of 97^a (mod p) and finds 97^a≡11^b29^c83^d (mod p). She can solve this
+    congruence for 97\. Let the multiplicative inverse of a modulo p-1 be a'. Raise
+    the congruence to the a' power. 97^(aa)'≡97≡(11^b29^c83^d)^a' (mod p). After multiplying
+    all of the exponents and reducing them modulo p-1, the result is 97≡11^e29^f83^g
+    (mod p) for some values e, f and g. (The actual values could be up to 300 digits
+    each if p has 300 digits.) Once she has an expression for one of the base primes,
+    in this case 97, she can substitute that value into all of the factored products,
+    both the ones she already has and the ones she will find later.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Emily will not be able to factor the residue of every power. Factoring a 300-digit
+    number is very difficult, meaning very time-consuming. The best strategy is to
+    choose a fixed base set F(B) of primes, say all the primes up to B = 10⁶, or perhaps
+    up to B = 10⁷. F(B) is called the *factor base*. Try to factor each power using
+    only the primes in the factor base. Numbers that can be factored this way are
+    called *B-smooth*. As the numbers get larger, the proportion that are B-smooth
+    gets smaller and smaller. Among 300-digit numbers the B-smooth numbers are rare.
+    As Emily finds each factor, the unfactored portion of the number shrinks. If she
+    has tried all of the primes in the base set, and some unfactored portion of the
+    number remains, she should not try to factor it any further. It is more efficient
+    to discard this power and move on to the next power.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here is what Emily must do: continue generating products and factoring their
+    residues modulo p. Keep only the B-smooth numbers and discard the rest. Check
+    for crashes among the B-smooth numbers. Each time a crash is found, solve the
+    congruence for the largest prime in the product so that fewer and fewer base primes
+    are needed to express each product. She may reserve one or more processors dedicated
+    solely to this task.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose that q^n is a power of a prime, and let its residue modulo p be x. Try
+    to factor x using the primes in the base set B. If x is not B-smooth, try to factor
+    the numbers x+p, x+2p, x+3p, ... It is not much harder to factor a 301-digit or
+    302-digit number than a 300-digit number. Set a fixed number of such trials, say
+    10 trials, for each residue.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When she generates these powers she needs to place special emphasis on SM and
+    RSM. Remember, the goal of this exercise is to find the exponent r such that (SM)^r≡RSM
+    (mod p). She can’t do that until she has expressed both SM and RSM in terms of
+    powers of the base primes. To begin, she should develop numerous sequences of
+    powers of SM and RSM. Once she has succeeded in finding such an expression, she
+    looks for primes within the expression that have not yet been expressed in terms
+    of powers of smaller primes. Place the emphasis on these primes next. Continue
+    until both SM and RSM are expressed as powers of a single prime. She can now find
+    r using the methods of section 15.3.2.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.3.5 Estimates
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Suppose that she uses 10⁶ base primes, that is, primes up to B = 15,485,863\.
+    To express all of these in terms of a single prime will require 10⁶ congruences.
+    Storing these requires a 10⁶×10⁶ matrix of exponents. The matrix is initially
+    sparse, but it grows dense as the solution progresses, so sparse-matrix techniques
+    will not be beneficial. Each exponent is a 300-digit number. This requires on
+    the order of 10^(15) bytes, or one *petabyte*, of storage. As of this writing
+    (March 2022), the largest supercomputer in the world is the Summit computer at
+    the Oak Ridge National Laboratory, which has 2.76 petabytes of addressable storage.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The running time obviously depends on how long it takes to find B-smooth numbers.
+    The density of B-smooth numbers is given by the de Bruijn function Ψ(p,B), which
+    gives the number of B-smooth integers less than p. It was studied by Dutch mathematician
+    Nicolaas Govert de Bruijn. The value of Ψ(x,x^(1/u)) is closely approximated by
+    xρ(u), where ρ(u) is the Dickman function invented by actuary Karl Dickman. The
+    Dickman function ρ(u) is approximated by u^(-u). In this case x = 10^(300) and
+    x^(1/u) = 15,485,863, so u = 41.725\. Thus it will take about 41.725^(41.725)
+    = 4.08×10^(67) tries to find each B-smooth number.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Altogether it will take more than 10^(73) trials to find 10⁶ B-smooth powers.
+    Factoring each number may take up to 10⁶ trial divisions, so there are 10^(79)
+    total trial divisions. Since the numbers are 300 digits, each trial division will
+    take some multiple of 300 operations. Call it 10^(82) operations altogether. This
+    is a huge improvement over 10^(150) for the crash method, but still well out of
+    reach for current computers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This shows that 300 digits are more than sufficient for the foreseeable future,
+    perhaps for the next 20 to 30 years. This may change as quantum computers develop,
+    but for now 300 digits is safe.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.4 Matrix three pass protocol
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The Shamir and Massey-Omura methods for the three pass algorithm both use exponentiation.
+    A different approach to the three pass algorithm is to use matrices. We have seen
+    this before with the Hill cipher, section 15.1\. The message is divided into blocks.
+    Each block is treated as a vector of integers modulo 256\. This vector is multiplied
+    by an invertible square matrix of integers modulo 256, either on the left or on
+    the right. For the three pass version, Sandra will have a matrix S for encryption
+    and its inverse S' for decryption, while Riva will have encryption matrix R and
+    decryption matrix R'. These matrices are not over the integers modulo 256, but
+    over a ring ***R*** of 256 elements, and the characters of the message are treated
+    as elements of this ring. Let the message block be M, so Sandra sends SM to Riva,
+    Riva sends RSM back to Sandra, and Sandra deciphers it with S' to get S'RSM =
+    RM. Now Riva can decrypt it with R', namely R'RM = M.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The tricky part is making S'RSM = RM. Matrix multiplication is not commutative,
+    so Sandra and Riva need to choose special matrices S and R that commute with each
+    other. To be clear, S and R are not commutative matrices. If you choose a matrix
+    X at random, it is nearly certain that SX ≠ XS and RX ≠ XR. This is an essential
+    point, so let me repeat it, S and R are not commutative matrices. They do not
+    commute with most other matrices. They commute with each other.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.4.1 Commutative family of matrices
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Sandra and Riva will need a large supply of these matrices so that Emily cannot
+    simply try them all. This means that they need a large commutative family **Ғ**
+    of matrices from which to select the matrix for each block of the message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note **Ғ** is a commutative family of matrices, not a family of commutative
+    matrices. It is essential to understand that it is the family that is commutative,
+    and not the matrices themselves. Nearly all matrices in **Ғ** will *not* be commutative.
+    They will commute with one another, but not with other matrices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The easiest way to construct a commutative family is to begin with any invertible
+    matrix, F, and take its powers, F⁰, F¹, F², F³, ... , where F⁰ is the identity
+    matrix I, and F¹ = F. Call F the *generating matrix* for the family **Ғ**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sandra and Riva will each need to use a different matrix for each block of the
+    message, otherwise Emily might solve the set of linear equations R(SM[i]) = RSM[i]
+    given a sufficient set of message blocks M[i] with known plaintext.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.4.2 Multiplicative order
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: To make the family **Ғ** large, you need to find or to construct a generating
+    matrix F of high multiplicative order. That is, the smallest integer n > 0 such
+    that F^n = I needs to be large, at least 10^(25), but preferably larger. If the
+    matrix F is invertible, such an n will always exist, and the multiplicative inverse
+    F' of F is F^(n-1). A method for finding invertible matrices was given in section
+    15.8\. Determining the multiplicative order of F is a bit of an art. It is clearly
+    not feasible to take successive powers F until F^n = I, certainly not when n >
+    10^(25). But it can be done.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To find the multiplicative order, begin with 1×1 matrices, namely the ring elements.
+    Look at the multiplicative order of these elements. These can easily be found
+    by enumeration, since the highest possible value for n is 255\. Likely values
+    are 2, 3, 7, 15, 31, 63, 127 and 255\. The multiplicative orders for larger matrices
+    will tend to be multiples of these values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose that the multiplicative orders of the ring elements happen to be 2,
+    7 and 31\. When you try 2×2 matrices, first raise each matrix A to some multiple
+    of the single-element orders, say 2⁴7²31 = 24304\. Then enumerate the powers of
+    B = A^(24304). Suppose you find that B^(52) = I. You now know for certain that
+    the multiplicative order m of A evenly divides x = 24304×52 = 2⁶7²13×31, and that
+    it is a multiple of 2⁶13\. You should next try A^(x/7) and A^(x/31) to see if
+    those are I. If A^(x/7) is I, you then try A^(x/49). In this case the highest
+    multiplicative order might be 2⁶7×13×31.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You next tackle the 3×3 matrices. If no other prime factors besides 2, 3, 7,
+    13 and 31 appeared in the multiplicative orders of the 2×2 matrices, then a good
+    starting exponent might be x = 2⁸7²13²31². Enumerate successive powers of B =
+    A^x and repeat the process of narrowing down the exponent. As the matrices get
+    larger, the multiplicative order may increase by a factor too large to find by
+    enumeration. In this case you will need to guess at the new prime factors that
+    will appear.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Watch for patterns that appear in the sequence of multiplicative orders. This
+    requires some detective work. For example, suppose 2³-1, 2⁶-1, 2⁹-1 and 2^(12)-1
+    appear. You won’t see these directly, because they are not all prime. 2⁶-1 = 63
+    = 3²7, 2⁹-1 = 511 = 7×73 and 2^(12)-1 = 4095 = 3²5×7×13\. So finding a 13 among
+    the prime factors is a clue that the “real” factor may be 2^(12)-1, and finding
+    a 73 is a strong indicator that 2⁹-1 is a factor. If you see 2³-1, 2⁶-1, 2⁹-1
+    and 2^(12)-1 all appear, you should expect 2^(15)-1 to appear soon. If all of
+    these appear, they are each divisible by 7, so the multiplicative order will be
+    divisible by 7⁴.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.4.3 Maximum order
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Sandra’s objective in all of this is to make the family **Ғ** as large as possible
+    so that she and Riva have lots of choices for their matrices S and R. A useful
+    trick is to watch the multiplicative orders for differences in the sets of factors.
+    For example, if the multiplicative order of A is 19m and the multiplicative order
+    of B is 23m, then the multiplicative order of AB just might be 19×23m = 437m.
+    If that doesn’t work, then A'B or AB' may have multiplicative order 437m.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If at all possible, Sandra should choose a generating matrix F whose multiplicative
+    order has a large prime factor, say m > 10^(35), in order to prevent a Silver-Pohlig-Hellman
+    attack (section 14.4). Sandra will need to factor 2^n-1 for various n to find
+    the ones that have large prime factors, and then find a generating matrix whose
+    multiplicative order is divisible by one of those 2^n-1 by trying successively
+    larger matrices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.4.4 Emily attacks
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Suppose that Sandra has chosen F and **Ғ**, and that she has sent a message
+    to Riva. Since Sandra and Riva are communicating over a public channel, such as
+    the internet, assume that Emily knows F, **Ғ**, SM, RSM and RM. Her goal is to
+    find either R or S, so she gets two chances. Let’s concentrate on how Emily might
+    find R. Emily knows two things about R. First, she knows the values of SM and
+    RSM, so that gives her a set of n linear equations in the n² unknown elements
+    of R. Second, she knows that R is in the family **Ғ**, so it must commute with
+    F, namely RF = FR. If the ring ***R*** is commutative, then this gives her n(n-1)
+    additional linear equations in the n² elements of R.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This works because the left side of the matrix equation RF = FR produces sums
+    of terms of the form rf, where r is an unknown element of R and f is a known element
+    of F. The right side produces terms of the form fr. Since the ring is commutative,
+    the left-side terms rf can be converted to the form fr and combined with the right-side
+    terms to form linear equations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: With n² linear equations in n² unknowns it would seem like child’s play to solve
+    those linear equations and find R. It’s not that easy. Recall from section 15.3.1
+    that there are strong congruences and weak congruences. The same is true for linear
+    equations over any finite ring whose size is not a prime. The more prime factors
+    the ring size has, the more potential for weak equations. In the present case,
+    the ring size is 2⁸, with 8 prime factors, so many of the linear equations are
+    likely to be weak. A typical size for the matrices might be 30×30 if the ring
+    ***R*** were well-chosen, or 128×128, or even 256×256 with a poor choice of ring.
+    Even with a well-chosen ring, and even if half of the equations are strong, you
+    would expect to have at least 2^(450) solutions to the set of 30×30 = 900 equations.
+    In practice the number of solutions is much greater because there can be equations
+    with 4, 8 or possibly 16 solutions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is good news for Emily. Emily can solve for R' instead of R, and whichever
+    one of those 2^(450) or more solutions she gets will be a valid inverse of R,
+    letting her obtain the message by R'RM = M.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.4.5 Non-commutative ring
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: It looks like Sandra and Riva are sunk. Emily has won this battle.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One possible answer to this attack would be for Sandra and Riva to use a non-commutative
+    ring. Two examples of non-commutative rings are matrices and quaternions (section
+    15.7.2). You can form matrices whose elements are themselves matrices or quaternions,
+    or, conversely, quaternions whose coefficients are matrices or quaternions. None
+    of these are good choices. You would need to make them very large to produce matrices
+    of high multiplicative order.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A better route is to construct your own ring ***N*** using the techniques of
+    section 15.7\. You should choose a ring that has many elements that (1) are invertible,
+    (2) have high multiplicative order, and (3) are non-commutative. It is a tricky
+    balancing act to find a ring that has all of these features. For example, a ring
+    that has elements of maximal multiplicative order (255 for a 256-element ring)
+    could not have any non-commutative elements. If you could find a ring where half
+    of the elements are invertible, half have multiplicative order equal to about
+    half the ring size, and half are non-commutative, *dayenu* (it would be sufficient).
+    You cannot achieve all 3 of these goals simultaneously, but you may exceed some
+    while coming close on the others.
+  prefs: []
+  type: TYPE_NORMAL
+- en: With a non-commutative ring, the matrix equation RF = FR can no longer be linearized,
+    because it is no longer certain that rf = fr. Instead, the matrix equation leads
+    to a set of *bilinear* equations. The general term in a bilinear equation takes
+    the form axb, where a and b are elements of the ring, and x is a variable whose
+    value you wish to determine. While linear equations can be solved using a simple
+    systematic approach, namely Gaussian elimination, there is no such method for
+    bilinear equations. There is not even a general method for solving such a simple
+    equation as ax+xb = c with a single variable, x. So solving bilinear equations
+    over a ring is “impossible.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.4.6 Solving bilinear equations
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: That said, I will now show you how to solve bilinear equations. The trick is
+    to change the representation of the elements in the ring ***N***. We have already
+    seen several examples of how this can be done. In the ring ***R13***, elements
+    are represented as *a* + *b*√13. Gaussian integers are represented as a+bi. Quaternions
+    are represented as a+bi+cj+dk. Here, i, j and k are abstract units whose products
+    determine the behavior of the ring, and a, b, c and d are commutative elements
+    of the ring. Quaternions can be non-commutative because the multiplication of
+    the units is not commutative, that is, ij ≠ ji, ik ≠ ki and jk ≠ kj. With only
+    one unit, Gaussian integers are necessarily commutative.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The trick is to *linearize* the bilinear equations by finding a representation
+    for the non-commutative ring ***N***. This is easily done. Start by dividing the
+    elements of ***N*** into two sets, A and B, where A contains the elements that
+    have representations, and B contains the remaining elements. Initially A is empty
+    and B contains all the elements of the ring. Begin by taking the commutative elements
+    and moving them into set A. These ring elements will represent themselves. They
+    are the “a” term in the representation. Choose any remaining invertible element
+    as the unit i. Take all of the ring elements that can be represented as a+bi,
+    where a and b are commutative elements of the ring, and move them from set B into
+    set A. So far, all of the elements of A are still commutative.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Set B cannot be empty because ***N*** is not commutative. We already noted that
+    a ring with only one unit, like the Gaussian integers, must be commutative. So
+    take a second invertible element from set B and call that the second unit, j.
+    This time you take all elements that can be represented as a+bi+cj and move them
+    from set B to set A. There may still be ring elements remaining in set B. In that
+    case you would repeat these steps, but for simplicity let’s suppose that (1) only
+    two units are needed; (2) all of the elements in the ring can be represented as
+    a+bi+cj, where i and j are the abstract units; and (3) a, b and c are commutative
+    elements of the ring ***N***. In practice, the number of units you get may depend
+    on your choice of i and j, so you should make multiple trials to get the fewest
+    units. This is important because more units means you will have more equations
+    when you linearize. Since the time needed to solve a set of linear equations is
+    proportional to the cube of the number of equations, this has a large impact.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s go back to the matrix equation RF = FR, and put the ring elements into
+    the form a+bi+cj. The unknown elements of ***R*** would have the form x+yi+zj,
+    where x, y and z are unknown commutative ring elements. Now a term of the matrix
+    product RF would have the form
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![16-unnumb-1-equation-16-2](../Images/16-unnumb-1-equation-16-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: where i², j², ij and ji would be further expanded as linear combinations of
+    1, i and j, such as d+ei+fj. The actual expansions, of course, would depend on
+    the choice of ring and which elements were chosen as i and j.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The same must be done with the terms in the matrix product FR. In the end, instead
+    of 900 equations in 900 unknowns you get 2700 equations in 2700 unknowns. This
+    boosts the number of false solutions from 2^(450) up to 2^(1350). This is bad
+    news for Emily. False solutions do not allow her to recover the message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.4.7 Weaklings
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The family **Ғ** will include some weaklings, such as diagonal matrices and
+    triangular matrices, which Emily can easily invert. These weaklings should not
+    be used as keys. When choosing a matrix from **Ғ**, verify that there is at least
+    one nonzero element both above and below the main diagonal. To make this test
+    fast, just verify that at least one of X[12], X[13] and X[23] is nonzero, and
+    at least one of X[21], X[31] and X[32] is nonzero. Otherwise reject X and choose
+    again. The percentage of matrices that get rejected is negligible.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.4.8 Making it fast
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The advantage of using matrices instead of exponentiation may not be clear yet.
+    Choosing a matrix S or R from the family **Ғ** requires taking a large power of
+    the generating matrix F. How is that any better or faster than taking a large
+    integer to a large power? The difference is preparation. In the Shamir and Massey-Omura
+    methods, Sandra and Riva must take the number each has received from the other
+    party and raise that to a large power. Since they do not know that number in advance,
+    they cannot make any preparations to speed up the exponentiation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: With the matrix method, however, the generating matrix F is known beforehand.
+    Both Sandra and Riva can generate some powers of F in advance, then keep this
+    base set of matrix powers on hand so that they can generate a new power of F by
+    just 1 or 2 matrix multiplications. For starters, they could generate the set
+    of 16 matrices F, F², F⁴, F⁸, ... , F^(32768) using just 15 matrix multiplications.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If they did only that much, then Emily could do the same. She would have the
+    same base set of matrices as Sandra and Riva, so she could easily determine their
+    encryption matrices, S and R. To prevent this, Sandra and Riva need to randomize
+    their sets of matrices. They do this by choosing two of their matrices at random
+    and multiplying them. This product will replace one of those two matrices in the
+    base set. Sandra and Riva do this independently. Neither one knows which powers
+    of F the other one has chosen.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This replacement operation should be repeated many times during setup, say 1000
+    times, so that each party’s set of matrices is thoroughly random. If 1000 seems
+    excessive, remember that in the Shamir method using a 300-digit prime, each exponentiation
+    will require about 1000 multiplications and 1000 modulo reductions. Sandra and
+    Riva also need to keep the inverses of their matrices. Each time they multiply
+    two of the powers of F they need to multiply the corresponding powers of F' so
+    that they never need to invert any of the powers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This setup step, generating the base set, needs to be done only once, before
+    the first message is sent. When you have this expanded set of generating matrices
+    you can produce a matrix for sending a message using just one multiplication for
+    the matrix, and one for its inverse. You randomly choose two different matrices
+    F^a and F^b from your base set, multiply to get F^(a+b), then replace F^a by F^(a+b)
+    so you generate different matrices each time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using this technique, I have found that the matrix method is about 2100 times
+    as fast as either the Shamir or Massey-Omura exponentiation method for a 30×30
+    matrix versus a 1024-bit modulus.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.5 Two-sided three pass protocol
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The matrix multiplication in the previous matrix method may be done on either
+    the left side or the right side, meaning the message may be enciphered as SM or
+    MS. It is also possible to multiply on both sides. In this case the message is
+    split into blocks of n² characters, and there are two independent commutative
+    families of n×n matrices, **Ғ** and **Ɠ**, with generating matrices F and G. Sandra
+    will encipher the message with matrices S from **Ғ** and T from **Ɠ**, and Riva
+    will superencipher with matrices R from **Ғ** and Q from **Ɠ**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sandra sends Riva the enciphered message SMT. Riva superenciphers this and sends
+    back RSMTQ. Sandra removes her encipherment by using the inverse matrices S' and
+    T', sending S'RSMTQT' = RMQ back to Riva, who deciphers it using her inverse matrices
+    R' and Q', as R'RMQQ' = M. The 2-sided method is not practical for short messages
+    due to its large block size, but for long messages it is much faster than the
+    1-sided methods because you get n² characters in each block instead of n characters.
+    For 30×30 matrices it can be 15 times as fast as the 1-sided method, hence about
+    30,000 times as fast as the Shamir or Massey-Omura method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Emily must solve for two matrices simultaneously. Let the 3 matrices that Emily
+    intercepts be called X, Y and Z, that is, X = SMT, Y = RSMTQ and Z = RMQ. Emily
+    knows that Y = RXQ and Z = S'YT'. It looks like Emily will need to solve a large
+    set of quadratic equations over the non-commutative ring ***N***, which is much
+    more difficult than solving linear or bilinear equations. However, if these equations
+    are multiplied by R', Q', S and T, respectively, they become R'Y = XQ, YQ' = RX,
+    SZ = YT' and ZT = S'Y. These matrix equations multiply out to yield bilinear equations.
+    We saw how to solve bilinear equations in section 16.4.6.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Emily can recover M if she can find both R' and Q', or if she can find both
+    S' and T'. She has the choice of solving either the first two or the last two
+    of these four equations. Let’s continue the example of 30×30 matrices, and concentrate
+    on solving R'Y = XQ. There are 900 unknowns in R' and 900 more in Q. This matrix
+    equation provides 900 bilinear equations in these 1800 unknowns. Emily also knows
+    that R' is in **Ғ**, and Q is in **Ɠ**, so R'F = FR' and QG = GQ. Each of these
+    yields an additional 30×29 = 870 bilinear equations. This gives Emily a total
+    of 2640 bilinear equations in 1800 unknowns. These equations can be linearized
+    by changing the representation of the ring elements.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This results in 7920 linear equations in 5400 unknowns. When there are more
+    equations than unknowns the system is called *overdetermined*. As Emily reduces
+    the set of equations, the excess equations simply drop away. That is, many rows
+    of the 7920×5400 matrix become all-zero. They may be shifted to the bottom of
+    the matrix and ignored. In the end, the same difficulties appear as the 1-sided
+    case, namely that there are a multitude of solutions. Since the 2-sided equations
+    are overdetermined, they are stronger than the 1-sided equations. On the other
+    hand, there are twice as many unknowns. It is not clear which method is ultimately
+    stronger. You might simply opt for the 2-sided method because it is so much faster.******
+  prefs: []
+  type: TYPE_NORMAL

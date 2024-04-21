@@ -1,0 +1,567 @@
+- en: 3 Keyed hashing
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generating a secure key
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Verifying data authentication with keyed hashing
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Using the `hmac` module for cryptographic hashing
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Preventing timing attacks
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: In the previous chapter, you learned how to ensure data integrity with hash
+    functions. In this chapter, you’ll learn how to ensure data authentication with
+    keyed hash functions. I’ll show you how to safely generate random numbers and
+    passphrases. Along the way, you’ll learn about the `os`, `secrets`, `random`,
+    and `hmac` modules. Finally, you learn how to resist timing attacks by comparing
+    hash values in length-constant time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.1 Data authentication
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Let’s revisit Alice’s document management system from the previous chapter.
+    The system hashes each new document before storing it. To verify the integrity
+    of a document, the system rehashes it and compares the new hash value to the old
+    hash value. If the hash values don’t match, the document is considered corrupt.
+    If the hash values do match, the document is considered intact.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alice’s system effectively detects accidental data corruption but is less than
+    perfect. Mallory, a malicious attacker, can potentially take advantage of Alice.
+    Suppose Mallory gains write access to Alice’s filesystem. From this position,
+    she can not only alter a document, but also replace its hash value with the hash
+    value of the altered document. By replacing the hash value, Mallory prevents Alice
+    from detecting that the document has been tampered with. Alice’s solution can
+    therefore detect only accidental message corruption; it cannot detect intentional
+    message modification.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If Alice wants to resist Mallory, she’ll need to change the system to verify
+    the integrity *and the origin* of each document. The system can’t just answer
+    the question, “Has the data changed?” The system must also answer, “Who authored
+    this data?” In other words, the system will need to ensure data integrity and
+    data authentication.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Data authentication*, sometimes referred to as *message authentication*, ensures
+    that a data reader can verify the identity of the data writer. This functionality
+    requires two things: a key and a keyed hash function. In the next sections, I
+    cover key generation and keyed hashing; Alice combines these tools to resist Mallory.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.1.1 Key generation
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Every key should be hard to guess if it is to remain a secret. In this section,
+    I compare and contrast two types of keys: random numbers and passphrases. You’ll
+    learn how to generate both, and when to use one or the other.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Random numbers
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'There is no need to use a third-party library when generating a random number;
+    there are plenty of ways to do this from within Python itself. Only some of these
+    methods, however, are suitable for security purposes. Python programmers traditionally
+    use the `os.urandom` function as a cryptographically secure random number source.
+    This function accepts an integer `size` and returns `size` random bytes. These
+    bytes are sourced from the operating system. On a UNIX-like system, this is `/dev/urandom`;
+    on a Windows system, this is `CryptGenRandom`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'An explicit high-level API for generating cryptographically secure random numbers,
+    the `secrets` module, was introduced in Python 3.6\. There is nothing wrong with
+    `os.urandom`, but in this book I use the `secrets` module for all random-number
+    generation. This module features three convenient functions for random-number
+    generation. All three functions accept an integer and return a random number.
+    Random numbers can be represented as a byte array, hexadecimal text, and URL-safe
+    text. The prefix for all three function names, shown by the following code, is
+    `token_`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Generates 16 random bytes
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Generates 16 random bytes of hexadecimal text
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Generates 16 random bytes of URL-safe text
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Type the following command to generate 16 random bytes on your computer. I’m
+    willing to bet you get a different number than I did:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: A third way to obtain random numbers is the `random` module. Most of the functions
+    in this module do not use a secure random-number source. The documentation for
+    this module clearly states it “should not be used for security purposes” ([https://docs
+    .python.org/3/library/random.html](https://docs.python.org/3/library/random.html)).
+    The documentation for the `secrets` module asserts it “should be used in preference
+    to the default pseudo-random number generator in the `random` module” ([https://docs.python.org/3/library/secrets.html](https://docs.python.org/3/library/secrets.html)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Never use the `random` module for security or cryptographic purposes.
+    This module is great for statistics but unsuitable for security or cryptography.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Passphrases
+  prefs: []
+  type: TYPE_NORMAL
+- en: A *passphrase* is a sequence of random words rather than a sequence of random
+    numbers. Listing 3.1 uses the `secrets` module to generate a passphrase composed
+    of four words randomly chosen from a dictionary file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The script begins by loading a dictionary file into memory. This file ships
+    with standard UNIX-like systems. Users of other operating systems will have no
+    problem downloading similar files from the web ([www.karamasoft.com/UltimateSpell/Dictionary.aspx](https://www.karamasoft.com/UltimateSpell/Dictionary.aspx)).
+    The script randomly selects words from the dictionary by using the `secrets .choice`
+    function. This function returns a random item from a given sequence.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 3.1 Generating a four-word passphrase
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Loads a dictionary file into memory
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Randomly selects four words
+  prefs: []
+  type: TYPE_NORMAL
+- en: Dictionary files like this are one of the tools attackers use when executing
+    brute-force attacks. Constructing a secret from the same source is therefore nonintuitive.
+    The power of a passphrase is size. For example, the passphrase `whereat` `isostatic
+    custom` `insupportableness` is 42 bytes long. According to [www.useapassphrase.com](https://www.useapassphrase.com/),
+    the approximate crack time of this passphrase is 163,274,072,817,384 centuries.
+    A brute-force attack against a key this long is infeasible. Key size matters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A random number and a passphrase naturally satisfy the most basic requirement
+    of a secret: both key types are difficult to guess. The difference between a random
+    number and a passphrase boils down to the limitations of long-term human memory.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: TIP Random numbers are hard to remember, and passphrases are easy to remember.
+    This difference determines which scenarios each key type is useful for.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Random numbers are useful when a human does not or should not remember a secret
+    for more than a few minutes. A multifactor authentication (MFA) token and a temporary
+    reset-password value are both good applications of random numbers. Remember how
+    `secrets.token_bytes`, `secrets.token_hex`, and `secrets .token_urlsafe` are all
+    prefixed with `token_`? This prefix is a hint for what these functions should
+    be used for.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Passphrases are useful when a human needs to remember a secret for a long time.
+    Login credentials for a website or a Secure Shell (SSH) session are both good
+    applications of passphrases. Unfortunately, most internet users are not using
+    passphrases. Most public websites do not encourage passphrase usage.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is important to understand that random numbers and passphrases don’t just
+    solve problems when applied correctly; they create new problems when they are
+    applied incorrectly. Imagine the following two scenarios in which a person must
+    remember a random number. First, the random number is forgotten, and the information
+    it protects becomes inaccessible. Second, the random number is handwritten to
+    a piece of paper on a system administrator’s desk, where it is unlikely to remain
+    a secret.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imagine the following scenario in which a passphrase is used for a short-term
+    secret. Let’s say you receive a password-reset link or an MFA code containing
+    a passphrase. Wouldn’t a malicious bystander be more likely to remember this key
+    if they see it on your screen? As a passphrase, this key is less likely to remain
+    a secret.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note For the sake of simplicity, many of the examples in this book feature keys
+    in Python source code. In a production system, however, every key should be stored
+    safely in a key management service instead of your code repository. Amazon’s AWS
+    Key Management Service ([https://aws.amazon.com/kms/](https://aws.amazon.com/kms/))
+    and Google’s Cloud Key Management Service ([https://cloud.google.com/security-key-management](https://cloud.google.com/security-key-management))
+    are both examples of good key management services.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You now know how to safely generate a key. You know when to use a random number
+    and when to use a passphrase. Both skills are relevant to many parts of this book,
+    starting with the next section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.1.2 Keyed hashing
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Some hash functions accept an optional key. The key, as shown in figure 3.1,
+    is an input to the hash function just like the message. As with an ordinary hash
+    function, the output of a keyed hash function is a hash value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH03_F01_Byrne](Images/CH03_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 3.1 Keyed hash functions accept a key in addition to a message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Hash values are sensitive to key values. Hash functions using different keys
+    produce different hash values of the same message. Hash functions using the same
+    key produce matching hash values of the same message. The following code demonstrates
+    keyed hashing with BLAKE2, a hash function that accepts an optional key:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ First key
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Second key
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Same key, same hash value
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Different key, different hash value
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alice, working on her document management system, can add a layer of defense
+    against Mallory with keyed hashing. Keyed hashing allows Alice to store each document
+    with a hash value that only she can produce. Mallory can no longer get away with
+    altering a document and rehashing it. Without the key, Mallory has no way of producing
+    the same hash value as Alice when validating the altered document. Alice’s code,
+    shown here, can therefore resist accidental data corruption and malicious data
+    modification.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 3.2 Alice resists accidental and malicious data modification
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Hashes document with the given key
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Writes document and hash value to separate files
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Reads document and hash value from storage
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Recomputes new hash value with the given key
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❺ Compares recomputed hash value with hash value read from disk
+  prefs: []
+  type: TYPE_NORMAL
+- en: Most hash functions are not keyed hash functions. Ordinary hash functions, like
+    SHA-256, do not natively support a key like BLAKE2\. This inspired a group of
+    really smart people to develop hash-based message authentication code (HMAC) functions.
+    The next section explores HMAC functions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.2 HMAC functions
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*HMAC* *functions* are a generic way to use any ordinary hash function as though
+    it were a keyed hash function. An HMAC function accepts three inputs: a message,
+    a key, and an ordinary cryptographic hash function (figure 3.2). Yes, you read
+    that correctly: the third input to an HMAC function is another function. The HMAC
+    function will wrap and delegate all of the heavy lifting to the function passed
+    to it. The output of an HMAC function is—you guessed it—a hash-based message authentication
+    code (MAC). A MAC is really just a special kind of hash value. In this book, for
+    the sake of simplicity, I use the term *hash value* instead of *MAC*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH03_F02_Byrne](Images/CH03_F02_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Figure 3.2 HMAC functions accept three inputs: a message, a key, and a hash
+    function.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: tip Do yourself a favor and commit HMAC functions to memory. HMAC functions
+    are the solution to many of the challenges presented later in this book. This
+    topic will reappear when I cover encryption, session management, user registration,
+    and password-reset workflows.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Python’s answer to HMAC is the `hmac` module. The following code initializes
+    an HMAC function with a message, key, and SHA-256\. An HMAC function is initialized
+    by passing a key and hash function constructor reference to the `hmac.new` function.
+    The `digestmod` keyword argument (kwarg) designates the underlying hash function.
+    Any reference to a hash function constructor in the `hashlib` module is an acceptable
+    argument for `digestmod`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: WARNING The `digestmod` kwarg went from optional to required with the release
+    of Python 3.8\. You should always explicitly specify the `digestmod` kwarg to
+    ensure that your code runs smoothly on different versions of Python.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The new HMAC function instance mirrors the behavior of the hash function instance
+    it wraps. The `digest` and `hexdigest` methods, as well as the `digest_size` property,
+    shown here, should look familiar by now:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Returns the hash value in bytes
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Returns the hash value in hexadecimal text
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Returns the hash value size
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The name of an HMAC function is a derivative of the underlying hash function.
+    For example, you might refer to an HMAC function wrapping SHA-256 as HMAC-SHA256:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: By design, HMAC functions are commonly used for message authentication. The
+    *M* and *A* of *HMAC* literally stand for *message authentication*. Sometimes,
+    as with Alice’s document management system, the message reader and the message
+    writer are the same entity. Other times, the reader and the writer are different
+    entities. The next section covers this use case.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.2.1 Data authentication between parties
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Imagine that Alice’s document management system must now receive documents
+    from Bob. Alice has to be certain each message has not been modified in transit
+    by Mallory. Alice and Bob agree on a protocol:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alice and Bob share a secret key.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Bob hashes a document with his copy of the key and an HMAC function.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Bob sends the document and the hash value to Alice.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Alice hashes the document with her copy of the key and an HMAC function.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Alice compares her hash value to Bob’s hash value.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 'Figure 3.3 illustrates this protocol. If the received hash value matches the
+    recomputed hash value, Alice can conclude two facts:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The message was sent by someone with the same key, presumably Bob.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Mallory couldn’t have modified the message in transit.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '![CH03_F03_Byrne](Images/CH03_F03_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 3.3 Alice verifies Bob’s identity with a shared key and an HMAC function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Bob’s implementation of his side of the protocol, shown in the following listing,
+    uses HMAC-SHA256 to hash his message before sending it to Alice.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 3.3 Bob uses an HMAC function before sending his message
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Bob hashes the document.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Hash value accompanies document in transit
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alice’s implementation of her side of the protocol, shown next, uses HMAC-SHA256
+    to hash the received document. If both MACs are the same value, the message is
+    said to be authenticated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 3.4 Alice uses an HMAC function after receiving Bob’s message
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Alice computes her own hash value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Alice compares both hash values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mallory, an intermediary, has no way to trick Alice into accepting an altered
+    message. With no access to the key shared by Alice and Bob, Mallory cannot produce
+    the same hash value as they do for a given message. If Mallory modifies the message
+    or the hash value in transit, the hash value Alice receives will be different
+    from the hash value Alice computes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Take a look at the last few lines of code in listing 3.4\. Notice that Alice
+    uses the `==` operator to compare hash values. This operator, believe it or not,
+    leaves Alice vulnerable to Mallory in a whole new way. The next section explains
+    how attackers like Mallory launch timing attacks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.3 Timing attacks
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Data integrity and data authentication both boil down to hash value comparison.
+    As simple as it may be to compare two strings, there is actually an unsafe way
+    to do this. The `==` operator evaluates to False as soon as it finds the first
+    difference between two operands. On average, `==` must scan and compare half of
+    all hash value characters. At the least, it may need to compare only the first
+    character of each hash value. At most, when both strings match, it may need to
+    compare all characters of both hash values. More importantly, `==` will take longer
+    to compare two hash values if they share a common prefix. Can you spot the vulnerability
+    yet?
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mallory begins a new attack by creating a document she wants Alice to accept
+    as though it came from Bob. Without the key, Mallory can’t immediately determine
+    the hash value Alice will hash the document to, but she knows the hash value is
+    going to be 64 characters long. She also knows the hash value is hexadecimal text,
+    so each character has 16 possible values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The next step of the attack is to determine, or crack, the first of 64 hash
+    value characters. For all 16 possible values this character can be, Mallory fabricates
+    a hash value beginning with this value. For each fabricated hash value, Mallory
+    sends it along with the malicious document to Alice. She repeats this process,
+    measuring and recording the response times. After a ridiculously large number
+    of responses, Mallory is eventually able to determine the first of 64 hash value
+    characters by observing the average response time associated with each hexadecimal
+    value. The average response time for the matching hexadecimal value will be slightly
+    longer than the others. Figure 3.4 depicts how Mallory cracks the first character.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH03_F04_Byrne](Images/CH03_F04_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 3.4 Mallory cracks the first character of a hash value after observing
+    slightly higher average response times for b.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mallory finishes the attack by repeating this process for the remaining 63 of
+    64 characters, at which point she knows the entire hash value. This is an example
+    of a *timing attack*. This attack is executed by deriving unauthorized information
+    from system execution time. The attacker obtains hints about private information
+    by measuring the time a system takes to perform an operation. In this example,
+    the operation is string comparison.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Secure systems compare hash values in length-constant time, deliberately sacrificing
+    a small amount of performance in order to prevent timing attack vulnerabilities.
+    The `hmac` module contains a length-constant time comparison function named `compare_digest`.
+    This function has the same functional outcome as an `==` operator, but the time
+    complexity is different. The `compare_digest` function does not return early if
+    it detects a difference between the two hash values. It always compares all characters
+    before it returns. The average, fastest, and slowest use cases are all the same.
+    This prevents a timing attack whereby an attacker can determine the value of one
+    hash value if they can control the other hash value:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Different arguments, same runtime
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Same arguments, same runtime
+  prefs: []
+  type: TYPE_NORMAL
+- en: Always use `compare_digest` to compare hash values. To err on the side of caution,
+    use `compare_digest` even if you’re writing code that is using hash values only
+    to verify data integrity. This function is used in many examples in this book,
+    including the one in the previous section. The arguments for `compare_digest`
+    can be strings or bytes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Timing attacks are a specific kind of side channel attack. A *side channel attack*
+    is used to derive unauthorized information by measuring any physical side channel.
+    Time, sound, power consumption, electromagnetic radiation, radio waves, and heat
+    are all side channels. Take these attacks seriously, as they are not just theoretical.
+    Side channel attacks have been used to compromise encryption keys, forge digital
+    signatures, and gain access to unauthorized information.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Keyed hashing ensures data authentication.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Use a passphrase for a key if a human needs to remember it.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Use a random number for a key if a human doesn’t need to remember it.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: HMAC functions are your best bet for general-purpose keyed hashing.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Python natively supports HMAC functions with the `hmac` module.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Resist timing attacks by comparing hash values in length-constant time.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

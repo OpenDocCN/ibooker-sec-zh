@@ -1,0 +1,12 @@
+- en: Part 3 Attack resistance
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Unlike parts 1 and 2, part 3 isn’t primarily concerned with fundamentals or
+    development. Instead, everything revolves around Mallory as she devastates the
+    other characters with attacks such as cross-site scripting, open redirect attacks,
+    SQL injection, cross-site request forgery, clickjacking, and more. This is the
+    most adversarial portion of the book. In each chapter, attacks don’t complement
+    the main idea; attacks *are* the main idea.
+  prefs: []
+  type: TYPE_NORMAL

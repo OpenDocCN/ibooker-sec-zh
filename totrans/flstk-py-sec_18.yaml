@@ -1,0 +1,836 @@
+- en: 15 Content Security Policy
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Composing a content security policy with fetch, navigation, and document directives
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Deploying CSP with `django-csp`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Detecting CSP violations with reporting directives
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Resisting XSS and man-in-the-middle attacks
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Servers and browsers adhere to a standard known as *Content Security Policy*
+    (*CSP*) to interoperably send and receive security policies. A policy restricts
+    what a browser can do with a response, in order to protect the user and server.
+    Policy restrictions are designed to prevent or mitigate various web attacks. In
+    this chapter, you’ll learn how to easily apply CSP with `django-csp`. This chapter
+    covers CSP Level 2 and finishes with parts of CSP Level 3.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A policy is delivered from a server to a browser by a `Content-Security-Policy`
+    response header. A policy applies to only the response it arrives with. Every
+    policy contains one or more directives. For example, suppose bank.alice.com adds
+    the CSP header shown in figure 15.1 to each resource. This header carries a simple
+    policy composed of one directive, blocking the browser from executing JavaScript.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH15_F01_Byrne](Images/CH15_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 15.1 A Content-Security-Policy header forbids JavaScript execution with
+    a simple policy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: How does this header resist XSS? Suppose Mallory identifies a reflected XSS
+    vulnerability at bank.alice.com. She writes a malicious script to transfer all
+    of Bob’s money into her account. Mallory embeds this script in a URL and emails
+    it to Bob. Bob takes the bait again. He unintentionally sends Mallory’s script
+    to bank.alice.com, where it is reflected back to him. Fortunately, Bob’s browser,
+    restricted by Alice’s policy, blocks the execution of the script. Mallory’s plan
+    fails, amounting to only an error message in the debugging console of Bob’s browser.
+    Figure 15.2 illustrates Mallory’s failed reflected XSS attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH15_F02_Byrne](Images/CH15_F02_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 15.2 Alice’s site uses CSP to prevent Mallory from pulling off another
+    reflected XSS attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This time, Alice barely stops Mallory with a very simple content security policy.
+    In the next section, you compose a more complex policy for yourself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.1 Composing a content security policy
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'In this section, you’ll learn how to build your own content security policy
+    with some of the more commonly used directives. These directives follow a simple
+    pattern: each is composed of at least one source. A *source* represents an acceptable
+    location for the browser to retrieve content from. For example, the CSP header
+    you saw in the previous section combined one fetch directive, `script-src`, with
+    one source, as shown in figure 15.3.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH15_F03_Byrne](Images/CH15_F03_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 15.3 The anatomy of Alice’s simple content security policy
+  prefs: []
+  type: TYPE_NORMAL
+- en: Why single quotes?
+  prefs: []
+  type: TYPE_NORMAL
+- en: Many sources, such as `none`, use single quotes. This is not a convention; it
+    is a requirement. The CSP specification requires these characters in the actual
+    response header.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The scope of this policy is very narrow, containing only one directive and one
+    source. A policy this simple is not effective in the real world. A typical policy
+    is composed of multiple directives, separated by a semicolon, with one or more
+    sources, separated by a space.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'How does the browser react when a directive has more than one source? Each
+    additional source expands the attack surface. For example, the next policy combines
+    `script-src` with a `none` source and a scheme source. A scheme source matches
+    resources by protocols such as HTTP or HTTPS. In this case, the protocol is HTTPS
+    (the semicolon suffix is required):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'A browser processes content matched by *any* source, not *every* source. This
+    policy therefore permits the browser to fetch any script over HTTPS, despite the
+    `none` source. The policy also fails to resist the following XSS payload:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'An effective content security policy must strike a balance between diverse
+    forms of attack and the complexity of feature development. CSP accommodates this
+    balance with three major directive categories:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fetch directives
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Navigation directives
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Document directives
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The most commonly used directives are *fetch directives*. This category is the
+    largest and arguably most useful.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.1.1 Fetch directives
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: A *fetch directive* limits how a browser fetches content. These directives provide
+    many ways to avoid or minimize the impact of XSS attacks. CSP Level 2 supports
+    11 fetch directives and 9 source types. For your sake and mine, it doesn’t make
+    sense to cover all 99 combinations. Furthermore, some source types are relevant
+    to only some directives, so this section covers only the most useful directives
+    combined with the most relevant sources. It also covers a few combinations to
+    avoid.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The default-src directive
+  prefs: []
+  type: TYPE_NORMAL
+- en: Every good policy begins with a `default-src` directive. This directive is special.
+    A browser falls back to `default-src` when it does not receive an explicit fetch
+    directive for a given content type. For example, a browser consults the `script-src`
+    directive before it loads a script. If `script-src` is absent, the browser substitutes
+    the `default-src` directive in its place.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Combining `default-src` with a `self` source is highly recommended. Unlike `none`,
+    `self` permits the browser to process content from a specific place. The content
+    must come from wherever the browser obtained the resource. For instance, `self`
+    permits a page from Alice’s bank to process JavaScript from the same host.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Specifically, the content must have the same *origin* as the resource. What
+    is an origin? An origin is defined by the protocol, host, and port of the resource
+    URL. (This concept applies to more than just CSP; you will see it again in chapter
+    17.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 15.1 compares the origin of [https://alice.com/path/](https://alice.com/path/)
+    to the origins of six other URLs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 15.1 Comparing origins with [https://alice.com/path/](https://alice.com/path/)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| URL | Matching origin? | Reason |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **http**://alice.com/path/ | No | Different protocol |'
+  prefs: []
+  type: TYPE_TB
+- en: '| https://**bob**.com/path/ | No | Different host |'
+  prefs: []
+  type: TYPE_TB
+- en: '| https://**bank.**alice.com/path/ | No | Different host |'
+  prefs: []
+  type: TYPE_TB
+- en: '| https://alice.com**:8000**/path/ | No | Different port |'
+  prefs: []
+  type: TYPE_TB
+- en: '| https://alice.com/**different_path**/ | Yes | Path differs |'
+  prefs: []
+  type: TYPE_TB
+- en: '| https://alice.com/path/**?param=42** | Yes | Query string differs |'
+  prefs: []
+  type: TYPE_TB
+- en: 'The following CSP header represents the foundation of your content security
+    policy. This policy permits the browser to process only content fetched from the
+    same origin as the resource. The browser even rejects inline scripts and stylesheets
+    in the body of the response. This can’t prevent malicious content from being injected
+    into the page, but it does prevent malicious content in the page from being executed:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: This policy offers a lot of protection but is fairly strict by itself. Most
+    programmers want to use inline JavaScript and CSS to develop UI functionality.
+    In the next section, I’ll show you how to strike a balance between security and
+    feature development with content-specific policy exceptions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The script-src directive
+  prefs: []
+  type: TYPE_NORMAL
+- en: As its name implies, the `script-src` directive applies to JavaScript. This
+    is an important directive because the primary goal of CSP is to provide a layer
+    of defense against XSS. Earlier you saw Alice resist Mallory by combining `script-src`
+    with a `none` source. This mitigates all forms of XSS but is overkill. A `none`
+    source blocks all JavaScript execution, including inline scripts as well as those
+    from the same origin as the response. If your goal is to create an extremely secure
+    yet boring site, this is the source for you.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `unsafe-inline` source occupies the opposite end of the risk spectrum.
+    This source permits the browser to execute XSS vectors such as inline `<script>`
+    tags, javascript: URLs, and inline event handlers. As the name warns, `unsafe-inline`
+    is risky, and you should avoid it.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You should also avoid the `unsafe-eval` source. This source permits the browser
+    to evaluate and execute any JavaScript expression from a string. This means all
+    of the following are potential attack vectors:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `eval(string)` function
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`new Function(string)`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`window.setTimeout(string, x)`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`window.setInterval(string, x)`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'How do you strike a balance between the boredom of `none` and the risk of `unsafe-inline`
+    and `unsafe-eval`? With a *nonce* (*number used once*). A nonce source, shown
+    here in bold font, contains a unique random number instead of a static value such
+    as `self` or `none`. By definition, this number is different for each response:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'If a browser receives this policy, it will execute inline scripts, but only
+    those with a matching `nonce` attribute. For example, this policy would allow
+    a browser to execute the following script because the `nonce` attribute, shown
+    in bold is a match:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: How does a nonce source mitigate XSS? Suppose Alice adds this layer of defense
+    to bank.alice.com. Mallory then finds yet another XSS vulnerability and plans
+    to inject a malicious script into Bob’s browser again. To successfully carry out
+    this attack, Mallory has to prepare the script with the same nonce Bob is going
+    to receive from Alice. Mallory has no way of knowing the nonce in advance because
+    Alice’s server hasn’t even generated it yet. Furthermore, the chance of Mallory
+    guessing the correct number is next to nothing; gambling in Las Vegas would give
+    her a better chance of getting rich than targeting Alice’s bank.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A nonce source mitigates XSS while enabling inline script execution. It is the
+    best of both worlds, providing safety like `none` and facilitating feature development
+    like `unsafe-inline`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The style-src directive
+  prefs: []
+  type: TYPE_NORMAL
+- en: As the name implies, `style-src` controls how the browser processes CSS. Like
+    JavaScript, CSS is a standard tool web developers deliver functionality with;
+    it may also be weaponized by XSS attacks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Suppose the 2024 US presidential election is underway. The entire election
+    boils down to two candidates: Bob and Eve. For the first time ever, voters may
+    cast their votes online at Charlie’s new website, ballot.charlie.com. Charlie’s
+    content security policy blocks all JavaScript execution but fails to address CSS.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mallory identifies yet another reflected XSS opportunity. She emails Alice a
+    malicious link. Alice clicks the link and receives the HTML page shown in listing
+    15.1\. This page contains a drop-down list with both candidates, authored by Charlie;
+    it also contains an injected stylesheet, authored by Mallory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mallory’s stylesheet dynamically sets the background of whichever option Alice
+    checks. This event triggers a network request for a background image. Unfortunately,
+    the network request also reveals Alice’s vote to Mallory in the form of a query
+    string parameter. Mallory now knows who Alice voted for.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 15.1 Mallory injects a malicious stylesheet into Alice’s browser
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Mallory’s injected stylesheet
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Triggered if Alice votes for Bob
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Sends Alice’s choice to Mallory
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Triggered if Alice votes for Eve
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❺ Sends Alice’s choice to Mallory
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❻ Two presidential candidates
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Clearly, the `style-src` directive should be taken seriously, like `script-src`.
+    The `style-src` directive can be combined with most of the same sources as `script-src`,
+    including `self`, `none`, `unsafe-inline`, and a nonce source. For example, the
+    following CSP header illustrates a `style-src` directive with a nonce source,
+    shown in bold font:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'This header permits a browser to apply the following stylesheet. As shown in
+    bold, the `nonce` attribute value is a match:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: The img-src directive
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `img-src` directive determines how the browser fetches images. This directive
+    is often useful for sites hosting images and other static content from a third-party
+    site known as a *content delivery network* (*CDN*). Hosting static content from
+    a CDN can decrease page load times, cut costs, and counteract traffic spikes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following example demonstrates how to integrate with a CDN. This header
+    combines an `img-src` directive with a host source. A host source permits the
+    browser to pull content from a specific host or set of hosts:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The following policy is an example of how complicated host sources can be.
+    Asterisks match subdomains and ports. URL schemes and port numbers are optional.
+    Hosts can be specified by name or IP address:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: Many other fetch directives are not as useful as those covered so far. Table
+    15.2 summarizes them. In general, I recommend omitting these directives from the
+    CSP header. This way, the browser falls back to `default-src`, implicitly combining
+    each one with `self`. You, of course, may need to relax some of these limitations
+    on a case-by-case basis in the real world.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 15.2 Other fetch directives and the content they govern
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| CSP directive | Relevance |'
+  prefs: []
+  type: TYPE_TB
+- en: '| object-src | <applet>, <embed>, and <object> |'
+  prefs: []
+  type: TYPE_TB
+- en: '| media-src | <audio> and <video> |'
+  prefs: []
+  type: TYPE_TB
+- en: '| frame-src | <frame> and <iframe> |'
+  prefs: []
+  type: TYPE_TB
+- en: '| font-src | @font-face |'
+  prefs: []
+  type: TYPE_TB
+- en: '| connect-src | Various script interfaces |'
+  prefs: []
+  type: TYPE_TB
+- en: '| child-src | Web workers and nested contexts |'
+  prefs: []
+  type: TYPE_TB
+- en: Navigation and document directives
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: There are only two navigation directives. Unlike fetch directives, when a navigation
+    directive is absent, the browser does not fall back to `default-src` in any way.
+    Your policy should therefore include these directives explicitly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `form-action` directive controls where a user may submit a form. Combining
+    this directive with a `self` source is a reasonable default. This allows everyone
+    on your team to get their work done while preventing some types of HTML-based
+    XSS.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `frame-ancestors` directive controls where a user may navigate. I cover
+    this directive in chapter 18.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Document directives are used to limit the properties of a document or web worker.
+    These directives are not used often. Table 15.3 lists all three of them and some
+    safe default values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 15.3 Document directives and the content they govern
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| CSP directive | Safe default | Relevance |'
+  prefs: []
+  type: TYPE_TB
+- en: '| base-uri | self | <base> |'
+  prefs: []
+  type: TYPE_TB
+- en: '| plugin-types | Omit and combine object-src with none | <embed>, <object>,
+    and <applet> |'
+  prefs: []
+  type: TYPE_TB
+- en: '| sandbox | (No value) | <iframe> sandbox attribute |'
+  prefs: []
+  type: TYPE_TB
+- en: Deploying a content security policy is extremely easy. In the next section,
+    you’ll learn how to do this with a lightweight Django extension package.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.2 Deploying a policy with django-csp
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'You can deploy a content security policy in minutes with `django-csp`. Run
+    this command from within your virtual environment to install `django-csp`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, open your setting file and add the following middleware component to
+    `MIDDLEWARE`. `CSPMiddleware` is responsible for adding a `Content-Security-Policy`
+    header to responses. This component is configured by many settings variables,
+    each prefixed with `CSP_`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `CSP_DEFAULT_SRC` setting instructs `django-csp` to add a `default-src`
+    directive to each `Content-Security-Policy` header. This setting expects a tuple
+    or list representing one or many sources. Start your policy by adding this line
+    of code to your `settings` module:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `CSP_INCLUDE_NONCE_IN` setting defines a tuple or list of fetch directives.
+    This collection informs `django-csp` what to combine a nonce source with. This
+    means you can permit the browser to process inline scripts and inline stylesheets
+    independently. Add the following line of code to your `settings` module. This
+    permits the browser to process scripts and stylesheets with matching `nonce` attributes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'How do you obtain a valid nonce in your template? `django-csp` adds a `csp_nonce`
+    property to every request object. Put the following code in any template to exercise
+    this feature:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Dynamically embeds a nonce in the response
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'By adding `script-src` and `style-src` directives to a CSP header, the browser
+    no longer falls back to `default-src` when encountering a script or style tag.
+    For this reason, you must now explicitly tell `django-csp` to send these directives
+    with a `self` source in addition to a `nonce` source:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, add the following line of code in your `settings` module to accommodate
+    a CDN:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Finally, configure both navigation directives with the following configuration
+    settings:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Restart your Django project and run the following code in an interactive Python
+    shell. This code requests a resource and displays the details of its CSP header.
+    The header carries six directives, shown in bold font:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Requests a resource
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Programmatically accesses response header
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Displays directives
+  prefs: []
+  type: TYPE_NORMAL
+- en: Ideally, one policy would fit every resource on your site; in reality, you’re
+    probably going to have corner cases. Unfortunately, some programmers accommodate
+    every corner case by simply relaxing the global policy. Over time, the policy
+    for a large site ends up losing its meaning after accumulating too many exemptions.
+    The easiest way to avoid this situation is to individualize the policy for exceptional
+    resources.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.3 Using individualized policies
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The `django-csp` package features decorators designed to modify or replace the
+    `Content-Security-Policy` header for an individual view. These decorators are
+    intended to support CSP corner cases for class-based and function-based views
+    alike.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here’s a corner case. Suppose you want to serve the web page shown in the following
+    listing. This page links to one of Google’s public stylesheets, shown here in
+    bold font. The stylesheet uses one of Google’s custom fonts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 15.2 A web page embeds a stylesheet and font from Google
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ A public stylesheet hosted by Google
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ An inline stylesheet
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The global policy defined in the previous section forbids the browser from
+    requesting Google’s stylesheet and font. Now suppose you want to create an exception
+    for both resources without modifying the global policy. The following code demonstrates
+    how to accommodate this scenario with a `django-csp` decorator named `csp_update`.
+    This example appends a host source to the `style-src` directive and adds a `font-src`
+    directive. Only the response of the `CspUpdateView` is affected; the global policy
+    remains intact:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Creates decorator dynamically
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Applies decorator to view
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `csp_replace` decorator replaces a directive for a single view. The following
+    code tightens a policy by replacing all `script-src` sources with `none`, disabling
+    JavaScript execution entirely. All other directives are unaffected:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Creates decorator dynamically
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Applies decorator to view
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `csp` decorator replaces the entire policy for a single view. The following
+    code overrides the global policy with a simple policy combining `default-src`
+    with `self`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Creates and applies decorator
+  prefs: []
+  type: TYPE_NORMAL
+- en: In all three examples, the keyword argument for the decorator accepts a string.
+    This argument can also be a sequence of strings to accommodate multiple sources.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `csp_exempt` decorator omits the CSP header for an individual view. Obviously,
+    this should be used only as a last resort:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Creates and applies decorator
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `CSP_EXCLUDE_URL_PREFIXES` setting omits the CSP header for a set of resources.
+    The value of this setting is a tuple of URL prefixes. `django-csp` ignores any
+    request with a URL matching any prefix in the tuple. Obviously, you need to be
+    very careful if you have to use this feature:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: So far, you’ve seen how fetch, document, and navigation directives restrict
+    what a browser can do with specific types of content. On the other hand, reporting
+    directives are used to create and manage a feedback loop between the browser and
+    the server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.4 Reporting CSP violations
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: If your policy blocks an active XSS attack, you obviously want to know about
+    it immediately. The CSP specification facilitates this with a reporting mechanism.
+    CSP is therefore more than just an additional layer of defense; it also informs
+    you when other layers such as output escaping have failed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'CSP reporting boils down to a couple of reporting directives and an additional
+    response header. The `report-uri` directive, shown here in bold, carries one or
+    more reporting endpoint URIs. Browsers respond to this directive by posting CSP
+    violation reports to use each endpoint:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: WARNING The `report-uri` directive has been deprecated. This directive is slowly
+    being replaced by the `report-to` directive in combination with a `Report-To`
+    response header. Unfortunately, `report-to` and `Report-To` are not supported
+    by all browsers or `django-csp` at the time of this writing. MDN Web Docs ([http://mng.bz/K4eO](http://mng.bz/K4eO))
+    maintains the latest information as to which browsers support this functionality.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `CSP_REPORT_URI` setting instructs `django-csp` to add a `report-uri` directive
+    to the CSP header. The value of this setting is an iterable of URIs:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Third-party reporting aggregators such as httpschecker.net and report-uri.com
+    offer commercial reporting endpoints. These vendors are able to detect malicious
+    reporting activity and withstand traffic spikes. They also convert violation reports
+    into useful graphs and charts:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Here is an example of a CSP violation report generated by Chrome. In this case,
+    an image hosted by mallory.com was blocked by a policy served from alice.com:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: WARNING CSP reporting is a great way to gather feedback, but a single CSP violation
+    on a popular page can increase site traffic dramatically. Please don’t execute
+    a DOS attack on yourself after reading this book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `CSP_REPORT_PERCENTAGE` setting is used to throttle browser reporting behavior.
+    This setting accepts a float between 0 and 1\. This number represents the percentage
+    of responses to receive a `report-uri` directive. For example, assigning this
+    to 0 omits the `report-uri` directive from all responses:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE29]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `CSP_REPORT_PERCENTAGE` setting requires you to replace `CSPMiddleware`
+    with `RateLimitedCSPMiddleware`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE30]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Removes CSPMiddleware
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Adds RateLimited-CSPMiddleware
+  prefs: []
+  type: TYPE_NORMAL
+- en: In some situations, you may want to deploy a policy without enforcing it. For
+    example, suppose you are working on a legacy site. You have defined a policy,
+    and now you want to estimate how much work it will take to bring the site into
+    compliance. To solve this problem, you can deploy your policy with a `Content-Security-Policy-Report-Only`
+    header instead of a `Content-Security-Policy` header.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE31]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `CSP_REPORT_ONLY` setting informs `django-csp` to deploy the policy with
+    a `Content-Security-Policy-Report-Only` header instead of a normal CSP header.
+    The browser observes the policy, reports violations if configured to do so, but
+    it does not enforce the policy. The `Content-Security-Policy-Report-Only` header
+    is useless without a `report-uri` directive:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE32]'
+  prefs: []
+  type: TYPE_PRE
+- en: So far, you’ve learned a lot about CSP Level 2 ([www.w3.org/TR/CSP2/](https://www.w3.org/TR/CSP2/)).
+    This document is publicly endorsed by the W3C as a Recommendation. A standard
+    must withstand extensive review before it can receive this status. The next section
+    covers some of CSP Level 3 ([www.w3.org/TR/CSP3/](https://www.w3.org/TR/CSP3/)).
+    At the time of this writing, CSP Level 3 is a W3C Working Draft. A document at
+    this stage is still in review.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.5 Content Security Policy Level 3
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: This section covers a few of the more stable features of CSP Level 3\. These
+    features are the future of CSP and are presently implemented by most browsers.
+    Unlike the features covered previously, these address man-in-the-middle threats
+    rather than XSS.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `upgrade-insecure-requests` directive instructs the browser to upgrade
+    the protocol of certain URLs from HTTP to HTTPS. This applies to non-navigational
+    URLs for resources such as images, stylesheets, and fonts. This also applies to
+    navigational URLs for the same domain as the page, including hyperlinks and form
+    submissions. The browser will not upgrade the protocol for navigational requests
+    to other domains. In other words, on a page from alice.com, the browser will upgrade
+    the protocol for a link to alice.com but not bob.com:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE33]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `CSP_UPGRADE_INSECURE_REQUESTS` setting tells `django-csp` to add the `upgrade-insecure-requests`
+    directive to the response. The default value for this setting is `False`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE34]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Alternatively, instead of upgrading the protocol, you can block the request
+    altogether. The `block-all-mixed-content` directive forbids the browser from fetching
+    resources over HTTP from a page requested over HTTPS:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE35]'
+  prefs: []
+  type: TYPE_PRE
+- en: The `CSP_BLOCK_ALL_MIXED_CONTENT` setting adds the `block-all-mixed-content`
+    directive to the CSP response header. The default value for this setting is `False:`
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE36]'
+  prefs: []
+  type: TYPE_PRE
+- en: Browsers ignore `block-all-mixed-content` when `upgrade-insecure-requests` is
+    present; these directives are intended to be mutually exclusive. You should therefore
+    configure your system to use the one that best suits your needs. If you’re working
+    on a legacy site with a lot of HTTP URLs, I recommend `upgrade-insecure-requests`.
+    This allows you to migrate URLs to HTTPS without breaking anything in the interim.
+    In all other situations, I recommend `block-all-mixed-content`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Policies are composed of directives; directives are composed of sources.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Each additional source expands the attack surface.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: An origin is defined by the protocol, host, and port of a URL.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: A nonce source strikes a balance between `none` and `unsafe-inline`.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: CSP is one of the cheapest layers of defense you can invest in.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Reporting directives inform you when other defense layers have failed.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

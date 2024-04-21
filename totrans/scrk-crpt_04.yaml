@@ -1,0 +1,576 @@
+- en: 4 Cryptographer’s toolbox
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: The rating system used for ciphers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Substitution ciphers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Transposition ciphers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Fractionation, breaking letters into smaller units
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Pseudorandom number generators
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Secret Key ciphers are built from a few basic elements. You can think of these
+    as the tools of the trade. To build a strong cipher you want all of these tools
+    in your toolbox. That does not mean you should use every element in every cipher.
+    That could lead to excess complexity without any improvement in security. Your
+    cipher would be slower, with no added benefit. This chapter covers substitution,
+    transposition, fractionation and random numbers. I introduce other tools such
+    as text compression in chapter 10 and block chaining in chapter 11.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Before discussing the elements, let’s talk about strength. The strength of a
+    cipher is measured in bits. Each bit represents one binary choice. If there were
+    a cipher where each ciphertext could represent just one of two possible plaintexts,
+    then that cipher would have a strength of 1 bit. For example,
+  prefs: []
+  type: TYPE_NORMAL
+- en: 0 = We lost.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 1 = We won.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The size of the key is a limiting factor in determining the strength of a cipher.
+    If a cipher uses 64-bit keys, then its strength can be no more than 64 bits, but
+    the strength can be less if the cipher is weak.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![4-unnumb-1](../Images/4-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 4.1 Rating system
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'In order to give you a general feel for the strengths of the ciphers described
+    in this book, I rate ciphers on a One to Ten scale. These are my personal ratings,
+    based on my experience and my analysis of how much effort is required to break
+    the cipher using the best techniques I know, and how the ciphers compare to one
+    another and to historical ciphers that were or were not broken in practice. I
+    give much of the analysis in the section preceding each rating:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: One indicates a cipher that can be broken by a beginner with no training using
+    only paper and pencil and moderate effort.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Two indicates a cipher that can be broken by an experienced amateur or hobbyist
+    using only paper and pencil.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Three is a cipher that a skilled amateur cryptographer can breach with hand
+    methods.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Four or Five means that a computer, a trained cryptographer, or both are needed.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: From Six to Nine indicates how much computing power an expert opponent would
+    need.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Ten denotes a cipher that will stand up against a national cryptographic agency
+    with legions of trained cryptographers using today’s largest supercomputers.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Sometimes I go outside the scale. Zero means that the cipher can be understood
+    without needing paper or pencil, such as Pig Latin or **GNITIRW** **EHT** **SDROW**
+    **SDRAWKCAB**. An Eleven rating means that the cipher will stand up to potential
+    future ultracomputers far stronger than quantum computers or supercomputers as
+    we currently conceive them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: By seeing how I rate different ciphers, you can get the gist of how to rate
+    ciphers that you see elsewhere, or that you may invent yourself. Each rating is
+    only an estimate, not a guarantee of strength. The guarantee comes from performing
+    the analyses described in chapter 12.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.2 Substitution
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The first tool in the cryptographer’s toolbox is substitution. One unit is substituted
+    for another unit in a text. The plaintext units can be single letters, pairs of
+    letters or longer blocks. The ciphertext units can be letters, blocks of letters,
+    blocks of digits or letter-digit combinations. When all units are single letters,
+    the cipher is called *simple substitution* or *monoalphabetic*. In computer cryptography
+    the units can be bits, bytes, or blocks of bits or bytes of any length. This section
+    gives a quick glimpse. There is a full discussion in chapters 5 and 6.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One of the oldest known substitution ciphers is the *Caesar* *Cipher*, used
+    and possibly invented by Julius Caesar, where each letter of the alphabet is replaced
+    by the letter 3 positions later. In modern use, this may be any fixed number of
+    positions earlier or later. The Caesar cipher is rated One.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is no requirement that all plaintext units have the same length. Suppose
+    that the cipher takes letters of the alphabet and substitutes 2-digit pairs. There
+    are only 26 letters of the alphabet, but 100 possible digit pairs. This means
+    there are 74 extra pairs the cryptographer can use for some other purpose. One
+    approach, which has been used for hundreds of years, is to provide substitutes
+    for common letter pairs, such as TH, ER, ON, AS and NT, and possibly short words
+    like THE and AND, in addition to the single letters. The plaintext units would
+    then be 1, 2 or 3 letters long. This makes the frequencies of the digit pairs
+    more uniform. Since differences in letter frequencies can be used for solving
+    ciphers, making the frequencies more uniform makes the cipher stronger.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another approach is to use the extra pairs to provide additional substitutes
+    for some common letters. This is called *homophonic* substitution. For example,
+    you might provide 10 substitutes for E, 8 substitutes for T, and so forth. The
+    multiple substitutes for a given letter are called *homophones*. This is analogous
+    to the way the homophones F and PH both represent the same sound in English. Providing
+    multiple substitutes makes the frequencies of the 100 digit pairs more even. Naturally,
+    both approaches, letter pairs and homophonic substitution, can be combined to
+    get even more uniform frequencies for the digit pairs. In other words, these methods
+    prevent an opponent from using frequency analysis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.2.1 Huffman codes
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In a computer context the ciphertext units can be strings of bits. A good example
+    is *Huffman Coding*, developed by David A. Huffman in 1952 when he was a student
+    at MIT. I won’t cover the method for optimizing the set of codes, I will just
+    give the general concept as an example of a variable-length binary code. In Huffman
+    coding, the most frequent letters get short codes, while rarer letters get long
+    codes, based on an underlying letter frequency table. Consequently, fewer bits
+    are required to express the message. This is called *text compression*. There
+    are even stronger methods for text compression in section 10.7.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The most frequent letters in English are E and T, which each occur about 1/8
+    of the time. Since 8 = 2³ we use 3 bits to represent E and T. We can arbitrarily
+    choose any 3-bit values, say E = 100 and T = 111\. I call this method *Mixed Huffman*.
+    The next most frequent are A, O, I, N, S, R, H. These each occur roughly 1/16
+    of the time, so we use 4 bits for each of them. We can use any 4-bit codes, except
+    codes starting with 100 or 111, which have already been used. The next group of
+    letters are D, L, U, C, M, F, Y, which each occur about 1/32 of the time, so 5-bit
+    codes are needed. And so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is a set of mixed Huffman codes I created based on counts of 150,000 letters
+    of English text. Other languages vary. Huffman codes have the *prefix property*,
+    namely no code is a prefix of any longer code. For instance, if ABCD is a code,
+    then ABCDE could not also be a code for any choice of binary digits A,B,C,D,E.
+    The prefix property was first described by mathematician Emil Leon Post in 1920.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![4-unnumb-2](../Images/4-unnumb-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Using these code groups, the word STYLE would be encoded as **0110** **111**
+    **11011** **01000** **100**. Rewriting this in groups of 4 bits gives **0110**
+    **1111** **1011** **0100** **0100**, which is hexadecimal **6FB44**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Although it is nearly impossible for Emily, Sandra’s enemy, to identify the
+    code groups for individual letters in a ciphertext, Emily can search for longer
+    repeated strings of bits. These will represent common letter pairs, called *bigrams*,
+    letter triples, called *trigrams*, or words. For example, any given 10-bit string
+    should appear about once every 2^(10), or 1024, times. If a 10-bit string appears
+    20 or more times out of 1024 strings, then it almost certainly represents the
+    word THE, which is by far the most common word in English. If you have identified
+    the word THE in a text, then you can look for extensions like THERE or THESE,
+    which are easy to spot because of the repeated E. Mixed Huffman is rated Three.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.3 Transposition
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The second major cryptographic tool is transposition, changing the order of
+    the characters in a message. The simplest method is *route transposition*. The
+    letters of the message are written into a grid in one order, and read out in a
+    different order. This section gives a quick look. The full discussion is in chapter
+    7.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For example, the message THERE IS NO LOVE AMONG THIEVES, which has 25 letters,
+    is written into this 5×5 grid from left to right across the rows, and read out
+    from top to bottom down the columns. The leftmost column in this grid is **TIOOI**
+    when read from top to bottom.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![4-unnumb-3](../Images/4-unnumb-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Common routes for writing the letters into the grid, and for reading the letters
+    out of the grid, include going straight across the rows, either left or right,
+    straight up or down the columns, alternating left and right across the rows, alternating
+    up and down the columns, diagonally starting at any corner, diagonally in alternating
+    directions, or spiral clockwise or counterclockwise, either inward or outward.
+    Route transposition ciphers are rated One.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.4 Fractionation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Fractionation is the division of characters into smaller units. We have already
+    seen one way, representing a character as a binary number. Each bit of that binary
+    number can be manipulated as a separate unit, substituted or transposed. This
+    section introduces fractionation. There is a detailed discussion in chapters 9
+    and 10.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A classical way of representing a letter as two digits is the *Polybius Square*,
+    invented in the second century BCE by the Greek historian Polybius. Here is a
+    5×5 square using a mixed alphabet with the keyword SAMPLE. Notice that the letters
+    I and J share one cell in order to make the 26-letter alphabet fit into the 25-cell
+    grid.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![4-unnumb-4](../Images/4-unnumb-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Since A is on row 2 in cell 3, it is represented by 23\. B is 33, C is 34, and
+    so on, through Z represented by 21\. I and J are both represented by 44\. These
+    digits can then be substituted, transposed and regrouped in various ways. Pairs
+    of digits can be turned back into letters using this grid, or another Polybius
+    square arranged in a different mixed order.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A modern version would replace each character with its hexadecimal representation
+    in ASCII or UTF-8 code. Thus A = 41, B = 42, C = 43, through Z = 5A. These hexadecimal
+    digits can similarly be substituted, transposed, regrouped and turned back into
+    bytes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A fun example is *Fractionated Morse*, invented by M. E. Ohaver in 1910\. Ohaver
+    always went by M. E. because he disliked his first name, which was Merle.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Historical note
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A footnote on page 241 of Craig Bauer’s *Secret History: The Story of Cryptology*
+    states that M. E. Ohaver was one of the pseudonyms of prolific pulp fiction writer
+    Kendell Foster Crossen. This is not true. Crossen sometimes used the pseudonym
+    M. E. Chaber from the Hebrew *mechaber*, מחבר, meaning *author*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In fractionated Morse, the letters are taken in groups of a fixed size, say
+    7, and replaced by their Morse code equivalents, using / as a letter separator.
+    Then the lengths of the code groups are reversed, and the resized groups are turned
+    back into letters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![4-unnumb-5](../Images/4-unnumb-5.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Morse code was invented by Alfred Vail in 1840 and named for his employer, Samuel
+    F. B. Morse.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This cipher has several obvious weaknesses. Since it uses the standard Morse
+    alphabet, the only key is the length of the letter groups, which can be guessed
+    in just a few tries. Plaintext letters are often replaced by themselves. There
+    are 30 different Morse code groups, but only 26 letters, so 4 extra characters
+    are needed. Ohaver used Germanic ä, ë, ö and ü. Fractionated Morse is rated One.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'These problems can be partially fixed with two changes: (1) Use only the Morse
+    groups of lengths 1, 3 and 4\. There are 26 such groups, perfectly fitting the
+    26-letter alphabet. (2) Scramble the order of the alphabet, or, equivalently,
+    scramble the order of the Morse code groups. I call this enhanced version *FR-Actionated
+    Morse*. For example, using the keyword MIXEDALPHBT to mix the alphabet, with the
+    Morse groups in standard order, you get'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![4-unnumb-6](../Images/4-unnumb-6.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Even with these improvements, FR-Actionated Morse is rated only Two.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.5 Random number generators
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A random number generator can be anything that produces a sequence of numbers
+    in some given range. The numbers might be single bits, 8-bit bytes, decimal digits,
+    or numbers in any other desired range. For example, numbers in the range 0 to
+    25, corresponding to the 26 letters of the alphabet, are useful for some cryptographic
+    purposes. This section introduces the topic. The complete discussion is in chapter
+    13.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is important to recognize that there is no such thing as “a random number.”
+    You cannot say that 51 is a random number, while 52 is not, or vice versa. You
+    can, however, say that the sequence 51, 52, 53, 54, ... is not random. That sequence
+    is completely predictable. Randomness is a property of the sequence, or of the
+    generator, not of the individual numbers in the sequence. It is more accurate
+    to say “a random sequence of numbers” than “a sequence of random numbers.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: The generator might be a physical process, such as cosmic rays, the pinging
+    of a Geiger counter, precise timing of computer keystrokes, a flag fluttering
+    in a stiff breeze, spray from crashing waves or people rushing to catch trains.
+    Most physical sources are not fast enough for cryptographic purposes, but the
+    sequence of numbers might be stored in a computer file for later use.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The generator could also be a mathematical function or computer program that
+    produces a number each time it is called. Random numbers produced by mathematical
+    algorithms are called *pseudorandom* numbers to distinguish them from *true random*
+    numbers. They are considered weaker than true random numbers because an opponent
+    who determines a portion of the random sequence may be able to calculate the preceding
+    and following numbers and thus read the message. True random numbers can never
+    be produced by a mathematical function. In section 13.8 I show methods for generating
+    cryptographically secure pseudorandom number sequences designed to prevent an
+    opponent from extending a segment of the sequence.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One key difference between pseudorandom sequences and true random sequences
+    is that pseudorandom sequences eventually repeat, while true random sequences
+    never repeat. The number of terms before the sequence repeats is called its *period*.
+    The sequence 3,1,9,2,4, 3,1,9,2,4, 3,1,9,2,4, 3, ... for example, has a period
+    of 5, shown underlined. In general, the longer the period, the stronger the cipher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simply because a sequence of numbers is random does not mean that the numbers
+    are equally probable. For example, suppose you are observing the colors of cars
+    crossing a busy bridge. The colors are random, but certain colors are much more
+    common than others. White, black, silver and red are far more common than orange,
+    fuchsia or chartreuse. Similarly, in the game of craps, if the dice are fair,
+    then each throw is random, yet throwing a 7 is six times as likely as throwing
+    a 12.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In sections 13.14.1 and 13.14.2 I discuss how to “harvest” the randomness in
+    such sequences to obtain sequences where the numbers have essentially equal probabilities.
+    I will henceforth assume that any random number generator produces numbers with
+    equal probabilities. This is called a *uniform distribution*, or an *equiprobable
+    distribution*. With a good random number generator, pairs and triples, and so
+    on, of generated numbers will also have uniform probabilities, perhaps going as
+    far as octuples or beyond.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.5.1 Chained digit generator
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Let me end this section with a sample pseudorandom number generator that can
+    easily be done using paper and pencil. No computer required. Let’s call it the
+    *Chained Digit Generator*. Begin by writing any 7-digit decimal number. These
+    7 digits are called the *seed*, or *initial value*, or *initialization vector*.
+    They can be considered the key, or a part of the key, for any cipher that incorporates
+    this generator. To get the first pseudorandom digit you simply add the first and
+    last digits. You append this new digit to the sequence, and black out the first
+    digit. So, starting with 3920516 we add 3+6 to get 9.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![4-unnumb-7](../Images/4-unnumb-7.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Any time the sum exceeds 9 we drop the tens digit. That is, the addition is
+    done modulo 10\. This is sometimes called *non-carrying addition*. To get the
+    second pseudorandom digit we repeat the process. Here 9+9 gives 18\. We drop the
+    tens digit to get 8.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![4-unnumb-8](../Images/4-unnumb-8.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This process can be repeated to get as many pseudorandom decimal digits as desired.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![4-unnumb-9](../Images/4-unnumb-9.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The resulting pseudorandom sequence is **9800562199940232...**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Notice that if all of the digits in the seed are even, then all of the generated
+    digits will be even. Likewise, if all of the digits are divisible by 5, namely
+    0 or 5, then all of the generated digits will be divisible by 5\. In that case
+    the period could be no more than 128 since there are 7 digits in the seed, and
+    there are only 2⁷ = 128 possible combinations of 0s and 5s. Since such seeds cannot
+    produce long periods they are called *unqualified*. For the chained digit generator
+    a *qualified* seed must contain at least one odd digit and one digit that is not
+    a multiple of 5\. For example, 2222225 is a qualified seed, but 2222222 and 5555555
+    are not qualified. With a qualified 7-digit seed the period will always be 2,480,437.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This generator has behavior typical of homemade pseudorandom number generators.
+    There are 10⁷ possible 7-digit seeds. If you start with any seed, the generator
+    will cycle through some sequence of numbers until it produces that seed again,
+    so the set of 7-digit numbers is partitioned into several discrete cycles, each
+    with its own period. If you choose a qualified seed, then the cycle will always
+    have the maximum possible period of 2,480,437 numbers. There are 4 separate cycles
+    of this length, plus several much shorter cycles produced by the unqualified seeds.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The behavior is similar for seeds of other sizes. Even when the maximal cycle
+    is very short there is often a high probability of getting a maximal cycle because
+    there can be many maximal cycles. This table shows the probability of getting
+    a cycle of a given length using a qualified seed:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| **Digits** | **Period** | **Probability** |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 4 | 1,560 | 100% |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 5 | 168 | 86.7% |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 6 | 196,812 | 99.974% |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 7 | 2,480,437 | 100% |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 8 | 15,624 | 98.817% |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 9 | 28,515,260 | 79.999% |'
+  prefs: []
+  type: TYPE_TB
+- en: '| at least 2,851,526 | 99.9988% |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 10 | 1,736,327,236 | 86.9% |'
+  prefs: []
+  type: TYPE_TB
+- en: '| at least 248,046,748 | 99.31% |'
+  prefs: []
+  type: TYPE_TB
+- en: '| at least 13,671,868 | 100% |'
+  prefs: []
+  type: TYPE_TB
+- en: The table shows that seed lengths of 5 and 8 digits are not safe. They produce
+    a large percentage of very short cycles. Seed lengths of 7 and 10 digits are best
+    because you are always guaranteed a long period.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This random number generator is strictly a demo model, just to show what can
+    be achieved using simple hand methods. It is not suitable for high-security work.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.6 Useful combinations, wasteful combinations
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The 4 basic techniques of this chapter can be used in myriad combinations, which
+    I explore throughout the remainder of this book. However, it is important to recognize
+    right at the outset that not every combination is beneficial. Some combinations
+    add work without adding strength.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Consider an idea that some beginners try. They perform a simple substitution
+    on a message, then a second simple substitution on the resulting text, then a
+    third, and so forth, for 5, 10, even 100 rounds. This is a waste of effort. Performing
+    two simple substitutions is the same as performing one, but with a different mixed
+    alphabet, so performing many simple substitutions does not add any strength. Here
+    is an illustration. The two substitutions are mixed with the keys FIRST and SECOND.
+    The third substitution is equivalent to performing the first followed by the second.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![4-unnumb-10](../Images/4-unnumb-10.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Let’s try an example. If we encipher the word **EXAMPLE** using the first substitution,
+    the result is **IUXEJDI**. If **IUXEJDI** is enciphered with the second substitution,
+    the result is **CLQYOXC**. You can verify for yourself that enciphering **EXAMPLE**
+    with the equivalent substitution yields **CLQYOXC**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Performing one encipherment and then a second encipherment is called *composing*
+    the two encipherments. The previous example shows that composing two simple substitutions
+    just produces another simple substitution. If the first encryption uses a code,
+    then following the code with a cipher is called *superencipherment*. The most
+    common form of superencipherment is non-carrying addition, or addition modulo
+    10, which works like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![4-unnumb-11](../Images/4-unnumb-11.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 4.6.1 Bazeries type 4 cipher
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Let’s look at the opposite case. Let’s look at a cipher where using a substitution
+    step followed by a very simple transposition produces a cipher that is much stronger.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The cipher was proposed by the brilliant, irascible and vituperative French
+    cryptographer Étienne Bazeries in 1898\. I do not know what Bazeries named this
+    cipher. I call it *Bazeries Type 4* because it was the last of 4 ciphers that
+    he proposed to the diplomatic Bureau de Chiffre during the 1890s. It can easily
+    be done by hand.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Bazeries type 4 consists of a simple substitution followed by a simple transposition,
+    which I call a *piecewise reversal*. The transposition reverses short pieces of
+    the text according to a key that is a sequence of small integers. Here is an example
+    using the keyword BAZERIS to mix the substitution alphabet, and the key 4,2,3
+    for the transposition.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![4-unnumb-12](../Images/4-unnumb-12.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This type of transposition can be used to strengthen many different types of
+    ciphers, so it deserves a name of its own. Let’s call it *Piecewise Reversal*.
+    You can strengthen this transposition by mixing in a few segments of text in normal
+    order, perhaps by using negative numbers in the numeric key. Here is an example
+    using the numeric key 3, 4, -3, 2\. Note that this key is equivalent to 3, 4,
+    1, 1, 1, 2.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![4-unnumb-13](../Images/4-unnumb-13.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'The cryptographers at the Bureau de Chiffre were unable to solve any of the
+    sample messages that Bazeries provided. Despite considerable effort, the messages
+    remained unsolved for 40 years until renowned architect, and amateur cryptographer,
+    Rosario Candela solved them and wrote a book about how he did it (*The Military
+    Cipher of Commandant Bazeries*, Cardanus Press: New York, 1938).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Candela, however, was unable to decrypt the messages directly. Instead, he identified
+    and exploited a weakness in the way Bazeries generated the substitution alphabet
+    from a key. If Bazeries had used a stronger method for mixing the cipher alphabet,
+    Candela could not have deciphered the messages. Consequently, Bazeries type 4
+    with a well-mixed alphabet is rated Five. Pretty good for combining two methods
+    that are each rated One.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Historical tidbit
+  prefs: []
+  type: TYPE_NORMAL
+- en: Candela was a graduate of Columbia School of Architecture, so he planned to
+    publish his book at Columbia University Press. William F. Friedman, then the dean
+    of American cryptologists, got wind of this, and secretly blocked the publication.
+    This again attests to the strength of the Bazeries Type 4 cipher.
+  prefs: []
+  type: TYPE_NORMAL

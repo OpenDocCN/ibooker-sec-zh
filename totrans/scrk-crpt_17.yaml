@@ -1,0 +1,236 @@
+- en: 17 Codes
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Ideas for constructing a code
+  prefs: []
+  type: TYPE_NORMAL
+- en: Over the centuries, despite advances in ciphers, then cipher machines, and now
+    digital cryptography, the military has always relied on codes. Even today, we
+    can assume that the military still has codes as a backup in case electronic devices
+    fail or power is unavailable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Most codes replace letters, syllables, words or phrases with groups of a fixed
+    size, usually 3, 4 or 5 decimal digits, or groups of 3 or 4 letters. Variable-length
+    codes are uncommon. Codes generally fall into two types, single codes and double
+    codes. In a single code the words and phrases are listed alphabetically and the
+    code groups are assigned in numeric order, although not consecutively, so words
+    and code groups can be looked up using the same list. The weakness of this method
+    is obvious. If your opponent has figured out that code 08452 means CANNON then
+    they know that any codes close in value to 08452 must have meanings such as CAMOUFLAGE,
+    CAMPAIGN, CANCEL, CANINE, CANVAS, CAPITAL, CAPITULATE, CAPSIZE, CAPTAIN, and so
+    forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In a double code, the code groups are assigned in random order. The code book
+    will contain two separate lists, one that lists the words and phrases in alphabetic
+    order, and one that lists the code groups in numeric order. In the past, double
+    codes took months to compile, and were very costly. A government might, therefore,
+    use the same code for years, largely negating its effectiveness. Since the 1960s,
+    the job of compiling a double code can be done by computer in seconds.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Compilers of codes had lots of tricks to make their codes more secure. For common
+    words and phrases they would provide lots of equivalent code groups, or synonyms.
+    Thus a naval code might have 10 to 20 code groups for “ship”, while an army code
+    might have that number of code groups for “artillery” and a diplomatic code might
+    have as many groups for “treaty”. Codes tend to have lots of null groups. Whole
+    sections of a message may be entirely null. Some code groups may have multiple
+    meanings depending on some indicator, such as the last digit of the preceding
+    group.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Some code books are printed in two columns. The code is taken from either the
+    left or the right column according to some indicator. For example, if the current
+    code group begins with an even digit, take the next code group from the left column,
+    otherwise take the next code group from the right column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 17.1 The Joker
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The *Joker* is a style of code of my own invention. If any readers want to devise
+    their own codes, the Joker may give them some useful ideas. The basic concept
+    is that in each code group one letter or digit is distinct from the others. In
+    a 5-character group, for example, 4 characters would carry the meaning, while
+    the other character, called the Joker, is there to cause mayhem. Simply having
+    one null character makes the opponent’s job a good deal harder, but there is much
+    more you can do with this special letter or digit.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s assume a code of 5-digit groups. Four of the digits are the code itself,
+    and the other digit is the Joker. To get started, suppose the Joker is always
+    in the middle position in the first code group in each message. Let’s also assume
+    that this is a 2-column code book, where the codes in the left column have entirely
+    different meanings from the codes in the right column. For example, 0022 in the
+    left column could mean “rescue,” while 0022 in the right column means “engine.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: Similarly, there could be two columns of meanings for the Joker, so the Joker
+    can move to a different digit position, and also move to a different column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is a list of possible meanings you could assign to the Joker. There are
+    a lot more than 10\. You can pick the 10 you want. Or, use 2 columns and have
+    20 meanings for the Joker. Or, use letters instead of digits and choose 26 meanings
+    for the Joker.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Starting with the next group, the Joker moves 1 position left.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Starting with the next group, the Joker moves 1 position right.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Starting with the next group, the Joker moves to position 1.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Starting with the next group, the Joker moves to position 2, and so on.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: For the next group only, the Joker is in position 1.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: For the next group only, the Joker is in position 2, and so on.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Switch to the left column of codes.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Switch to the right column of codes.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Switch to the opposite column of codes.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: For the next code only, use the opposite code column.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: For the next 2 codes, use the opposite code column, and so on.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The next group is null.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The group after next is null.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The next 2 groups are null, and so on.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: In the next group, the code is null but the Joker is real.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: In the next group, the code is real but the Joker is null.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Swap the order of the next 2 groups.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Add 1111 to the code in the next group (non-carrying addition).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Add 3030 to the code in the next group (non-carrying addition), and so on.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: If the next code is even, add 2222, otherwise subtract 2222 (non-carrying).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Add 1 to the Joker in the next group (non-carrying).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Add 2 to the Joker in the next group (non-carrying), and so on.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Add this 4-digit code to the next 4-digit code. The Joker is excluded.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Read the digits of the next code backward, for example 1075 really means 5701.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Ignore the following codes until there is a code starting with 0.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The next group is a special indicator.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: For an example of non-carrying addition, see section 4.6.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Special indicators require a fuller explanation. In a special indicator, all
+    5 digits of the code group serve a special purpose, such as telling where the
+    Joker will be, or which column to use. For example, a special indicator of 13152
+    could mean that in the following 5 groups the Joker will be in positions 1, 3,
+    1, 5 and 2 in that order. The special indicator could also tell which column the
+    next 5 codes are taken from, an odd digit indicating the code is from the left
+    column and an even digit indicating the code is from the right column. A special
+    indicator of 10384 could mean that in the following 5 groups the codes are taken
+    from the left, right, left, right and right columns successively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Another use for a special indicator might be to specify numbers to add to the
+    codes in the next 5 groups. For example, the special indicators might mean to
+    add the following values to the 4-digit codes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![17-unnumb-1](../Images/17-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: These values would be added using non-carrying addition, addition modulo 10.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Joker always indicates an action to be taken in the following group or groups,
+    never in the current or preceding group. For example, you should not use a Joker
+    whose meaning is “cancel the previous Joker.” When a Joker indicates an action
+    covering several subsequent groups, make certain that the actions of two different
+    Jokers do not conflict. For example, you should not have a Joker in group 20 saying,
+    “the next 3 codes are taken from the left column” followed by a Joker in group
+    21 saying, “the next 3 codes are taken from the right column.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another trick that can be used with the Joker code is to use a letter A through
+    E instead of a Joker. This letter may appear in any position, and supersedes the
+    expected position for the Joker. A letter A means the next Joker will be in position
+    1, a B indicates position 2, and so forth. You can also assign meanings to the
+    letters F, G and H. For example, F could indicate that the code should be taken
+    from the opposite column and the next Joker will be in position 1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Do not use the letter I if there is any chance that it could be mistaken for
+    the digit 1\. I like to use the letter J as a super-Joker. It means that everything
+    following is null. You can bang on for another 10, 20 or 100 code groups of gibberish
+    and really send Emily into delirium. Or, you can use those nulls to send a misleading
+    false message, say “Normandy landing postponed to June 10 at Utah beach.”
+  prefs: []
+  type: TYPE_NORMAL

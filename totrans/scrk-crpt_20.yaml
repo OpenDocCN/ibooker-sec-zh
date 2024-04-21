@@ -1,0 +1,47 @@
+- en: Appendix B. Challenge
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: These cryptograms are presented as a challenge to readers. The methods are not
+    given. It is your task to determine the method and solve the cryptogram. Sufficient
+    material is given so that a skilled amateur who has determined the method can
+    solve it. In all cases the language is English. The text reads normally and grammatically.
+    No special effort has been made to distort standard English letter frequencies
+    or contact frequencies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: These are all single-step ciphers. There is no mixing of methods, such as combining
+    a substitution with a transposition. These challenge ciphers are rated Three.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'C1: Challenge #1'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is a paper-and-pencil cipher. The plaintext consists of 250 uppercase letters
+    without word spaces or punctuation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![20-unnumb-1](../Images/20-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'C2: Challenge #2'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This cipher can be solved by hand, but it is easier with some computer assistance
+    to manage the hexadecimal representation. The plaintext consists of 200 characters
+    in mixed case with word spacing and punctuation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![20-unnumb-2](../Images/20-unnumb-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'C3: Challenge #3'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This cipher can be encrypted and decrypted by hand. The plaintext consists of
+    180 letters in uppercase without word spacing or punctuation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![20-unnumb-3](../Images/20-unnumb-3.png)'
+  prefs: []
+  type: TYPE_IMG

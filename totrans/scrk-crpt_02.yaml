@@ -1,0 +1,610 @@
+- en: 2 What is cryptography?
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Basic terms used in cryptography
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: What is an unbreakable cipher?
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: What are the different types of cryptography?
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Cryptography is often called “The Art of Secret Writing.” It is more than that.
+    It encompasses everything from invisible inks to transmitting messages by quantum
+    entanglement of photons. In particular, cryptography includes the making and breaking
+    of codes and ciphers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Different authors use cryptographic terminology in inconsistent ways, so let
+    us begin by agreeing on some basic terms.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Plaintext* or *cleartext* is the message or document that you wish to keep
+    secret. In traditional cryptography, the message was text written in some language
+    known to both sender and receiver. In a computer setting, this could be any type
+    of file such as a PDF (text), JPG (image), MP3 (audio), or AVI (multimedia).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A *cipher* is a method, or *algorithm*, for garbling a message to make it unreadable:
+    for example, by changing the order of the characters or by replacing some characters
+    with different characters. In general, ciphers operate on individual characters
+    or groups of characters in the text without regard for their meaning.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A *key* is a secret piece of information known only to the sender and the legitimate
+    receiver(s) that selects which transformation is used for each message. For example,
+    if the cipher (method) is to change the order of the letters in a message, the
+    key might specify which order to use for that day’s messages. A key can be a letter,
+    a word or phrase, a number, or a sequence of letters, words and numbers. The strength
+    of a cipher is highly dependent on the total size of the keys it uses.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A *keyword* or *keyphrase* is a word or phrase used as a key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Encryption* or *encipherment* is the process of changing the plaintext into
+    an unreadable garble by the legitimate sender who knows the key.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Ciphertext* is the resulting garbled unreadable message or document, which
+    will be transmitted or stored.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Decryption* or *decipherment* is the process that the legitimate receiver,
+    who knows the method and the key, uses to turn the garbled ciphertext back into
+    the original plaintext message.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A *code* is also a method for garbling a message to make it unreadable. By contrast
+    to a cipher, a code normally operates on words or phrases in a message. A typical
+    code replaces words or phrases with groups of digits or letters. (Confusingly,
+    the word *code* is also used to mean a standardized representation for letters,
+    such as Morse code. Hopefully the meaning will be clear from the context.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Cryptology* is the formal study of cryptography, the mathematics and methodologies
+    used for constructing and solving ciphers. Scholars study cryptology; code-breakers
+    study cryptanalysis.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Cryptanalysis* is the study of codes and ciphers for the specific purpose
+    of identifying weaknesses and finding ways to break them or, conversely, ways
+    to strengthen them.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Code-breaking* is the process of solving encrypted messages by third parties
+    (enemies or opponents) who do not have the key and may not even know the method.
+    This can be done by mathematical methods or by the patient amassing and collating
+    of intercepts, but in practice often comes down to the three B’s: bribery, blackmail
+    and break-ins.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2.1 Unbreakable ciphers
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Now that we have some common language, let me address the main issue. What exactly
+    do I mean by “unbreakable”? First, I mean that a cipher cannot be broken by cryptographic
+    means. This excludes break-ins, bribery, coercion, defections, extortion, honeytraps
+    and similar means. Those lie outside our scope. Second, I mean that the cipher
+    cannot be broken in a practical sense. Any opponent has finite resources and finite
+    time to devote to the code-breaking task. When choosing a cipher, you need to
+    have some idea of how much manpower and computer power your potential opponent(s)
+    may expend on breaking your cipher. Make a conservative guess, allow for improvements
+    in computers, add a margin of safety, and pick a number. Then, when you choose
+    a cipher, you have a target to aim for. Reach that target and your cipher is effectively
+    unbreakable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Remember that many messages have a limited lifespan. If your message is ATTACK
+    AT DAWN, and your enemy reads your message at noon, it’s too late. You have already
+    attacked. A cipher that can be broken in 12 hours is effectively unbreakable when
+    your opponent does not have 12 hours.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Just to make this concept doubly clear, when I say that a cipher has been *broken*,
+    I mean that an opponent can read messages sent using that cipher. Even if the
+    opponent can read only 1% or .01% of the messages, the cipher is broken. But there
+    is a cutoff somewhere. If the opponent can read a message only if they have intercepted
+    many messages of the same length enciphered with the same key, or where 63 out
+    of 64 key bits are zero, then the cipher is still unbroken. The opponent has no
+    *a priori* way of telling which messages used which key, or which keys are nearly
+    all-zero. It may never happen that you send two messages with the same length
+    and same key, or where 63 key bits out of 64 are zero.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If your cipher uses a 256-bit key, and an enemy cryptanalyst finds a mathematical
+    or computational method to reduce this to 200 bits or even 150 bits, that cipher
+    may be weakened, but it is still unbroken if your chosen level of security is
+    128 bits. Using a 256-bit key to achieve a security level of 128 bits provides
+    a huge margin of safety.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the government decided that the old Data Encryption Standard was no longer
+    safe, it held an international competition for a new cipher. Proposals were solicited
+    worldwide. Dozens of ciphers were submitted. Hundreds of cryptographers evaluated
+    these candidate ciphers for security, speed and ease of implementation. There
+    were three rounds of winnowing lasting from 1997 to April 2000 until a winner
+    was chosen. That’s what you need to do when your cipher is going to be a worldwide
+    standard for governments, banking, industry and the military. If you decide to
+    enter the next competition, this book will help prepare you.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Most readers, however, will not attempt that. Their ciphers will have more limited
+    scope. They may trust their own judgment, or whatever verification process they
+    devise, for evaluating their ciphers. The principles in chapter 12 will help guide
+    them to a sound and confident decision.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2.2 Types of cryptography
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: There are many different types of cryptography. Some types used in the past
+    were
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Hidden message*: for example, the messenger could swallow the message, or
+    hide it in their boot heel or saddle, or simply memorize it. It was common in
+    ancient times to have a messenger memorize a message phonetically in a language
+    they did not understand.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Secret method*, such as the *Caesar Cipher*, where each letter of the alphabet
+    is replaced by the letter 3 places later. That is, A becomes D, B becomes E, C
+    becomes F, and so forth.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Disguised message*, where the message is made to look like something else,
+    such as a design in the messenger’s garments.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Invisible* *message*, such as microdots, or invisible inks that become visible
+    when heated or exposed to acid.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Misdirection*: for example, where the signature or the shape and color of
+    the paper are the true messages, and everything else is distraction or disinformation.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Collectively, all methods for hiding a message are called *steganography*, first
+    described in the 1499 book *Steganographia* by Benedictine abbot Johannes Trithemius,
+    born Johannes Heidenberg. Trithemius’s book is itself a form of steganography,
+    since it is disguised as a book of magic.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Some of these steganographic methods have modern counterparts. For example,
+    a message can be concealed in a JPEG image file by using only the low-order bits
+    of each pixel. Another example is to use a random number generator to pick certain
+    bits in each byte of a file. The chosen bits contain the message, and the remaining
+    bits can be random gibberish.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Before describing modern ciphers, let me introduce a useful shorthand. A message
+    is sent from a sender to a receiver, and the purpose of encryption is to keep
+    some enemy from reading the message. For brevity, I call the sender Sandra, the
+    intended receiver Riva, and the enemy Emily. That is more natural than Alice,
+    Bob and Carol, isn’t it?
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![2-unnumb-1](../Images/2-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Usually Sandra enciphers the message at her location before sending it to Riva.
+    The message may be sent by any means: letter, telephone, internet, shortwave radio,
+    Aldis lamp, microburst, telegraph, fiber-optic cable, semaphore, quantum entanglement,
+    or even smoke signals if there is a direct line of sight. To make this picture
+    more complete, the cipher may require a key as well as the plaintext, and there
+    may be an enemy listening in. Here is a fuller image.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![2-unnumb-2](../Images/2-unnumb-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Modern ciphers generally fall into three broad categories: Secret Key, Public
+    Key and Personal Key. Their main distinguishing features are as follows.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Secret Key*: Sandra has a secret key, which she uses to encipher messages.
+    Riva has a corresponding secret key, which she uses to decipher those messages.
+    This may be the same key or an *inverse* key. Usually Sandra controls the key.
+    When Sandra changes the key, she must send the new key, or its inverse, to Riva.
+    This is the standard paradigm of classical cryptography.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Public Key*: Riva has a public encryption key, which she makes known to everyone.
+    Whenever Sandra wants to send Riva a message, she enciphers it using Riva’s public
+    key. Riva also has a secret decryption key, known only to herself, which she can
+    use to decipher the messages that she receives. To make this scheme work, it is
+    essential that nobody else can compute this secret key from the public information.
+    The dominant Public Key method is the RSA algorithm invented by Ronald Rivest,
+    Adi Shamir and Len Adelman in about 1975.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Personal Key*: Sandra and Riva each have a personal key they share with nobody,
+    not even one another. Since no keys are ever transmitted or shared, Personal Key
+    cryptography is sometimes called *keyless* cryptography. Here is how it works:
+    (Pass 1) Sandra enciphers the message with her personal key and sends the enciphered
+    message to Riva. (Pass 2) Riva enciphers that message with her personal key and
+    sends this doubly enciphered message back to Sandra. (Pass 3) Sandra deciphers
+    that message using her personal key and sends this back to Riva. The message is
+    now enciphered only with Riva’s key, which she uses to read the message.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The tricky part here is that Sandra’s encryption and Riva’s encryption need
+    to *commute*. That is, they must produce the same result regardless of whether
+    Sandra encrypts first or Riva encrypts first. Symbolically, we express this as
+    SRM=RSM, where M is the message and S and R are Sandra’s and Riva’s encryptions.
+    The advantage of Personal Key cryptography is that anybody can communicate securely
+    with anybody else without having to prearrange any keys or transmit any keys,
+    so there is no possibility of a key being intercepted.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Personal Key cryptography is also called the *Three Pass Protocol*. A *protocol*
+    is just a sequence of steps used for some purpose such as transmitting a message.
+    In other words, a protocol is an algorithm. The basic idea for the Three Pass
+    Protocol was invented by Adi Shamir in about 1975, and the specific method I present
+    in this book is my own.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2.3 Symmetric vs. asymmetric cryptography
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Many books state that cryptography can be divided into two types: *symmetric*
+    and *asymmetric* ciphers. The idea is that in Secret Key cryptography, Sandra
+    and Riva use the same key to both encrypt and decrypt the message, while in Public
+    Key cryptography, Sandra uses one key while Riva uses its inverse. This dichotomy
+    overlooks Personal Key cryptography, which is neither symmetric nor asymmetric,
+    as well as the various classical methods described at the start of section 2.2\.
+    Moreover, the symmetric/asymmetric classification is not always accurate. In section
+    15.1 I describe the *Hill Cipher*, a Secret Key method where encryption consists
+    of multiplying the message by the key, and decryption consists of multiplying
+    by an inverse key—just like Public Key cryptography.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Categorizing a cipher as either symmetric or asymmetric is not particularly
+    useful. It fails to capture the essential difference between Secret Key and Public
+    Key cryptography, namely that in Secret Key cryptography, all of the keys are
+    kept secret, while in Public Key cryptography, each party keeps one key secret
+    and makes one key public and available to everyone.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Public Key cryptography and Personal Key cryptography both came out around 1975\.
+    Public Key cryptography fired the imagination, so Secret Key and Personal Key
+    methods have received scant attention since that time. Public Key cryptography
+    is fully covered in many books. This book focuses primarily on Secret Key cryptography,
+    the mainstay and bedrock of cryptography.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2.4 Block ciphers vs. stream ciphers
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Another classification is to divide ciphers into block ciphers and stream ciphers.
+    Block ciphers operate on blocks of characters in the message, say blocks of 5
+    characters. Usually all of the blocks are the same size, and the same key is used
+    for every block.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stream ciphers operate on one character of the message at a time. Each character
+    has its own key, called the *character key*, typically taken from a larger key
+    called the *message key*. In older stream ciphers the message key was repeated.
+    For example, if the message key size was 10 characters, then the first key character
+    would be used to encipher message characters 1, 11, 21, 31, ... of the message,
+    the second key character would encipher message characters 2, 12, 22, 32, ...
+    , and so forth. Ciphers using regularly repeating keys are called *periodic*.
+    In newer stream ciphers the message key is usually as long as the message itself
+    and is called the *key stream*. This *aperiodic*, or non-periodic, style of enciphering
+    is called the *one-time pad*. In chapter 13, there are discussions of how key
+    streams can be generated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The block/stream classification is not exclusive. There are hybrid ciphers where
+    the message is broken up into blocks, but different blocks are enciphered with
+    different keys, so the cipher operates on a stream of blocks rather than a stream
+    of characters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2.5 Mechanical vs. digital
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Ciphers can also be classified according to the means used to produce them.
+    The earliest ciphers were done entirely by hand. Not using pencil and paper, but
+    rather stylus and parchment, or stylus and clay tablet.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The first mechanical means of encipherment was the *skytale* or *scytale* (pronounced
+    SKIT-a-lee) used by the ancient Greeks and Spartans, probably as early as 700
+    BCE. This consisted of a rod with a narrow strip of leather or parchment wound
+    around it so the edges of each turn carefully matched the edges of the adjacent
+    turns. In other words, there were no gaps and no overlaps. The letters of the
+    message were written across two or more turns of the strip. When the strip was
+    unwound, only disconnected pieces of the letters were visible so that an enemy
+    would not recognize that it contained a message. Additional squiggles or patches
+    of color could be added to make it look like a decoration.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The sender kept the staff for reading and writing future messages. Messengers
+    could wear the strip as a belt or use it to tie up their hair or cinch their saddles.
+    The recipient needed a rod of identical diameter to reconstitute the message.
+    Messengers, of course, were not told the purpose of the ribbon or thong. It might
+    even be sewn into their garments without their knowledge.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is an image of a skytale in the 1593 edition of *De Occultis Literarum
+    Notis* by Giovanni Battista Porta. It shows how each Greek letter spans several
+    turns of the leather strip. Here is a modern version.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![2-unnumb-3](../Images/2-unnumb-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'The Greeks kept the secret of the skytale for about 700 years. The Romans,
+    however, were not so successful. Eventually their enemies in northern Europe learned
+    the meaning and use of these rods. So, the Romans invented a special measuring
+    tool consisting of a hollow brass or bronze dodecahedron, a solid shape with 12
+    identical pentagonal faces, with a circular hole on each face. These holes allowed
+    them to make wooden rods of precisely the correct diameter. When a governor (satrap),
+    ambassador, or spy was sent to a post that required travel through hostile territory,
+    it was safer to carry this tool than to carry an actual skytale that could be
+    captured. The 12 holes had different diameters to allow for secure communications
+    with other governors, ambassadors and spies: for example, small for Londinium
+    (now London), medium for Lugdunum (now Lyon), and large for Tarraco (now Tarragona
+    in Catalonia).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: So far as is known, the purpose of these dodecahedrons was never discovered
+    by the northern Europeans or, for that matter, by modern archeologists. Archeologists
+    have proposed a plethora of preposterous purposes for these artifacts, such as
+    children’s toys, saddle ornaments, practice pieces for blacksmiths, candleholders,
+    range-finders for artillery, or, the answer of last resort, religious objects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is a bronze Roman dodecahedron found near Tongeren, the oldest town in
+    Belgium, and displayed in the Gallo-Romeins Museum.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![2-unnumb-4](../Images/2-unnumb-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Here is an interesting side note: If you look up *skytale* in Wikipedia and
+    other websites, it says that the skytale was used to produce a transposition cipher
+    by writing each letter within one turn of the strip. This is wrong. Such a strip
+    would easily be recognized as a cipher message. Whether or not the enemy could
+    read the message, they would certainly not let the messenger deliver it. A thorough
+    examination of the whole letter versus broken letter issue can be found at [cryptiana.web.fc2.com/code/scytale.htm](http://cryptiana.web.fc2.com/code/scytale.htm).
+    In 1841, Edgar Allan Poe, who was a talented cryptographer, wrote an essay, “A
+    Few Words on Secret Writing,” which gives a good description of the skytale and
+    his method for decrypting these messages by matching up the broken fragments of
+    letters.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: To compound this error, if you look up “transposition cipher” in Wikipedia,
+    it says that the skytale was used to produce a “rail fence cipher,” also called
+    a “zigzag cipher.” A rail fence cipher has columns that alternate up and down.
+    Writing a message either along or around a rod does not involve any changes of
+    direction. So, if a skytale were used to produce a transposition cipher, the result
+    could be a columnar transposition, never a rail fence. (I corrected these errors
+    in Wikipedia, but my corrections were deleted. I have given up trying to be the
+    Wikipedia Police.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: A 1960s version of the skytale was to sort a deck of computer punch cards, write
+    the message in pencil on an outer surface of the deck, and then thoroughly shuffle
+    the deck, leaving just scattered dots. When the deck was run through a card sorting
+    machine, the cards would be restored to the original order, and the message could
+    be read. This idea was widely discussed by programmers, but I do not know if it
+    was ever put into practice. Another modern equivalent is to write the message
+    on the blank back of a jigsaw puzzle and then scramble the pieces. The receiver
+    needs to solve the puzzle and then flip it over to read the message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another mechanical cipher was the Jefferson Wheel Cypher invented by Thomas
+    Jefferson some time between 1790 and 1793\. It consisted of 36 same-sized wooden
+    disks threaded on an iron rod to form a wooden cylinder. Around the exposed edge
+    of each disk, the 26 letters of the alphabet were written in some scrambled order.
+    The disks could be rotated independently to spell any message. Versions of the
+    Jefferson cipher using disks or paper strips were used as recently as the 1960s.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Many types of disk ciphers were developed from the 15th through the 19th centuries.
+    The most common type used several thin flat concentric disks that could be rotated
+    around a center pivot. Each disk had the alphabet or some set of numbers or symbols
+    written in some order around the rim of its upper face. The disks got progressively
+    smaller so that all of the alphabets could be seen at the same time. The disks
+    were aligned in some position, and encipherment consisted of finding the plaintext
+    letter on one of the disks, then using the corresponding letter or symbol on one
+    of the other disks as the ciphertext letter. Later types of disk ciphers advanced
+    the inner disk after each letter was enciphered, either manually or through a
+    clockwork mechanism.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is a picture of the Leon Battista Alberti cipher disk drawn by Augusto
+    Buonafalce, from his 1467 book, *De compendis cifri*. (Image distributed by Wikimedia
+    Commons.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![2-unnumb-5](../Images/2-unnumb-5.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Starting in 1915, a long series of electromechanical rotor ciphers were invented.
+    The most famous is the Enigma machine developed in the 1920s by German engineer
+    Arthur Scherbius. Dozens of types were marketed up through the start of the computer
+    era. They all produced stream ciphers. The basic idea was that the substitute
+    for a letter was determined by the path that the electric current took through
+    the series of turning rotors. After each letter was enciphered, some of the rotors
+    turned, controlled by various cams, gears, lugs and pawls to change the substitutions
+    in myriad ways. So, if the word INFANTRY came out as **PMRNQGFW**, that might
+    not happen again for billions of turns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since the 1960s, cryptography has become increasingly computerized and digital.
+    The Data Encryption Standard (DES) was developed by IBM in 1975 and certified
+    by the National Bureau of Standards in 1977\. This touched off a series of block
+    ciphers with names like Serpent and Twofish, culminating in the Advanced Encryption
+    Standard (AES) adopted by the National Institute of Standards and Technology (NIST)
+    in 2001\. This class of ciphers is covered in chapter 11.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The progression has been from manual ➔ mechanical ➔ electromechanical ➔ digital.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2.6 Why choose Secret Key?
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In this era of Public Key cryptography, the question naturally arises, why would
+    anyone choose Secret Key cryptography? There are several reasons.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Secret Key cryptography is much faster. Even the strongest, most complex Secret
+    Key methods tend to be hundreds or even thousands of times faster than the leading
+    Public Key methods. In fact, the main use of Public Key cryptography is to encrypt
+    keys for Secret Key cryptography. The keys are sent using Public Key methods,
+    but the messages themselves are sent using Secret Key methods.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Public Key cryptography (PKC) requires a Public Key Infrastructure. There must
+    be Public Key servers to distribute public keys to potential correspondents. PKC
+    is subject to a variety of man-in-the-middle and spoofing attacks, where an opponent
+    poses as the sender, and/or the receiver, and/or the key server, so PKC requires
+    a great deal of authentication and verification. The person requesting a public
+    key must prove membership in the same network as the recipient. The message containing
+    the public key must be verified to assure it came from the server. The receiver
+    must be authenticated when the public key is first posted on the server and every
+    time it is changed. When a new party is added to the network, the person authorizing
+    that new party must be authenticated. When a new network is added to a server,
+    every party involved must be authenticated. The receiver must verify that the
+    received message has not been altered or replaced by some third party. This all
+    makes for a profusion of messages.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Secret Key cryptography can operate without any of that administrative overload.
+    Two individual people can exchange secret key messages without involving anyone
+    else or any intermediating system. When several people are exchanging Secret Key
+    messages, the only authorization required is that each party has the current key.
+    An unauthorized person won’t have the keys and can’t read the messages.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Exchanging messages is not the only use for cryptography. An equally important
+    role is securing the secrecy of data files stored on a computer, on an external
+    device such as a flash drive, or in cloud storage, often for a long time. PKC
+    cannot be used for this purpose. Only Secret Key methods are suited for keeping
+    data files secret.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When a message needs to be broadcast to many receivers at the same time, this
+    can easily be done with Secret Key methods. All that is needed is for each party
+    to have the key. They could use a special broadcast key separate from their personal
+    keys. Or, each party could be sent the message key by using a separate key-transmission
+    key. With Public Key methods, you would need to get the individual public keys
+    of all of the recipients, with all of the attendant authorization and verification.
+    This cannot be prearranged because the participants are free to change their public
+    keys at any time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The most common Public Key method is the RSA method. The strength of this method
+    depends on the fact that it is currently very difficult to factor large numbers
+    (see section 3.4). Given a 200-digit decimal number with no small prime factors,
+    there is currently no feasible way of factoring it. However, when quantum computers
+    become available, this will all change. MIT professor Peter Shor developed a quantum
+    algorithm that can easily factor a number that size. When that happens, all of
+    the RSA messages stored on computers will be able to be read.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is, so far, no known way to use quantum computers for cracking secret
+    key ciphers. If quantum computers are a concern, Secret Key cryptography is the
+    only choice.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2.7 Why build your own?
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: If you are a cipher hobbyist, it is obvious why you want to build your own ciphers.
+    You build your own ciphers because that’s your hobby. Model train hobbyists design,
+    build, and run model trains. Model plane fans design, build and fly model planes.
+    Cipher hobbyists design, build and solve ciphers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you are a cryptography student, building your own cipher is good training.
+    It is the best way to learn how to build and how to evaluate ciphers. The current
+    standard cipher, AES (section 11.5), will not last forever, and somebody will
+    need to design its replacement. If you want to be part of that effort, this book
+    may be your best starting point.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you are a serious cryptographer with responsibilities for protecting high-value
+    data and communications, you might build your own ciphers out of a healthy skepticism
+    that the government-approved ciphers are as safe and secure as your government
+    claims. Let me give you one story that will support your doubts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Circa 1975, IBM proposed the cipher now called DES, the Data Encryption Standard.
+    It became a worldwide standard for secret key encryption. As IBM originally designed
+    it, DES had a 64-bit key. The National Security Agency (NSA) required that the
+    key be reduced from 64 bits to 56 bits, with the other 8 bits used as a checksum.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This made no sense. If a checksum were really needed, then the key could be
+    increased from 64 to 72 bits. It was widely believed that the real reason the
+    NSA made this demand was that it knew how to crack messages using a 56-bit key,
+    but not messages using a 64-bit key. This proved to be true.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You could reasonably conclude that the NSA would never approve any encryption
+    standard that it could not crack. In that case, you could infer that the NSA can
+    crack all of the different forms of AES. And if the NSA can crack AES, then it
+    is likely that its Russian and Chinese counterparts can crack AES as well.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are just a handful of experts who construct the candidate ciphers from
+    which the worldwide standard ciphers are selected. It is well-known that these
+    experts receive briefings at NSA headquarters in Fort Meade, Maryland. During
+    these meetings, NSA personnel advise them of techniques that might either strengthen
+    or weaken the ciphers. It is possible that hidden among the recommended methods
+    is some backdoor that lets the NSA, and only the NSA, solve these ciphers easily.
+    It is also plausible that the NSA could offer jobs, contracts and research grants
+    that might induce the experts to adopt those vulnerable methods.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is a good bit of speculation here, but cryptographers tend to be very
+    conservative. If you can imagine a plausible weakness or vulnerability, whether
+    or not your opponent can realistically exploit it, it is best to guard against
+    it whenever you can.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finally, you might just be after speed, simpler implementation, or cheaper hardware.
+    You might want to construct your own ciphers to achieve these goals without giving
+    up security. You will find methods in this book that can help you do that.
+  prefs: []
+  type: TYPE_NORMAL
+- en: That said, remember that there are plenty of pitfalls. Don’t just create a cipher
+    and assume it is “strong enough.” Lots of ciphers turn out to have unexpected
+    weaknesses. Even the strongest cipher can be defeated by operator errors, such
+    as starting every message with a standard header, frequently reusing keys, or
+    sending the identical message using different keys. For example, many German messages
+    were solved during WW II because they all began, “Heil Hitler.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: This book contains all the information you need to construct an unbreakable
+    cipher, but remember that reading only one book about cryptography will not make
+    you an expert overnight. Be sure to check the strength of your cipher using the
+    principles detailed in chapter 12.
+  prefs: []
+  type: TYPE_NORMAL

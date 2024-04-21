@@ -1,0 +1,714 @@
+- en: 16 Cross-site request forgery
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Managing session ID usage
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Following state management conventions
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Validating the `Referer` header
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Sending, receiving, and verifying CSRF tokens
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: This chapter examines another large family of attacks, *cross-site request forgery*
+    (*CSRF*). A CSRF attack aims to trick the victim into sending a forged request
+    to a vulnerable website. CSRF resistance boils down to whether or not a system
+    can distinguish a forged request from a user’s intentional requests. Secure systems
+    do this via request headers, response headers, cookies, and state management conventions;
+    *defense in depth* is not optional.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.1 What is request forgery?
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Suppose Alice deploys admin.alice.com, the administrative counterpart of her
+    online bank. Like other administrative systems, admin.alice.com lets administrators
+    such as Alice manage the group memberships of other users. For example, Alice
+    can add someone to a group by submitting their username and the group name to
+    /group-membership/.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One day, Alice receives a text message from Mallory, a malicious bank employee.
+    The text message contains a link to one of Mallory’s predatory websites, win-iphone.mallory.com.
+    Alice takes the bait. She navigates to Mallory’s site, where the following HTML
+    page is rendered by her browser. Unbeknownst to Alice, this page contains a form
+    with two hidden input fields. Mallory has prefilled these fields with her username
+    and the name of a privileged group.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The remaining portion of this attack requires no further action from Alice.
+    An event handler for the body tag, shown in bold font, automatically submits the
+    form immediately after the page loads. Alice, currently logged in to admin.alice.com,
+    unintentionally adds Mallory to the administrators group. As an administrator,
+    Mallory is now free to abuse her new privileges:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ This event handler fires after the page loads.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ URL of the forged request
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Prefilled hidden input fields
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this example, Mallory literally executes CSRF; she tricks Alice into sending
+    a forged request from another site. Figure 16.1 illustrates this attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH16_F01_Byrne](Images/CH16_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 16.1 Mallory uses a CSRF attack to escalate her privileges.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This time, Alice is tricked into escalating Mallory’s privileges. In the real
+    world, the victim can be tricked into performing any action a vulnerable site
+    allows them to do. This includes transferring money, buying something, or modifying
+    their own account settings. Usually, the victim isn’t even aware of what they’ve
+    done.
+  prefs: []
+  type: TYPE_NORMAL
+- en: CSRF attacks are not limited to shady websites. A forged request can be sent
+    from an email or messaging client as well.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Regardless of the attacker’s motive or technique, a CSRF attack succeeds because
+    a vulnerable system isn’t capable of differentiating between a forged request
+    and an intentional request. The remaining sections examine different ways to make
+    this distinction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.2 Session ID management
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A successful forged request must bear a valid session ID cookie of an authenticated
+    user. If the session ID were not a requirement, the attacker would just send the
+    request themselves instead of trying to bait the victim.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The session ID identifies the user but can’t identify their intentions. It is
+    therefore important to forbid the browser from sending the session ID cookie when
+    it isn’t necessary. Sites do this by adding a directive, named `SameSite`, to
+    the `Set-Cookie` header (you learned about this header in chapter 7).
+  prefs: []
+  type: TYPE_NORMAL
+- en: A `SameSite` directive informs the browser to restrict the cookie to requests
+    from the “same site.” For example, a form submission from https://admin.alice.com/profile/
+    to https://admin.alice.com/group-membership/ is a *same-site request*. Table 16.1
+    lists several more examples of same-site requests. In each case, the source and
+    destination of the request have the same registrable domain, bob.com.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 16.1 Same-site request examples
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Source | Destination | Reason |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **https**://bob.com | **http**://bob.com | Different protocols do not matter.
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| https://**social**.bob.com | https://**www**.bob.com | Different subdomains
+    do not matter. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| https://bob.com/**home/** | https://bob.com/**profile/** | Different paths
+    do not matter. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| https://bob.com:**42** | https://bob.com:**443** | Different ports do not
+    matter. |'
+  prefs: []
+  type: TYPE_TB
+- en: A *cross-site request* is any request other than a same-site request. For example,
+    submitting a form or navigating from win-iphone.mallory.com to admin.alice.com
+    is a cross-site request.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Note A cross-site request is not to be confused with a cross-origin request.
+    (In the previous chapter, you learned that an origin is defined by three parts
+    of the URL: protocol, host, and port.) For example, a request from https:/./social.bob.com
+    to https:/./www.bob.com is cross-origin but not cross-site.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `SameSite` directive assumes one of three values: `None`, `Strict`, or
+    `Lax`. An example of each is shown here in bold font:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: When the `SameSite` directive is `None`, the browser will unconditionally echo
+    the session ID cookie back to the server it came from, even for cross-site requests.
+    This option provides no security; it enables all forms of CSRF.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the `SameSite` directive is `Strict`, the browser will send the session
+    ID cookie only for same-site requests. For example, suppose admin.alice.com had
+    used `Strict` when setting Alice’s session ID cookie. This wouldn’t have stopped
+    Alice from visiting win-iphone.mallory.com, but it would have excluded Alice’s
+    session ID from the forged request. Without a session ID, the request wouldn’t
+    have been associated with a user, causing the site to reject it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Why doesn’t every website set the session ID cookie with `Strict`? The `Strict`
+    option provides security at the expense of functionality. Without a session ID
+    cookie, the server has no way of identifying who an intentional cross-site request
+    is coming from. The user must therefore authenticate every time they return to
+    the site from an external source. This is unsuitable for a social media site and
+    ideal for an online banking system.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note `None` and `Strict` represent opposite ends of the risk spectrum. The `None`
+    option provides no security; the `Strict` option provides the most security.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is a reasonable sweet spot between `None` and `Strict`. When the `SameSite`
+    directive is `Lax`, the browser sends the session ID cookie for all same-site
+    requests, as well as cross-site top-level navigational requests using a safe HTTP
+    method such as GET. In other words, your users won’t have to log back in every
+    time they return to the site by clicking a link in an email. The session ID cookie
+    will be omitted from all other cross-site requests as though the `SameSite` directive
+    is `Strict`. This option is inappropriate for an online banking system but suitable
+    for a social media site.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `SESSION_COOKIE_SAMESITE` setting configures the `SameSite` directive for
+    the session ID `Set-Cookie` header. Django 3.1 accepts the following four values
+    for this setting:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`"None"`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`"Strict"`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`"Lax"`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`False`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The first three options are straightforward. The `"None"`, `"Strict"`, and `"Lax"`
+    options configure Django to send the session ID with a `SameSite` directive of
+    `None`, `Strict` or `Lax`, respectively. `"Lax"` is the default value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING I highly discourage setting `SESSION_COOKIE_SAMESITE` to `False`, especially
+    if you support older browsers. This option makes your site less secure and less
+    interoperable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Assigning `False` to `SESSION_COOKIE_SAMESITE` will omit the `SameSite` directive
+    entirely. When the `SameSite` directive is absent, the browser will fall back
+    to its default behavior. This will cause a website to behave inconsistently for
+    the following two reasons:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The default `SameSite` behavior varies from browser to browser.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: At the time of this writing, browsers are migrating from a default of `None`
+    to `Lax`.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Browsers originally used `None` as the default `SameSite` value. Starting with
+    Chrome, most of them have switched to `Lax` for the sake of security.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Browsers, Django, and many other web frameworks default to `Lax` because this
+    option represents a practical trade-off between security and functionality. For
+    instance, `Lax` excludes the session ID from a form-driven POST request while
+    including it for a navigational GET request. This works only if your GET request
+    handlers follow state-management conventions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.3 State-management conventions
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'It is a common misconception that GET requests are immune to CSRF. In reality,
+    CSRF immunity is actually a consequence of the `request` method and the implementation
+    of the request handler. Specifically, safe HTTP methods should not change server
+    state. The HTTP specification ([https://tools.ietf.org/html/rfc7231](https://tools.ietf.org/html/rfc7231))
+    identifies four safe methods:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Of the request methods defined by this specification, the GET, HEAD, OPTIONS,
+    and TRACE methods are defined to be safe.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'All state changes are conventionally reserved for unsafe HTTP methods such
+    as POST, PUT, PATCH, and DELETE. Conversely, safe methods are intended to be read-only:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Request methods are considered “safe” if their defined semantics are essentially
+    read-only; i.e., the client does not request, and does not expect, any state change
+    on the origin server as a result of applying a safe method to a target resource.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unfortunately, safe methods are often confused with idempotent methods. *An
+    idempotent method* is safely repeatable, not necessarily safe. From the HTTP specification
+  prefs: []
+  type: TYPE_NORMAL
+- en: A request method is considered “idempotent” if the intended effect on the server
+    of multiple identical requests with that method is the same as the effect for
+    a single such request. Of the request methods defined by this specification, PUT,
+    DELETE, and safe request methods are idempotent.
+  prefs: []
+  type: TYPE_NORMAL
+- en: All safe methods are idempotent, but PUT and DELETE are both idempotent and
+    unsafe. It is therefore a mistake to assume idempotent methods are immune to CSRF,
+    even when implemented correctly. Figure 16.2 illustrates the difference between
+    safe methods and idempotent methods.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH16_F02_Byrne](Images/CH16_F02_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 16.2 The difference between safe methods and idempotent methods
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Improper state management isn’t just ugly; it will actually leave your site
+    vulnerable to attack. Why? In addition to programmers and security standards,
+    these conventions are also recognized by browser vendors. For instance, suppose
+    admin.alice.com sets `SameSite` to `Lax` for Alice’s session ID. This defuses
+    Mallory’s hidden form so she replaces it with the following link. Alice clicks
+    the link, sending a GET request with her session ID cookie to admin.alice.com.
+    If the /group-membership/ handler accepts GET requests, Mallory still wins:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ URL of the forged request
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Request parameters
+  prefs: []
+  type: TYPE_NORMAL
+- en: These conventions are even reinforced by web frameworks such as Django as well.
+    For example, by default every Django project is equipped with a handful of CSRF
+    checks. These checks, which I discuss in later sections, are intentionally suspended
+    for safe methods. Once again, proper state management isn’t just a cosmetic design
+    feature; it is a matter of security. The next section examines a few ways to encourage
+    proper state management.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.3.1 HTTP method validation
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Safe method request handlers shouldn’t change state. This is easier said than
+    done if you’re working with function-based views. By default, a function-based
+    view will handle any request method. This means a function intended for POST requests
+    may still be invoked by GET requests.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The next block of code illustrates a function-based view. The author defensively
+    validates the `request` method, but notice how many lines of code this takes.
+    Consider how error prone this is:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Programmatically validates the request method
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Conversely, class-based views map HTTP methods to class methods. There is no
+    need to programmatically inspect the `request` method. Django does this for you.
+    Mistakes are less likely to happen and more likely to be caught:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Explicitly declares the request method
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Why would anyone *validate* the `request` method in a function when they can
+    *declare* it in a class? If you’re working on a large legacy codebase, it may
+    be unrealistic to refactor every function-based view to a class-based view. Django
+    supports this scenario with a few method validation utilities. The `require_http_methods`
+    decorator, shown here in bold font, restricts which methods a view function supports:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: Table 16.2 lists three other built-in decorators that wrap `require_http_methods`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 16.2 Request method validation decorators
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Decorator | Equivalent |'
+  prefs: []
+  type: TYPE_TB
+- en: '| @require_safe | @require_http_methods([''GET'', ''HEAD'']) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| @require_POST | @require_http_methods([''POST'']) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| @require_GET | @require_http_methods([''GET'']) |'
+  prefs: []
+  type: TYPE_TB
+- en: CSRF resistance is an application of defense in depth. In the next section,
+    I’ll extend this concept to a couple of HTTP headers. Along the way, I’ll introduce
+    you to Django’s built-in CSRF checks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.4 Referer header validation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: For any given request, it is typically useful to the server if it can determine
+    where the client obtained the URL. This information is often used to improve security,
+    analyze web traffic, and optimize caching. The browser communicates this information
+    to the server with a `Referer` request header.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The name of this header was accidentally misspelled in the HTTP specification;
+    the entire industry intentionally maintains the misspelling for the sake of backward
+    compatibility. The value of this header is the URL of the referring resource.
+    For example, Charlie’s browser sets the `Referer` header to `https:/./search.alice.com`
+    when navigating from search.alice.com to social.bob.com.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Secure sites resist CSRF by validating the `Referer` header. For example, suppose
+    a site receives a forged POST request with a `Referer` header set to `https:/./win-iphone.mallory.com`.
+    The server detects the attack by simply comparing its domain to the domain of
+    the `Referer` header. Finally, it shields itself by rejecting the forged request.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Django performs this check automatically, but on rare occasions you may want
+    to relax it for a specific referrer. This is useful if your organization needs
+    to send unsafe same-site requests between subdomains. The `CSRF_TRUSTED_ORIGINS`
+    setting accommodates this use case by relaxing `Referer` header validation for
+    one or more referrers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Suppose Alice configures admin.alice.com to accept POST requests from bank.alice.com
+    with the following code. Notice that the referrer in this list does not include
+    the protocol; HTTPS is assumed. This is because `Referer` header validation, as
+    well as Django’s other built-in CSRF checks, applies to only unsafe HTTPS requests:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: This functionality carries risk. For example, if Mallory compromises bank.alice.com,
+    she can use it to launch a CSRF attack against admin.alice.com. A forged request
+    in this scenario would contain a valid `Referer` header. In other words, this
+    feature builds a one-way bridge between the attack surfaces of these two systems.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this section, you learned how servers build a defense layer out of the `Referer`
+    header. From the user’s perspective, this solution is unfortunately less than
+    perfect because it raises privacy concerns for public sites. For example, Bob
+    may not want Alice to know which site he was at before visiting bank.alice.com.
+    The next section discusses a response header designed to alleviate this problem.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.4.1 Referrer-Policy response header
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The `Referrer-Policy` response header gives the browser a hint for how and when
+    to send the `Referer` request header. Unlike the `Referer` header, the `Referrer-Policy`
+    header is spelled correctly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This header accommodates eight policies. Table 16.3 describes what each of them
+    communicates to a browser. Do not bother committing each policy to memory; some
+    are fairly complicated. The important takeaway is that some policies, such as
+    `no-referrer` and `same-origin`, omit the referrer address for cross-site HTTPS
+    requests. Django’s CSRF checks identify these requests as attacks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 16.3 Policy definitions for the Referrer-Policy header
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Policy | Description |'
+  prefs: []
+  type: TYPE_TB
+- en: '| no-referrer | Unconditionally omit the Referer header. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| origin | Send only the referrer origin. This includes the protocol, domain,
+    and port. The path and query string are not included. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| same-origin | Send the referrer address for same-site requests and nothing
+    for cross-site requests. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| origin-when-cross-origin | Send the referrer address for same-site requests
+    but send only the referrer origin for cross-site requests. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| strict-origin | Send nothing if the protocol is downgraded from HTTPS to
+    HTTP; otherwise, send the referrer origin. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| no-referrer-when-downgrade | Send nothing if the protocol is downgraded;
+    otherwise, send the referrer address. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| strict-origin-when-cross-origin | Send the referrer address for same-origin
+    requests. For cross-origin requests, send nothing if the protocol is downgraded
+    and send the referrer origin if the protocol is preserved. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| unsafe-url | Unconditionally send the referrer address for every request.
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: The `SECURE_REFERRER_POLICY` setting configures the `Referrer-Policy` header.
+    It defaults to `same-origin`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Which policy should you choose? Look at it this way. The extreme ends of the
+    risk spectrum are represented by `no-referrer` and `unsafe-url`. The `no-referrer`
+    option maximizes user privacy, but every inbound cross-site request will resemble
+    an assault. On the other hand, the `unsafe-url` option is unsafe because it leaks
+    the entire URL, including the domain, path, and query string, all of which may
+    carry private information. This happens even if the request is over HTTP but the
+    referring resource was retrieved over HTTPS. Generally, you should avoid the extremes;
+    the best policy for your site is almost always somewhere in the middle.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next section, I’ll continue with CSRF tokens, another one of Django’s
+    built-in CSRF checks. Like `Referer` header validation, Django applies this layer
+    of defense only to unsafe HTTPS requests. This is one more reason to follow proper
+    state-management conventions and use TLS.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.5 CSRF tokens
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'CSRF tokens are Django’s last layer of defense. Secure sites use CSRF tokens
+    to identify intentional unsafe same-site requests from ordinary users like Alice
+    and Bob. This strategy revolves around a two-step process:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The server generates a token and sends it to the browser.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The browser echoes back the token in ways the attacker cannot forge.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 'The server initiates the first portion of this strategy by generating a token
+    and sending it to the browser as a cookie:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Like the session ID cookie, the CSRF token cookie is configured by a handful
+    of settings. The `CSRF_COOKIE_SECURE` setting corresponds to the `Secure` directive.
+    In chapter 7, you learned that the `Secure` directive prohibits the browser from
+    sending the cookie back to the server over HTTP:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: WARNING `CSRF_COOKIE_SECURE` defaults to `False`, omitting the `Secure` directive.
+    This means the CSRF token can be sent over HTTP, where it may be intercepted by
+    a network eavesdropper. You should change this to `True`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The details of Django’s CSRF token strategy depend on whether or not the browser
+    sends a POST request. I describe both scenarios in the next two sections.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.5.1 POST requests
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'When the server receives a POST request, it expects to find the CSRF token
+    in two places: a cookie and a request parameter. The browser obviously takes care
+    of the cookie. The request parameter, on the other hand, is your responsibility.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Django makes this easy when it comes to old-school HTML forms. You have already
+    seen several examples of this in earlier chapters. For instance, in chapter 10,
+    Alice used a form, shown here again, to send Bob a message. Notice that the form
+    contains Django’s built-in `csrf_token` tag, shown in bold font:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ This tag renders the CSRF token as a hidden input field.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The template engine converts the `csrf_token` tag into the following HTML input
+    field:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: After the request arrives, Django extracts the token from the cookie and the
+    parameter. The request is accepted only if the cookie and the parameter match.
+  prefs: []
+  type: TYPE_NORMAL
+- en: How can this stop a forged request from win-iphone.mallory.com? Mallory can
+    easily embed her own token in a form hosted from her site, but the forged request
+    will not contain a matching cookie. This is because the `SameSite` directive for
+    the CSRF token cookie is `Lax`. As you learned in a previous section, the browser
+    will therefore omit the cookie for unsafe cross-site requests. Furthermore, Mallory’s
+    site simply has no way to modify the directive because the cookie doesn’t belong
+    to her domain.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'If you’re sending POST requests via JavaScript, you must programmatically emulate
+    the `csrf_token` tag behavior. To do this, you must first obtain the CSRF token.
+    The following JavaScript accomplishes this by extracting the CSRF token from the
+    `csrftoken` cookie:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, the token must then be sent back to the server as a POST parameter, shown
+    here in bold font:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Sends the CSRF token as a POST parameter
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Handles the response
+  prefs: []
+  type: TYPE_NORMAL
+- en: POST is only one of many unsafe request methods; Django has a different set
+    of expectations for the others.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 16.5.2 Other unsafe request methods
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'If Django receives a PUT, PATCH, or DELETE request, it expects to find the
+    CSRF token in two places: a cookie and a custom request header named `X-CSRFToken`.
+    As with POST requests, a little extra work is required.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following JavaScript demonstrates this approach from the browser’s perspective.
+    This code extracts the CSRF token from the cookie and programmatically copies
+    it to a custom request header, shown in bold font:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Uses an unsafe request method
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Adds CSRF token with a custom header
+  prefs: []
+  type: TYPE_NORMAL
+- en: Django extracts the token from the cookie and the header after it receives a
+    non-POST unsafe request. If the cookie and the header do not match, the request
+    is rejected.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This approach doesn't play nicely with certain configuration options. For example,
+    the `CSRF_COOKIE_HTTPONLY` setting configures the `HttpOnly` directive for the
+    CSRF token cookie. In a previous chapter, you learned that the `HttpOnly` directive
+    hides a cookie from client-side JavaScript. Assigning this setting to `True` will
+    consequently break the previous code example.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Note Why does `CSRF_COOKIE_HTTPONLY` default to `False` while `SESSION _COOKIE_HTTPONLY`
+    defaults to `True`? Or, why does Django omit `HttpOnly` for CSRF tokens while
+    using it for session IDs? By the time an attacker is in a position to access a
+    cookie, you no longer have to worry about CSRF. The site is already experiencing
+    a much bigger problem: an active XSS attack.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The previous code example will also break if Django is configured to store the
+    CSRF token in the user’s session instead of a cookie. This alternative is configured
+    by setting `CSRF_USE_SESSIONS` to `True`. If you choose this option, or if you
+    choose to use `HttpOnly`, you will have to extract the token from the document
+    in some way if your templates need to send unsafe non-POST requests.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Regardless of the request method, it is important to avoid sending the
+    CSRF token to another website. If you are embedding the token in an HTML form,
+    or if you are adding it to an AJAX request header, always make certain the cookie
+    is being sent back to where it came from. Failing to do this will expose the CSRF
+    token to another system, where it could be used against you.
+  prefs: []
+  type: TYPE_NORMAL
+- en: CSRF demands layers of defense in the same way XSS does. Secure systems compose
+    these layers out of request headers, response headers, cookies, tokens, and proper
+    state management. In the next chapter, I continue with cross-origin resource sharing,
+    a topic that is often conflated with CSRF.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A secure site can differentiate an intentional request from a forged request.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`None` and `Strict` occupy opposite ends of the `SameSite` risk spectrum.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`Lax` is a reasonable trade-off, between the risk of `None` and `Strict`.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Other programmers, standards bodies, browser vendors, and web frameworks all
+    agree: follow proper state management conventions.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Don’t validate a request method in a function when you can declare it in a class.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Simple `Referer` header validation and complex token validation are both effective
+    forms of CSRF resistance.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

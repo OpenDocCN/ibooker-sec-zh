@@ -1,0 +1,1255 @@
+- en: 9 Fractionation
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Polybius square
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Splitting a letter into smaller parts, such as bits or hexadecimal digits
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Mixing and recombining those parts
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The first two basic tools of cryptography are substitution and transposition,
+    which are covered in chapters 5 through 8\. The third fundamental element of cryptography
+    is fractionation. This means breaking the normal units of language, letters, syllables
+    and words into smaller units and operating on those units. The smaller units are
+    commonly bits, decimal digits, hexadecimal digits, or digits in other number bases.
+    This chapter covers fractionation using digits in bases 2, 3, 5, 6, and 16, plus
+    some other forms of fractionation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.1 Polybius square
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Possibly the oldest method for representing letters as smaller units is the
+    *Polybius Square*, which we saw in section 4.4\. Here each letter is represented
+    by two base-5 digits, making 25 possible 2-digit combinations. (The Greeks did
+    not have a representation for 0, so their digits started at 1.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is the Polybius square from section 4.4\. Each letter is represented by
+    its *coordinates* in the square, that is, by its row and column numbers. For example,
+    the letter P is on row 2 in column 5, so it is represented as 25\. When needed
+    for clarity this can also be written as 2,5.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-1](../Images/9-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: A Polybius square by itself can produce a number of different ciphers. For example,
+    it can produce a simple substitution by replacing each letter in a message by
+    the letter to the right in the square (U becomes **V**), or below (U becomes **Z**),
+    or below and to the right (U becomes **S**) or left (U becomes **P**), and so
+    forth. This idea can be extended to a polyalphabetic cipher by changing directions,
+    say right, left, down, right, left, down, etc. You can also go 2 letters away
+    or use knight moves, as in chess.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A Polybius square can also be used to produce a *Polybius Ripple* cipher. Begin
+    by replacing each letter of the message by its coordinates, simply written out
+    in one line. Starting with the second number in this list, add the previous number
+    to the current number. If the sum is more than 5, subtract 5 to keep the numbers
+    in the range 1 to 5\. Then turn these numbers back into letters using the Polybius
+    square again.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-2](../Images/9-unnumb-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The Polybius ripple cipher is rated Three. The cipher can be strengthened by
+    using a different Polybius square for converting the coordinates back to letters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s look at a few hand ciphers from the 1800s based on the Polybius square
+    in sections 9.2 to 9.7\. I cover some additional hand methods in sections 9.8
+    to 9.11\. Then I discuss some computer methods in the rest of the chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.2 Playfair
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The *Playfair* cipher was invented by Charles Wheatstone (pronounced WHIT-stun)
+    in 1854\. Wheatstone is well-known among electrical engineers as the inventor
+    of the Wheatstone bridge, which measures electrical resistance. Wheatstone and
+    William Cooke invented the needle telegraph several years before Samuel Morse
+    invented his key telegraph. Cooke commercialized the needle telegraph in England
+    years before Morse began his telegraph company in the US.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Wheatstone’s cipher is called the Playfair cipher because it was Wheatstone’s
+    look-alike friend Baron Lyon Playfair (both had bright red hair and stood about
+    5'2'') who advocated for its use and convinced the British Foreign Office to use
+    the cipher for diplomatic communications.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Historical aside
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since this cipher was not called the Wheatstone cipher, that left the Wheatstone
+    name available for a second cipher that Wheatstone invented circa 1860 and exhibited
+    at the Paris Exposition Universelle in 1867\. The Wheatstone Cryptograph, which
+    resembled a large pocket watch, consisted of two stationary concentric rings made
+    of stiff cardboard and two moveable clock hands connected by a simple clockwork
+    mechanism. The inner ring was erasable, and could be changed for each message.
+    This ring had the 26-letter alphabet in scrambled order, while the outer ring
+    had the standard 26-letter alphabet plus a blank, making 27 positions. You move
+    the long clock hand to indicate the plaintext letter on the outer ring, and the
+    short hand moves to indicate the ciphertext letter on the inner ring. When the
+    long clock hand completes one revolution of 27 positions, the short hand also
+    moves 27 positions, which is 1 complete revolution plus 1 extra letter position.
+    So the short hand starts from a different point on each revolution. An equivalent
+    device with moveable rings and no hands had been produced by Col. Decius Wadsworth,
+    chief of ordnance, in 1817, based on plans made by Thomas Jefferson in 1790, but
+    it is Wheatstone’s name that is forever associated with this concept.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Photo provided by Ralph Simpson. The inscription reads
+  prefs: []
+  type: TYPE_NORMAL
+- en: “The Cryptograph. C. Wheatstone Inv^r.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-3](../Images/9-unnumb-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The Playfair cipher is based on the Polybius square, and enciphers two letters
+    at a time. That is, it enciphers bigrams. The square can be prepared by mixing
+    the alphabet using any of the methods of section 5.2\. One low-frequency letter
+    of the alphabet such as J, Q or Z is omitted to make the alphabet fit into a 5×5
+    square. (In French, J, Q and Z are common, so omit W. In German, omit Q, X or
+    Y.) When the omitted letter occurs in the message, some other letter is chosen
+    to replace it. In our case each J is replaced by an **I**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The next step is to divide the message into bigrams, for example ME ET ME TO
+    MO RR OW. If a bigram is a double letter, this should be broken up, typically
+    by inserting an X in the middle. (This is a good reason not to omit X from the
+    square.) Also, if the message contains an odd number of letters, an X is added
+    at the end. The message becomes ME ET ME TO MO RX RO WX. Now we are ready to encipher
+    it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Playfair has 3 rules: (1) if the two letters are on the same row, each letter
+    is replaced by the letter to its right; (2) if the letters are in the same column,
+    each letter is replaced by the letter below it; (3) for all other letters, each
+    letter is replaced by the letter in the same row, but in the column of the other
+    letter of the bigram. It is understood that the square wraps around, so in the
+    square in section 9.1, the letter to the right of Y is U, and the letter below
+    Q is W.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: These rules can be restated in terms of the coordinates. Let the bigram we wish
+    to encipher be r1c1 r2c2, so that the first letter is on row r1 in column c1 and
+    the second letter is on row r2 in column c2\. Now the 3 rules become
+  prefs: []
+  type: TYPE_NORMAL
+- en: If r1 = r2 then substitute r1,c1+1 r2,c2+1.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: If c1 = c2 then substitute r1+1,c1 r2+1,c2.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Otherwise substitute r1,c2 r2,c1.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Let’s encipher our sample message ME ET ME TO MO RX RO WX and see how these
+    rules work. The first bigram is ME. M and E are in different rows and different
+    columns so Rule 3 applies. M is in row 2 column 4 and E is in row 3 column 2\.
+    So M gets replaced by the letter in the same row, namely row 2, in the same column
+    as the letter E, namely column 2\. The letter in row 2 column 2 is S, so M is
+    replaced by **S**. Likewise, E is replaced by the letter in row 3 column 4, namely
+    **C**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the same way ET is replaced by **DO**, and the second ME is replaced by **SC**.
+    The letters T and O are in the same row, so Rule 1 applies. They are replaced
+    by the letters to their right. T gets replaced by **N** and O gets replaced by
+    **Q**. So TO is replaced by **NQ**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: MO goes by Rule 3\. It is replaced by **SR**. R and X are in the same column
+    so Rule 2 applies. RX is replaced by **XM**. RO and WX both use Rule 1 and are
+    replaced by **TQ** and **XY**. The entire message thus becomes **SC DO SC NQ SR
+    XM TQ XY**, which is **SCDOS CNQSR XMTQX Y** after regrouping.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here are some diagrams to help you visualize how the bigrams LY, TO and RX are
+    enciphered.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-4](../Images/9-unnumb-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The Playfair cipher remained in military and diplomatic use until at least 1960\.
+    Next, let’s take a brief look at how a Playfair cipher can be solved.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.2.1 Solving a Playfair cipher
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Notice that each letter can be enciphered by only 5 possible substitutes, namely
+    the 4 other letters on its row and the letter immediately below it. For each letter
+    there are 24 other letters in the grid. Of these, only the 4 letters in its own
+    column will cause the letter to be replaced by the letter below it. So the chance
+    of a letter being replaced by the letter below is 4/24, or 1/6\. The chance that
+    it is replaced by another letter on its row is therefore 5/6.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since there are 5 rows in the square and 9 English letters with frequencies
+    over 5% there must be several rows that contain at least 2 high-frequency letters.
+    If there are fewer than 4 such rows, then there must be at least one row with
+    3 high-frequency letters. The other letters on these rows will appear more frequently
+    in the ciphertext than any other letters. If you have sufficient ciphertext there
+    is a good chance that the 3 to 5 most frequent letters in the ciphertext appear
+    on the same row in the square.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If we remove all of the bigrams containing these letters, the 3 to 5 most frequent
+    letters in the remaining bigrams are likely to be on the same row of the square.
+    Knowing the high-frequency letters on 2 out of the 5 rows is enough to get started
+    in the reconstruction of the square. The next step would be to try to place some
+    probable words.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Playfair cipher is rated Three. There are several ways to increase the strength
+    of the Playfair cipher. Let me mention just a few.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.2.2 Strengthening a Playfair cipher
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Here are several stronger variants of the Playfair cipher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Nullfair or nofair
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Nulls can be added to the ciphertext at repeating intervals, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-5](../Images/9-unnumb-5.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Nullfair is rated Five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Playfair+1
+  prefs: []
+  type: TYPE_NORMAL
+- en: This super-simple enhancement adds a repeating binary key to the Playfair ciphertext.
+    Wherever there is a 1 bit, the next letter of the alphabet is used. Playfair+1
+    is stronger if the binary key has an odd length.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-6](../Images/9-unnumb-6.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Playfair+1 is rated Five. Playfair+1 can also be done with ternary numbers.
+    The digits in the additive key are kept small so the addition can be done in your
+    head, without needing a tableau.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Double Playfair
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Playfair cipher can be strengthened by applying it twice. On the second
+    round, the pairs should straddle the bigrams created in the first round. (1) Encipher
+    the message with a Playfair cipher. (2) Either move the first letter to the end,
+    move the last letter to the beginning, or add a null at both ends. (3) Apply another
+    round of Playfair. This is strongest if a different mixed alphabet is used for
+    the second Playfair cipher. Double Playfair is rated Six.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Playfair ripple
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is a variant of double Playfair that takes only one pass through the message,
+    and needs only one Polybius square. Let the plaintext be P[1]P[2]P[3]P[4] ...
+    Start at the left end and encipher plaintext bigram P[1]P[2] using Playfair, producing
+    ciphertext bigram C[1]C[2]. Then encipher C[2]P[3] as the second bigram, getting
+    D[2]C[3]. Notice that D[2] has been enciphered twice. Next you encipher C[3]P[4],
+    to get D[3]C[4], and so forth, moving one character to the right at each step.
+    Playfair ripple is rated Six.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since the first letter C[1] and the last letter C[n] of the ciphertext have
+    been enciphered only once, you may wish to encipher them as a bigram to complete
+    the cycle.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-7](../Images/9-unnumb-7.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: PolyPlayfair
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Use two different Polybius squares and alternate between them by using a repeating
+    key. For example, a key of 11212 means that on each cycle of 5 bigrams the first,
+    second and fourth bigrams would be enciphered with Square 1, while the third and
+    fifth bigrams would be enciphered with Square 2\. This can be extended to three
+    or more squares, with a correspondingly longer setup time. Using two squares and
+    a key of not more than 10 digits PolyPlayfair is rated Five. If the key is generated
+    by the Chained Digit algorithm, using the first square when the digit is 0 to
+    4, and the second square when the digit is 5 to 9, the rating increases to Six.
+    (Note: using the parity of the chained digit sequence has a much shorter period,
+    so it is far weaker.)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Transposition
+  prefs: []
+  type: TYPE_NORMAL
+- en: After the plaintext has been enciphered with the Playfair cipher the resulting
+    ciphertext can be transposed. The transposition can be as elaborate as the columnar
+    transposition of section 7.2, or as simple as the piecewise reversal of the Bazeries
+    Type 4 cipher in section 4.6.1\. With columnar transposition the Playfair is rated
+    Seven. With piecewise reversal the Playfair is rated Five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.3 Two Square
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The *Two Square* cipher, sometimes called *Double Playfair*, is an improved
+    version of the Playfair cipher. It was invented by French amateur cryptographer
+    Félix-Marie Delastelle and described in his 1902 book *Traité Élémentaire de Cryptographie*.
+    As the name implies, it uses two Polybius squares instead of one, so that there
+    are two mixed alphabets instead of one. The two squares may be placed side-by-side
+    horizontally, or bottom-to-top vertically. The horizontal version is illustrated.
+    In this example the two squares were mixed using the keywords FIRST and SECOND,
+    and the letter Q was omitted to fit the 5×5 grids.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-8](../Images/9-unnumb-8.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Like the Playfair, the message is enciphered 2 letters at a time. That is, Two
+    Square enciphers bigrams. To encipher the bigram SO we find the S in the left
+    square and the O in the right square. The substitute for S is the letter in the
+    right square in the same row as S and the same column as O, namely **T**. The
+    substitute for O is the letter in the left square in the same row as O and the
+    same column as S, namely **K**. Thus the bigram SO becomes **TK**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unlike the Playfair, there is no need to break up double letters. The two letters
+    could be on different rows in the two squares. For example, SS becomes **MK**.
+    In most cases, a double letter in the ciphertext will not correspond to a double
+    letter in the plaintext.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is the substitution process visually.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-9](../Images/9-unnumb-9.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: An important weakness of the Two Square cipher is that when the two letters
+    of a bigram fall on the same row in the grid the substitute is simply those letters
+    in reverse. For instance, ST would become **TS**. This weakness, called a *transparency*,
+    sometimes allows an entire word to leak through. For example, SU ND AY would become
+    **US DN YA**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To prevent this, I propose this *Same Row Rule*: when the two letters are on
+    the same row, they are replaced by the letters immediately below them, wrapping
+    to the top row when necessary. For example, ST would now become **DY**, and VI
+    would become **FP**.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: With the Same Row Rule, Two Square is rated Four. Call this variation *Two Square
+    B*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Germans took the name Double Playfair literally. They enciphered each bigram
+    using the Two Square cipher, and then enciphered that bigram again, using Two
+    Square with the same two squares. The result is essentially a general bigram substitution
+    (section 6.5).
+  prefs: []
+  type: TYPE_NORMAL
+- en: The same methods that were used to strengthen the Playfair cipher may also be
+    used to strengthen the Two Square cipher, such as *TwoSquare+1* and *Two Square
+    Ripple*, with the same ratings. Here is an additional variant.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Playfair TwoSquare
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Two Square cipher uses two Polybius squares. Either of these squares could
+    be used for a Playfair cipher. This suggests a hybrid method that mixes Playfair
+    and Two Square. Again, we will use a numerical key to control how each successive
+    bigram is enciphered. A 1 means encipher the bigram using Playfair in the left
+    square, a 2 means encipher the bigram using Playfair in the right square, and
+    a 3 means encipher the bigram using Two Square or Two Square B. It is best if
+    the numeric key contains at least one of each digit. Since Two Square is stronger
+    than Playfair, 3 should occur more often than 1 or 2 in the key. About 50% would
+    be suitable. *Playfair TwoSquare* is rated Six.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.4 Three Square
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Three Square* is my own idea. Otherwise, it has no special merit. I include
+    it here simply because one of the books I read while researching for this book
+    said that Two Square could not be extended to more than two squares. I love a
+    challenge.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: As the name suggests, Three Square uses three Polybius squares. These squares
+    should be well-mixed with independent keys. Three Square enciphers 3 letters at
+    a time, that is, it enciphers trigrams. This makes it stronger than Two Square.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-10](../Images/9-unnumb-10.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The basic idea is that each letter is replaced by a letter in the square to
+    its right. The replacement letter is in the same row, but in the column containing
+    the next letter of the trigram.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose we wish to encipher the trigram THE. The first letter is T, the second
+    letter is H, and the third letter is E. We encipher using the T in the first square,
+    the H in the second square and the E in the third square, like this.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-11](../Images/9-unnumb-11.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The substitute for T is on the row containing the T, and in the column in the
+    second square containing the H, so T is replaced by **V**. The substitute for
+    H is on the same row as the H in the same column as the E in the third square,
+    so H is replaced by **R**. The substitute for E is on the same row as the E in
+    the column in the first square containing the T, so E is replaced by **Z**. Thus,
+    THE becomes **VRZ**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This can be seen pictorially as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-12](../Images/9-unnumb-12.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'The decipherment goes in the opposite direction. Since the first letter of
+    the ciphertext trigram **VRZ** came from the second square, we begin deciphering
+    in the second square, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-13](../Images/9-unnumb-13.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Three Square has a worse problem than Two Square with letters falling on the
+    same row. In a trigram such as XYZ, it is possible that X and Y could fall on
+    the same row, Y and Z could fall on the same row, or Z and X could fall on the
+    same row. This requires two extra rules to prevent a transparency where a letter
+    represents itself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Rule 1:* If two consecutive letters in the trigram fall on the same row, the
+    first of these two letters is enciphered as the letter to the right of the second
+    of the letters, wrapping to the left column, if needed. For example, in the trigram
+    SUB the S is on the top row of the first square, and the U is on the top row of
+    the second square. Therefore S is replaced by **V** instead of by **U**. Similarly,
+    in the trigram LET, the T is on the third row of the third square, and the L is
+    on the third row of the first square. So T is replaced by **G** instead of **L**.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This diagram illustrates Rule 1\. Without Rule 1, in the trigram SUB the S would
+    be replaced by **U**. Instead, it is replaced by the letter to the right of U
+    in the middle square, namely **V**. Without Rule 1, in the trigram LET the T would
+    be replaced by **L**. Instead, it is replaced by the letter to the right of L
+    in the left square. This wraps from column 5 to column 1, which has the letter
+    **G**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-14](../Images/9-unnumb-14.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '*Rule 2:* If all three letters in the trigram fall on the same row, each letter
+    will be replaced by the letter immediately below it, wrapping to the top row,
+    if needed. Thus FUN would be replaced by **AZV**, and WRE would be replaced by
+    **IXL**.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: With these rules Three Square is rated Five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Playfair ThreeSquare
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Three Square cipher uses three Polybius squares. Any of these squares could
+    be used for a Playfair cipher. This suggests a hybrid method that mixes the Playfair
+    and Three Square ciphers. You can use a numerical key such as 1,4,1,3,4,2,4 to
+    control how each successive bigram or trigram is enciphered. A 1 means encipher
+    the next 2 letters as a bigram using Playfair in the first square. A 2 means encipher
+    the next 2 letters as a bigram using Playfair in the second square. A 3 means
+    encipher the next 2 letters as a bigram using Playfair in the third square. A
+    4 means encipher the next 3 letters as a trigram using Three Square. It is best
+    if the numeric key contains at least one of each digit. Since Three Square is
+    much stronger than Playfair, the digit 4 should occur more often than 1, 2 or
+    3 in the numeric key. About 50% would be suitable. That is, 4 should occur as
+    often as 1, 2 and 3 combined. Equivalently, generate random numbers from 1 to
+    6, and use Three Square with 4, 5 or 6.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since Playfair ThreeSquare mixes bigrams and trigrams, about half of the bigrams
+    and two-thirds of the trigrams will not fall on even boundaries. This means the
+    increase in strength is greater than the increase for Playfair TwoSquare. Playfair
+    ThreeSquare is rated Seven.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is possible to combine Playfair, Two Square and Three Square into an even
+    more complex cipher, no doubt with greater strength, but Playfair ThreeSquare
+    is already pushing the limits of what a human code clerk can do. Both speed and
+    accuracy would suffer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is an opposite approach, which I call a *Straddling Three Square*. Group
+    the plaintext into rows containing four blocks of 3 characters each. Encipher
+    each of the blocks using the Three Square cipher. Now take the last letter of
+    block 1 and the first letter of block 2 and encipher that bigram using the Playfair
+    cipher with the first Polybius square. Take the last letter of block 2 and the
+    first letter of block 3 and encipher that bigram using the Playfair cipher with
+    the second Polybius square. Take the last letter of block 3 and the first letter
+    of block 4 and encipher that bigram with the third Polybius square. This improves
+    the strength of the Three Square cipher without adding much complexity, or much
+    time. Use the Same Row Rule throughout.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.5 Four Square
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The *Four Square* cipher was invented by Félix-Marie Delastelle circa 1890,
+    and described in his book *Traité Élémentaire de Cryptographie*, published 3 months
+    after his death in 1902\. Delastelle invented the Two Square cipher after the
+    Four Square cipher as a simplified and slightly less secure version. However,
+    with the Same Row Rule described in section 9.3 the two ciphers can be considered
+    equal in strength.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As the name implies, the Four Square cipher utilizes four Polybius squares.
+    Two of the squares contain the standard alphabet, and the other two squares contain
+    alphabets mixed using independent keys. The message is enciphered two letters
+    at a time, that is, Four Square enciphers bigrams.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is a sample arrangement.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-15](../Images/9-unnumb-15.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Enciphering uses the familiar rectangular scheme. You locate the two plaintext
+    letters in the standard alphabets and replace them with the letters at the opposite
+    corners of the rectangle, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-16](../Images/9-unnumb-16.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Since the two plaintext letters can never be in the same row or the same column
+    of the 10×10 grid there is no need for special rules, or for separating double
+    letters. The only need for a null character is for completing the last bigram.
+    Four Square is rated Five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cycling method
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To get a little more strength you can use a simple transposition similar to
+    the piecewise reversal in section 4.6.1\. This transposition uses a repeating
+    numeric key such as 1,3,1,4,2,6\. Divide the ciphertext into blocks of 7 characters,
+    or any other odd length. Write the successive key digits above each block. Then
+    cycle each block left the number of positions indicated by its key digit. For
+    example, if the key digit is 4 you would move the leftmost 4 digits to the right
+    end of the block. Here is an example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-17](../Images/9-unnumb-17.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Four Square using the cycling method is rated Six.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Halving method
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another approach to strengthening Four Square is to transpose the message beforehand.
+    Suppose the message is AMBASSADOR WILKINS ASSASSINATED KABUL TODAY. This has 39
+    letters. Dividing 39 by 2 and rounding up gives 20\. Write the message in two
+    rows of 20 letters each, and read off the bigrams reading vertically. Encipher
+    these bigrams using Four Square.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-18](../Images/9-unnumb-18.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: These bigrams no longer have the normal bigram frequencies, or the normal contact
+    frequencies, for English bigrams. Four Square using the halving method is rated
+    Seven.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.6 Bifid
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Let’s look at one more historical hand cipher based on the 5×5 Polybius square.
+    This is the *Bifid* cipher, also invented by Félix-Marie Delastelle in the 1890s.
+    Bifid is a 3-step cipher where (1) the letters are converted into their Polybius
+    coordinates, (2) those coordinates are rearranged, and (3) the coordinates are
+    then converted back into letters. Originally, Delastelle wrote out the entire
+    message with the coordinates written vertically under each letter, then he combined
+    the pairs of coordinates reading horizontally, first across the top row and then
+    across the bottom row.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The modern method is to break the message into blocks of a fixed size. The block
+    size should be an odd number, such as 5, 7 or 9\. If the block size is an even
+    number, then Emily can separate the blocks into bigrams.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The first step is to convert the letters into their coordinates in the Polybius
+    square. Suppose the block length is 5\. The 5 plaintext letters can be represented
+    as X1, X2, X3, X4 and X5\. Their row and column coordinates can be represented
+    as R1C1, R2C2, R3C3, R4C4 and R5C5\. Each of these R and C symbols is a number
+    from 1 to 5, with the row coordinate first and the column coordinate second. These
+    pairs of coordinates are written vertically below each letter in the block, like
+    this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-19](../Images/9-unnumb-19.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Then they are read out going across the rows in the order R1R2, R3R4, R5C1,
+    C2C3, C4C5\. Here is an example. The word MAJOR is enciphered using a Polybius
+    square that was mixed using the keyword SAMPLE.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-20](../Images/9-unnumb-20.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Notice that the third set of letter coordinates in the ciphertext, **R5C1**,
+    is a row/column pair. This means that the third ciphertext letter will come from
+    the same row, **R5**, in the Polybius square as the fifth plaintext letter, and
+    from the same column, **C1**, as the first plaintext letter. This concurrence
+    of both row coordinate and column coordinate is called a *natural*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since there are 5 letters in each row and 5 letters in each column in the square,
+    there is a 1 in 5 chance that the third ciphertext letter is the same as the fifth
+    plaintext letter, and a 1 in 5 chance that the third ciphertext letter is the
+    same as the first plaintext letter. That is, there is a 20% chance that **R5C1**
+    is the same as **R5C5**, and a 20% chance that **R5C1** is the same as **R1C1**.
+    In this example, that is exactly what happened. The fifth plaintext letter is
+    R and the third ciphertext letter is also **R**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now look at the first ciphertext letter, **R1R2**. This is a row/row pair, not
+    a row/column pair. Here only the first coordinate, **R1**, is in the correct place
+    for a row/ column pair. The other coordinate, **R2**, is a row coordinate in the
+    column position. Such a single placement is called a *half-natural*. It means
+    that the first ciphertext letter comes from the same row in the Polybius square
+    as the first plaintext letter. So there is a 20% chance that the first ciphertext
+    letter is the same as the first plaintext letter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This also happens with the second, fourth and fifth ciphertext letters. Each
+    one of them falls in either the same row or the same column as one of the plaintext
+    letters. Thus each of them has a 20% chance of being the same as that plaintext
+    letter. This happened in the example, where the second ciphertext letter, **J**,
+    is the same as the third plaintext letter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is a serious weakness in the bifid cipher which makes it easy for Emily
+    to guess at and place probable words. On the other hand, if the plaintext and
+    ciphertext letters are different, then you know that they are in the same row
+    or column. In the example, the first plaintext letter **R1C1** is M, and the first
+    ciphertext letter **R1R2** is **S**. This means that M and S must be in the same
+    row of the Polybius square. When Emily deduces or guesses a word, that provides
+    several of these equivalences. This, in turn, makes it easier to place additional
+    words. When enough of these letter pairs have been accumulated, Emily can reconstruct
+    the square.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Due to these weaknesses, the bifid cipher is rated Three.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.6.1 Conjugated matrix bifid
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: These problems can be eliminated by using a different Polybius square to convert
+    the coordinates back to letters. For example, Square 2 yields the ciphertext **VBJEF**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-21](../Images/9-unnumb-21.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Bifid with two separate Polybius squares is called by the highfalutin name *Conjugated
+    Matrix Bifid*. In this context, a matrix simply means a rectangular array of letters
+    or characters. The conjugated matrix bifid cipher is rated Five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are several ways to boost the strength of the bifid cipher. One way is
+    to vary the block length using a repeating numeric key such as 5, 11, 7\. The
+    block lengths would be a cyclic repetition of this key, namely 5, 11, 7, 5, 11,
+    7, 5, ... If you prefer, you can generate the block lengths by using the chained
+    digit generator and translating the digits to odd block lengths. One possibility
+    is
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-22](../Images/9-unnumb-22.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: So, if the generator produced digits 3, 6, 2, 7, ... , then the block lengths
+    would be 11, 7, 9, 9, ...
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using a short repeating key and conjugated matrices the cipher is rated Six.
+    With a long repeating key or generating the block lengths using a random number
+    generator the cipher is rated Seven.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A similar idea is to read out the coordinates starting from a different point
+    in each block. You could use a numeric key to specify the sequence of starting
+    points. If the block length is L, each number in the key may be anywhere from
+    1 to 2L. A number from 1 to L would indicate a starting position on the top row
+    of coordinates, while a number from L+1 to 2L would indicate a starting position
+    on the bottom row, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-23](../Images/9-unnumb-23.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The coordinates would be taken out in pairs reading from left to right. Here
+    is the order for reading out the coordinates using the numeric key 4, 9\. The
+    starting positions 4 and 9 are shaded.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-24](../Images/9-unnumb-24.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This method increases the rating to Six.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another way to strengthen the bifid cipher is to use a stronger transposition
+    to mix the coordinates. The standard bifid using a block of length L takes the
+    2L coordinates and writes them into a 2×L block. The coordinates are written into
+    the block vertically and read out horizontally. We recognize this as a very simple
+    route transposition, described in section 7.1\. There are several stronger transpositions
+    covered in chapter 7, notably columnar transposition. One example of this type
+    of cipher is the *ADFGVX* cipher invented by intelligence officer Lt. Fritz Nebel
+    and used by the Germans in World War I. In the ADFGVX cipher, the coordinates,
+    represented by the letters A,D,F,G,V,X, are mixed using a columnar transposition,
+    and then transmitted as a string of those letters. This cipher is rated Five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you used longer blocks, say 20 characters, that would give you 40 coordinates.
+    (With this method the block lengths may be either even or odd.) This is enough
+    to use columnar transposition effectively to mix the coordinates. Or, you could
+    go back to Delastelle’s original concept and take the coordinates for the entire
+    message as a single block. Either way, using conjugated matrices this cipher is
+    rated Eight. Using a double columnar transposition the cipher is rated Ten. Assuming
+    four long independent keys and well-mixed alphabets, this is an unbreakable paper
+    and pencil cipher. Call it *Double Columnar Bifid*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.7 Diagonal bifid
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A variation on the bifid cipher is to write the Polybius coordinates vertically
+    under each letter, as usual, but to read them out diagonally, going from lower
+    left to upper right (or southwest to northeast). This is called a *left diagonal*
+    or an *antidiagonal*. (On a heraldic crest it is called *bar sinister*, and indicates
+    out-of-wedlock birth.) For the last letter, you wrap to the first column (the
+    shaded digit 1). The advantage of this is that there are no naturals or half-naturals
+    to help Emily guess words. Here is an example.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-25](../Images/9-unnumb-25.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Diagonal bifid is rated Four. With conjugated matrices it is rated Five. With
+    conjugated matrices and periodically varying block sizes it is rated Six. Unlike
+    classical bifid, both odd and even block sizes can be used with diagonal bifid.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.8 6×6 squares
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: If your messages contain a lot of numbers, it may be advantageous to use a 6×6
+    Polybius square instead of a 5×5 square. A 6×6 square allows you to have the full
+    26-letter alphabet plus the numerals from 0 to 9\. There is no need to omit J
+    or Q from the alphabet. If you are enciphering by hand, this requires taking extra
+    care to distinguish the letters O, I, Z, S and G from the digits 0, 1, 2, 5 and
+    6\. Some people adopt special conventions, such as underlining all digits. I find
+    this cumbersome and error-prone. I usually just exaggerate the characteristics
+    that distinguish each of these characters from its mate, such as writing the letter
+    I with extra-wide serifs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: All of the methods from the preceding 5 sections, namely Playfair, Two Square,
+    Three Square, Four Square and Bifid, can be used with 6×6 squares, along with
+    all of their variations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.9 Trifid
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: If you like squares, how about cubes? Another fractionation method, also invented
+    by Félix-Marie Delastelle in the 1890s, is the *Trifid* cipher. Instead of representing
+    each letter of the alphabet by two digits in base 5 (quinary numbers), each letter
+    is represented by three base-3 digits (ternary numbers). This gives 3×3×3, or
+    3³, different 3-digit combinations. This is enough for all 26 letters of the alphabet
+    plus one extra character. Delastelle used a + plus sign for the 27th character.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The extra character + might be used as a form of punctuation, or it might be
+    a signal that the following plaintext letter should be interpreted as a digit.
+    The correspondence +A = 1, +B = 2, ... , +J = 0 could be used. The rest of the
+    alphabet could also be used as special characters. For example, +K could mean
+    period, +L could mean comma, and so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Just as the 2-digit combinations can be displayed as a 5×5 letter square, the
+    3-digit combinations can be displayed as a 3×3×3 letter cube. The 3 digits in
+    each triple can be interpreted as the coordinates in the cube where that letter
+    is located. These coordinates are commonly called the layer, the row and the column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here are the 27 ternary combinations, in order, with letter equivalents weakly
+    mixed by using the keyword EXAMPLE and alternating columns. For instance, the
+    letter N is represented by the triple 102, so it would be located on layer 1,
+    row 0 and column 2 of the 3×3×3 letter cube.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-26](../Images/9-unnumb-26.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The trifid cipher works similarly to the bifid cipher. The plaintext is written
+    in blocks of some fixed size. The size may be any number that is not a multiple
+    of 3\. The 3 digits are written vertically beneath each letter of the message,
+    and then read out horizontally in groups of 3\. Then they are converted back into
+    letters using the same equivalences. Here is an example with the plaintext SEND
+    HELP and block size 4.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-27](../Images/9-unnumb-27.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The same analysis and techniques that were used for bifid can also be applied
+    to trifid, and they have the same ratings. You can use two separate substitution
+    tables for converting the letters to digits and the digits back to letters. You
+    can vary the block sizes. You can start reading out the digits from different
+    places in each block. You can use a strong transposition to mix the ternary digits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A natural question is whether there is a diagonal version of the trifid cipher
+    analogous to diagonal bifid. The advantage of diagonal bifid over the original
+    bifid is that the diagonal version does not give rise to the half-naturals that
+    weaken the original version. In the analogous diagonal trifid the middle digit
+    of every group would be a third-natural, so the advantage is lost. The problem
+    of naturals disappears, though, if you use two different mixed alphabets, one
+    for writing in the digits and another for reading them out. Diagonal trifid with
+    two alphabets is rated Five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.10 Three Cube
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: As I was typing the preceding paragraph about the trifid cipher, I realized
+    that the 3×3×3 cubic arrangement lends itself to a 3-dimensional analogue to the
+    Two Square cipher described in section 9.3\. It is easy to visualize the Two Square
+    cipher in two dimensions, but much harder to visualize a cube in three dimensions,
+    so I am going to describe the new cipher solely in terms of the coordinates. Let’s
+    call this cipher *Three Cube*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Two Square enciphers two letters at a time using two substitution tables, ergo
+    Three Cube will encipher three letters at a time using three substitution tables.
+    Here is a set of three tables well-mixed using the keywords COLUMBIA, STANFORD
+    and HOPKINS. These three substitution tables are designated S, T and U. That’s
+    S for Substitution, T for Table, and U for the next letter in the alphabet.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The substitution tables correspond the 26 letters of the alphabet and the character
+    + with the 27 ternary triplets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-28](../Images/9-unnumb-28.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Like trifid, Three Cube begins by writing the 3-digit triplet for each letter
+    vertically beneath it. The 3 digits for the first letter are taken from substitution
+    table S, the 3 digits for the second letter are taken from table T, and the 3
+    digits for the third letter are taken from U. The pattern is shown here and illustrated
+    by the trigram FLY.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-29](../Images/9-unnumb-29.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Then the digits are read out left to right, and these horizontal triplets are
+    converted back to letters. It would seem natural to use table S for converting
+    the top row, table T for the middle row and table U for the bottom row. However,
+    that would lead to a 1 in 9 chance that the top row would be identical to the
+    left column, so that the first plaintext letter would be replaced by itself. That
+    is, there is 1 chance in 9 that S1S2S3 is the same as S1T1U1\. The same is true
+    for the middle and bottom rows. Let’s call this situation, where one digit is
+    the same, a *part natural*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For this reason, substitution table S is used for the second row, table T is
+    used for the third row, and table U is used for the top row. This eliminates the
+    naturals. Here is the pattern.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-30](../Images/9-unnumb-30.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Since this is hard to keep straight when you are enciphering by hand, I suggest
+    writing the choice of substitution table over each triplet of digits. This is
+    similar to writing the key letter over each plaintext letter when using the Belaso
+    cipher (section 5.5). Here is an example of Three Cube using the plaintext message
+    FLY TO ROME.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-31](../Images/9-unnumb-31.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The Three Cube cipher is rated Seven.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is a simple way to strengthen the Three Cube cipher. Instead of converting
+    the triplets back to letters using the three substitution tables in strict rotation
+    as we just did, use a key to set the order of the read-out tables. The key would
+    consist of the letters S, T and U in some scrambled order, for example SUTUTTUUSTS.
+    The length of this key should not be a multiple of 3\. I call this variant *Three
+    Cube Plus*. Here is how FLY TO ROME would be enciphered using this read-out key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-32](../Images/9-unnumb-32.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Using Three Cube Plus about 1/3 of the letters will have part naturals. That
+    is, one of the 3 write-in digits will be the same as one of the read-out digits.
+    However, Emily will not know which letters have this defect, and will not be able
+    to exploit it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Three Cube Plus is rated Nine.
+  prefs: []
+  type: TYPE_NORMAL
+- en: So, you might well be saying, is it possible to nudge the rating up to Ten without
+    making the cipher too complex for hand use? Thank you for asking. First off, let’s
+    increase the number of substitution tables from 3 to 6\. Let’s call them S, T,
+    U, V, W and X. Instead of writing in the triplets using a strict rotation STU,
+    STU, STU, ... we will use another letter key consisting of those 6 letters in
+    some scrambled order. The write-in key could be TWXUSTTVWV, and the read-out key
+    could be VWTXXSUSVTU. Ideally, the lengths of these keys would be mutually prime,
+    and neither length would be divisible by 3\. Here the lengths are 10 and 11\.
+    Let’s call this cipher *Three Cube Super*. This is an example of Three Cube Super
+    using the plaintext FLY TO NEW YORK.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-33](../Images/9-unnumb-33.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Three Cube Super is rated Ten. This is another unbreakable hand cipher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.11 Rectangular grids
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Up to now we have discussed only square and cubic arrays of letters. There is
+    no restriction in cryptography that requires all of the dimensions of a letter
+    grid to be the same. It is basically a historical accident that the English alphabet
+    has 26 letters, and 26 is very close to 5×5\. If we used the 33-letter Russian
+    alphabet we might choose a 4×8 or 5×7 rectangle.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If we want to have all 26 letters of the alphabet, then a 3×9 or 4×7 rectangle
+    might be preferable. These give you the full 26-letter alphabet plus one or two
+    extra characters. We have discussed the use of such extra characters earlier,
+    for example for switching between letters and numerals. Most of the ciphers based
+    on Polybius squares work just as well with 3×9 or 4×7 rectangles as they do with
+    5×5 squares, assuming all of the rectangles are oriented in the same direction.
+    These are the Playfair, the Two Square, the Three Square, the Four Square, and
+    the diagonal bifid ciphers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In fact, these 5 ciphers may be stronger when used with those rectangles because
+    each letter of the alphabet has more possible substitutes. The downside, when
+    using Playfair or Two Square, is that there is a higher probability that the two
+    letters are on the same row, and therefore are replaced with the letters below
+    them or to their right.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here is an example of a Playfair cipher done with a 3×9 rectangle:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-34](../Images/9-unnumb-34.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 9.12 Hexadecimal fractionation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: So far this chapter has focused solely on hand methods. This meant small arrays
+    using only the uppercase alphabet. For computer use you usually want the full
+    alphabet, uppercase and lowercase, numbers, punctuation, special symbols, diacritics,
+    and perhaps multiple alphabets. In short you may want the full text capabilities
+    of the computer. The simplest way to do this is to represent each character by
+    an 8-bit byte using one of the standard computer codes such as UTF-8 or UTF-16.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A natural way to fractionate an 8-bit byte is to split it into two 4-bit hexadecimal
+    digits, or hex digits. All of the fractionation methods that are based on Polybius
+    squares also work for 16×16 squares, namely Playfair, Two Square, Three Square,
+    Four Square, and bifid. If the 16×16 square is well-mixed using a large key, these
+    methods are stronger than the same methods used with 5×5 squares. This is because
+    there are vastly more arrangements of 256 characters than of 25 characters, namely
+    8.58×10^(506) versus 1.55×10^(25).
+  prefs: []
+  type: TYPE_NORMAL
+- en: A simple method for using hexadecimal fractionation is to (1) convert the characters
+    of the message to hexadecimal digits by using a well-mixed keyed substitution
+    table, (2) scramble those digits using some transposition cipher, and then (3)
+    convert the pairs of hex digits back to bytes using a second well-mixed keyed
+    substitution table.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The simplest transposition is just moving the first hex digit to the end, so
+    that 12 34 56 78 would become 23 45 67 81\. This might be called *Cycle Hex*.
+    It is essentially diagonal bifid (section 9.7) done in base 16 instead of base
+    5\. Cycle hex is rated Five. You could also use the piecewise reversal transposition
+    described in section 4.6.1 to scramble the letter order. This might be called
+    *Piecewise Hex*. It is also rated Five. A stronger method would be to scramble
+    the hex digits using a columnar transposition cipher. This could be called *Columnar
+    Hex*. It is rated Seven. With a double columnar transposition the rating increases
+    to Ten.
+  prefs: []
+  type: TYPE_NORMAL
+- en: These methods can be used to encipher any computer file. However, if the files
+    are pure text, the methods can be further enhanced. Pure text will normally use
+    fewer than 100 of the 256 possible byte values. The remaining character codes
+    can be used for nulls, bigrams, trigrams and other purposes described in section
+    6.4\. If done well, this raises the ratings to cycle hex Six, piecewise hex Six,
+    and columnar hex Eight.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.13 Bitwise fractionation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Fractionation can also be done with the individual bits that represent the characters
+    in a message. The block of N characters would be represented by 8N bits. These
+    can be formed into a rectangle in several ways, such as 2×4N, 4×2N, 8×N and N×8\.
+    For example, a block of 5 letters would be represented by 40 bits, which could
+    be written as 2 rows of 20 bits, 4 rows of 10 bits, 8 rows of 5 bits, or 5 rows
+    of 8 bits. This is cumbersome for hand operations, but easily done with a computer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is an example of how 5 characters can be written horizontally into a 5×8
+    block and then read out vertically. This example uses the standard UTF-8 character
+    codes. For example, uppercase letter A is represented as 01000001\. The plaintext
+    is the word DELTA.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-35](../Images/9-unnumb-35.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The bits are read out going down the columns. Since each column contains only
+    5 bits, each byte of the ciphertext must span two or more columns. The 8 bits
+    for the first ciphertext byte are found in columns 1 and 2 with medium highlighting.
+    The first column contains 00000, and the first 3 bits in the second column are
+    111, so the first byte of the ciphertext is 00000111, or hex 07\. This is the
+    control character BELL, dating back to the teletype era, when it used to cause
+    the carriage-return bell to sound. It has no graphic representation anymore. I
+    will use the note **♪** to represent the bell character.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The second ciphertext byte comes from the darker highlighted section spanning
+    columns 2, 3 and 4\. The last 2 bits in column 2 are 11, column 3 contains 00000,
+    and the first bit in column 4 is 0\. Combining these, the second ciphertext byte
+    is 11000000\. This represents the character **À**, which is an uppercase **A**
+    with a grave accent.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Bytes 3 and 4 of the ciphertext are **“** and **x**, that is, double quote and
+    lowercase x. The fifth byte comes from columns 7 and 8, namely 000 and 01001\.
+    The byte 00001001 represents the **HTAB**, or horizontal tab character, which
+    is invisible. I will use the arrowhead **►** to represent it. Thus the ciphertext
+    is **♪À“x►**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This looks pretty cryptic, but the method is weak because it uses the standard
+    alphabet for both the conversion of the plaintext into bits and the conversion
+    from bits back to characters. It is rated One. If two independent well-mixed keyed
+    alphabets are used for these steps, then this cipher is simply a binary version
+    of the conjugated matrix bifid (section 9.6.1). This method could be called *Hex
+    Rectangle*. It has the same rating as the conjugated matrix bifid cipher, namely
+    Five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is natural to form eight 8-bit bytes into an 8×8 bit square. Write the 8
+    bits for each character vertically into the square using a mixed alphabet, and
+    read them out horizontally using a different mixed alphabet. This is just an 8×8
+    square version of the hex rectangle, and has the rating Six.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.13.1 Cyclic 8×N
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: It is easy to improve the strength of this cipher. For any block of N characters,
+    write their 8-bit representations into an 8×N rectangle vertically. Shift each
+    row cyclically to the left by some amount from 0 to N-1 bit positions. For example,
+    abcdefgh cyclically shifted, or *rotated*, left by 2 positions would give cdefghab.
+    Then read each 8-bit column out vertically. Here is an example using an 8×8 bit
+    square. Each row is cycled left by the amount indicated to its left.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-36](../Images/9-unnumb-36.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This cipher is at the limit of what can be done by hand. It requires 3 keys,
+    namely 2 keys for mixing the 2 alphabets, and an 8-digit key for specifying the
+    shift amounts. It can be called *Cyclic 8×N*. When N is 6 or larger it is rated
+    Seven. The cipher gets stronger as the block size, N, increases.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the rectangle is square you can rotate both the rows and columns to get
+    a *Bicyclic 8×8* cipher. You should alternate directions for this. Write the bits
+    in horizontally, cycle the bits vertically, cycle the bits horizontally, and read
+    out the characters vertically. The Bicyclic 8×8 is rated Eight.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The cyclic 8×N cipher can be repeated to get a *Double Cyclic 8×N* cipher. This
+    requires 5 keys, namely 3 keys to mix the 3 alphabets, and two 8-digit keys to
+    control the 2 rounds of shifting. There are 5 steps. (1) Use the first alphabet
+    to do a simple substitution. The resulting N bytes are written into the 8×N bit
+    rectangle vertically. (2) Cyclically shift the rows using the first shift key.
+    (3) Use the second alphabet to perform a simple substitution on the N columns.
+    (4) Cyclically shift the rows using the second shift key. (5) Use the third alphabet
+    to perform a final simple substitution on the vertical columns. Notice that all
+    the shifts are horizontal and all the substitutions are vertical. The double cyclic
+    8×N cipher is rated Nine.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This can be continued to *Triple*, *Quadruple* and beyond, if desired. All of
+    these variations can be further enhanced by varying the block sizes, either periodically
+    or using a random number generator.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.14 Other fractionation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In sections 9.12 and 9.13 we looked at dividing a byte into two hexadecimal
+    digits or into eight individual bits. There are numerous other ways of partitioning
+    8 bits, such as 3,2,3\. If the 3,2,3 bit representation of each character is written
+    vertically, and then the 3 rows are cyclically shifted left by some number of
+    positions, then each column will still have the 3,2,3 bit distribution, so the
+    8 bits can be converted back into bytes. Here is an example. Each row is cycled
+    left by the number of positions shown at the left, that is, 1 position, 3 positions
+    and 2 positions, respectively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![9-unnumb-37](../Images/9-unnumb-37.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Here the plaintext RETREAT has been transformed into the ciphertext **@w«****θ****K_****╝**.
+    Let’s call this a *BitCycle Substitution*. This method is rated Five. Like the
+    cyclic 8×N cipher in section 9.13.1, this can be doubled, tripled, or more, and
+    the block sizes can be varied.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This basic idea can be enhanced in two powerful ways.
+  prefs: []
+  type: TYPE_NORMAL
+- en: First, the bytes can be divided in several different ways, such as 1,3,2,2 or
+    2,4,2\. For example, you could encipher the block first using the 3,2,3 split,
+    then reencipher it using the 1,3,2,2 split, then reencipher that using the 2,4,2
+    split. This would involve 7 keys and 7 steps. (1) Use the first substitution to
+    produce the 3,2,3 bit representation of the message. (2) Shift the 3 rows using
+    the first shift key. (3) Use the second substitution to produce the 1,3,2,2 bit
+    representation of the bytes. (4) Shift the 4 rows according to the second shift
+    key. (5) Use the third substitution to produce the 2,4,2 bit representation of
+    the bytes. (6) Shift the 3 rows according to the third shift key. (7) Use the
+    fourth substitution to produce the final ciphertext bytes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Second, the message blocks can be divided in several different ways. Suppose
+    you used long plaintext blocks of, say, 32 characters. For Step 2 in the previous
+    technique you could divide the 32 bytes into groups of 6, 14 and 12 bytes. For
+    Step 4 you could divide the 32 bytes into groups of 11, 8 and 13 bytes. For Step
+    6 you could divide the 32 bytes into groups of 8, 17 and 7 bytes. Each group would
+    be shifted independently. This division could be different for every message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Or, you could take a more inclusive approach. For Step 2, divide the entire
+    message into blocks of size X. For Step 4, divide the message into blocks of size
+    Y. For Step 6, divide the message into blocks of size Z. X, Y and Z may be any
+    length from 6 bytes up to the full message length.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I will not rate all of the variations of the BitCycle substitution. Suffice
+    to say that the ratings may range anywhere from Five to Ten. In chapter 12 I will
+    describe how you can verify that a block cipher truly deserves a rating of Ten.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.15 Stronger blocks
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Several of the ciphers described in this chapter work on blocks of plaintext.
+    There are several things that you can do to the plaintext blocks to make your
+    cipher just a bit harder for Emily. Here is a short list of ideas:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vary the block lengths, periodically or pseudorandomly.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Reverse the first few letters of each block, periodically or pseudorandomly.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Reverse the last few letters of each block, periodically or pseudorandomly.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Cycle each block left or right, periodically or pseudorandomly.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Swap the last N letters of the block with the first N letters of the next block.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'But a word of warning: if you are enciphering and deciphering by hand, use
+    these methods sparingly. If you make your cipher so complex that you cannot encipher
+    and decipher accurately, then it becomes worthless.'
+  prefs: []
+  type: TYPE_NORMAL

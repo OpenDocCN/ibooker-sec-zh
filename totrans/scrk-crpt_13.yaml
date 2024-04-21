@@ -1,0 +1,1405 @@
+- en: 13 Stream ciphers
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Pseudorandom number generators
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Functions for combining the random numbers with the message
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Generating true random numbers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Hash functions
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Stream ciphers are the opposite of block ciphers. Characters in stream ciphers
+    are enciphered as they are encountered, usually one at a time. The basic concept
+    is to take a stream of message characters and combine them with a stream of key
+    characters to produce a stream of ciphertext characters. This paradigm is well
+    suited for continuous operation where messages are continuously enciphered and
+    transmitted at one end, and continuously received and deciphered at the other
+    end, with no pauses, or only momentary pauses to change keys.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We have already seen a few stream ciphers. The autokey and running key ciphers
+    in section 5.9, the rotor machines of section 5.10, Huffman substitution in section
+    10.4, and the ciphers based on text compression in section 10.7 are all examples
+    of stream ciphers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.1 Combining functions
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The most common types of stream ciphers use one key unit to encipher one plaintext
+    unit. The units are usually letters or bytes, but hex digits or even bits can
+    also be used. The key unit is combined with the plaintext unit using essentially
+    the same combining functions that were used with the ripple ciphers in section
+    11.8, but using a key unit in place of the preceding unit. Here are the analogous
+    methods, with x[n] being the nth unit of the message, k[n] being the nth unit
+    of the key, A and B being simple substitutions and P being a general polyalphabetic
+    substitution. The substitutions A, B and P should be mixed using keys, not fixed
+    or built in.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| **xor** | Exclusive-OR | x[n] is replaced by k[n]⊕x[n]. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **sxor** | Substitute and exclusive-OR | There are three variations: x[n]
+    may be replaced by A(k[n])⊕x[n], or k[n]⊕B(x[n]) or A(k[n])⊕B(x[n]). That is,
+    you may substitute for either k[n] or x[n] or both. (The use of A(k[n]) instead
+    of k[n] can serve to prevent Emily from recovering the pseudorandom sequence when
+    there is known plaintext.) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **xors** | Exclusive-OR and substitute | x[n] is replaced by A(k[n]⊕x[n]).
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **add** | Add | x[n] is replaced by k[n]+x[n]. As always, addition is modulo
+    the size of the alphabet. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **madd** | Multiply and add | Also called **linear replacement**. x[n] is
+    replaced by pk[n]+x[n], or k[n]+qx[n], or pk[n]+qx[n], where p may be any integer
+    and q may be any odd integer. (If you are using an alphabet whose size is different
+    from 256, q must be coprime to that size.) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **sadd** | Substitute and add | x[n] is replaced by A(k[n])+x[n], or k[n]+B(x[n])
+    or A(k[n])+B(x[n]). |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **adds** | Add and substitute | x[n] is replaced by A(k[n]+x[n]). |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **poly** | General polyalphabetic substitution | x[n] is replaced by P(k[n],
+    x[n]). |'
+  prefs: []
+  type: TYPE_TB
+- en: Since **xor** or **sxor** may leak information about its operands, I recommend
+    using **xors** instead, so that the simple substitution is done after the exclusive-OR
+    to mask the waveforms, namely A(k[n]⊕x[n]).
+  prefs: []
+  type: TYPE_NORMAL
+- en: A stream cipher may also use one or more previous characters to encipher the
+    current character. There are many combinations. One example is P(k[n]⊕x[n-i],
+    x[n]) for some small integer i. This cipher requires an initialization vector
+    to encipher the first i characters. A stream cipher can also be strengthened by
+    switching among several combining functions, for example periodically switching
+    among the 3 forms of **sadd**, or of **madd**, or by periodically varying the
+    multipliers p and q in **madd**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.2 Random numbers
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The long keys used in the stream ciphers listed in the previous table can come
+    from several sources:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: They may be a list of numbers repeated as many times as needed. This was the
+    standard method from the 16th through the 19th centuries.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: They may be generated by a mathematical process. Such numbers are called *pseudorandom*
+    because they eventually repeat, as opposed to true random numbers, which never
+    repeat. The process that generates these numbers is called a *pseudorandom number
+    generator* (PRNG).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: They may be true random numbers that might be generated by some physical process
+    such as gamma rays from an exploding star. Such processes are usually too slow
+    for cryptographic needs, so these random numbers are usually collected over time
+    and stored in the computer for later use. That is, they may be collected continuously
+    and used only when you need to send a message.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Books and articles about cryptography often state that you need true random
+    numbers for a secure cipher. They point out that it has been mathematically proven
+    that a one-time pad using a true random key cannot be broken. This is certainly
+    true, provided that for every plaintext unit p and every ciphertext unit c there
+    is a key unit k that transforms p into c, that is, S(k, p) = c. A true random
+    key is sufficient to make the one-time pad unbreakable. However, as everyone who
+    has studied logic knows, a condition can be sufficient without being necessary,
+    and vice versa.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For example, for an integer to be a prime it is necessary for it to be greater
+    than 1\. That is necessary but not sufficient, since 4 is an integer greater than
+    1 but is not a prime. For an integer to be composite it is sufficient for it to
+    be a square greater than 1\. That is sufficient but not necessary, since 6 is
+    composite but not a square.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Requiring that the key for a one-time pad must be true random is overkill. To
+    make the one-time pad unbreakable the key must be *unpredictable*, also called
+    *cryptographically secure*. With a true random key, no matter how many key units
+    Emily may know, it is impossible for her to determine any other units. With an
+    unpredictable key it only needs to be computationally infeasible for Emily to
+    determine any other units. Specifically, the amount of work Emily needs to do
+    to determine another key unit must be greater than 2^k, where k is your chosen
+    key size in bits. It is true that when the key stream is only pseudorandom you
+    can no longer prove that the cipher is unbreakable, but this has no practical
+    significance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Later in this chapter I will describe several schemes to make pseudorandom number
+    generators cryptographically secure, and point out one secure-looking scheme that
+    is insecure, namely CG5, described in section 13.13.
+  prefs: []
+  type: TYPE_NORMAL
+- en: All of the stream ciphers listed earlier can utilize pseudorandom number generators
+    to produce the key stream, so let’s look at a variety of PRNGs, starting with
+    some classical methods from the 1950s. These generators use a small initial value,
+    called the *seed* or the *initial state*, and some simple mathematical function
+    that generates the next state from the current state, called the *state vector*.
+    Common generating functions are addition, multiplication and exclusive-OR. These
+    generators are still in wide use today because of their great speed and easy implementation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Each generator produces a sequence of integers that eventually repeats after
+    a period that depends on the seed. It is possible to have a repeating sequence
+    of numbers that never repeats the seed, like 1,2,3,4,5,4,5,4,5,4,5, ... , but
+    none of the generators in this book have that behavior. The period is limited
+    by the size of the state vector. For example, a generator whose state vector is
+    three 31-bit integers cannot have a period longer than 2^(93).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.3 Multiplicative congruential generator
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A *multiplicative congruential PRNG* uses two parameters, a multiplier m and
+    a modulus p. Starting from the seed s, the sequence of pseudorandom numbers x[n]
+    is generated by the recurrence
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-equation-13-1](../Images/13-equation-13-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: In other words, to get the next pseudorandom number you multiply the previous
+    number by m and then take the residue modulo p. The seed may be any integer 1,2,3,
+    ... ,p-1\. The modulus p is almost always chosen to be a prime because primes
+    produce the longest periods. The choice of p often depends on the size of the
+    registers in the computer you are using. For 32-bit registers, the prime 2^(31)-1,
+    which is 2,147,483,647, is a common choice. The first PRNG in this class was published
+    by Berkeley number theorist Derrick H. Lehmer (not to be confused with Berkeley
+    number theorist Derrick N. Lehmer, his father) in 1949.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The multiplier m must be chosen carefully. The period of a multiplicative congruential
+    generator can be any integer that evenly divides p-1\. Since p is a prime, and
+    presumably far greater than 2, p-1 will be even, so a very poor choice of m, such
+    as p-1, could give a period of 2\. A multiplier that has the maximum possible
+    period, namely p-1, is called a *primitive root* of p. That means m, m², m³, ...
+    , m^(p-1) all have different residues modulo p. For a multiplicative congruential
+    generator, it is best to make m a primitive root in order to get the longest possible
+    period.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fortunately, this is easy to do. On average just slightly less than 3/8 of the
+    numbers in the range 2 to p-2 are primitive roots of p. The exact ratio is called
+    *Artin’s constant*, for Emil Artin, an Austrian mathematician who escaped from
+    Nazi Germany in 1937 and finished his career at Princeton. Its value is about
+    .373956\. If you can factor p-1, then it is easy to test whether a given multiplier
+    m is a primitive root of p. We know that the period of m must divide p-1, so begin
+    by factoring p-1\. Suppose the distinct prime factors of p-1 are a, b, c and d.
+    Then you only need to test m^((p-1)/a) (mod p), m^((p-1)/b) (mod p), m^((p-1)/c)
+    (mod p) and m^((p-1)/d) (mod p). If none of these are 1, then m is a primitive
+    root. For example, if p = 13, the distinct prime factors of p-1 = 12 are 2 and
+    3, so you only need to test exponents 12/2 and 12/3, that is, m⁶ and m⁴. For example,
+    5 is not a primitive root of 13 because 5⁴ = 625≡1 mod 13.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are efficient ways to compute m^x by taking successive squares. For example,
+    to compute m^(21) you could successively compute m², m⁴, m⁸, m^(16), m^(20), m^(21)
+    using just 6 multiplications. You can get further efficiencies by using these
+    products to compute the next power. For example, if the next value to test were
+    m^(37), you could compute m^(32), m^(36), m^(37) using just 3 multiplications.
+    It is more efficient to calculate the residue modulo p after each multiplication
+    than to compute the huge number m^(21) and take the residue at the end. There
+    are more sophisticated schemes that use somewhat fewer multiplications, perhaps
+    10% to 15% fewer, but if you are doing this only a few times the extra effort
+    is not worthwhile.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you are using a multiplicative congruential PRNG it is important to know
+    that it is the magnitude of each number that shows random properties. To convert
+    an output R of the generator to an integer in the range 0 to N-1, the correct
+    calculation is ⌊RN/p⌋, where ⌊x⌋, read “floor of x,” means x rounded down to the
+    next lower integer. For example, ⌊27⌋ is 27, and ⌊27.999⌋ is 27\. The expression
+    ⌊RN/p⌋ is slightly biased toward smaller values, that is, it will yield lower
+    numbers slightly more frequently than higher numbers. However, when p is much
+    larger than N, say p > 1000N, this will not matter for cryptographic purposes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Historical aside
+  prefs: []
+  type: TYPE_NORMAL
+- en: Incidentally, the notation ⌊x⌋ and the corresponding ⌈x⌉ (read “ceil of x,”
+    which means x rounded up to the next higher integer, so ⌈27.001⌉ is 28) were both
+    invented by Kenneth Iverson, the creator of the APL programming language, in 1962\.
+    APL was the first interactive programming language. Computer users today take
+    interactivity for granted. You press a key or click the mouse, and the computer
+    does something. They do not realize that this concept had to be invented. Before
+    then, the standard model for computing was that you ran a card deck through a
+    card reader, the computer printed the results, and a few hours later you got a
+    sheaf of paper.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Do not use (R mod N) as your random number. R mod N can be severely
+    biased toward low values. For example, if the modulus p = 11 and N = 7, then the
+    11 possible values of (R mod 7) are 0, 1, 2, 3, 4, 5, 6, 0, 1, 2, 3, so that 0,
+    1, 2 and 3 are generated twice as often as 4, 5 or 6.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A multiplicative congruential generator will have decent random properties as
+    long as m > √p. It is best if the multiplicative inverse m' > √p as well. This
+    means that the number of bits in m needs to be at least half the number of bits
+    in p. You want p to be as large as possible so the generator will have a long
+    period, and you want m to be large so the generator is random. How big can you
+    go? The sizes of m and p are limited by the size of the registers in the computer.
+    If you go bigger than one register, you will pay a penalty in speed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Each pseudorandom number x[n] is generated by multiplying the previous number
+    x[n-1] by m. The number x[n-1] can have as many bits as p, so if p has b bits,
+    x[n-1] can also have b bits. Since m must have at least b/2 bits, the product
+    mx[n-1] can have 3b/2 bits. If the register size is 63 bits, then b can be at
+    most 2/3 of 63, namely 42, which means m could have at most 21 bits. It is better
+    to make m larger than √p. A reasonable trade-off is for m to be 25 bits and for
+    p to be 38 bits. That lets the period be up to 2^(38).
+  prefs: []
+  type: TYPE_NORMAL
+- en: The property that is required to make the generator unpredictable is that the
+    generated units have equal or uniform frequencies, pairs of units have equal frequencies,
+    triples and quadruples have equal frequencies, and so forth. As a practical matter,
+    you need not go beyond octuples or at most dectuples of bytes. If you want to
+    be absolutely dead sure, take your desired key size and divide by the size of
+    the generated units. For example, if your key size is 128 bits and the PRNG generates
+    4-bit hex digits, then you might require the n-tuples to have equal frequencies
+    for all values of n up through 32\. (Anyone who does that is clearly obsessive-compulsive
+    and should seek treatment.) Even for 4-bit random numbers it is neither necessary
+    nor useful to go beyond 16-tuples or at most 20-tuples (sexdectuples or vigintuples),
+    that is, 64 or 80 bits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Emily would need more than 2^(64) or 2^(80) bytes, respectively, of known plaintext
+    to exploit these uneven frequencies. Even if Sandra never changed her key, it
+    is implausible that Emily could ever accumulate that much material. To put this
+    in perspective, suppose there were a satellite that beamed down telemetry at the
+    rate of 1 MB per second. Suppose, further, that it beams this data down using
+    two different key streams simultaneously, and that Emily has the key for one of
+    them. Even though she is getting plaintext/ciphertext pairs at the rate of 1 MB
+    per second, it would still take about 585,000 years for her to collect 2^(64)
+    bytes. Even with 1000 satellites all using the same keys, it would take 585 years.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the frequencies of the n-tuples are equal for every value of n, then your
+    generator is true random. You have found a mathematical algorithm for generating
+    true random numbers. Congratulations. Go collect your Fields Medal.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In order to have the tuple frequencies equal up through n-tuples it is generally
+    necessary for the generator to have seeds that are themselves at least n-tuples.
+    For multiplicative congruential generators the single-unit and pair frequencies
+    are uniform, but the triples frequencies are never uniform, and the n-tuple frequencies
+    for n > 3 are very far from uniform; most of these frequencies are 0.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cracking a multiplicative congruential cipher is straightforward if you have
+    a few characters of known plaintext, and if the cipher makes it easy to determine
+    the random output from a plaintext/ciphertext pair, that is, if the combining
+    function is **xor**, **add** or **madd**. For example, if the cipher exclusive-ORs
+    the key byte to the plaintext byte to get the ciphertext byte, then all Emily
+    needs to do is exclusive-OR the plaintext byte with the ciphertext byte to get
+    the key byte.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the generator has a 31-bit or 32-bit modulus, it is feasible for Emily to
+    try all 2^(31) or 2^(32) values for the seed, even on a PC. The known plaintext
+    characters would be used merely for verification. If the modulus is larger, say
+    48 or 64 bits, then the first 2 or 4 known plaintext characters are used to limit
+    the search range. The first random output limits the current state of the generator
+    to a narrow range, 1/256 of the total range. A second known plaintext character
+    gives a second output that limits the state to 1/256 of that range, and so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Thus a single multiplicative congruential generator is not cryptographically
+    secure. It is possible to use a much larger modulus, using big-integer multiplication
+    techniques like Karatsuba or Toom-Cook, but that would sacrifice the high speed
+    of this class of generator. There are faster ways to produce cryptographically
+    secure generators, so this book will not cover big-integer multiplication methods.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.4 Linear congruential generator
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Linear congruential generators* are an extension of the multiplicative congruential
+    generators. They add a linear constant term c to the recurrence formula. Starting
+    from the seed s, the sequence of pseudorandom numbers x[n] is generated by the
+    recurrence'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-equation-13-2](../Images/13-equation-13-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'In other words, to get the next pseudorandom number you multiply the previous
+    number by m, add c and then take the residue of that sum modulo P. The seed may
+    be any integer 1, 2, 3, ... , P-1\. The generator will have the longest possible
+    period when these three conditions are met:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: c is relatively prime to P,
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: For every prime p that is a factor of P, m has the form pk+1, and
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: If P is a multiple of 4, then m has the form 4k+1,
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: where k may be any integer. These are called the *Hull-Dobell conditions* for
+    T. E. Hull and A. R. Dobell of the University of British Columbia, who published
+    them in 1962.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For example, suppose P = 30, which is 2×3×5\. Then m-1 must be a multiple of
+    2, of 3 and of 5\. In other words, m must be 1\. So, if s = 1 and c = 7, the pseudorandom
+    sequence would be 1, 8, 15, 22, 29, ... This is an arithmetic progression, and
+    not at all random. For this reason, the modulus P is usually chosen to be a power
+    of a prime, most commonly 2\. It is difficult to find values for m, c and P that
+    produce good random properties.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is, however, one good use for linear congruential generators. If you want
+    to produce a generator that has an extremely long period, you can add the outputs
+    of two or more linear congruential generators whose moduli are powers of different
+    primes to get a generator with good random properties and a period equal to the
+    product of those moduli. For example, suppose you added the outputs of the following
+    three PRNGs. I chose the 3 moduli to be as large as possible, yet still fit in
+    a 32-bit machine word, and I chose the multipliers and constants to satisfy the
+    Hull-Dobell conditions. Other than that, I chose them arbitrarily.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-equation-13-3](../Images/13-equation-13-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Let w[n] = (x[n]+y[n]+z[n]) mod 2^(31). Select the high-order byte of w[n] by
+    shifting it right 23 places, namely v[n] = w[n]/2^(23). The v[n] sequence will
+    have good random properties provided that (1) at least one of the three multipliers,
+    and its multiplicative inverse, are greater than the square root of its corresponding
+    modulus, and (2) neither of the other two multipliers is 1 or P-1\. The period
+    of the v[n] sequence is 2^(31)3^(19)5^(13) = 3.0468×10^(27).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.5 Chained exclusive-OR generator
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The simplest *chained exclusive-OR generator* operates on a string of bits,
+    like 10111\. The basic idea is to exclusive-OR the first bit to the last bit,
+    delete the first bit, and append the new bit to the end of the string, that is,
+    x[i] = x[i-1]⊕x[i-n]. Since there are 2^n possible values for an n-bit string,
+    and since the all-zero string produces a sequence of all zeros, the longest possible
+    period for a chained exclusive-OR generator is 2^n-1\. Let’s look at a small example
+    using 3-bit strings.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-unnumb-1](../Images/13-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: After 7 steps the initial string 001 repeats, so the period of this generator
+    is 7\. This is called a *full period* generator. The chained exclusive-OR generator
+    has a full period when n is 2, 3, 4, 6, 7, 15 or 22\. For n = 37 the generator
+    comes within .00057% of being full period. That is, 99.99943% of all 37-bit values
+    form one large cycle, and the rest belong to shorter cycles. For some purposes
+    n = 37 may be a good choice. For most values of n there are several repeating
+    sequences of bits, some short and some long. Their combined lengths total 2^n-1\.
+    You can talk about *the* period only for full period generators. Otherwise there
+    will be multiple cycles that may have differing lengths.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose that you need a generator with a period longer than 2^(22), and you
+    are unwilling to take a .00057% chance of getting a short cycle. What can you
+    do? One option is to try other generating functions. Instead of x[i] = x[i-1]⊕x[i-n],
+    try the recurrence relation x[i] = x[i-1]⊕x[i-j]⊕x[i-k]⊕x[i-n] for values of j
+    and k such that 1 < j < k < n. There is a good chance that some of these generators
+    will have a full period. Note, however, that x[i] = x[i-1]⊕x[i-j]⊕x[i-n], which
+    has 3 terms, can never produce a full period generator. There must be an even
+    number of terms.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Whichever generator you choose, the result is a sequence of bits. To get a pseudorandom
+    sequence of bytes, take the bits in groups of 8, that is, bits 1 to 8, bits 9
+    to 16, bits 17 to 24, and so forth. That requires generating 8 bits for every
+    byte. There is a faster way. Instead of exclusive-ORing single bits, exclusive-OR
+    a byte at a time. In effect, you are running 8 separate single-bit generators
+    in parallel. That way, you get a whole byte in one operation each time. If your
+    programming language supports it, you could use full 32-bit words and get 4 bytes
+    at a time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Any of the combining functions listed in section 13.1 can be used to combine
+    the pseudorandom stream with the plaintext to form a cipher. If Sandra chooses
+    the combining function **xor**, **add** or **madd**, then the cipher will be easy
+    for Emily to solve, provided she has enough known plaintext. She can easily determine
+    the random outputs corresponding to the plaintext characters. This lets her reconstruct
+    a section of the key stream. This section can be extended both ahead and back
+    to reconstruct the entire key stream merely by exclusive-ORing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is a trick that Sandra can use to confound Emily. Suppose that the generator
+    produces a sequence of 32-bit words, which Sandra carves up into four separate
+    bytes. Instead of always starting with the high-order bit, Sandra could start
+    from a different position each time. Equivalently, Sandra could shift the 32-bit
+    word cyclically, either left or right, by a varying number of bit positions. For
+    example, ABCDEF cyclically shifted left 2 positions gives CDEFAB. The lengths
+    of the shifts could be a repeating sequence of numbers in the range 0 to 31\.
+    This way, Emily cannot match up successive outputs of the generator to reconstruct
+    the key stream.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.6 Chained addition generator
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Chained addition generators*, also called *lagged Fibonacci* generators, are
+    similar to chained exclusive-OR generators, except that they use addition instead
+    of exclusive-OR. The addition is understood to be modulo 2^w, where w is the word
+    size in bits, x[i] = (x[i-1]+x[i-n]) mod 2^w. Typical values for w are 15, 31
+    and 63 using signed addition, or 16, 32 and 64 using unsigned addition. Another
+    way of looking at the mod 2^w operation is that the carry out of the high-order
+    bit is ignored.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Because addition produces carries from one bit position to the next-higher bit
+    position, the period of the higher bit is twice the period of the lower bit. The
+    period of the low-order bit in each word is the same as the period of an exclusive-OR
+    generator with the same seeds. That is because addition is the same as exclusive-OR
+    with a carry. If the period of the low-order bit in a chained addition generator
+    is P, then the period of the high-order bit is 2^(w-1)P.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Chained additive generators are an easy way to get a longer period for little
+    additional effort. Just find a chained exclusive-OR generator with a long period,
+    preferably a full period, and then expand it from single-bit width to full word
+    width. Like the multiplicative congruential generators, the most random part of
+    the sequence of outputs is the high-order end. For a sequence of pseudorandom
+    bytes, use only the high-order 8 bits of each word.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Once again, you may use any of the combining functions from section 13.1 to
+    combine the pseudorandom stream with the plaintext to form a cipher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.7 Shift and XOR generator
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Another class of PRNGs is the shift and exclusive-OR generators invented by
+    George Marsaglia of Florida State University. Marsaglia is best known for developing
+    the Diehard suite of random number tests. These generators use two operators that
+    work on integers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: << *Shift left.* For example, 80<<2 shifts the integer 80 left 2 bit positions
+    to give the value 320.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '>> *Shift right*. For example, 80>>2 shifts the integer 80 right 2 bit positions
+    to give the value 20.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Bits that are shifted out of the high- or low-order end of the computer word
+    are lost. For example, 25>>1 is 12, not 12.5\. These operations contrast with
+    the cyclic shifts <<< and >>>, where the bits that are shifted out of one end
+    of the computer word are placed at the opposite end. For example, if the hex digits
+    in a 32-bit computer word are 12345678, then 12345678<<<4 gives 23456781, and
+    12345678>>>12 gives 67812345, because each hex digit has 4 bits. If the word is
+    contained within a larger computer register, the unused bits need to be zeroed
+    out.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are several different generators in this class. The lengths and directions
+    of the shifts must be carefully chosen so that the generator will have a long
+    period. Following are two examples of the *Xorshift* generator devised by Marsaglia.
+    They have long periods, and strong random properties, although they fail some
+    of the more sensitive randomness tests. Each generator uses 3 shift and exclusive-OR
+    steps in a left-right-left pattern to produce the next number in the sequence.
+    The variable y is used to hold intermediate values. Any positive integer is a
+    qualified seed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-unnumb-1-equation-13-4](../Images/13-unnumb-1-equation-13-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 13.8 FRand
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: FRand, for Fast Random generator, is my own creation. FRand uses an array of
+    S binary words of width W, that is, it uses the low-order W bits of each word
+    in the array to hold an unsigned integer value. The period depends on the values
+    of S and W. I have found that W = 29 works best, and that S = 40 and S = 64 give
+    extremely long periods. The array of seeds can be viewed as a 40×29 matrix of
+    bits. Each row is one seed, and each column represents one bit position within
+    each seed word.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For S = 40 the period is 2^(1160)-2^(40), about 1.566×10^(349), for qualified
+    seeds. A seed is *qualified* if at least one of the 40 seed words is neither all-zeros
+    nor all-ones. This generator has a weakness. If the seed array contains almost
+    entirely zeros, then the generator may produce dozens or even hundreds of successive
+    outputs that are mostly zero. In the extreme case, when the seed array contains
+    1159 zeros and only 1 one, it will take at least 1120 cycles before there is at
+    least one 1 in every column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is best if the initial seeds contain plenty of ones and zeros in a random-looking
+    pattern. One way to get a suitable seed array is to take a mnemonic or numerical
+    key expressed in UTF-8 code, and hash it into an 1160-bit value. A suitable hash
+    function is
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-unnumb-1-equation-13-5](../Images/13-unnumb-1-equation-13-5.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Once the generator has been seeded, the pseudorandom sequence can be generated
+    by the recurrence formula. The recurrence formula for this generator uses an index
+    or placemarker, n.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-unnumb-1-equation-13-6](../Images/13-unnumb-1-equation-13-6.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: At the end of each pass through the seed array, when n = 40, the index is reset
+    to 1, and the next pseudorandom number is generated by x[1] = (x[1]⊕x[40])>>>1\.
+    That is, the first 29-bit word x[1] is cyclically shifted right one bit position.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This pseudorandom sequence passes many of the randomness tests, but it falls
+    far short of being cryptographically secure. To produce a secure sequence, the
+    trick is to take each successive output byte from a different part of the 29-bit
+    word. The pseudorandom sequence itself can be used to select these locations.
+    Suppose the next 3 pseudorandom outputs are a, b and c. Take s = a mod 25\. If
+    s is in the range 0 to 21, then shift b right by s positions and take the low-order
+    8 bits. In this case only a and b are generated. c will be generated for the next
+    pseudorandom number. If s > 21, then shifting s positions right would leave fewer
+    than 8 bits. In this case discard a and take s = b mod 22\. Shift c right by s
+    positions and take the low-order 8 bits as the random output. To put this algebraically,
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-unnumb-1-equation-13-7](../Images/13-unnumb-1-equation-13-7.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This process uses an average of 2.12 pseudorandom outputs to produce each secure
+    key byte. That way, the key byte comes from the even-numbered outputs about half
+    the time, and from the odd-numbered outputs half the time. The generator switches
+    back and forth from odd to even and back about once every 8 cycles in an irregular
+    pattern.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.9 Mersenne Twister
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Mersenne Twister* has the longest period of any class of PRNG. It was developed
+    in 1997 by Makoto Matsumoto and Takuji Nishimura of Hiroshima University. It is
+    named for French theologian Marin Mersenne, 1588-1648, widely known for his work
+    on primes of the form 2^n-1, and important for disseminating the works of Galileo,
+    Descartes, Pascal and Fermat, among others.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The twister has decent random properties, although it fails some randomness
+    tests. It is far slower than the other random number generators described in this
+    chapter. Its main importance is its humongous period, the Mersenne prime 2^(19937)-1,
+    which was discovered in 1971 by Bryant Tuckerman of IBM Research, Yorktown, NY.
+    IBM Research was so proud of this discovery that it put “2^(19937)-1 is prime”
+    on its stationery and its postage meter imprint.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Like FRand, Mersenne Twister suffers from the drawback that if the initial state
+    is mostly zero, it could take many cycles to become random-looking. With the Mersenne
+    Twister it is common to require 10,000 or even 50,000 startup cycles before beginning
+    to use the outputs. By contrast, the FRand package has a function that initializes
+    the generator without needing any startup cycles.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.10 Linear feedback shift registers
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The *linear feedback shift register* (LFSR) is the darling of electrical engineers,
+    because it is so simple to implement as a digital circuit. The LFSR uses an array
+    of bits x[1], x[2], ... , x[n]. The next bit is generated by exclusive-ORing several
+    of the preceding bits, for example
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-unnumb-1-equation-13-8](../Images/13-unnumb-1-equation-13-8.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: using 3 feedbacks. The number of feedbacks, of course, need not be 3, but an
+    odd number of feedbacks will typically give a much longer period than an even
+    number of feedbacks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This LFSR would have k+1 bit positions, assuming i < j < k. After each new bit
+    is generated the low-order bit is shifted out, and the new bit is placed in the
+    high-order position, so the register always contains the most recent k+1 bits
+    of the pseudorandom sequence.
+  prefs: []
+  type: TYPE_NORMAL
+- en: An obvious disadvantage of using an LFSR is that they are slow because they
+    require 8 cycles to produce each pseudorandom output byte. LFSRs are also the
+    weakest of the pseudorandom generating functions because they are entirely linear.
+    If Emily has some known plaintext, and if she can determine the corresponding
+    key bits, then she can reconstruct the entire pseudorandom sequence just by solving
+    a set of linear equations, which is easy. Emily can determine the key bits if
+    Sandra has used **xor**, **add** or **madd** for the combining function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For this reason, the pseudorandom outputs are usually run through a non-linear
+    substitution before combining them with the plaintext. This can be done two ways,
+    bitwise or bytewise. Non-linear bitwise substitutions are possible because at
+    every cycle there are k+1 bits accessible in the register. The bits that are used
+    as inputs to the non-linear function are called *taps*, and may be taken from
+    anywhere in the register. Using these non-linear functions makes it harder for
+    Emily to determine the key bits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One suitable non-linear function is the *majority* *function*. This function
+    has the value 1 if the majority of its input bits are 1, and the value 0 otherwise.
+    For the case with 3 input bits A, B and C the majority function is AB∨BC∨CA, where
+    ∨ is the Boolean OR function. The majority function is defined for any odd number
+    of inputs, 3, 5, 7, ... One elaboration of this idea is to use 9 taps and three
+    3-bit majority function circuits. Three of the 9 bits go into each circuit. Then
+    the 3 output bits are run through a fourth majority circuit.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Bytewise substitutions are inherent if the combining function is **sxor**, **sadd**
+    or **poly**. Construction of these non-linear substitutions is discussed at length
+    in section 12.3\. It is possible to combine bitwise and bytewise substitutions.
+    Each of the 8 bits in an output byte is generated using the taps and a non-linear
+    bit function, then the 8 single-bit outputs of those circuits are fed into the
+    bytewise substitution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s look at what Emily must do to break an LFSR cipher. Suppose that Sandra
+    is using a 40-bit hardware LFSR with taps at bit positions 3, 6 and 9 feeding
+    into a majority function circuit, M, and that she has naively used **xor** as
+    the combining function. Suppose further that Emily has a few characters of known
+    plaintext, and therefore knows a sequence of the output bits. For each known bit,
+    the 3 LFSR tap positions that feed into M are narrowed to only 4 of the 8 possible
+    values. If the bit is 0, then the 3 taps must be 000, 001, 010 or 100\. If the
+    bit is 1, the 3 taps must be 011, 101, 110 or 111.
+  prefs: []
+  type: TYPE_NORMAL
+- en: After 4 cycles, 12 bits have fed into the 3 taps, so there are 4⁴ = 256 possible
+    combinations for the 12 bits. This is a great reduction from 2^(12) = 4096 combinations.
+    Even better, from Emily’s standpoint, the bit that was originally at position
+    3 is now at position 6, and the bit that was originally at position 6 has now
+    moved to position 9\. This means that some of the 12-bit combinations can be eliminated.
+    The number of combinations that can be removed depends on the sequence of output
+    bits. If the first and fourth output bits are the same, fewer combinations are
+    eliminated. If they are different, more combinations are eliminated. Each additional
+    known output bit gives a further reduction in the number of possible combinations
+    for the bits in the shift register.
+  prefs: []
+  type: TYPE_NORMAL
+- en: An example may help. Suppose Sandra is using a 40-bit LFSR with 3 taps that
+    feed into the majority function to produce each output bit. Also suppose Emily
+    knows all the details of the device and knows that the message came from General
+    Headquarters, where all the messages begin *GHQ*. That gives her 24 bits of known
+    plaintext. If she exclusive-ORs these 24 bits with the corresponding bits of the
+    ciphertext, she gets 24 output bits from the device. For each of these output
+    bits there are 4 possible 3-bit input combinations that produce the known value.
+    That makes 72 bits of possible bit values at the 3 tap positions. Since the bits
+    in the LFSR shift one position every cycle, these bit combinations will overlap,
+    so the total number of combinations can be continually reduced.
+  prefs: []
+  type: TYPE_NORMAL
+- en: What should Sandra learn from this brief analysis? (1) Make the shift register
+    big, preferably at least 128 bits. (2) Space the taps far apart. (3) Do not space
+    the taps evenly. Here 3, 6, 9 was an exceptionally poor choice. (4) Use a combining
+    function that makes it hard for the opponent to determine the key bits. Do not
+    use **xor**, **add** or **madd** for the combining function. Better choices are
+    **xors** and **adds**, but the best choice is **poly**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.11 Estimating the period
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: If you are a crypto hobbyist, you may want to try designing your own pseudorandom
+    generator. This book will not cover how to test a PRNG, which is a big subject,
+    but let’s look at how you can estimate the period of your generator. The method
+    depends on the size of the state vector (section 13.2).
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the state vector is small, say 31 bits, you can just run your generator for
+    2^(31) cycles and see when it repeats. Unfortunately, it is possible that the
+    initial seed will never repeat. There is a trick to handle that possibility. Make
+    2 copies of your PRNG and initialize them with the same seed, S. Then run the
+    first copy 1 step at a time, and run the second copy 2 steps at a time. Suppose
+    you find after 3000 cycles that the 2 copies produce the same state vector. That
+    means R[3000] = R[6000], so the period of your generator is 3000, at least with
+    the seed S.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the state vector is larger, say 64 bits, it is not feasible to run your generator
+    for potentially 2^(64) cycles. You can still estimate the period by using sampling.
+    Make a table of, say, T = 1,000,000 entries. Entry N in this table will hold the
+    number of the cycle when your generator produces the value N. Initially, set all
+    of the entries in this table to zero, since no values have been produced yet.
+    Choose a seed in the range 1 to T-1 and run your generator for, perhaps, G = 1,000,000,000
+    cycles. On each cycle, if the value N that is produced is less than T, you record
+    the cycle number in table entry N. If the entry is not zero, then you have a repeat,
+    and that tells you the period. For example, if the value 12795 was produced on
+    cycle 33,000 and again on cycle 73,500, then the period of your generator for
+    that seed is 73500-33000 = 40500.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you do not find any repeats, then you can estimate the period by seeing how
+    many of the T values were produced. If E entries in the table are nonzero, then
+    the portion of entries that are produced is E/T. Since you ran the generator for
+    G cycles, the estimated period is G/(E/T) = GT/E.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As we saw with the chained digit generator (section 4.5.1), a generator may
+    have several different cycles, some long and some short. You should make several
+    estimates for the period of your generator, using different seeds. One good strategy
+    is first to use the seed 1\. For the second seed, use the lowest value that was
+    not generated by the first seed. For the third seed, use the lowest value that
+    was not generated by the first or second seed. You can do this by making the table
+    cumulative. Do not reset it to zero between estimation runs. If the estimates
+    for the period are consistent over, say, 20 to 100 such runs, then you can have
+    confidence that your generator has a long period for most seeds.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.12 Strengthening a generator
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: One method for strengthening a PRNG is using a *selection generator* that separates
+    the operation of generating the numbers from the operation of selecting the numbers.
+    This can be done by keeping N numbers in an array, say 32, 64 or 256 numbers.
+    Each number in the array should be the size of the desired random outputs. For
+    example, if you want to generate random bytes, the array should contain 8-bit
+    numbers. The PRNG is first run for N cycles to produce the initial numbers, which
+    are put into the array in the order that they are generated. Then the PRNG is
+    restarted with a new seed. The generator is then used to produce a sequence of
+    pseudorandom numbers in the range 1 to N. Each of these numbers is used to select
+    an element of the array. This element becomes the next pseudorandom output. The
+    selected array element then gets replaced by a new pseudorandom number using the
+    PRNG.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This means that the first, third, fifth, ... random numbers are used for selection,
+    while the second, fourth, sixth, ... numbers are used to replace the numbers in
+    the array. It may be convenient to use two separate copies of the PRNG with different
+    seeds, however, this will not increase the period. A better strategy is to use
+    two different generators whose periods are coprime. Then the period of the combined
+    generator is the product of their periods. For example, if the numbers are generated
+    by a multiplicative congruential generator with period 2^(31)-1, and the numbers
+    are selected by a linear congruential generator with period 2^(31), then the period
+    of the combined generator is 2^(62)-2^(31), or 4.612×10^(18).
+  prefs: []
+  type: TYPE_NORMAL
+- en: The period of 4.612×10^(18) is long enough for cryptographic work, but the selection
+    generator is still not cryptographically secure. That is because Emily can brute-force
+    the selector sequence and try all 2^(31) possible seeds. With enough known plaintext
+    this could give her a sequence of outputs from the first generator, which would
+    be enough to solve it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are several possible remedies. (1) Use a combining function like **xors**,
+    **adds** or **poly****,** which makes it hard for Emily to determine the random
+    outputs. (2) Make the selector generator bigger, say 63 bits instead of 31 bits.
+    (3) Make the seed for the selector generator bigger, for example by making the
+    multiplier and/or the additive constant part of the seed, namely m and c in the
+    generating function x[n+1] = (mx[n]+c) mod P. (4) Use the techniques in the following
+    section to construct a selector with a longer period.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.13 Combining generators
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Pseudorandom number generators can be combined in a variety of ways to get longer
+    periods or better randomness properties, or to become cryptographically secure.
+    These improvements usually go hand in hand. You do not trade one off to achieve
+    the other. If you increase the period, you will normally improve the randomness
+    at the same time. There are two classes of combined generators, fixed combinations
+    and variable combinations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fixed combinations
+  prefs: []
+  type: TYPE_NORMAL
+- en: In fixed combinations, there are several PRNGs, preferably with periods that
+    are coprime. These could be multiplicative congruential, linear congruential or
+    Xorshift generators. The outputs of these generators can be combined bitwise or
+    bytewise. One bitwise method is to take a fixed set of bits from each generator
+    and input them into some combining function. For example, the high-order bit could
+    be taken from each of 8 generators, or the two high-order bits could be taken
+    from each of 4 generators. These 8 bits would then be input into a highly non-linear
+    substitution. The substitution step prevents Emily from separating the outputs
+    from each of the generators and solving them individually.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One bytewise method is to take the high-order byte from each generator and combine
+    them by adding them modulo 256, or by exclusive-ORing them. Two generators may
+    be combined by multiplying their outputs and taking the middle 8 bits of the product.
+    Another technique is to take a linear combination such as (a[1]x[1]+a[2]x[2]+a[3]x[3]+a[4]x[4])
+    mod 256, where x[1], x[2], x[3] and x[4] are the 8-bit outputs taken from four
+    PRNGs, and the four coefficients a[1], a[2], a[3] and a[4] may be any odd integers
+    from 1 to 255\. These coefficients may be different for each message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For example, the four PRNGs could be multiplicative congruential generators
+    using the prime modulus 2^(31)-1 with 4 different, but fixed, multipliers. The
+    four 31-bit seeds plus the four 7-bit coefficients make a combined seed of 152
+    bits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Three PRNGs can be combined by using the >>> cyclic shift operation (section
+    13.7). With a 32-bit unsigned generator, the 32-bit outputs can be combined using
+    x[1] + (x[2] >>>11) + (x[3] >>>21) mod 2^(32). The optimal shift amounts are 1/3
+    and 2/3 of the 32-bit register size. If you wish to use more than 3 generators,
+    make the shift amounts as uniform as possible. For example, with 5 generators
+    the shift amounts should be 1/5, 2/5, 3/5 and 4/5 of the word size, rounded to
+    the nearest integer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another fixed generator, *CyGen*, combines two generators, C and G, by cyclic
+    shifting. C may be any size, but G should be either 32 bits or 64 bits. On each
+    cycle 5 or 6 bits, respectively, are taken from C to get the shift amount. The
+    output from G is then cycled left that number of positions to get the output from
+    CyGen. This makes it infeasible for Emily to reconstruct G from a sequence of
+    its outputs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You are not restricted to linear combinations. For example, 3 generators can
+    be combined using x[n]+y[n]z[n], or x[n]+y[n]²+z[n]z[n-1]z[n-3], or ... At least
+    one term in the sum should be linear. The possibilities are endless, and, of course,
+    you can switch around among multiple methods.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Variable combinations
+  prefs: []
+  type: TYPE_NORMAL
+- en: One example of a variable combination is the selection generator shown in section
+    13.11\. However, let me start this section with a cautionary tale. Here is a combined
+    generator, *CG5*, that seems to be surefire secure, but is not.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The combined generator CG5 uses 5 multiplicative congruential generators, each
+    with a different multiplier and different 31-bit prime modulus. Call these generators
+    G0, G1, G2, G3 and SEL. (Alternatively, SEL could be a linear congruential or
+    Xorshift generator with a 2^(31) period.) The production generators G0 through
+    G3 are used to produce pseudorandom numbers, and the selection generator SEL is
+    used to select which of G0-G3 to use to produce the next pseudorandom output.
+    Specifically, the high-order 2 bits of SEL determine which among G0-G3 to use.
+    Suppose SEL generates 10, which selects G2\. Then the G2 generator is run for
+    1 cycle, and its output becomes the next output for CG5\. The combined generator
+    will have a period of about 2^(155) and will have good random properties ... but
+    will not be cryptographically secure. Here’s why:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Assume that Emily has sufficient known plaintext, and consider the first 17
+    outputs from CG5\. At least 5 of these 17 outputs must have been produced by the
+    same generator. (If 4 generators produced at most 4 outputs each, then there could
+    be at most 16 outputs, not 17.) There are only 6188 ways that 5 items can be chosen
+    out of 17\. Emily can try all of them. This gives about 1.33×10^(13) combinations
+    of placement plus seed to test, however, this can be reduced substantially. Emily
+    knows the high-order 8 bits of each of the 5 chosen outputs. Instead of starting
+    with the first of the 17 outputs, she should start with the first of the 5 chosen
+    outputs. Then she needs to try only 2^(23) values instead of 2^(31) values. That
+    cuts her work down to a manageable 5.19×10^(10) combinations. The CG5 combined
+    generator is not safe.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s look at a safer generator. I will call it *Gen5*. Once more, the combined
+    generator uses 5 multiplicative congruential generators, each with a different
+    multiplier and different 31-bit prime modulus. The moduli and multipliers are
+    fixed, and chosen to have good random properties. This time let’s call the generators
+    G1, G2, G4, G8 and SEL. Only the 4 high-order bits of the selector SEL are used.
+    In this 4-bit number, a 1 in the first bit means select G1, a 1 in the second
+    bit selects G2, a 1 in the third bit will select G4 and a 1 in the fourth bit
+    selects G8\. Whenever fewer than two generators are selected, SEL is run for another
+    cycle to generate a new selection. Only 11 out of the 16 possible 4-bit output
+    values from SEL are used, so SEL is run for an additional cycle 5/16 of the time,
+    two additional cycles 25/256 of the time, and so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When two or more generators are selected, they are each run for 1 cycle, and
+    their outputs are added together modulo 2^(31) to produce the Gen5 pseudorandom
+    output. The generators that were not selected are not run, so that the 4 generators
+    run asynchronously. This output is slightly biased toward lower numbers, but not
+    nearly enough for Emily to exploit. If you are concerned about this bias, either
+    (1) discard the high-order bit and use high-order bits 2 through 9 of the sum
+    as the output byte, or (2) use the Meld8 operation (section 12.3.7). That is,
+    form the output byte from the Gen5 generator by exclusive-ORing the high-order
+    8 bits of the sum with the second 8 bits of the sum, namely exclusive-OR bits
+    1 to 8 with bits 9 to 16.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*****Emily can no longer isolate any of the four generators. It might appear
+    feasible for Emily to separate out one of the 6 pairs Gi+Gj, where i and j can
+    be 1, 2, 4 or 8\. Such a pair could be treated like a single generator, and then
+    Gi could be separated from Gj later. Let’s look at that approach first. In order
+    to solve for the seeds of both Gi and Gj, at least 9 random outputs from Gen5
+    are needed. Since each of these pairings occurs only 1/11 of the time, Emily may
+    have to look at 89 or more message characters. This is because, simply by chance,
+    the 5 combinations of 3 or 4 generators may occur more frequently than the 6 combinations
+    of 2 generators.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are about 6.356×10^(11) possible placements for 9 items out of 89, so
+    it is more efficient for Emily simply to try all of the approximately 2^(31) =
+    2.147×10⁹ seeds for the SEL generator. This lets Emily find the next 10 positions
+    for all 6 of the Gi+Gj pairs. It also lets her count how many times Gi and Gj
+    have been used up to each of those occurrences. For example, suppose that G2+G4
+    occurs at the 14th cycle of Gen5\. It may happen that among those 14 cycles, G2
+    was used in 6 of those cycles and G4 was used in 9 of those cycles. So now Emily
+    knows the value of the 6th output of G2 plus the 9th output of G4.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If Emily can put together 10 such output values for, say, G2+G4 then she can
+    determine the seeds of those two generators in about 2^(31+31-8) = 2^(54) = 1.801×10^(16)
+    trials. This must be done for each of the approximately 2^(31) seeds of SEL, so
+    the total work is about 2^(85) = 3.869×10^(25). This is a huge improvement over
+    the 2^(155) trials that a brute-force solution to Gen5 would require, but it falls
+    far short of the goal of 2^(128) trials. This generator is rated Nine.******
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now we are ready for the coup de grâce. This is a souped-up version of Gen5,
+    which I will call *GenX*. There are two parts to GenX, a pseudorandom number generator
+    and a cipher. The GenX PRNG will generate a sequence of 10-bit pseudorandom outputs,
+    and the cipher will combine the key bytes k[n] with the message bytes x[n] to
+    produce the ciphertext. This will push the cipher beyond the 128-bit key size.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The GenX generator is just an extended version of the Gen5 generator. It uses
+    four production generators, G1, G2, G4 and G8, and a selection generator, SEL.
+    The high-order 4 bits of SEL are used to select some combination of 2 to 4 production
+    generators. The selected production generators are run for one cycle, and their
+    outputs are added modulo 2^(31) to produce a sum, G. The high-order 10 bits of
+    G are exclusive-ORed with the next 10 bits of G to produce the 10-bit output.
+    The 10-bit output is divided into an 8-bit key byte k[n] and a 2-bit control c[n].
+  prefs: []
+  type: TYPE_NORMAL
+- en: The GenX cipher combines the key byte k[n] with the message byte x[n] according
+    to the control c[n] using a well-mixed keyed substitution, S. The control bits
+    c[n] determine which combining function is used for each plaintext byte. One possible
+    way to interpret the 2 control bits is
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-unnumb-1-equation-13-10](../Images/13-unnumb-1-equation-13-10.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: All sums are modulo 256\. Cipher GenX is rated Ten. The keys for this cipher
+    are the five 31-bit seeds for G1, G2, G4, G8 and SEL plus the key for mixing the
+    substitution S, for example a SkipMix key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.14 True random numbers
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: All of the techniques for generating random numbers that have been discussed
+    so far in this chapter produce pseudorandom numbers. Every book I have ever seen
+    that discusses random numbers repeats the belief that it is impossible to produce
+    true random numbers using software. This is because they are limiting themselves
+    to a too-narrow range of possible methods. In this section I will present a workable
+    method for producing true random numbers in bulk using software.
+  prefs: []
+  type: TYPE_NORMAL
+- en: All the methods in the literature for producing true random numbers depend on
+    physical phenomena like cosmic rays, thermal noise, vibration, nuclear decay,
+    and so forth. These methods are much too slow for cryptographic purposes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instead, you can produce true random numbers by a 3-step process. (1) Build
+    up a large body of true random numbers taken from nature. (2) Make their probability
+    distribution uniform. (3) Generate the random numbers by selecting and combining
+    numbers from this corpus. The next few sections will detail how these steps can
+    be done.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Nature is full of randomness. The shape, coloration and position of every leaf
+    on every plant and tree on earth is random. They are the result of winds and breezes,
+    sunlight filtering through the foliage, nutrients flowing up from the roots, raindrops
+    and hailstones that have struck the foliage, insects that have chewed it, birds,
+    squirrels, ground tremors, and many other factors. Every wave on every ocean,
+    every plant and rock in every desert, every ripple on every river, every cloud,
+    every shell on every beach is random in size, shape, colors, location, orientation
+    and sometimes velocity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Some of this randomness can be captured simply by photographing these locales.
+    You don’t even need to leave home. Just take a handful of popcorn and drop it
+    on a patterned surface. You can also use your own photos of people you know and
+    places you have been. There are photos you have downloaded from websites and emails.
+    There are hundreds more that have been placed on your computer by the operating
+    system and by apps you have. There are billions more photos you can find using
+    a web browser. As an experiment, I invented a pseudo-word, ZRMWKNV, and searched
+    for images. I got over 6,000 search results with pictures related to ZRMWKNV,
+    and some of those sites contained hundreds of images.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.14.1 Lagged linear addition
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Each such image file contains lots of randomness, particularly if the resolution
+    is high, but the distribution of byte values is far from uniform, and far from
+    independent. The distribution can be flattened out by using *lagged linear addition*,
+    treating the whole image file, including the headers, as one long byte string
+    of length L. Here is an example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-unnumb-1-equation-13-11](../Images/13-unnumb-1-equation-13-11.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The subscripts wrap around, as always. Three passes, as shown, are sufficient,
+    but feel free to use more. You don’t want the frequencies too uniform, because
+    that would no longer be random. If you want to use a streamlined version, like
+    x[n] = (x[n]+x[n-179]) mod 256, note that five passes are needed. Be sure to use
+    a different lag on each pass.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is nothing special about these coefficients, 7, 31, et al. I picked them
+    arbitrarily. They may be any odd integers from 1 to 255\. For each pass the lags
+    40, 1581, etc. should be chosen so that one lag is considerably larger than the
+    other. Small step, big step. One idea is to make the smaller lag about ∛*L* and
+    the larger lag around about ∛*L*². For example, if the image file is 1,000,000
+    bytes, you might make the lags about 100 and about 10,000, respectively. The smaller
+    lag could be chosen between 50 and 200, and the larger lag could be between 5000
+    and 20,000\. Following the lagged linear addition with a keyed simple substitution
+    makes it harder for Emily to reconstruct the image file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.14.2 Layering images
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Another way to construct a true random sequence is to take two images and layer
+    them one over the other using some combining function such as **xor** or **add**
+    (see section 13.1). A good method would be to perform one pass of lagged linear
+    addition on each image before combining, and a final pass after they have been
+    combined.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Three images can be combined bit by bit using the non-linear majority function
+    (section 13.10). Again, I suggest one pass of lagged linear addition on each image
+    before combining, and a final pass after they have been combined. This method
+    can be used even when none of the three images are the same size. Align one short
+    image to begin at the same point as the largest image, and the other short image
+    to end at the same point as the longest image, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-unnumb-2](../Images/13-unnumb-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Where only two of the images overlap, add them bytewise modulo 256\. Where all
+    three images overlap, combine them bitwise using the majority function, or use
+    a linear combination modulo 256, such as c[n] = (113x[n]+57y[n]+225z[n]) mod 256\.
+    The coefficients may be any odd integers from 1 to 255.
+  prefs: []
+  type: TYPE_NORMAL
+- en: An alternative approach to aligning the images is to extend the short images
+    by repeating them. In the example, the x image has 22 bytes and the y image has
+    33 bytes. The x image can be extended to 33 bytes by repeating the first 11 bytes
+    of x. This way, the majority function can be used in all 33 byte positions. In
+    practice these images would have millions of bytes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.15 Refreshing the random bytes
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Good. Now we have a table, T, of several million true random bytes. They are
+    true random because, if Emily had all but one of the bytes in T, that would not
+    enable her to determine the one missing byte. Both Sandra and Riva have a copy.
+    What then? Surely we cannot repeat this process every time we want to send a message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One way to utilize T is to partition it into keys for use with a block cipher.
+    One million random bytes can make 62,500 keys of 128 bits each. Eventually the
+    million bytes will get used up. If Sandra is using a strong block cipher, perhaps
+    that does not matter. She can use keys repeatedly, as long as Emily cannot tell
+    which messages have been enciphered with the same key. Of course, Sandra cannot
+    reuse keys with a stream cipher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose Sandra does not wish to take the risk of reusing keys. One solution
+    is for her to refresh the list of random numbers. Sandra could layer on another
+    image, but that means Riva also must have a copy of the same image. That could
+    be managed if the image comes from a website to which both Sandra and Riva have
+    access. This could be a good strategy if there is a high risk that transmitted
+    keys could be intercepted.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A different method is to refresh T using lagged linear addition (section 13.14.1).
+    Call the refreshed table T[1]. Now Sandra needs to transmit only the 9 coefficients
+    and the 6 lags, and she has another 62,500 keys to use. Assuming 1 byte for each
+    coefficient and 2 bytes for each lag, Sandra needs to transmit only 21 bytes to
+    generate T[1]. Then to select a key for a message, only the position of this message
+    key within T[1] is needed. Two bytes are sufficient for this because all of the
+    positions are multiples of 16\. When T[1] is exhausted, a new set of coefficients
+    and lags can be used to construct T[2], and so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In sections 13.5 and 13.6, linear functions were used to assure a long period
+    for the generator. Here there is no period, so there is no such constraint. Some
+    non-linear functions that can be used are
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-unnumb-2-equation-13-12](../Images/13-unnumb-2-equation-13-12.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Here the subscripts wrap around, a and b are odd integers from 1 to 255, and
+    i, j and k are integers between 1 and L-1\. S can be either a fixed non-linear
+    substitution or a variable key-mixed substitution. The function E(x) is defined
+    as
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-unnumb-2-equation-13-13](../Images/13-unnumb-2-equation-13-13.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: When you take E(x[n-j]x[n-k]) mod 256 you are essentially adding the individual
+    bytes of x[n-j]x[n-k]. This is stronger than just using x[n-j]x[n-k] because x[n-j]x[n-k]
+    is even 3/4 of the time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alternatively, Sandra could obtain keys from T by taking 1 byte, skipping 3,
+    taking the next byte, skipping 2, taking 2 bytes, skipping 4, and so forth in
+    some periodic sequence. The skips can be small, so 2 or 3 skips could be coded
+    in one key byte. It is possible that if Emily obtained the random source T she
+    could determine the sequence of small skips. To prevent this, skipping could be
+    combined with adding a sequence of numbers to the selected bytes modulo 256, also
+    periodically. It is safest if the number of skips and the number of additives
+    are coprime, say 12 skips and 11 additives. Using this method, each message key
+    would use 2 bytes for the starting point, 6 bytes to encode the 12 skips, plus
+    the 11 additives, for a total of 20 bytes, or 160 bits. This method could be called
+    *Skip & Add*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is essential in this type of system that it is infeasible for Emily to reconstruct
+    T. For example, Emily might, over time, acquire the plaintexts for numerous messages
+    and recover their keys. If she also knows the placement of these keys within T,
+    perhaps because Sandra transmits the location to Riva with each message, then
+    she may be able to reconstruct portions of T. For this reason, T itself should
+    never be used for keys. T should be retained to construct T[1], T[2], ... which
+    then may be carved up into message keys. Retaining T protects Sandra and Riva
+    in case any of the T[i] are lost or garbled. T could be called the *base* key
+    and T[1], T[2], ... the *derived* keys.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Even if Emily could somehow reconstruct T[1] or T[2], she cannot go backward
+    to recover T, because T is true random. If Emily tried all possible combinations
+    of coefficients and lags, there is nothing that would indicate which among those
+    quintillions of strings is the correct random string, T.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.16 Synchronized key streams
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In Secret Key cryptography Sandra and Riva must use the same key. Usually that
+    means either (1) the key is enciphered and transmitted with the message, or (2)
+    they have a list of keys, and choose each key from the list based on the date,
+    time of day, or some other external factor. There is a third method that is unique
+    to stream ciphers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sandra and Riva could use synchronized key streams. This means that Sandra and
+    Riva both continuously generate the same key streams. When Sandra enciphers a
+    message, she begins with the next key byte in her key stream, which must also
+    be the next key byte in Riva’s key stream. When Riva receives the message, she
+    must begin from the same point in the key stream. Sandra and Riva must begin generating
+    from the same initial seed at precisely the same time. The synchronized method
+    is most useful when there is a direct cable from Sandra to Riva, or a line-of-sight
+    tower-to-tower connection, or when both receive over-the-air broadcasts from the
+    same transmitter. It is well-suited for transmitting digitized speech in close
+    quarters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the messages are being sent over a network that has significant delays at
+    the nodes or relay points, particularly packet-switched networks where portions
+    of a message may arrive by different paths and must be reassembled at the receiving
+    end, it is necessary for the sender to provide a time stamp for the start of transmission,
+    say in a message header.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since it takes time for Sandra to encipher the message and time for the message
+    to travel from Sandra to Riva, it might seem that Riva would have to generate
+    the random keys a few microseconds later than Sandra. By the same token, when
+    Riva sends a message to Sandra, Sandra would have to generate the keys a few microseconds
+    later than Riva.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are several ways out of this impasse. One method would be for Sandra to
+    begin messages only at specific cycles in the pseudorandom stream. For example,
+    Sandra might begin a message only at every 100,000th cycle. Then when Riva receives
+    a message at, say, cycle 123,456,789,123, she knows that the key started at cycle
+    123,456,700,000\. If the message were received closer to an even multiple of 100,000,
+    say cycle 123,456,701,234, Riva could try 123,456,700,000 and 123,456,600,000\.
+    Riva would need to store the last two sets of 100,000 pseudorandom numbers. The
+    figure 100,000 cycles can be adjusted up or down according to the speed of the
+    PRNG and the transmission time between the two parties.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is one issue left to tackle, namely how Riva can detect the start and
+    end of each enciphered message. If the communications channel has an idle state
+    where neither zeros nor ones are being transmitted, then there is no problem.
+    Let the channel idle between messages. Otherwise, let’s assume that the channel
+    emits a steady stream of zeros whenever it is idle. In this case, you add an extra
+    1 bit before and after the message, like enclosing the message in quotation marks,
+    and you require that a minimum of 64 zeros must be transmitted before the next
+    message can begin. The odds of 64 zeros happening by chance within a legitimate
+    message are negligible. (Also, note that the average time between messages will
+    actually be more than 50,000 cycles; 64 cycles is just the worst case.) So, when
+    Riva detects a 1 bit after at least 64 zeros, she can be confident that is the
+    start of the next message, and when she finds a 1 followed by 64 or more zeros,
+    that marks the end of the message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.17 Hash functions
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Hash functions are not ciphers, but they are closely related to ciphers and
+    often used together with cryptography. In this section I will discuss two uses
+    for hash functions, and present one hash function suited for each use.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Hash functions are often used for searching. Suppose you have a list of people
+    such as customers, patients or students, and you need to search this list frequently
+    for information about those people. Hashing provides a quick way of searching
+    by converting the person’s name into a number that can be found directly in a
+    table. For example, the name “John Smith” could get turned into the number 2307,
+    where entry 2307 in the table contains the information about John Smith.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is a hash designed for this purpose. For each letter L of the alphabet,
+    randomly choose a binary value R(L) of some fixed size, say 32 bits. To hash the
+    name, simply exclusive-OR the 32-bit numbers for each letter in the name. A weakness
+    of this hash is that names that are anagrams will have the same hash value. For
+    example, ARNOLD, ROLAND and RONALD all hash to the same value. To avoid this problem,
+    after adding each letter, cycle the hash value left 1 bit position. That is,
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-unnumb-2-equation-13-14](../Images/13-unnumb-2-equation-13-14.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Call the final hash value H. H can be converted to an index I into a name table
+    of size T by scaling it, I = ⌊HT/2^(32)⌋. For example, if the name hashes to 917354668
+    and the table has 5000 entries, the index is ⌊917354668×5000/4294967296⌋ = ⌊1067.94⌋
+    = 1067\. Let’s call this hashing method *Hash32*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There can be several names that produce the same index. Various methods are
+    used for handling these index crashes, such as having a separate table to hold
+    the duplicates, hashing the name a second time to choose a different slot in the
+    table, or chaining the duplicate names together.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Hash functions are also used for message authentication. In this case the entire
+    message is hashed to produce a long hash value. Let’s suppose 16 bytes. This hash
+    value must be sent to Riva in a tamper-proof way, such as sending it via a trusted
+    third party that records and timestamps the hash value. Riva will then hash the
+    message and compare the hash values. If they are different, then the message may
+    have been altered. The hash function used for this purpose must make it infeasible
+    for Emily to modify the message without changing the hash value. That is, Emily
+    cannot find a different message that produces the same hash value. Likewise, Sandra
+    cannot change the message and claim that she had sent the changed message, because
+    the hash value will no longer match.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For this hash we will use 4 highly non-linear substitutions, A, B, C and D.
+    These may be publicly known fixed substitutions. It is worthwhile putting some
+    effort into making the four substitutions highly non-linear and minimally correlated
+    with one another. The basic operation is to combine each byte of the message with
+    4 previous bytes using the **xors** combining function, that is, to perform an
+    exclusive-OR and then to make a simple substitution on the result. Let H be a
+    copy of the message M, so that the message is not destroyed by the hashing process.
+    Each character H[n] in the copy is hashed by
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-unnumb-2-equation-13-15](../Images/13-unnumb-2-equation-13-15.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This way, every byte of the hash depends on every byte that came before, and
+    every byte that comes after depends on it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The hash requires an initialization vector (section 11.10) in order to hash
+    the first 16 bytes of the message. A copy of the first 16 bytes of the message
+    can be used for this purpose. That is, initially bytes H[-15] through H[0] are
+    the same as bytes H[1] through H[16], which are the same as bytes M[1] through
+    M[16] of the message. With the initialization vector it is possible to propagate
+    the hash from H[1] to H[L], where L is the length of the message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This leaves the last few bytes rather weakly hashed. It may be possible for
+    Emily to change the last few bytes of the message without much effort. The solution
+    is to continue the hashing process beyond the end of the message. To do this,
+    when we hash the first 16 bytes of the message, we save these hash values for
+    later use. When we reach the end of the message, we append those 16 bytes and
+    continue the hashing until the end of the extended message. Those last 16 bytes
+    become the hash value for the message. Call this hash method *Hash128*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For some machines it may be faster to hash a message 4 bytes at a time using
+    the machine’s 32-bit arithmetic functions. The message and hash values are treated
+    as lists of L 32-bit words rather than 4L bytes. The hash array H is initially
+    a copy of the message. If the message length is not an even multiple of 4 bytes,
+    up to 3 bytes are appended to fill out the last word. Copies of the first two
+    words of H are appended to the front, namely H[-1] = H[1] and H[0] = H[2]. After
+    the first 4 words of the message have been hashed, these 4 words are appended
+    to the end of the message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This hash, called *HashPQ*, uses two primes which are P = 2^(32)-5 = 4294967291
+    and Q = 2^(32)-17 = 4294967279, and the magic multiplier R = 77788888, which is
+    a primitive root of both P and Q. The hashing operation is
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![13-unnumb-2-equation-13-16](../Images/13-unnumb-2-equation-13-16.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: If the sum exceeds 2^(32)-1, the value is truncated to 32 bits simply by ignoring
+    the extra high-order bit(s). That is, we get the modulo 2^(32) operation free.
+    The last 4 words of the H array are the 16-byte hash value. HashPQ uses less storage
+    than Hash128 since it does not need the 4 simple substitutions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Hash32, Hash128 and HashPQ all have the ideal property required for a good hash
+    function, namely that a change to any bit or combination of bits in the input
+    causes about half of the bits in the output to change. All three hashes are fast,
+    and can be done in a single left-to-right pass.
+  prefs: []
+  type: TYPE_NORMAL

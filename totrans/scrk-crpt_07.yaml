@@ -1,0 +1,849 @@
+- en: 7 Transposition
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Route and columnar transposition
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Random number transposition
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Key transposition
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Multiple anagramming
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: In chapters 5 and 6 we looked at substitution ciphers. The second major category
+    of Secret Key encryption methods is transposition. Transposition means changing
+    the order of elements in the message. These elements may be words, syllables,
+    letters or the individual digits or bits that represent the letters. In this chapter
+    we will deal primarily with letter transposition, but keep in mind that you can
+    use the same methods for other elements, such as the word transposition in section
+    7.2.2\. This chapter will cover many different types of transposition ciphers.
+    You can do most of these transposition ciphers using only pencil and paper.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.1 Route transposition
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Route* *transposition* is the simplest, and oldest, form of transposition
+    cipher. There is no key involved. The secrecy comes from the choice of routes
+    or paths.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Route transposition is a great way to get children interested in cryptography.
+    It makes a great activity for classrooms, scout troops or other clubs. The main
+    caveat is that the children must write the letters uniformly in straight columns,
+    otherwise the message gets garbled. This can be avoided by using graph paper with
+    wide spacing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The basic idea is that the message is written into a rectangle using one route,
+    and read out using a different route. For example, if the message has 30 characters,
+    then a 5×6 rectangle is best. If the message has 29 characters, just add a null.
+    Pad the message with nulls until it fits into a rectangle of suitable size. It
+    is helpful to draw the outline of the rectangle before you start to fill it in.
+    If the message is long, break it into blocks of a convenient size. For example,
+    a message of 1000 characters might be broken into twenty 5×10 blocks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We have already seen one example of a route transposition in section 4.3\. The
+    message was written into the 5×5 grid horizontally from left to right across the
+    rows and read out vertically top to bottom down the columns. Horizontal and vertical
+    are two types of routes. Here is a fuller list.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Horizontally, left to right, right to left, or alternating left and right
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Vertically, top to bottom, bottom to top, or alternating up and down
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Diagonally, upper left to lower right, lower left to upper right, and so forth,
+    or alternating
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Spiral, from any corner inward or from the center outward, clockwise or counterclockwise
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'You can start in any corner of the rectangle, use any route to write the message
+    in, and use any other route to read the message out. Here is an example of a fancy
+    route:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-1](../Images/7-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The message would be written into the grid in the order indicated by the numbers,
+    and read out by columns, that is, 1, 36, 37, 39, 42, 2, 6, 38, ...
+  prefs: []
+  type: TYPE_NORMAL
+- en: For a route transposition Emily only needs to guess the route you used to read
+    the message out. After Emily has filled the message into the rectangle, it can
+    be read by inspection. Note that it does not matter to Emily whether you wrote
+    the message horizontally into a 5×6 rectangle or vertically into a 6×5 rectangle.
+    Neither does it matter whether you started at the top row and worked down or the
+    bottom row and worked up. Emily cannot tell the difference.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Route transposition is rated One.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.2 Columnar transposition
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Columnar* *transposition* is the workhorse of transposition ciphers. It has
+    been used by armies, diplomats and spies since the 17th century. The method is
+    first described in a 1685 book by John Falconer, *Cryptomenysis Patefacta* (Secret
+    Communication Revealed). After the Glorious Revolution of 1688, John Falconer
+    followed James II into exile in France, where he died before the second edition
+    of the book was published in 1692 under the new title *Rules for Explaining and
+    Decyphering all Manner of Secret Writing*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Columnar transposition uses a key that may be a string of consecutive numbers
+    in mixed order, or a keyword or keyphrase that gets turned into a numeric string
+    by numbering the letters in alphabetic order. Consider the keyword SAMPLE. The
+    letter A comes earliest in alphabetic order, so it gets numbered 1\. Next in alphabetic
+    order is E, which gets numbered 2\. Then L, M, P and S. So SAMPLE gets converted
+    into the string 6,1,4,5,3,2\. If the same letter appears more than once, the occurrences
+    are numbered from left to right. For example, ANACONDA becomes 1,6,2,4,8,7,5,3.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-2](../Images/7-unnumb-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Write the message into a grid horizontally from left to right. The number of
+    columns is the size of the key. If the key is SAMPLE there are 6 columns. If the
+    key is ANACONDA there are 8 columns. Write the numeric key above the grid, like
+    this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-3](../Images/7-unnumb-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Read the message out vertically top to bottom, according to the numeric key,
+    starting with the column numbered 1, EKFHE, then column 2, ESRAT, column 3, NROW,
+    through column 8, YCYI, as shown.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Riva, the legitimate receiver, needs to do a little arithmetic to read this
+    message. The key length is 8 letters, and the message length is 35 letters. 35
+    divided by 8 is 4 with a remainder of 3\. That means that the array will contain
+    4 complete rows of 8 letters, plus a short row of 3 letters. Riva should draw
+    the outline of this array before she starts filling in the columns so that she
+    places the correct number of characters in each.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The task for Emily, the enemy, is a little harder. The technique is to write
+    the letters from each column vertically onto a strip of paper, and then match
+    up those strips to determine the order of the columns. She looks for pairs of
+    strips where the matching letters form common bigrams. When she gets a good match,
+    she tries to add a third strip either before or after those two strips. Once 3
+    or 4 strips are correctly matched, short words begin to appear and the task becomes
+    easy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Emily does not know the length of the keyword, so she needs to guess it. She
+    might start at 5 and work up. Let’s suppose she has gotten up to 8, the correct
+    length. Like Riva she divides 35 by 8\. She knows that there are 5 short columns
+    of 4 letters each, and 3 long columns of 5 letters each. Emily’s problem is where
+    to start and end each strip so that it contains at least one full column.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The first strip starts at the first character of the ciphertext, and must be
+    5 letters long in case the first column read out of the array was a long one.
+    The second strip starts at the fifth letter of the ciphertext in case the first
+    column was short, and ends at the tenth letter in case both the first and second
+    columns were short. Similarly for the third and fourth strips. Then Emily will
+    do the opposite for the other 4 strips, working from the last letter of the ciphertext
+    backward toward the center.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Emily will then match up the strips, sliding them against one another to determine
+    the correct alignments. All of this is done by eye, so Emily must know the frequencies
+    of the most common bigrams and trigrams by heart. This can also be done by computer
+    in a simple, straightforward way.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The most common countermeasure to this type of matching procedure is for Sandra,
+    the sender, to read out some of the columns from top to bottom, and some of them
+    from bottom to top. This means that Emily will need a second set of strips reading
+    backward. She will then have twice as many strips to attempt to match up.
+  prefs: []
+  type: TYPE_NORMAL
+- en: With all columns reading down, columnar transposition is rated Two if the array
+    is a rectangle, and Three if it is not. With columns reading in alternating directions,
+    columnar transposition is rated Three if the grid is a rectangle, or if the columns
+    are long, and Four otherwise.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Columnar transposition is a tried-and-true method for adding strength to any
+    type of substitution cipher. Columnar transposition combined with a well-mixed
+    keyed simple substitution is rated Five. When combined with a well-mixed general
+    polyalphabetic cipher it is rated Seven. The combination is strongest if the lengths
+    of the two keys are coprime.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The most common technique for strengthening a columnar transposition is to make
+    some of the rows different lengths. This makes it harder for Emily to know where
+    the strips should begin and end. Four such ideas are shown. Of these, number (4)
+    is the strongest since it disrupts the strips at an unpredictable point in the
+    middle, rather than at the ends. More elaborate patterns of blanks could have
+    2 or more blanks in some columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Columnar transposition with these variations is rated Four, provided that Emily
+    does not know the pattern. The rating goes up to Five for variant (4) if the key
+    is long and there are a variable number of blanks in the columns. The French used
+    a system like this toward the end of World War I. It is believed that the Germans
+    were able to read at least some of those messages, largely because the French
+    reused their keys many times.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-4](../Images/7-unnumb-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Two further variations on number (3), the staircase, are (5) start from column
+    1 when you reach the right edge, making a skew pattern, and (6) reverse direction
+    when you reach the right edge, creating a chevron or zigzag pattern. The advantage
+    of these patterns is that the number of characters is the same on every row except
+    possibly the last, making it very easy for Riva to calculate the number of rows.
+    Here are examples of these two variations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-5](../Images/7-unnumb-5.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: You can also have two or more separate staircases of different widths, or have
+    staircases in both the diagonal and anti-diagonal directions **\** and **/**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When you are deciphering a message sent with any of these columnar transposition
+    variants, if you have any difficulty calculating how many rows are needed, or
+    how long the last row is, here’s a trick. Count the letters in the message, and
+    fill in the array left to right with that number of little dots, following the
+    same pattern that Sandra used to write in the letters. Then fill in the letters
+    over the dots.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For example, in variant (2), suppose you have agreed that you will always start
+    with 7 letters on the first row. Ciphertext (2) has 38 letters, so you put 7 dots
+    on the first row, 8 dots on the second row, ... until you have placed a total
+    of 38 dots. Then you start filling in the letters in their proper columns, replacing
+    the dots like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-6](../Images/7-unnumb-6.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Another way to use blacked-out squares is to fill them with nulls. The nulls
+    should be chosen so they form uncommon letter pairs on both sides to make matching
+    the columns harder for Emily. It is better to use common letters rather than rare
+    letters, which might easily be recognized as nulls. Here is an example.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-7](../Images/7-unnumb-7.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Columnar transposition with nulls is rated Three. With a fixed pattern of blacked-out
+    spaces, the rating is Four.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.2.1 Cysquare
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Historical tidbit: During World War II the British used a variant of this idea,
+    called *Cysquare*, invented by Brigadier John H. Tiltman in 1941\. Cysquare was
+    a columnar transposition cipher with lots of blackouts. The British issued pads
+    of 26×26 grids with about 60% of the squares blacked out in a random pattern.
+    Each page had a different pattern. The message was written into the white squares
+    going across the rows, and then read out vertically in some order. The grid was
+    square, so it could be used in any orientation.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The key was the page number in the pad, the orientation, and the starting and
+    ending positions within the grid. The cipher clerk would draw lines on the page
+    to mark the message area. Using different areas allowed pages to be used for multiple
+    messages.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The drawback was the need to distribute so many pads. To minimize the number
+    of pads, the British used each page for a full day, for perhaps as many as 50
+    messages. This meant writing faintly and erasing many times. The pages became
+    unreadable, and eventually the cipher clerks refused to use them. Cysquare was
+    abandoned in 1944.
+  prefs: []
+  type: TYPE_NORMAL
+- en: After the Germans captured some of these pads, along with the instructions,
+    they started using the system themselves, from 1944 until the end of the war.
+    They called it *Rasterschlüssel*, meaning *Grid Key*. The Germans, however, did
+    a poor job of selecting the black and white squares. They used too many adjacent
+    white squares, so the British could identify bigrams and trigrams when they matched
+    up the strips. These messages became a valuable source of intelligence for the
+    British. Cysquare is rated Seven. Rasterschlüssel is rated Four.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It should be noted that in the computer era, the black and white squares could
+    be transmitted as a pattern of bits, the grid could be any size, and the grid
+    could be changed for every message. I suggest 65% to 75% black squares. Done this
+    way, cysquare would be rated Eight.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is a simplified version of cysquare for hand use that does not require
+    printed grids, and that allows you to use a numeric key to specify which squares
+    are blacked out. Here are two variations of the *Blackout* transposition cipher,
+    a left-right alternating version and a stairstep version. Both use the numeric
+    key 3174255 for the blackouts. The blackout key can be a repeating key, or it
+    could be generated by a pseudorandom number generator. You would use a separate
+    key to specify the order for reading out the columns.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-8](../Images/7-unnumb-8.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Another method for strengthening columnar transposition is to break the text
+    into blocks of irregular size. For instance, if the message length is 150 you
+    could break it into blocks of 37, 71 and 42 letters. This method is rated Four.
+    If you use a different key for each block, the rating increases to Five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Combining a columnar transposition with any type of substitution cipher greatly
+    enhances its security. Even combined with a simple substitution the rating increases
+    to Five because matching the strips is much harder. It makes no difference which
+    one is done first. Combining a general polyalphabetic cipher with a columnar transposition
+    of at least 12 columns increases the rating to Seven, even if the period of the
+    polyalphabetic is as little as 3\. This is because you have essentially removed
+    the possibility of matching the strips.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.2.2 Word transposition
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Word* *transposition* is a historically important columnar transposition based
+    on words rather than letters. It is the main method used by the Union Army during
+    the American Civil War. The idea came from Anson Stager, a Union telegrapher who
+    later founded the Western Union telegraph company. Union Army communications were
+    hampered by a high rate of transmission errors. In many cases commanding officers
+    would forego the telegraph and simply send a messenger on foot or horseback. Stager
+    realized that sending words instead of individual letters would cut the rate of
+    errors, and reduce the need for retransmitting the messages.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Union cipher clerks wrote the messages word by word from left to right in a
+    rectangular array, and then read them out using a variety of routes, such as alternately
+    going up and down the columns, or alternately taking columns from the left and
+    right halves of the array. Null words were used liberally. Here is an example.
+    Notice that the third row is nulls. The columns are read out in the order 1,3,5,2,4.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-9](../Images/7-unnumb-9.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 7.3 Double columnar transposition
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: As the name implies, *double columnar transposition* means doing two columnar
+    transpositions in succession, preferably with two different keys. This eliminates
+    the possibility of matching strips. Remarkably, a general solution was found in
+    1934 by Solomon Kullback and published by the Signals Intelligence Service. The
+    31-page book was declassified in 1980 and published by Aegean Park Press. Aegean
+    Park Press was for many years an invaluable resource for books on cryptography.
+    It went out of business some time after 2001 when Wayne G. Barker, its founder,
+    died, and the books became unavailable. I am happy to say that [www.openlibrary.org](http://www.openlibrary.org/)
+    now has these books (accessed July 2019).
+  prefs: []
+  type: TYPE_NORMAL
+- en: I will not repeat Kullback’s analysis here, except to say that it is based on
+    determining where each plaintext letter will occur in the ciphertext. Instead,
+    I will discuss 3 methods for defeating Kullback’s solution. (BTW, Kullback went
+    to the same high school as my father, but 6 years earlier.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'One simple method is to change the shape of the grid by blacking out a few
+    squares. These squares could form a rectangle, or some other shape, in one of
+    the corners, or even in the middle of the grid. Here are some examples:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-10](../Images/7-unnumb-10.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The blacked-out sections can have different sizes, shapes or locations for each
+    of the two transposition steps. The size, shape and location of the blacked-out
+    section(s) can be appended to the key, so that a different blackout is used for
+    each message. Double columnar transposition is rated Four. Double columnar transposition
+    with blackouts is rated Five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The opposite method, called *NullBlock*, is also effective. You can insert a
+    block of null characters into the intermediate ciphertext or the final ciphertext,
+    or both. It is not helpful to add the null block to the plaintext. The size and
+    location of the block can be specified by a numeric key. These should be varied
+    from message to message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Combining any transposition cipher with any substitution cipher strengthens
+    both. Double columnar transposition combined with simple substitution is rated
+    Six. Double columnar transposition combined with a general polyalphabetic substitution
+    is rated Eight.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.4 Cycling columnar transposition
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Another variation on columnar transposition is *Cycling Columnar Transposition*.
+    It comes in two flavors, horizontal cycling and vertical cycling. Horizontal cycling
+    requires two keys, one for cycling the rows, and one to determine the column order.
+    Begin by writing the message into a rectangular block left to right across the
+    rows. Next write the cycling key vertically to the left of the rows. If there
+    are more rows than the length of this key, repeat the key as many times as needed.
+    If the cycling key is a word or phrase, convert it to numbers in the usual way
+    using alphabetic order.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Once the cycling key is in numeric form, cycle each row left by the number of
+    positions indicated. Then read out the letters vertically in the order specified
+    by the column key. Here is an example using the cycling key CYCLES and the column
+    key PAULREVERE.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-11](../Images/7-unnumb-11.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The same method of matching up paper strips that was used to solve the columnar
+    transposition still works for the cycling columnar transposition. It is only slightly
+    harder because the last letter on each row is adjacent to the first letter, potentially
+    forming a low-frequency bigram. This is at most a minor impediment to Emily. Columnar
+    transposition with horizontal cycling is rated Three.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vertical cycling is similar. Instead of cycling the rows of the block left,
+    you cycle the columns of the block upward. Here is an example using the keyword
+    CYCLE for cycling the columns and the keyphrase PAULREVERE for selecting the order
+    in which the columns are read out.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-12](../Images/7-unnumb-12.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This cipher can still be solved by matching up paper strips, the same as a regular
+    columnar transposition, but Emily will need two strips for each column, one for
+    the top section and one for the bottom. When each column is cycled, some of the
+    characters from the top of the column are moved to the bottom, and become the
+    new bottom section. The remaining letters move upward and become the new top section.
+    In the example, the left column **ODYTEL** moves up 1 position, so **DYTEL** becomes
+    the new top section, and **O** becomes the new bottom section. These sections
+    need to be on separate strips because Emily does not know whether these letters
+    came from a long column or a short column. This makes the matching process considerably
+    harder. Columnar transposition with vertical cycling is rated Four.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is feasible to perform both vertical and horizontal cycling on the block.
+    This is comparable in strength to double columnar transposition. Remember, though,
+    that the more complex you make your cipher the more time it takes, and the more
+    difficult it is both to encipher and to decipher accurately. *Double cycling columnar
+    transposition* is rated Five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.5 Random number transposition
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Let’s look at an entirely different type of transposition. This transposition
+    does not involve any sort of array or grid. Instead, it simply numbers the letters
+    in the message randomly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You can use any random number generator. There are several presented in chapter
+    13\. The only random number generator I have described so far is the chained digit
+    generator in section 4.5.1, so let’s use that generator to illustrate. Generate
+    one random digit for each letter of the message, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-13](../Images/7-unnumb-13.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: First take all of the letters numbered 1, going left to right. These are C,
+    V and I.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-14](../Images/7-unnumb-14.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Next take all of the letters numbered 2\. These are A, O and L.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-15](../Images/7-unnumb-15.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Then take all of the letters numbered 3, namely N, E, E and M.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-16](../Images/7-unnumb-16.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Continue this way until all of the letters have been taken.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'To decipher this message, Riva would first generate the random digits. There
+    are three 1’s, so she would write the first 3 letters of the ciphertext, **CVI**,
+    under the three 1’s, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-17](../Images/7-unnumb-17.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Riva would write the next 3 letters of the ciphertext, **AOL**, under the 2’s,
+    like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-18](../Images/7-unnumb-18.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: and so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Random number transposition is rated Four. It can be broken by trying all possible
+    seeds for the random number generator.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The cipher can be strengthened by using a longer seed, or by selecting letters
+    from the plaintext using the 10 digits in an order other than 1, 2, 3, ... This
+    is equivalent to applying a simple substitution to the outputs of the random number
+    generator. For example, if you wanted to start with the letters marked 4, then
+    you would change all the 4’s into 1’s. If you next wanted to take all of the letters
+    marked 7, you would change all 7’s into 2’s, and so forth. Then you proceed as
+    described. This increases the number of possible keys by a factor of 10!, or 3,628,800.
+  prefs: []
+  type: TYPE_NORMAL
+- en: With this improvement, chained digit transposition is rated Five. For a computer
+    version, where the random number generator produces random bytes, the method is
+    rated Seven because there are so many possible orders for rearranging the 256
+    different bytes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.6 Selector transposition
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Since we are looking at random numbers, let’s look at a different transposition
+    cipher based on random numbers, namely a *Selector Transposition*. The idea is
+    to break the message into roughly equal pieces, and then to merge those pieces
+    using the random number sequence.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose the plaintext has 100 characters, and you want to split it into 3 parts.
+    Assume you have a random number generator that produces the digits 0, 1 and 2
+    with equal probability, and that you have chosen a seed, which acts as the key
+    for the transposition. You need to know how big to make each part of the message.
+    This is easily done. Just generate the first 100 random digits, and count how
+    many of each digit are produced. Say there are 36 zeros, 25 ones and 39 twos.
+    You would slice the message into 3 pieces, P0 with 36 letters, P1 with 25 letters
+    and P2 with 39 letters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Enciphering is easy. Each time the generator produces a 0, take the next letter
+    from P0\. Each time the generator produces a 1, take the next letter from P1\.
+    Each time the generator produces a 2, take the next letter from P2\. Deciphering
+    is even easier, because Riva does not need to know how large each piece had been.
+    Each time she gets a 0, she puts the next letter into P0\. Each time she gets
+    a 1, she puts the next letter into P1\. Each time she gets a 2, she puts the next
+    letter into P2\. Then she concatenates the 3 pieces, or she simply reads the message
+    ignoring the line breaks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When this is done with only 2 pieces, it is trivial for Emily to reconstruct
+    the message. The rating is One. With 3 pieces it is a bit harder, and the rating
+    is Two. With 20 or more pieces, the rating is Five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.7 Key transposition
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Sometimes it is preferable to transpose a message one block at a time. The best
+    choice for transposing blocks is a *key transposition*. Write the numerical key
+    above the characters of the message, then move each character to the position
+    indicated by its key number. In this example, the block size is 8, and the numeric
+    key is 41278563\. The key number for the first letter, **R**, is 4, so move the
+    **R** to the fourth position in the block. The key number for the second letter,
+    **U**, is 1, so move the **U** to the first position in the block, and so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-19](../Images/7-unnumb-19.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The key transposition may be used on the plaintext, the ciphertext or both.
+    A key transposition by itself is weak. Key transposition is rated One to Three
+    depending on the block size.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*****Let’s take a deeper look at transpositions. In mathematics, transpositions
+    are called *permutations*. Here is an example. I have used the hexadecimal digits
+    A, B and C to denote the numbers 10, 11 and 12\. In a cipher, these numbers will
+    represent the bits, letters or other units that are being permuted.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-20](../Images/7-unnumb-20.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The top line is standard. It represents the original order, before the permutation.
+    The second line is the permuted order. Later in this section, the second line
+    will be used to describe permutations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this permutation, the number in position 1 moves to position 4, the number
+    in position 4 moves to position 7, the number in position 7 moves to position
+    12, the number in position 12 moves to position 3, and the number in position
+    3 moves to position 1, completing the cycle **1****➔****4****➔****7****➔****C****➔****3****➔****1**.
+    The cycle can be represented as (1,4,7,12,3).
+  prefs: []
+  type: TYPE_NORMAL
+- en: The first number that is not in this cycle is 2\. Starting from position 2 we
+    find the cycle **2****➔****A****➔****6****➔****9****➔****B****➔****8****➔****5****➔****2**,
+    which can be represented as (2,10,6,9,11,8,5). The whole permutation can then
+    be expressed as (1,4,7,12,3) (2,10,6,9,11,8,5).
+  prefs: []
+  type: TYPE_NORMAL
+- en: These two cycles have periods of 5 and 7, respectively, so this permutation
+    has a period of 35\. That is, if you kept applying this transposition to a block
+    of 12 letters, it would produce 35 different permutations of the letters, and
+    the 36th permutation would be the same as the original plaintext.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose that you wanted to produce a strong block transposition cipher, one
+    where every block has a different transposition. Applying the previous transposition
+    a different number of times for each block would not be adequate because it repeats
+    every 35 cycles. This problem can be overcome by using two different permutations
+    and alternating.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let the two transpositions be A and B. If A and B are suitably chosen, then
+    you can generate a huge number of transpositions A, B, AA, AB, BA, BB, AAA, AAB,
+    ABA, ... that are all different.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is where understanding the cycle structure of the permutations becomes
+    important. Suppose that you chose the permutations (1,4,7,12,3) (2,10,6,9,11,8,5)
+    and (1,4,3,12,7) (2,10,9,6,5,11,8). These two permutations partition the block
+    of 12 units the same way, namely [1,3,4,7,12] and [2,5,6,8,9,10,11]. When you
+    alternate the two permutations repeatedly, the [1,3,4,7,12] partition will get
+    permuted separately from the [2,5,6,8,9,10,11] partition. That is, there is no
+    interaction between the two sets of numbers. To get a long period, each cycle
+    of the second permutation should overlap each cycle of the first permutation as
+    much as possible. Here is a suitable set of permutations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: (1,4,7,12,3) (2,10,6,9,11,8,5)
+  prefs: []
+  type: TYPE_NORMAL
+- en: (1,10,8) (4,6,5,12) (2,11,9,7,3)
+  prefs: []
+  type: TYPE_NORMAL
+- en: This transposition cipher is rated Three. It can be solved simply by trying
+    all of the 12! possible permutations for the first block. This is only 4.79×10⁸.
+    For each permutation that produces reasonable text for the first block, Emily
+    can try each of the 12! permutations for the second block. In practice this takes
+    far fewer than (12!)² = 2.29×10^(17) tries because just looking at the first 3
+    or 4 characters of the block can eliminate many implausible combinations. In fact,
+    it is feasible to solve this cipher by hand methods. The difficulty increases
+    slowly with larger block sizes.******
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are several ways to increase the security of a key transposition. One
+    way is to overlap the blocks. If the block size is 16, for example, instead of
+    starting the blocks at positions 1, 17, 33, ... in the message, start the blocks
+    at positions 1, 9, 17, 25, 33, ... . That way, each block overlaps 8 units with
+    the block before, and 8 units with the block after. The last 8 units of the message
+    may be combined with the first 8 units to form a wraparound block. This cipher
+    is rated Four.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The amount of overlap can be variable. If the current block starts at position
+    P, and the block length is L, the next block can begin anywhere from position
+    P+1 to position P+L. This cipher is rated Five. If two different transpositions
+    are used, and chosen randomly, the rating increases to Seven.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*****A second way to strengthen a block transposition cipher is by composing
+    the permutations. If T and U are transpositions, then the composition of T and
+    U, denoted TU, is formed by first performing transposition U and then performing
+    T. The resulting transposition is the same as using T to transpose U and then
+    transposing the text using the resulting transposition. Let’s try an example.
+    Suppose T is **419628573** and U is **385917462**. Since U is a block of 10 characters,
+    you can use T to transpose U the same way you would use T to transpose a 10-letter
+    word. Write T on the top line to use as the transposition key, and write U on
+    the second line as the text being transposed. The first digit of the result is
+    the number below the digit 1 in the key, namely **8** (see shading). The second
+    digit of the result is the digit below 2 in the key, namely **1**, and so forth.
+    Using T to permute U gives **812349675**.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-21](../Images/7-unnumb-21.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Composing transpositions this way lets you generate a sequence of transpositions,
+    U, TU, TTU, TTTU, ... . The period of this sequence is the same as the period
+    of T. For a block size of 12, the longest possible period occurs when the lengths
+    of the cycles are 3, 4 and 5, namely 3×4×5 = 60\. If your messages are longer
+    than 60 blocks, you may want a longer period. This can be done by permuting the
+    transposition with either U or T in some repeating or random pattern, say U, TU,
+    TTU, UTTU, UUTTU, ... This can generate a very large set of distinct transpositions,
+    provided that T and U individually have long periods, and the cycles of T overlap
+    the cycles of U, as described earlier.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You can test whether the cycles overlap sufficiently by using the *accretion
+    test*. Start with any one of the cycles of T or U. This forms a set containing
+    just that one cycle. Add to this set any other cycle of T or U that has elements
+    in common with it. Now add to this larger set any other cycle of T or U that has
+    elements in common with the cycles you have already chosen. Continue this way
+    until there are no more elements in common. If the set of cycles now contains
+    all of the cycles of both T and U, then you have good overlap. If you decide to
+    use more than two transpositions, say T, U and V, then T and U should overlap,
+    T and V should overlap, and U and V should also overlap.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is an example using some transpositions from earlier in this section, T
+    = (1,4,7,12,3) (2,10,6,9,11,8,5) and U = (1,10,8) (4,6,5,12) (2,11,9,7,3). Start
+    with the cycle (1,4,7,12,3).
+  prefs: []
+  type: TYPE_NORMAL
+- en: (1,4,7,12,3)
+  prefs: []
+  type: TYPE_NORMAL
+- en: This has the element 1 in common with the cycle (1,10,8) of U, so add that cycle
+    to the set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: (1,4,7,12,3) (1,10,8)
+  prefs: []
+  type: TYPE_NORMAL
+- en: This has the element 4 in common with the cycle (4,6,5,12) of U, so add that
+    cycle to the set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: (1,4,7,12,3) (1,10,8) (4,6,5,12)
+  prefs: []
+  type: TYPE_NORMAL
+- en: And so forth. Since this will include all of the cycles of T and U, they are
+    a good overlapping pair of transpositions, and will generate a very large family
+    of transpositions when they are composed.******
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.8 Halving transposition
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Halving* *transposition* is a computer technique I invented that uses a binary
+    key to swap units that may be either bits or bytes, or possibly hex digits. IBM
+    published this in the company’s Invention Disclosure Bulletin, and it was considered
+    for possible inclusion in the Data Encryption Standard (DES). Halving transposition
+    operates on a block whose size is some power of 2, typically 32 or 64 units. For
+    a block of n units, the key will have n-1 bits.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s use a block size of 16 characters as an example. The plaintext is GEORGE
+    WASHINGTON. The transposition will use a 15-bit key. The first bit of the key
+    determines whether the left and right 8-unit halves of the block are swapped.
+    A 0 means no swap, a 1 means swap the halves. The next 2 key bits determine whether
+    the 4-unit halves of those halves are swapped. If bit 2 of the key is 1 then the
+    first quarter of the block is swapped with the second quarter. If bit 3 of the
+    key is 1 then the third quarter of the block is swapped with the fourth quarter.
+    The next 4 bits of the key determine whether the halves of those quarters get
+    swapped. For example, if the fourth bit of the key is 1 then the first eighth
+    of the block is swapped with the second eighth. The final 8 bits control whether
+    the sixteenths of the block get swapped. For example, if the last bit of the key
+    is 1 then the last 2 units, the 15th and 16th units of the block, letters O and
+    N, are swapped.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-22](../Images/7-unnumb-22.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: To decipher this transposition the steps must be done in the reverse order.
+    That is, the individual units should be swapped first, then the pairs, foursomes,
+    and so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7.9 Multiple anagramming
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A general technique for solving transposition ciphers, one that works with many
+    types of transpositions, even when the type is unknown, is *multiple anagramming*.
+    To use the technique, you need to intercept several messages of the same length.
+    If these messages have been transposed with the same key, then the first letters
+    of each message will end up in the same position in all of the ciphertexts, the
+    second letters will end up in the same position in all of the ciphertexts, and
+    so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: We can exploit this fact. Make paper strip 1 with all of the first letters in
+    the ciphertexts. Make paper strip 2 with all of the second letters in the ciphertexts,
+    and so forth. Make as many strips as the length of each ciphertext. These strips
+    can be matched up just the way we did when we solved a columnar transposition.
+    The more messages that are available, the longer the strips will be, and the greater
+    the chance of success. It is generally felt that a minimum of 3 messages are required.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s look at an example. Suppose we have these 3 cipher messages:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-23](../Images/7-unnumb-23.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The message length is 12\. The 12 strips are shown to the right.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Message (1) contains a K. Some likely letters to precede that K are C and N.
+    Message (1) contains one of each. Message (2) contains a D. A likely letter to
+    precede the D is N. Message (2) contains one N. Let’s check that these are plausible
+    choices. We have
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-24](../Images/7-unnumb-24.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'In message (2) the most likely letter to precede **ND** is **A** or **E**.
+    This gives 3 possibilities:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-25](../Images/7-unnumb-25.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Matching each of these 3 choices with the remaining 9 strips, the best match
+    is with strip 4.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-26](../Images/7-unnumb-26.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This matches up well with columns 5 and 10, which we had already combined previously.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![7-unnumb-27](../Images/7-unnumb-27.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The 3 messages are now easily completed, (1) ATTACK AT DAWN, (2) SEND MORE AMMO,
+    and (3) MEET ME AT ONCE.
+  prefs: []
+  type: TYPE_NORMAL

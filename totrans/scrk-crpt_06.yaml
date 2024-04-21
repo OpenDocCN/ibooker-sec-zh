@@ -1,0 +1,669 @@
+- en: 6 Countermeasures
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Double encipherment
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Null characters and null bits
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Homophones
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Hiding messages within images or computer files
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: To recap section 5.9, polyalphabetic ciphers can be solved by a two-step process.
+    First, the period or the key length is determined using the Kasiski Method or
+    the Index of Coincidence. This separates the ciphertext into several smaller texts,
+    each enciphered by just one letter of the key. Second, these individual texts
+    are deciphered using the standard methods for simple substitution ciphers, frequency
+    and contacts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s turn it around. What can the cryptologist do to prevent a polyalphabetic
+    cipher from being cracked by this two-step process? We will look at a few countermeasures.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.1 Double encipherment
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: If a message is enciphered with one polyalphabetic cipher whose period is P,
+    and the resulting intermediate text is enciphered with a second polyalphabetic
+    cipher whose period is Q, the result is equivalent to a polyalphabetic cipher
+    whose period is the least common multiple of P and Q, denoted *lcm(P,Q)*. That
+    is, the period is the smallest integer that is a multiple of both P and Q. For
+    example, if P is 10 and Q is 11, then the double encipherment will have a period
+    of 110, but if P is 10 and Q is 12, then the double encipherment will have a period
+    of 60 because 60 is a multiple of both 10 and 12.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Each of the individual alphabets in the double encipherment is the composition
+    of the two alphabets from the first and second encipherments, as described in
+    section 11.7.4\. If these are shifted standard alphabets, the result is also a
+    shifted standard alphabet. If these are mixed alphabets, the result is likely
+    an alphabet that is more thoroughly mixed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Even though the double encipherment is still polyalphabetic, it can be stronger
+    than a single polyalphabetic encipherment because the period is longer, and there
+    will be fewer letters enciphered by each character of the key. This type of double
+    encipherment is rated Three.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the two polyalphabetic encipherments are autokey, running key, or one of
+    each, the double encipherment will be a running key encipherment. However, the
+    key will not be English text, so that the word dragging technique of section 5.11
+    cannot be used. The probabilistic technique in that section, though, can be adapted
+    for use with two running keys.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the encipherment is done with straight alphabets, that is, with the Belaso
+    tableau, then the order of the encipherments does not matter. Enciphering a message
+    M with the running key R and then reenciphering with running key S is the same
+    as enciphering the running key R with the running key S to get a new composite
+    running key C, then enciphering the message M with that composite running key
+    C.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Keys derived this way, by enciphering one running key with another running key,
+    are not random. They have their own characteristic letter frequencies and contact
+    frequencies. There are common sequences, such as THE enciphered by THE, or AND
+    enciphered by THE. All of this can be tabulated. If a long phrase such as UNITED
+    STATES OF AMERICA or NEGOTIATING STRATEGY is dragged through a text you can look
+    for sections of the running key that adhere to this distribution. Thus double
+    running key encipherment can be solved by computer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: With unmixed alphabets, the composition of two autokey and/or running key encipherments
+    is rated Four. With well-mixed keyed alphabets, the composition is rated Six.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.2 Null characters
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Nulls are a time-honored way of thwarting enemy code-breakers. They have been
+    used at least as far back as the Argenti family in the 15th century. Nulls are
+    meaningless characters that are inserted into a message to confound enemy cryptanalysts.
+    They are most commonly used with codes. With polyalphabetic ciphers they can pollute
+    the frequency counts and disrupt a Kasiski or Index of Coincidence analysis.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are several ways that nulls can be used. The most direct way is to add
+    a null character to the alphabet. This is commonly represented as an * asterisk.
+    This character could then be sprinkled into the plaintext. It should be used sparingly,
+    so as not to stand out and be obvious. About 3% to 6% nulls would be reasonable.
+    A useful way to use nulls is to insert them into high-frequency words to confound
+    a Kasiski attack. This should be done randomly. If you change *every* THE to T*HE
+    you are assisting Emily by providing 4-character repeats. It is better to use
+    THE about half of the time, T*HE one-quarter of the time and TH*E one-quarter
+    of the time. It is not beneficial to use *THE or THE* because the THE trigram
+    remains intact.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The enciphering tableau would then be 27 columns wide, and asterisks would appear
+    in the ciphertext. You might think that this would be a giveaway that nulls are
+    being used, but there is a cipher called a trifid cipher, described in section
+    9.9, which utilizes a 27-character alphabet. Emily might think your polyalphabetic
+    cipher is a trifid (not to be confused with the 3-legged monster plants from John
+    Wyndham’s 1951 novel *The Day of the Triffids*).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using nulls this way is fairly weak. It does not change the letter frequencies
+    much, and does not affect the Kasiski or Index of Coincidence badly. The method
+    is rated Three.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A second way to use nulls is to have some specific null letter sequences that
+    are inserted into a plaintext. These need to be easily recognizable. I suggest
+    forming the null sequences from a small number of medium-frequency letters such
+    as C, D and P. The bigrams CC, DD and PP could be used to represent letters C,
+    D and P, and the other 6 bigram combinations of these letters would be nulls.
+    This method is also rated Three.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.3 Interrupted key
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A stronger way of using nulls is to insert the nulls into the ciphertext so
+    that they break up the repeating period. A simple way of doing this is first to
+    encipher the message using the polyalphabetic cipher in the normal way. Then each
+    time some *trigger* event, such as some chosen letter or bigram, occurs in the
+    ciphertext, insert a null after it. The null can be any letter or even a bigram.
+    It is the presence of the trigger that marks it as a null.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This type of null insertion can be fairly elaborate. You could insert a null
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4 characters after each W in the ciphertext, for example ciphertext **NPGWSOVKLEWPIDF**
+    could become **NPGWSOV****T****KLEWPID****C****F**,
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: After every second H in the ciphertext,
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: After the first A that follows each Q in the ciphertext,
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 1 position after the first V, then 2 positions after the next B, 3 positions
+    after the next L, then repeat V, B, L, V, B, L, ... ,
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: After each double letter in the ciphertext, or after 3 consecutive vowels, or
+    after 4 letters in a row in either ascending or descending alphabetic order,
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: or some combination of these. The only limit is your imagination. Just don’t
+    make it so complex that Sandra and Riva can’t encipher and decipher quickly and
+    accurately. If Sandra is supposed to insert a null after every second K, and every
+    third M, and she misses one, or puts the null after the fourth M, then Riva may
+    be unable to decipher the message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This method of inserting nulls is rated Four with standard alphabets, and Five
+    with well-mixed alphabets, assuming, as always, that the mixed alphabets are kept
+    secret.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are several other methods for interrupting the periodic repetition of
+    the key. One way is to restart the key whenever some trigger occurs in the plaintext.
+    This is more secure than the preceding method where the trigger is in the ciphertext
+    because Emily can see the ciphertext, but not the plaintext. On the other hand,
+    it is harder for the legitimate receiver. When the triggers are in the ciphertext,
+    Riva can just scan through and delete the nulls by eye. When the triggers are
+    in the plaintext, Riva must decipher one character at a time, watching for the
+    triggers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The triggers can be similar to the ciphertext triggers just mentioned, except
+    in the plaintext, not in the ciphertext. The action that is taken after the trigger
+    occurs could be
+  prefs: []
+  type: TYPE_NORMAL
+- en: Skip a specific number of characters in the key, or
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Repeat a specific number of characters in the key, or
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Restart the key from the first character, or
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Switch directions, go backward through the key.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Here are examples of these 4 types of key interruption using the key SAMPLE
+    and the trigger letter A:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![6-unnumb-1](../Images/6-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This form of key interruption is rated Five with straight alphabets, and Six
+    when using well-mixed alphabets. The key should not be restarted too often, otherwise
+    the first character of the key will be overused while the last character of the
+    key could be neglected.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A stronger form of key interruption is to use two separate keys of different
+    lengths. This cipher is strongest when the key lengths are mutually prime. When
+    the trigger occurs, you switch from one key to the other. This method is rated
+    Six when well-mixed alphabets are used. Here is an example using the keys FIRST
+    and SECOND and the trigger A:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![6-unnumb-2](../Images/6-unnumb-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This cipher keeps track of which letter of the key was last used. When you switch
+    to the other alphabet encipherment continues with the next letter of the key.
+    For example, plaintext MA is enciphered with the key letters FI, so the next key
+    letter is R. After enciphering RYHA with the key letters SECO in the second key,
+    encipherment resumes in the first key with the key letters RS.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This way, all of the letters in each key are used about the same number of times.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.4 Homophonic substitution
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Homophonic substitution, introduced in section 4.2, provides several substitutes
+    for each plaintext letter in order to flatten the letter frequencies. The most
+    common method is to enlarge the ciphertext alphabet to provide extra substitutes.
+    Since classical polyalphabetic ciphers employ a fixed 26-letter alphabet, at least
+    for English, they normally do not use homophonic substitution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For a computer implementation using 8-bit bytes, homophonic substitution is
+    easy to accomplish. There are 256 possible values for a byte. The 26 uppercase
+    letters, 26 lowercase letters, 10 digits and perhaps 32 punctuation marks use
+    up only 94 of the 256 values. Call it 98 if you include the control characters
+    tab, backspace, line feed and carriage return. That leaves 158 characters that
+    can be used for nulls, bigrams and trigrams, and key interruption.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s look at how homophonic substitution could be achieved using paper and
+    pencil with a normal 26×26 mixed tableau. If you reserve one letter as a trigger
+    letter, that letter will have such a high frequency that it can be spotted easily.
+    The same is likely true with 2 trigger letters. I suggest using 3 trigger letters,
+    each with a frequency of under 4%. Let’s call this cipher *Trig3*. The letters
+    BCDFGJKLMPQUVWXYZ are suitable. Suppose you have chosen B, C and D. There are
+    78 bigrams starting with these 3 letters, that is 3×26\. You would not use bigrams
+    containing the high-frequency letters AEINORST because that would increase their
+    frequency, which works against the goal of flattening the letter frequencies.
+    That leaves 54 bigrams that can be used as nulls, homophones and key interrupters.
+    Here is one possible set:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![6-unnumb-3](../Images/6-unnumb-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Here **-** represents a null character, so plaintext BD, BL, CC, and so on,
+    are nulls. Codes +1, +2 and +3 are key-interrupters meaning skip 1, skip 2 and
+    skip 3 key letters, respectively. The set of homophones includes 6 bigrams, AN,
+    ER, IN, ON, RE and TH as well as single letters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is important to maintain balance. If you overuse these substitutes, then
+    the letters B, C and D will have too-high frequencies and will be easily spotted
+    as the triggers. If you use them too sparely, then they won’t have any useful
+    impact. About 10% is right, using the B, C and D bigrams roughly equally often,
+    so about 3% each. Remember, with this cipher you cannot use the letters B, C and
+    D by themselves, you must use their substitutes, DM, CD and CG.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Used properly, with well-mixed keyed alphabets, the Trig3 cipher is rated Five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.4.1 Cipher 5858
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Let me present one more cipher before moving on to bigram substitution. I call
+    it *Cipher 5858*. This is a computer cipher using 5-bit characters. Five bits
+    gives an alphabet of 32 characters, enough for 26 letters, 3 nulls and 3 homophones.
+    (1) The plaintext is written out as a sequence of 5-bit characters using a mixed
+    alphabet. (2) The nulls and homophones are inserted, using about 3% of each for
+    a total of 18% of the plaintext. It is best to use them in a haphazard way rather
+    than a systematic way. (3) The plaintext is padded to make its length an even
+    multiple of 8 by adding a null character, if needed, and up to 4 random bits.
+    (4) The padded message is treated as a string of 8-bit bytes and a well-mixed
+    substitution is performed. For example, if the message contained eighty 5-bit
+    characters, the 400 bits would be taken, in order, as fifty 8-bit bytes. (5) The
+    message is again regarded as a string of 5-bit characters. Three of these characters
+    are chosen as key interrupters +1, +2 and +3, as in the Trig3 cipher. (6) The
+    message is enciphered using a general polyalphabetic cipher and a well-mixed 32×32
+    tableau of 5-bit characters. (7) The string of 5-bit characters is then regrouped
+    into 8-bit bytes, and a second 8-bit substitution is done.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To recap, Cipher 5858 uses 4 substitution steps, an initial 5-bit substitution,
+    an 8-bit substitution, a 5-bit general polyalphabetic substitution with key interruption,
+    and a final 8-bit substitution. This cipher is rated Seven.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.5 Bigram and trigram substitution
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Another way to prevent Emily from using letter and contact frequencies to break
+    your cipher is to perform substitution on bigrams or even trigrams. The simplest
+    way to do this is with a tableau. For bigrams you would use a 26×26 tableau where
+    each entry would be a bigram. Here is the start of such a tableau:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![6-unnumb-4](../Images/6-unnumb-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The substitute for AA would be **BL**, the substitute for AB would be **TC**,
+    and so forth. For trigram substitution you might use a booklet with 26 such tableaus,
+    one for each first letter of the trigram.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This type of substitution can be used by itself, or it could be combined with
+    another method, such as polyalphabetic substitution. Used alone, bigram substitution
+    is rated Three, and trigram substitution is rated Four. Bigram substitution followed
+    by polyalphabetic substitution with secret well-mixed alphabets is rated Five,
+    and trigram substitution followed by polyalphabetic substitution with secret well-mixed
+    alphabets is rated Six.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*6.6 Hiding messages in images'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: An interesting idea, dating back to about 1999, is hiding messages inside various
+    types of data files on a computer. This is a modern version of steganography (section
+    2.2). Let’s look at one such method, hiding messages inside a bitmap, or BMP file.
+    Bitmaps are images that are stored pixel by pixel. The most common bitmap format
+    represents each pixel by 3 bytes that specify how much blue, green and red color
+    depth is in that single dot on the image. (This is the device-independent order
+    in the Microsoft standard for bitmap images. If you have trouble remembering the
+    order, notice that Blue, Green and Red are in alphabetic order.) For example,
+    0,0,0 has no color so it is pure black, 255,255,255 has maximum depth for all
+    3 colors so it is white, and 255,0,0 would be a pure blue.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Pixels are commonly represented in hexadecimal, so pure blue would be FF0000\.
+    In some computer languages this is written $FF0000 or X''FF0000'' or even 0xFF0000
+    since 255 in decimal is FF in hexadecimal. In some languages the order of the
+    color components is reversed. For example, in HTML pure blue would be #0000FF.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The entire image may contain hundreds or thousands of rows of pixels, each row
+    containing hundreds or thousands of pixels. It is not unusual for a bitmap to
+    contain 3000 rows of 4000 pixels each. Such an image would have 12,000,000 pixels,
+    and would require 36,000,000 bytes of storage, plus 54 bytes of header information.
+    That’s why having many high-resolution images can fill up a computer’s memory
+    so quickly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The trick is to use the low-order bit in each component of the pixel to carry
+    one bit of the message. This could go undetected because the difference between
+    FF0000 and FE0000 or even FE0101 is barely perceptible to the eye. In a single
+    pixel of a large image it would be visually undetectable. Besides, half of the
+    bits would not change value. When hiding a message in an image it is essential
+    that the file containing the image is transmitted exactly. The image must not
+    be enlarged, reduced, cropped, rotated, skewed, compressed or converted into another
+    image format.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The message can be enciphered with any method. However, if Emily suspects you
+    are hiding the message this way, then it would not add any extra security. You
+    would be paying the price of transmitting 8 bits of data for every bit of the
+    message with no corresponding benefit. If you simply took every low-order bit
+    from each pixel in turn, the rating would be the same as whatever method of encipherment
+    you chose.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One way of gaining some extra security from this scheme is not to use all of
+    the bits, but to select certain bits from each pixel in some cyclic order. To
+    do this you use a string of octal digits (see the table in section 3.1) such as
+    1,3,7,4,6 as a key for selecting the message bits. This can be called a *selection
+    key*. It has 5 octal digits, hence 15 selection bits. Start with the first pixel
+    of the image and the first digit of the selection key. If the first bit of this
+    digit is 1, put one bit of the message into the low-order bit of the blue component
+    of the pixel, otherwise set the low-order bit to 0 or 1 at random. If the second
+    key bit is 1, do the same for the green component, and if the third bit is 1 do
+    this for the red component. Then repeat this for the second pixel and the second
+    digit of the selection key. And so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Someone might think that when the key bit is 0 it is better to leave the corresponding
+    bit of the image unchanged. This would result in less distortion of the image
+    and make it harder for Emily to detect that it contained a hidden message. True,
+    but if Emily suspects that you are using this method then it will make it possible
+    to determine the selection key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose this is the case. Emily has intercepted your message containing a bitmap
+    image. Further suppose Emily has done an image search on the internet and found
+    the original image. Emily can match up the two images, pixel by pixel and color
+    component by color component. This enables Emily to make a map of where the two
+    versions of the image differ. Everywhere the low-order bits match, Emily can mark
+    an X in the map, and everywhere they do not match Emily can mark a |. Emily can
+    then try each possible length for the selection key. When the correct length L
+    has been chosen, and the marks are lined up at intervals of L pixels, then every
+    column where the selection bit is 0 will contain all X’s, while the columns where
+    the selection bit is 1 will contain half X’s and half |’s. For example, again
+    using the selection key 1,3,7,4,6 you might see
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![6-unnumb-5](../Images/6-unnumb-5.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: For every column that contains a | the corresponding bit of the selection key
+    must be 1\. All other bits of the selection key are probably 0\. With more rows
+    in the difference map, the probability gets higher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For this reason, wherever the selection bit is 0 the low-order bit of the color
+    component should be set randomly. Using a cyclic selection key, this method of
+    hiding the message adds 2 if the rating of the underlying cipher is One to Four,
+    or 1 if the rating is Five to Eight.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The selection key could also be generated using the Chained Digit pseudorandom
+    generator from section 4.5 using a qualified seed of 7, 9 or 10 digits. Use generated
+    digits from 0 to 7 as selection digits. If the generated digit is 8 or 9, discard
+    it and generate the next digit. It is not important here whether the pseudorandom
+    digits are statistically random. The essential property is that the sequence of
+    generated digits is longer than the message, measured in bits, so that Emily cannot
+    match up sections of the ciphertext that have the same selection key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using a Chained Digit selection key, this method of hiding the message adds
+    3 if the rating of the underlying cipher is One to Four, 2 if the rating is Five
+    to Seven, and 1 if the rating is Eight.******
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.7 Adding null bits
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'This idea of mixing bits of the message with null bits can also be done without
+    embedding the message in an image or other file, and it can be done by hand. First
+    encipher the message using simple substitution, or any method of your choice.
+    Write this preliminary ciphertext in binary, say 5-bit binary. The simple substitution
+    and conversion to binary can be done in one step. You could just substitute 5-bit
+    numbers for the 26 letters of the alphabet in some mixed order, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![6-unnumb-6](../Images/6-unnumb-6.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Notice that there are 6 decimal digits in addition to the 26 letters of the
+    alphabet. The digits 0, 1, 2 and 5 are omitted to prevent confusion with the letters
+    O, I, Z and S when handwritten. This gives you the 32 characters necessary to
+    convert the 5-bit numbers back into symbols for transmission.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now that the message is in the form of a bit string, the null bits can be added.
+    A selection key is used to specify where the null bits are inserted. The selection
+    key has the form m1,n1,m2,n2,m3,n3,..., which means take m[1] bits of the message
+    and insert n1 null bits, take m2 more bits of the message and add n2 more null
+    bits, take another m3 bits of the message and add n3 more null bits, and so on.
+    Here is an example using the selection key 2,1,3,1,4,2,3,2.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![6-unnumb-7](../Images/6-unnumb-7.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: With this scheme MESSAGE is enciphered as **Q9JIF PGUFF F**. Four null bits
+    (the shaded bits) are appended to complete the last group of 5 bits. This is called
+    *padding* or *null-padding*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The selection key could also be given in binary form, say 110111011110011100\.
+    Each 1 bit in the key means take the next message bit, while each 0 bit means
+    insert a null bit.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This scheme is stronger when two different alphabets are used for changing the
+    letters to bits and for changing the bits back to letters. The strength is also
+    improved by using variable-length substitutes like the Huffman codes described
+    in section 10.4\. For this purpose, the lengths of the codes need not correspond
+    to the frequencies of the letters, but they still must have the prefix property
+    so that Riva can decipher the message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You can avoid the need for adding extra characters for the second substitution,
+    which goes from bits back to letters, in two ways. (1) You could take the bits
+    in groups of 4 and use only 16 letters of the alphabet, or use the 16 hexadecimal
+    digits, or (2) you could use a variable-length code with six 4-bit code groups
+    and twenty 5-bit code groups. Again, these code groups must have the prefix property.
+    Here is an example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![6-unnumb-8](../Images/6-unnumb-8.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Notice that I used 4-bit substitutes for the 6 highest-frequency letters. This
+    will make those 6 letters have about twice the frequency in the ciphertext as
+    the other 20 letters. This could make an unwary opponent believe this is an entirely
+    different type of cipher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adding null bits is applicable to many types of encipherment. Since a null bit
+    is indistinguishable from any other bit, adding null bits is stronger than adding
+    null characters. It can increase the rating of a cipher by as much as Three.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s look at a specific example. Call it *Cipher Null5*. As earlier, there
+    are 3 steps, convert from letters to bits, add null bits, and convert back from
+    bits to letters. Letters are converted to bits using a homophonic substitution
+    from letters to 5-bit groups. Two substitutes are provided for each of the letters
+    E,T,A,O,I,N. Null bits are inserted using a selection key, as in section 6.6\.
+    Bits are converted back to letters using a 4-bit/5-bit substitution like the previous
+    table.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cipher Null5 is rated Six.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.8 Merging multiple messages
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The binary form of key can also be used as a merge key to merge two messages.
+    That is, the bits of two messages are interleaved to form a single message. A
+    merge key in base 3 or base 4 could be used to merge 3 or 4 messages. A base-4
+    merge key could likewise merge 3 messages plus null bits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Two advantages of merging multiple messages are that you don’t add as much extra
+    length as using null bits, and you can use simpler, faster encryption. If you
+    interleave 4 messages with a long merge key, and you use a different simple substitution
+    for each message, that alone gets a rating of Five. If you perform an additional
+    simple substitution on the merged message, the rating increases to Eight.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The keys for merging messages can take two forms, a bit count form or a selection
+    form. In the bit count form, the messages are taken in rotation. Each digit of
+    the key specifies how many bits are taken from each successive message. In the
+    selection form the messages may be taken in any order, but only one bit is taken
+    each time. Each digit of the key specifies which message to take the next bit
+    from. These examples show how the messages **010101111010001101011** and **11101010011011100110**
+    are merged by the bit count method using the key 123123, and by the selection
+    method using the key 12122112.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![6-unnumb-9](../Images/6-unnumb-9.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Merging multiple messages may be messy when the messages have different lengths.
+    You need to have an end-of-message marker on all but the longest message. Another
+    way of dealing with non-matching lengths is to balance the merge. Begin by writing
+    all of the messages end to end, separated by some reserved character or character
+    sequence. Then simply divide this long string into equal parts. For example, if
+    the messages have lengths of 50, 60, 70 and 80 characters, that is a combined
+    length of 260 characters, plus 3 separators for a total of 263 characters. You
+    could divide that into 4 strands of 66, 66, 66 and 65 characters. If you are using
+    8-bit bytes, you could divide the 263×8 = 2104 bits into 4 strands of 526 bits
+    each. It is not necessary to split the bit string on even byte boundaries, but
+    you should choose keys that take an equal number of bits from each strand.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Incidentally, the number of messages and the number of strands are independent.
+    There can be one message or many, and any number of strands from 2 up. For example,
+    one message could be divided into 3 strands, and 3 messages could be divided into
+    2 strands.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Balancing is half the solution. The other half comes when you get near the end
+    of the merging process. Eventually you will have merged all the bits from one
+    of the strings, while the other strings have bits left. If the merge key specifies
+    another bit from a string that has no bits left, just skip to the next bit selection.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s pull all of this together into one cipher, which can be called *Merge8*.
+    The Merge8 cipher operates on one or more messages concatenated end to end. In
+    the base-26 version, the 26 letters are converted to binary using a 4-bit/5-bit
+    code like the 4-bit/5-bit substitution in section 6.7\. The message divider can
+    be a letter sequence such as XXX or END. In the base-256 version a well-mixed
+    keyed simple substitution is applied to the ASCII code. The resulting bit string
+    is divided into 8 equal-length strands of bits. A key of 32 octal digits is used
+    to merge the 8 strands. Each of the 8 octal values appears 4 times in the key,
+    so there are 32!/(4!)⁸ = 2.39×10^(24) possible merge keys. A second simple substitution
+    is performed on the resulting string. An 8-bit substitution is used for both the
+    base-26 and base-256 versions. Merge8 is rated Six.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.9 Embedding a message in a file
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: When a message is hidden in a picture file, there are at least 7 bits of the
+    image for every bit of the message. That’s mighty inefficient. You can hide a
+    lot more message bits in a file if you don’t try to make it look like something
+    else. It’s a ciphertext, so let it look like a ciphertext. There are dozens of
+    ways to hide a plaintext message inside a file. I will simply list some of the
+    options. As in section 6.6, for each byte of the file a certain number of plaintext
+    bits are hidden among the 8 bits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A fixed number of plaintext bits or a variable number of plaintext bits are
+    taken each time.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The bits are placed in fixed bit locations or variable bit locations within
+    each byte.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The bits are placed in order, or rearranged.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The plaintext bits are inserted as is, or lightly enciphered, for example by
+    simple substitution.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The ciphertext bits are left as is, or lightly enciphered, for example by simple
+    substitution.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The number of bits, the locations of the bits and the order of the bits can
+    be controlled by either a periodic key or some random sequence. Depending on which
+    options are chosen, ciphers in this class may be rated anywhere from One to Ten.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is an example of such a cipher. (1) Perform a well-mixed keyed simple substitution
+    on the message. (2) Using a pseudorandom number generator with a large internal
+    state, choose 2 to 6 bit positions in each byte. Place the next 2 to 6 bits of
+    the message, in order, into these 2 to 6 bit positions. Set the remaining bit
+    positions to random values. (3) Perform a second well-mixed keyed simple substitution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This method, called *EmbedBits*, is extremely fast and simple. The downside
+    is that the ciphertext is about twice as long as the plaintext. EmbedBits is rated
+    Eight. To bump the rating up to Ten, replace the simple substitution with a bigram
+    substitution such as Two Square.
+  prefs: []
+  type: TYPE_NORMAL

@@ -1,0 +1,343 @@
+- en: 3 Preliminary concepts
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Bits and bytes
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Functions and Boolean operators
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Prime numbers and modular arithmetic
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Before we get into the meat of the subject, let’s look at some preliminary concepts.
+    I go through these topics fairly quickly because nowadays many of these ideas
+    are taught in schools, even in the lower grades. More of these basic ideas are
+    given later in the book, as needed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.1 Bits and bytes
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Data is stored in computers in the form of *bits*, which is shorthand for *binary
+    digits*. A bit is just a number that can have the value either 0 or 1\. A bit
+    can be stored in a computer in several ways. A switch can be either open or closed.
+    A magnet can be oriented with its north pole either up or down. Light can be polarized
+    either clockwise or counterclockwise. An electrical pulse can have either a small
+    amplitude or a large amplitude.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'These binary digits can be used to form binary numbers. Here are the 3-bit
+    binary numbers and their decimal equivalents. These 3-bit numbers are called *octal*
+    numbers, meaning that they are numbers in the base 8:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![3-unnumb-1](../Images/3-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Bits are also used to represent *logic values* or *truth values* in computer
+    logic. 0 represents the logic value *false*, and 1 represents the logic value
+    *true*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A character, such as a letter or a digit, can be represented by an 8-bit binary
+    number, which is called a *byte*. The term *byte* was coined in 1954 by Werner
+    Buchholz of IBM. Since each bit has 2 possible values, 8 bits can represent 2⁸
+    different characters: that is, 2 to the eighth power, which is 256\. This is enough
+    for the 26 lowercase letters, 26 uppercase letters, 10 decimal digits, 33 punctuation
+    marks such as = and $ plus some control characters such as tab and line feed.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are several schemes that allow for representing additional characters,
+    such as Cyrillic Ж, Arabic س, and even Chinese 是, by using up to 4 bytes for each
+    logogram. None of this is relevant for us. Ciphers can work on strings of characters
+    without regard for their meaning. It is irrelevant that the byte being enciphered
+    might be the third of 4 bytes representing some Chinese logogram.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For our purposes a byte has 3 identities: (1) it is a string of 8 logical true/false
+    values; (2) it is an 8-bit binary number, and hence an integer between 0 and 255,
+    inclusive, and (3) it is a representation of some character, such as a letter,
+    digit, punctuation mark, or part of a logogram.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.2 Functions and operators
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Mathematical functions are now taught in the elementary grades in school, so
+    I am sure I do not need to explain the concept, but it is helpful to establish
+    some notation and terminology. A function takes one or more values and produces
+    another value as the result. The values that are taken are called the *inputs*
+    or the *arguments* of the function, and the value that is returned is called the
+    *output* or *result*. We say that you *apply* the function to the arguments to
+    produce the result.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A function may be denoted by a symbol such as + or by a letter. When a symbol
+    is used, it is called an *operator*, so + and × are operators, and the arguments
+    are called the *operands*. When the function has one argument the symbol may be
+    placed in front of the argument, like -5 or √9, or after the argument, like 5!
+    (5 factorial, which is 1×2×3×4×5 = 120). If there are two arguments, the symbol
+    is placed between them, like 3+4 or 6×7\. When the symbol is a letter, the arguments
+    are enclosed in parentheses, like f(x). The function is denoted by f, and the
+    argument is denoted by x. If there are multiple arguments they are separated by
+    commas, like f(a,b,c). Some books on computer languages distinguish between arguments
+    and parameters, but that is not important here.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.3 Boolean operators
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Just as addition, subtraction, multiplication, and similar functions, operate
+    on numbers, there are several functions that operate on bits when they represent
+    truth values. These functions are called *logical operators*, or *Boolean operators*
+    in honor of English mathematician George Boole.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'If A and B are truth values, then the logical functions **not**, **and**, **or**
+    and **xor** are defined as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**not** A is true if A is false, and false if A is true.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A **and** B is true if A and B are both true, and otherwise it is false.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A **or** B is true if either A or B or both are true, and otherwise it is false.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A **xor** B is true if exactly one of A or B is true, and otherwise it is false.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In other words, A **xor** B is true either if A is true and B is false, or if
+    B is true and A is false. **xor** is called the *exclusive-OR* operator. It is
+    commonly denoted by the symbol ⊕, a circle with a + inside. The **and** and **or**
+    operators are often represented by the symbols ∧ and ∨. It is easy to remember
+    which is which because the symbol ∧ for **and** looks like a capital A without
+    the crossbar.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here are the values of the four Boolean functions in table form:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![3-unnumb-2](../Images/3-unnumb-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: These four operators can be extended from single bits to strings of bits by
+    operating on the corresponding pairs of bits. If A is 0011, a string of four bits
+    representing the logic values false,false,true,true, and if B is 0101 representing
+    the logic values false,true,false,true, then applying the four Boolean operators
+    gives
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![3-unnumb-3](../Images/3-unnumb-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'The exclusive-OR operator is used extensively in cryptography. For example,
+    a simple implementation of a one-time pad (see chapter 14) is to exclusive-OR
+    the bytes of the message with bytes of a key stream, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![3-unnumb-4](../Images/3-unnumb-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 3.4 Number bases
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In ordinary arithmetic, numbers are represented in decimal notation. This notation
+    was invented by the Hindus and the Arabs some time between the 5th and 7th centuries.
+    Thus decimal digits are also called *Arabic numerals*. The system was introduced
+    in Europe by Leonardo of Pisa (Leonardo Pisano), popularly known in his time as
+    Fibonacci.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Historical tidbit
+  prefs: []
+  type: TYPE_NORMAL
+- en: In Leonardo's time, roughly 1175-1250, sliding block puzzles were all the rage.
+    (Some people believe this puzzle was the same as the Fifteen Puzzle supposedly
+    invented by Noyes Chapman in 1874.) Public competitions with cash prizes were
+    commonplace. Leonardo was a wizard at this puzzle. He won every time. His competitors
+    gave him the jesting name “Fibonacci,” meaning “bonehead,” and Leonardo embraced
+    it. Fibonacci became famous throughout Italy. When Fibonacci wrote his *Liber
+    Abaci* (Book of Calculations) in 1202, he wanted people to know that its author
+    was the famous Fibonacci. It would be boastful and undignified to say so directly,
+    so on the title page he put *Filius Bonacci*, which could mean “Lucky Son” or
+    “Son of Bonacci.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: Later authors did not grasp this intent, and rejected the thought that the great
+    Leonardo Pisano should be called “bonehead.” They surmised that Leonardo's family
+    name might have been Bonacci. For the same reason, to remind his readers that
+    he was the famous Fibonacci, in his private writings Leonardo sometimes slyly
+    referred to himself as Leonardo Bonacci (Lucky Leonardo).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Over time people forgot the name and reputation of Fibonacci the puzzle genius,
+    until 1836 when bibliophile, and notorious book thief, Guglielmo Libri put the
+    pieces together and grasped that *Filius* + *Bonacci* = *Fibonacci*. The terms
+    *Fibonacci number* and *Fibonacci sequence* were coined by French mathematician
+    Edouard Lucas circa 1870.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Okay, back to work. To explain decimal numbers we use *exponential notation*.
+    An exponential means that a number is multiplied by itself a specified number
+    of times. For example, 5³ means that 5 is multiplied by itself 3 times, namely
+    5×5×5, which is 125\. In the exponential expression B^E, which is read “B to the
+    E power,” or simply “B to the E,” B is called the *base* and E is called the *exponent*.
+    If N is any number, then N¹ is N itself. By convention N⁰ is 1 for any number
+    N except 0\. The term 0⁰ has no defined value because different ways of evaluating
+    0⁰ lead to different results.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When we write a decimal, or base-10, number like 3456, it means 3×1000+4×100+5×10+6×1\.
+    Using exponential notation this is the same as 3×10³+4×10²+5×10¹+6×10⁰. Starting
+    from the right, the low-order digit, in this case 6, is multiplied by 1, the next
+    digit, namely 5, is multiplied by 10, the next digit by 10², then 10³, and so
+    forth. If there were 50 digits, the high-order digit, on the left, would be multiplied
+    by 10^(49).
+  prefs: []
+  type: TYPE_NORMAL
+- en: It works the same way in other number bases. For example, the binary system
+    uses base 2\. The binary number 11001 is evaluated as 1×2⁴+1×2³+0×2²+0×2¹+1×2⁰,
+    or 16+8+0+0+1, which is 25\. A number base commonly used in computer work is *hexadecimal*,
+    or base 16\. The digits used in base 16 are 0123456789ABCDEF, or 0123456789abcdef.
+    I prefer to use the capital letters ABCDEF for this purpose, because it makes
+    all of the hexadecimal digits the same height, which is easier to read. The hexadecimal
+    number 9AB would be evaluated as 9×16²+10×16¹+11×16⁰, or 9×256+10×16+11, which
+    is 2475 in decimal notation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'One use of number bases in cryptography is to convert text into numbers. It
+    is natural to associate the 26 letters of the alphabet with numbers in base 26
+    like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![3-unnumb-5](../Images/3-unnumb-5.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The word WORK could be expressed as a number 22×26³+14×26²+17×26+10, or 396,588\.
+    This value can be manipulated like any number, for example by addition, subtraction
+    or multiplication.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Large numbers can be expressed in exponential notation, also called *scientific*
+    notation, like this: 1.23×10⁷. This is the product of 1.23 with 10⁷, which is
+    10,000,000, so 1.23×10⁷ is 12,300,000\. This is the same as taking 1.23 and moving
+    the decimal point 7 positions to the right.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.5 Prime numbers
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Numbers, specifically integers greater than 1, are classed as either *prime*
+    numbers or *composite* numbers. If the number is the product of two smaller positive
+    integers, then it is called composite; otherwise it is prime. The first few composite
+    numbers are 4 = 2×2, 6 = 2×3, 8 = 2×4 and 9 = 3×3\. The first few prime numbers
+    are 2, 3, 5, 7 and 11\. The number 1 is neither prime nor composite.
+  prefs: []
+  type: TYPE_NORMAL
+- en: An important property of prime numbers is that any number can be written as
+    the product of prime numbers in only one way (aside from the order of the factors).
+    For example, since 30 = 2×3×5, no prime other than 2, 3 or 5 can evenly divide
+    30\. Here 2, 3 and 5 are called the *prime factors* of 30\. The set of prime factors
+    of any integer is unique. Determining the prime factors of an integer is called
+    *factoring* or *factorization*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If two integers A and B have no prime factors in common, then they are called
+    *coprime* or *mutually prime*. For example, 20 and 27 are coprime. If N is an
+    integer, then N and 1 are always coprime, while N and 0 are coprime only when
+    N = 1\. N and N+1 are always coprime.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using positive integers, when any number A is divided by another number B, called
+    the *divisor*, the result is a *quotient* and a *remainder*. Call the quotient
+    Q and the remainder R. Then Q is defined as the largest integer such that QB does
+    not exceed A. The remainder indicates how much is left over, that is, R = A-QB.
+    Note that 0 ≤ R < N. For example, suppose A is 40 and B is 11\. The largest multiple
+    of 11 that does not exceed 40 is 33, so the quotient is 3 since 3×11 = 33\. The
+    remainder is 7 since 40-33 is 7.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 3.6 Modular arithmetic
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The study of remainders is called *modular arithmetic*. Modular arithmetic was
+    introduced by the mathematician Carl Friedrich Gauss of the University of Göttingen
+    in 1801\. In modular arithmetic the quotient is ignored, the divisor is called
+    the *modulus*, and the remainder is called the *residue*. In the preceding example,
+    the modulus is 11 and the residue is 7\. If the modulus is N and two numbers X
+    and Y have the same residue, we say that X and Y are *congruent modulo* *N*, or,
+    equivalently, that X and Y are in the same *residue class* modulo N. This is written
+    X≡Y (mod N). For example, 40≡7 (mod 11), so 40 and 7 are in the same residue class
+    modulo 11\. X and Y will be congruent modulo N whenever X-Y is a multiple of N,
+    or, equivalently, whenever X = Y+aN for some integer a.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Residue classes follow the same rules of arithmetic as ordinary integers, such
+    as
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![3-unnumb-6](../Images/3-unnumb-6.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: We call -a the *additive inverse* of a. The notation a-b can be considered shorthand
+    for a+(-b).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The situation for the *multiplicative inverse* is more complex. The congruence
+    ax≡b (mod N) has 3 cases to consider: (1) when a and N are coprime, (2) when a
+    and N have a common factor d that does not divide b, and (3) when a, b and N are
+    all divisible by the common factor d.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose that a and N are mutually prime. Then there is a unique residue a' that
+    is the multiplicative inverse of a modulo N, so that aa'≡1 (mod N) and a'a≡1 (mod
+    N). If a' exists, then the congruence ax≡b (mod N) can easily be solved as x≡a'b
+    (mod N). In section 15.3.2 I present efficient ways of computing a' when N is
+    large.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: If a and N have a common factor d>1, then a has no multiplicative inverse modulo
+    N. There can be no a' such that aa'≡1 (mod N). If b is not divisible by d, then
+    ax≡b (mod N) has no solutions. For example, 4x≡5 (mod 12) has no solutions.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Suppose d is the greatest common divisor of a and N, denoted gcd(a,N). That
+    is, d is the largest integer that evenly divides both a and N. If a, b and N are
+    all divisible by d, then you can reduce the congruence by dividing a, b and N
+    by d, namely (a/d)x≡(b/d) (mod N/d).
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Let’s look at an example. Consider the congruence 8x≡4 (mod 12). Dividing through
+    by 4 gives the reduced congruence 2x≡1 (mod 3). The solution to this congruence
+    is x≡2 (mod 3), meaning that x can be any integer of the form 3n+2\. Going back
+    to the original congruence, x is a residue modulo 12, so x must lie in the range
+    0 to 11, inclusive. The numbers of the form 3n+2 that fall in this range are 2,
+    5, 8 and 11\. This means x can have any of the values 2, 5, 8 or 11\. So the congruence
+    8x≡4 (mod 12) has 4 solutions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Later in this book, **mod** is used as an arithmetic operator. The expression
+    x mod y, where x is an integer and y is a positive integer, means the remainder
+    when x is divided by y. Thus 27 mod 3 is 0, 27 mod 4 is 3, and 27 mod 5 is 2.
+  prefs: []
+  type: TYPE_NORMAL

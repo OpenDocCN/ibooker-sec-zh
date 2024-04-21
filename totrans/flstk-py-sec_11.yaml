@@ -1,0 +1,1151 @@
+- en: 9 User password management
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Changing, validating, and resetting user passwords
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Resisting breaches with salted hashing
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Resisting brute-force attacks with key derivation functions
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Migrating hashed passwords
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'In previous chapters, you learned about hashing and authentication; in this
+    chapter, you’ll learn about the intersection of these topics. Bob uses two new
+    workflows in this chapter: a password-change workflow and a password-reset workflow.
+    Once again, data authentication makes an appearance. You combine salted hashing
+    and a key derivation function as a defense layer against breaches and brute-force
+    attacks. Along the way, I’ll show you how to choose and enforce a password policy.
+    Finally, I’ll show you how to migrate from one password-hashing strategy to another.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.1 Password-change workflow
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'In the previous chapter, you mapped URL paths to a collection of built-in Django
+    views. You used two of these views, `LoginView` and `LogoutView`, to build an
+    authentication workflow. In this section, I’ll show you another workflow composed
+    of two more of these views: `PasswordChangeView` and `PasswordChangeDoneView`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You’re in luck; your project is already using the built-in views for this workflow.
+    You did this work in the previous chapter. Start your server, if it isn’t already
+    running, log back in as Bob, and point your browser to [https://localhost:8000/admin/password
+    _change/](https://localhost:8000/admin/password%20_change/). Previously, you mapped
+    this URL to `PasswordChangeView`, a view that renders a simple form for changing
+    users’ passwords. This form contains three required fields, as shown in figure
+    9.1:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The user’s password
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The new password
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The new password confirmation
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Notice the four input constraints next to the New Password field. These constraints
+    represent the project *password policy*. This is a set of rules designed to prevent
+    users from choosing weak passwords. `PasswordChangeView` enforces this policy
+    when the form is submitted.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH09_F01_Byrne](Images/CH09_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9.1 A built-in password change form enforces a password policy with four
+    constraints.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The password policy of a Django project is defined by the `AUTH_PASSWORD_VALIDATORS`
+    setting. This setting is a list of password validators used to ensure password
+    strength. Each password validator enforces a single constraint. This setting defaults
+    to an empty list, but every generated Django project comes configured with four
+    sensible built-in validators. The following listing illustrates the default password
+    policy; this code already appears in the `settings` module of your project.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 9.1 The default password policy
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`UserAttributeSimilarityValidator` rejects any password that is similar to
+    the username, first name, last name, or email. This prevents Mallory from guessing
+    passwords like `alice12345` or `bob@bob.com`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This validator accommodates two optional fields: `user_attributes` and `max_
+    similarity`. The `user_attributes` option modifies which user attributes the validator
+    checks. The `max_similarity` option modifies how strict the validator behaves.
+    The default value is 0.7; lowering this number makes the validator more strict.
+    The following listing demonstrates how you would configure the `UserAttributeSimilarityValidator`
+    to strictly test three custom attributes.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 9.2 Validating password similarity
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Default value is 0.7
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`MinimumLengthValidator`, shown in listing 9.3, rejects any password that is
+    too short. This prevents Mallory from brute-forcing her way into an account protected
+    by a password such as `b06`. By default, this validator rejects any password with
+    fewer than eight characters. This validator accommodates an optional `min_length`
+    field to enforce longer passwords.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 9.3 Validating password length
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Default value is 8.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `CommonPasswordValidator` rejects any password found in a list of 20,000
+    common passwords; see listing 9.4\. This prevents Mallory from hacking an account
+    protected by a password such as `password` or `qwerty`. This validator accommodates
+    an optional `password_list_path` field to override the common password list.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 9.4 Prohibiting common passwords
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`NumericPasswordValidator`, as the name implies, rejects numeric passwords.
+    In the next section. I’ll show you how to strengthen your password policy with
+    a custom password validator.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.1.1 Custom password validation
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Create a file named validators.py under the profile_info directory of your project.
+    In this file, add the code in listing 9.5\. `PassphraseValidator` ensures that
+    the password is a four-word passphrase. You learned about passphrases in chapter
+    3\. `PassphraseValidator` initializes itself by loading a dictionary file into
+    memory. The `get_help_text` method communicates the constraint; Django relays
+    this message to the user interface.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 9.5 A custom password validator
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Loads a dictionary file into memory
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Communicates the constraint to the user
+  prefs: []
+  type: TYPE_NORMAL
+- en: Next, add the method in listing 9.6 to the `PassphraseValidator`. The `validate`
+    method verifies two properties of each password. The password must consist of
+    four words, and the dictionary must contain each word. If the password does not
+    meet both criteria, the `validate` method raises a `ValidationError`, rejecting
+    the password. Django then rerenders the form with the `ValidationError` message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 9.6 The validate method
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Ensures each password is four words
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Ensures each word is valid
+  prefs: []
+  type: TYPE_NORMAL
+- en: By default, `PassphraseValidator` uses a dictionary file shipped with many standard
+    Linux distributions. Non-Linux users will have no problem downloading a substitute
+    from the web ([www.karamasoft.com/UltimateSpell/Dictionary.aspx](https://www.karamasoft.com/UltimateSpell/Dictionary.aspx)).
+    `PassphraseValidator` accommodates an alternate dictionary file with an optional
+    field, `dictionary_file`. This option represents a path to the overriding dictionary
+    file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A custom password validator like `PassphraseValidator` is configured in the
+    same way as a native password validator. Open the `settings` module and replace
+    all four native password validators in `AUTH_PASSWORD_VALIDATORS` with `PassphraseValidator`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Optionally overrides the dictionary path
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Restart your Django server and refresh the page at /accounts/password_change/.
+    Notice that all four input constraints for the new password field are replaced
+    by a single constraint: `Your` `password` `must` `contain` `4` `words` (figure
+    9.2). This is the same message you returned from the `get_help_text` method.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH09_F02_Byrne](Images/CH09_F02_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9.2 A built-in password-change form requiring a passphrase
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Finally, choose a new passphrase for Bob and submit the form. Why a passphrase?
+    Generally speaking:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is *easier* for Bob to *remember* a passphrase than a regular password.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It is *harder* for Mallory to *guess* a passphrase than a regular password.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: After submitting the form, the server redirects you to a simple template confirming
+    Bob’s password change. In the next section, I’ll explain how Bob’s password is
+    stored.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.2 Password storage
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Every authentication system stores a representation of your password. You must
+    reproduce this password in response to a username and password challenge when
+    you log in. The system compares your reproduced password with the stored representation
+    of it as a means of authenticating you.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Organizations have represented passwords in many ways. Some ways are much safer
+    than others. Let’s take a look at three approaches:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plaintext
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Ciphertext
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Hash value
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Plaintext* is the most egregious way to store user passwords. In this scenario,
+    the system stores a verbatim copy of the password. The password in storage is
+    literally compared to the password reproduced by the user when they log in. This
+    is a horrible practice because an attacker has access to every user’s account
+    if they gain unauthorized access to the password store. This could be an attacker
+    from outside the organization or an employee such as a system administrator.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Plaintext password storage
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fortunately, plaintext password storage is rare. Unfortunately, some news organizations
+    create a false impression about how common it is with sensational headlines.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For example, in early 2019, the security sphere saw a wave of headlines such
+    as “Facebook admits storing passwords in plain text.” Anyone who read beyond the
+    headline knows Facebook wasn’t intentionally storing passwords as plaintext; Facebook
+    was accidentally logging them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is inexcusable, but not the same as the headlines made it out to be. If
+    you do an internet search for “storing passwords as plaintext,” you can find similar
+    sensational headlines about security incidents at Yahoo and Google.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Storing passwords as ciphertext isn’t much of an improvement over storing them
+    as plaintext. In this scenario, the system encrypts each password and stores the
+    ciphertext. When a user logs in, the system encrypts the reproduced password and
+    compares the ciphertext to the ciphertext in storage. Figure 9.3 illustrates this
+    horrible idea.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH09_F03_Byrne](Images/CH09_F03_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9.3 How not to store passwords
+  prefs: []
+  type: TYPE_NORMAL
+- en: Storing encrypted passwords is a slippery slope. This means an attacker has
+    access to every user’s account if they gain unauthorized access to the password
+    store and the key; system administrators often have both. Encrypted passwords
+    are therefore an easy target for a malicious system administrator, or an attacker
+    who can manipulate a system administrator.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In 2013, the encrypted passwords of more than 38 million Adobe users were breached
+    and publicized. The passwords were encrypted with 3DES in ECB mode. (You learned
+    about 3DES and ECB mode in chapter 4.) Within a month, millions of these passwords
+    were reverse engineered, or *cracked*, by hackers and cryptography analysts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Any modern authentication system doesn’t store your password; it hashes your
+    password. When you log in, the system compares a hash value of your reproduced
+    password to the hash value in storage. If the two values match, you are authenticated.
+    If the two values don’t match, you have to try again. Figure 9.4 illustrates a
+    simplified version of this process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH09_F04_Byrne](Images/CH09_F04_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9.4 A simplified example of hash-based password verification
+  prefs: []
+  type: TYPE_NORMAL
+- en: Password management is a great real-world example of cryptographic hash function
+    properties. Unlike encryption algorithms, hash functions are one-way; the password
+    is easy to verify but difficult to recover. The importance of collision resistance
+    is obvious; if two passwords collide with matching hash values, either password
+    can be used to access the same account.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Is a hash function by itself suitable for hashing passwords? The answer is no.
+    In 2012, the hash values for over 6 million LinkedIn passwords were breached and
+    published to a Russian hacking forum.[1](#pgfId-1099658) At the time, LinkedIn
+    was hashing passwords with SHA1, a hash function you learned about in chapter
+    2\. Within two weeks, more than 90% of the passwords were cracked.
+  prefs: []
+  type: TYPE_NORMAL
+- en: How were these passwords cracked so quickly? Suppose it is 2012 and Mallory
+    wants to crack the recently published hash values. She downloads the dataset in
+    table 9.1 containing breached usernames and SHA1 hash values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 9.1 The abridged password store for LinkedIn
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| username | hash_value |'
+  prefs: []
+  type: TYPE_TB
+- en: '| ... | ... |'
+  prefs: []
+  type: TYPE_TB
+- en: '| alice | 5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| bob | 6eb5f4e39660b2ead133b19b6996b99a017e91ff |'
+  prefs: []
+  type: TYPE_TB
+- en: '| charlie | 5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8 |'
+  prefs: []
+  type: TYPE_TB
+- en: '| ... | ... |'
+  prefs: []
+  type: TYPE_TB
+- en: 'Mallory has several tools at her disposal:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Common password lists
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Hash function determinism
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Rainbow tables
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: First, Mallory can avoid hashing every possible password by just hashing the
+    most common ones. Previously, you learned how Django uses a common password list
+    to enforce a password policy. Ironically, Mallory can use the same list to crack
+    passwords of a site without this layer of defense.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Second, did you notice that the hash values for Alice and Charlie are the same?
+    Mallory can’t immediately determine anyone’s password, but with minimal effort
+    she knows Alice and Charlie have the same password.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Last but not least, Mallory can try her luck with a *rainbow table*. This very
+    large table of messages is mapped to precomputed hash values. This allows Mallory
+    to quickly find which message (password) a hash value maps to without resorting
+    to brute force; she can trade space for time. In other words, she can pay the
+    storage and transfer costs of acquiring the rainbow table rather than pay the
+    computational overhead of brute-force cracking. For example, the SHA1 rainbow
+    table at [https://project-rainbowcrack .com](https://project-rainbowcrack.com)
+    is 690 GB.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The passwords for all three users are shown in table 9.2, an extremely abridged
+    rainbow table. Notice that Bob is using a much stronger password than Alice and
+    Charlie.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 9.2 An abridged SHA1 rainbow table downloaded by Mallory
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| hash_value | sha1_password |'
+  prefs: []
+  type: TYPE_TB
+- en: '| ... | ... |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8 | password |'
+  prefs: []
+  type: TYPE_TB
+- en: '| ... | ... |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 6eb5f4e39660b2ead133b19b6996b99a017e91ff | +y;kns:]+7Y] |'
+  prefs: []
+  type: TYPE_TB
+- en: '| ... | ... |'
+  prefs: []
+  type: TYPE_TB
+- en: Clearly, a hash function by itself is unsuitable for password hashing. In the
+    next two sections, I show a couple of ways to resist attackers like Mallory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.2.1 Salted hashing
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Salting* is a way to compute a different hash value from two or more identical
+    messages. A *salt* is a random string of bytes that accompanies the message as
+    input to a hash function. Each message is paired with a unique salt. Figure 9.5
+    illustrates salted hashing.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH09_F05_Byrne](Images/CH09_F05_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9.5 Salting a message yields a different hash value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In many ways, a salt is to hashing what an initialization vector is to encryption.
+    You learned about IVs in chapter 4\. Here’s a comparison:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Salts individualize hash values; IVs individualize ciphertexts.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: A salted hash value is useless if the salt is lost; ciphertext is useless if
+    the IV is lost.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: A salt or IV is stored unobfuscated with the hash value or ciphertext, respectively.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Neither a salt or IV should ever be reused.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: WARNING Many programmers conflate *salts* with *keys*, but these are two totally
+    different concepts. Salts and keys are treated differently and produce different
+    effects. A salt is not a secret and should be used to hash one and only one message.
+    A key is intended to be a secret and can be used to hash one or more messages.
+    Salts are used to differentiate hash values for identical messages; keys should
+    never be used for this purpose.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Salting is an effective countermeasure against crackers like Mallory. By individualizing
+    each hash value, Alice and Charlie’s identical passwords hash to different hash
+    values. This deprives Mallory of a hint: she no longer knows that Alice and Charlie
+    have the same password. More importantly, Mallory cannot use a rainbow table to
+    crack salted hash values. There are no rainbow tables for salted hash values because
+    there is no way for a rainbow table author to predict the salt value in advance.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code demonstrates salted hashing with BLAKE2\. (You learned about
+    BLAKE2 in chapter 2.) This code hashes the same message twice. Each message is
+    hashed with a unique 16-byte salt, resulting in a unique hash value:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Generates two random 16-byte salts
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Same message, different salt
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Different hash values
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Despite built-in support for salt, BLAKE2 is unsuitable for password hashing,
+    and so is every other regular cryptographic hash function. The primary limitation
+    of these functions is counterintuitive: these functions are too fast. The faster
+    a hash function, the less it costs to carry out a brute-force attack. This makes
+    it cheaper for someone such as Mallory to crack passwords.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING BLAKE2 appears in this section for instructional purposes. It should
+    never be used for password hashing. It is way too fast.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Password hashing is one of the only situations in which you actually want to
+    strive for inefficiency. Fast is bad; slow is good. Regular hash functions are
+    the wrong tool for the job. In the next section, I’ll introduce you to a category
+    of functions that are slow by design.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.2.2 Key derivation functions
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Key* *derivation functions* (*KDFs*) occupy an interesting niche in computer
+    science because they are one of the only valid use cases for excessive resource
+    consumption. These functions hash data while intentionally consuming a lot of
+    computational resources, memory, or both. For this reason, KDFs have displaced
+    regular hash functions as the safest way to hash passwords. The higher the resource
+    consumption, the more expensive it is to crack the passwords with brute force.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Like a hash function, a KDF accepts a message and produces a hash value. The
+    message is known as the *initial key*, and the hash value is known as the *derived
+    key*. In this book, I do not use the terms *initial key* or *derived key*, to
+    avoid overloading you with unnecessary vocabulary. A KDF also accepts a salt.
+    As you saw earlier with BLAKE2, the
+  prefs: []
+  type: TYPE_NORMAL
+- en: salt individualizes each hash value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH09_F06_Byrne](Images/CH09_F06_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9.6 Key derivation functions accept a message, salt, and at least one
+    configuration parameter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unlike regular hash functions, a KDF accepts at least one configuration parameter
+    designed to tune resource consumption. A KDF doesn’t just run slow; you tell it
+    how slow to run. Figure 9.6 illustrates the inputs and output of a KDF.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'KDFs are distinguished by the kinds of resources they consume. All KDFs are
+    designed to be computationally intensive; some are designed to be memory intensive.
+    In this section, I examine two of them:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Password-Based Key Derivation Function 2
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Argon2
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Password-Based Key Derivation Function 2* (*PBKDF2*) is a popular password-based
+    KDF. This is arguably the most widely used KDF in Python, because Django uses
+    it to hash passwords by default. PBKDF2 is designed to wrap and iteratively call
+    a hash function. The iteration count and the hash function are both configurable.
+    In the real world, PBKDF2 usually wraps an HMAC function, which in turn often
+    wraps SHA-256\. Figure 9.7 depicts an instance of PBKDF2 wrapping HMAC-SHA256.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH09_F07_Byrne](Images/CH09_F07_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9.7 SHA-256 wrapped by HMAC, and HMAC wrapped by PBKDF2
+  prefs: []
+  type: TYPE_NORMAL
+- en: Create a file named pbkdf2.py and add the code in listing 9.7 to it. This script
+    establishes a crude performance benchmark for PBKDF2.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It begins by parsing the iteration count from the command line. This number
+    tunes PBKDF2 by telling it how many times to call HMAC-SHA256\. Next, the script
+    defines a function called `test`; this function wraps `pbkdf2_hmac`, a function
+    in Python’s `hashlib` module. The `pbkdf2_hmac` function expects the name of an
+    underlying hash function, a message, a salt, and the iteration count. Finally,
+    the script uses the `timeit` module to record the number of seconds it takes to
+    run the test method 10 times.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 9.7 A single call to PBKDF2 wrapping HMAC-SHA256
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Parameterizes the iteration count
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Tunes resource consumption
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Runs the test method 10 times
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Run the following command, shown in bold font, to execute the script with an
+    iteration count of 260,000\. At the time of this writing, Django defaults to this
+    number when hashing passwords with PBKDF2\. The last line of output, also shown
+    in bold, is the number of seconds the script takes to run PBKDF2 10 times:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, add a 0 to the end of the command line and run the script again. Notice
+    the steep increase in response time, shown here in bold:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: When Bob logs in to a Django project, he must wait for PBKDF2 to return once.
+    If Mallory tries to crack Bob’s password, she must wait for it to return over
+    and over again, until she generates whatever password Bob has. This task can easily
+    take more time than Mallory has to live if Bob chose a passphrase.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Attackers like Mallory often use *graphics processing units* (*GPUs*) to reduce
+    the time of a brute-force attack by orders of magnitude. GPUs are specialized
+    processors, originally designed for rendering graphics. Like a CPU, a GPU processes
+    data with multiple cores. A CPU core is faster than a GPU core, but a GPU can
+    have hundreds of cores more than a CPU. This allows GPUs to excel at tasks that
+    can be divided into many parallelizable subtasks. Tasks like this include machine
+    learning, bitcoin mining, and—you guessed it—password cracking. Cryptographers
+    have responded to this threat by creating a new generation of KDFs designed to
+    resist this kind of attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In 2013, a group of cryptographers and security practitioners announced a new
+    Password Hashing Competition (PHC). Its goal was to select and standardize on
+    a password hashing algorithm capable of resisting modern cracking techniques ([https://password-hashing.net](https://password-hashing.net)).
+    Two years later, a password-based KDF named *Argon2* won the PHC.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Argon2 is both memory-intensive and computationally intensive. This means an
+    aspiring password cracker must acquire a large amount of memory as well as a large
+    amount of computational resources. Argon2 is lauded for its ability to resist
+    FPGA- and GPU-driven cracking efforts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The workhorse of Argon2 is BLAKE2\. This is ironic. Argon2 is known for how
+    slow it can be. What’s under the hood? A hash function with a reputation for speed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note Use Argon2 for new projects. PBKDF2 is a better-than-average KDF but isn’t
+    the best tool for the job. Later I will show you how to migrate a Django project
+    from PBKDF2 to Argon2.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next section, I’ll show you how to configure password hashing in Django.
+    This allows you to harden PBKDF2 or replace it with Argon2.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.3 Configuring password hashing
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Django password hashing is highly extensible. As usual, this behavior is configured
+    via the `settings` module. The `PASSWORD_HASHERS` setting is a list of password
+    hashers. The default value is a list of four password hasher implementations.
+    Each of these password hashers wraps a KDF. The first three should look familiar:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: Django hashes new passwords with the first password hasher in the list. This
+    happens when your account is created and when you change your password. The hash
+    value is stored in the database, where it can be used to verify future authentication
+    attempts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Any password hasher in the list can verify authentication attempts against previously
+    stored hash values. For example, a project configured with the previous example
+    will hash new or changed passwords with PBKDF2, but it can verify passwords previously
+    hashed by PBKDF2SHA1, Argon2, or BCryptSHA256.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Each time a user successfully logs in, Django checks to see if their password
+    was hashed with the first password hasher in the list. If not, the password is
+    rehashed with the first password hasher, and the hash value is stored in the database.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.3.1 Native password hashers
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Django natively supports 10 password hashers. `MD5PasswordHasher`, `SHA1PasswordHasher`,
+    and their unsalted counterparts are insecure. These components are shown in bold.
+    Django maintains these password hashers for backward compatibility with legacy
+    systems:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`django.contrib.auth.hashers.PBKDF2PasswordHasher`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`django.contrib.auth.hashers.Argon2PasswordHasher`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`django.contrib.auth.hashers.BCryptSHA256PasswordHasher`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`django.contrib.auth.hashers.BCryptPasswordHasher`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`**django.contrib.auth.hashers.SHA1PasswordHasher**`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`**django.contrib.auth.hashers.MD5PasswordHasher**`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`**django.contrib.auth.hashers.UnsaltedSHA1PasswordHasher**`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`**django.contrib.auth.hashers.UnsaltedMD5PasswordHasher**`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`django.contrib.auth.hashers.CryptPasswordHasher`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: WARNING It is unsafe to configure a Django project with `SHA1PasswordHasher`,
+    `MD5PasswordHasher`, `UnsaltedSHA1PasswordHasher`, or `UnsaltedMD5PasswordHasher`.
+    Passwords hashed with these components are trivial to crack because the underlying
+    hash function is fast and cryptographically weak. Later in this chapter, I will
+    show you how to fix this problem.
+  prefs: []
+  type: TYPE_NORMAL
+- en: At the time of this writing, Django defaults to `PBKDF2PasswordHasher` with
+    260,000 iterations. The iteration count is increased by the Django development
+    team with each new release. Python programmers who want to increase this value
+    themselves can do so with a custom password hasher. This is useful if a system
+    is unfortunately stuck with an old release of Django.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.3.2 Custom password hashers
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Configuring a custom password hasher is easy when extending a native password
+    hasher. Observe `TwoFoldPBKDF2PasswordHasher` in the following code. This class
+    descends from `PBKDF2PasswordHasher` and bumps the iteration count by a factor
+    of two. Keep in mind that a configuration change like this isn’t free. By design,
+    this change would also increase login latency:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Doubles the iteration count
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Custom password hashers are configured via `PASSWORD_HASHERS`, just like native
+    password hashers:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`TwoFoldPBKDF2PasswordHasher` can verify authentication attempts against hash
+    values previously computed by `PBKDF2PasswordHasher` because the underlying KDF
+    is the same. This means a change like this can be done safely on an existing production
+    system. Django will upgrade a previously stored hash value when the user authenticates.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.3.3 Argon2 password hashing
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Every new Django project should hash passwords with Argon2\. This will cost
+    you only a few seconds of your time if you make this change before the system
+    is pushed to production. The amount of work goes up dramatically if you want to
+    make this change after users create accounts for themselves. I cover the easy
+    way in this section; I cover the hard way in the next section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Configuring Django to use Argon2 is easy. First, ensure that `Argon2PasswordHasher`
+    is the first and only password hasher in `PASSWORD_HASHERS`. Next, run the following
+    command from within your virtual environment. This installs the `argon2-cffi`
+    package, providing `Argon2PasswordHasher` with an Argon2 implementation:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: WARNING It is unwise to replace every default password hasher with `Argon2PasswordHasher`
+    on a system that is already in production. Doing this prevents existing users
+    from logging in.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If a system is already in production, `Argon2PasswordHasher` will be unable
+    to verify future authentication attempts of existing users by itself; older user
+    accounts would become inaccessible. In this scenario, `Argon2PasswordHasher` must
+    be the head of `PASSWORD_HASHERS`, and the legacy password hasher should be the
+    tail. This configures Django to hash new users’ passwords with Argon2\. Django
+    will also upgrade existing user’s passwords to Argon2 as they log in.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Django upgrades the existing password hash value only when a user authenticates.
+    This is not a concern if every user authenticates within a short period of time,
+    but often this is not the case.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The safety provided by a stronger password hasher is not realized for a user
+    until they log in after the upgrade. For some users, this can be a few seconds;
+    for others, it will never happen. Until they log in, the original hash value will
+    remain unchanged (and possibly vulnerable) in the password store. The next section
+    explains how to migrate all users to an upgraded password hasher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.3.4 Migrating password hashers
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'In June 2012, during the same week LinkedIn’s breach was announced, the unsalted
+    hash values for more than 1.5 million eharmony passwords were breached and published.
+    See them for yourself at [https://defuse.ca/files/eharmony-hashes.txt](https://defuse.ca/files/eharmony-hashes.txt).
+    At the time, eharmony was hashing passwords with MD5, an insecure hash function
+    you learned about in chapter 2\. According to one cracker ([http://mng.bz/jBPe](http://mng.bz/jBPe)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If eharmony had used salt in their hashes like they should have been, I wouldn't
+    have been able to run this attack. In fact, salting would have forced me to run
+    a dictionary attack on each hash by itself, and that would have taken me over
+    31 years.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s consider how eharmony could have mitigated this problem. Suppose it is
+    Alice’s first day on the job at eharmony. She has inherited an existing system
+    with the following configuration:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The author of this system was fired for using `UnsaltedMD5PasswordHasher`.
+    It’s now Alice’s responsibility to migrate the system to `Argon2PasswordHasher`
+    without any downtime. The system has 1.5 million users, so she can’t force every
+    one of them to log in again. The product manager does not want to reset the password
+    for every account, understandably. Alice realizes the only way to move forward
+    is to hash the passwords twice, once with `UnsaltedMD5PasswordHasher` and again
+    with `Argon2PasswordHasher`. Alice’s game plan is Add-Migrate-Delete:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Add `Argon2PasswordHasher`
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Migrate hash values
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Delete `UnsaltedMD5PasswordHasher`
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 'First, Alice adds `Argon2PasswordHasher` to `PASSWORD_HASHERS`. This limits
+    the problem to existing users who haven’t logged in recently. Introducing `Argon2PasswordHasher`
+    is the easy part; getting rid of `UnsaltedMD5PasswordHasher` is the hard part.
+    Alice keeps `UnsaltedMD5PasswordHasher` in the list to ensure that existing users
+    can access their accounts:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Adds Argon2PasswordHasher to the head of the list
+  prefs: []
+  type: TYPE_NORMAL
+- en: Next, Alice must migrate the hash values; this is most of the work. She can’t
+    just rehash the passwords with Argon2 so she has to double-hash them instead.
+    In other words, she plans to read each MD5 hash value out of the database and
+    pass it into Argon2; the output of Argon2, another hash value, will then replace
+    the original hash value in the database. Argon2 requires salt and is way slower
+    than MD5; this means it’s going to take crackers like Mallory way more than 31
+    years to crack these passwords. Figure 9.8 illustrates Alice’s migration plan.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH09_F08_Byrne](Images/CH09_F08_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9.8 Hashed once with MD5, and hashed again with Argon2
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alice can’t just modify the hash values of a production authentication system
+    without affecting users. Neither `Argon2PasswordHasher` or `UnsaltedMD5PasswordHasher`
+    would know what to do with the new hash values; users wouldn’t be able to log
+    in. Before Alice can modify the hash values, she must first author and install
+    a custom password hasher capable of interpreting the new hash values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Alice authors `UnsaltedMD5ToArgon2PasswordHasher`, shown in listing 9.8\. This
+    password hasher bridges the gap between `Argon2PasswordHasher` and `UnsaltedMD5PasswordHasher`.
+    Like all password hashers, this one implements two methods: encode and verify.
+    Django calls the `encode` method when your password is set; this method is responsible
+    for hashing the password. Django calls the `verify` method when you log in; this
+    method is responsible for comparing the original hash value in the database to
+    the hash value of the reproduced password.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 9.8 Migrating hash values with a custom password hasher
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Called by Django when your password is set
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Hashes with both MD5 and Argon2
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Called by Django when you log in
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Compares hash values
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Alice adds `UnsaltedMD5ToArgon2PasswordHasher` in `PASSWORD_HASHERS`, shown
+    in bold in the following code. This has no immediate effect because no password
+    hash values have been modified yet; every user’s password is still hashed with
+    either MD5 or Argon2:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: Alice is now finally in a position to retrieve each MD5 hash value, hash it
+    with Argon2, and store it back in the database. Alice executes this portion of
+    the plan with a Django *migration*. Migrations let Django programmers coordinate
+    database changes in pure Python. Typically, a migration modifies the database
+    schema; Alice’s migration will only modify data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 9.9 illustrates Alice’s migration. It begins by loading the `User` model
+    object for every account with an MD5 hashed password. For each user, the MD5 hash
+    value is hashed with Argon2\. The Argon2 hash value is then written to the database.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 9.9 A data migration for double hashing
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ References the User model
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Retrieves users with an MD5 hashed password
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Hashes each MD5 hash value with Argon2
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Saves double hash values
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❺ Ensures this code runs after the password table is created
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alice knows this operation will take more than a few minutes; Argon2 is slow
+    by design. Meanwhile, in production, `UnsaltedMD5ToArgon2PasswordHasher` is there
+    to authenticate these users. Eventually, each password is migrated with no downtime;
+    this breaks the dependency on `UnsaltedMD5PasswordHasher`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Finally, Alice deletes `UnsaltedMD5PasswordHasher` from `PASSWORD_HASHERS`.
+    She also ensures that the hash values created by it are deleted or retired from
+    all existing backup copies of the production database:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: Like most Add-Migrate-Delete work efforts, the first and last steps are the
+    easiest. Add-Migrate-Delete doesn’t just apply to password migrations. This mindset
+    is useful for any kind of migration effort (e.g., changing a URL to a service,
+    switching libraries, renaming a database column).
+  prefs: []
+  type: TYPE_NORMAL
+- en: By now, you have learned a lot about password management. You have composed
+    a password-change workflow out of two built-in views. You understand how passwords
+    are represented in storage and know how to hash them safely. In the next section,
+    I’ll show you another password-based workflow composed of four more built-in views.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 9.4 Password-reset workflow
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Bob has forgotten his password. In this section, you’ll help him reset it with
+    another workflow. You’re in luck; you do not have to write any code this time.
+    You did this work in the previous chapter when you mapped eight URL paths to built-in
+    Django views. The password-reset workflow is composed of the last four of these
+    views:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`PasswordResetView`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`PasswordResetDoneView`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`PasswordResetConfirmView`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`PasswordResetCompleteView`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Bob enters this workflow with an unauthenticated request to a password-reset
+    page. This page renders a form. He enters his email, submits the form, and receives
+    an email with a password-reset link. Bob clicks the link, taking him to a page
+    where he resets his password. Figure 9.9 illustrates this workflow.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH09_F09_Byrne](Images/CH09_F09_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9.9 A password-reset workflow
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Log out of the site and restart your Django server. Point your browser to the
+    password-reset page at https:/./localhost:8000/accounts/password_reset/. By design,
+    this page is accessible to unauthenticated users. This page has one form with
+    one field: the user’s email address. Enter `bob@bob.com` and submit the form.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The form post of the password-reset page is handled by `PasswordResetView`.
+    An email with a password-reset link is sent to the inbound email address if it
+    is associated with an account. If the email address is not associated with an
+    account, this view sends nothing. This prevents a malicious anonymous user from
+    using your server to bombard someone with unsolicited email.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The password-reset URL contains the user’s ID and a token. This token isn’t
+    just a random string of characters and numbers; it is a keyed hash value. `PasswordResetView`
+    produces this hash value with an HMAC function. The message is a handful of user
+    fields such as the ID and `last_login`. The key is the `SECRET_KEY` setting. Figure
+    9.10 illustrates this process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH09_F10_Byrne](Images/CH09_F10_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 9.10 Bob submits a password-reset request and receives a password-reset
+    token; the token is a keyed hash value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the previous chapter, you configured Django to redirect email to your console.
+    Copy and paste Bob’s password-reset URL from your console into another browser
+    tab. This delivers the password-reset token and the user’s ID back to the server.
+    The server uses the user ID to reconstruct the token. The reconstructed token
+    is then compared to the inbound password-reset token. If both tokens match, the
+    server knows it is the author of the token; Bob is allowed to change his password.
+    If the tokens do not match, the server knows the inbound password-reset token
+    is forged or tampered with. This prevents someone such as Mallory from resetting
+    the password for someone else’s account.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The password-reset token is not reusable. If Bob wants to reset his password
+    again, he must restart and finish the workflow. This mitigates the risk of Mallory
+    accessing Bob’s email account after he receives a password-reset email. Mallory
+    can still harm Bob in this scenario, but she cannot change Bob’s password with
+    an old and forgotten password-reset email.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The password-reset token has an expiry. This also mitigates the risk of Mallory
+    accessing Bob’s password-reset email. The default password-reset time-out is three
+    days. This is reasonable for a social media site but unsuitable for a missile-guidance
+    system. Only you can determine the appropriate value for the systems you build.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Use the `PASSWORD_RESET_TIMEOUT` setting to configure the password-reset expiry
+    in seconds. This setting deprecates `PASSWORD_RESET_TIMEOUT_DAYS`, which is too
+    coarse-grained for some systems.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In previous chapters, you learned a lot about hashing and authentication. In
+    this chapter, you learned about the relationships between these two topics. Changing
+    and resetting passwords are fundamental features of any system; both depend heavily
+    on hashing. The things you’ve learned about authentication so far prepare you
+    for the main topic of the next chapter, authorization.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Don’t reinvent the wheel; change and reset user passwords with built-in Django
+    components.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Enforce and fine-tune your password policy with password validation.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Resist brute-force attacks with salted hashing.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Do not hash passwords with a regular hash function; always use a key derivation
+    function, preferably Argon2.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Migrate legacy password hash values with a Django data migration.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Password-reset workflows are yet another application of data authentication
+    and keyed hashing.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '* * *'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 1. In 2016, LinkedIn acknowledged this number was actually more than 170 million.
+  prefs: []
+  type: TYPE_NORMAL

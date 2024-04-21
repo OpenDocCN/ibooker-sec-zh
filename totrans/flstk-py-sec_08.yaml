@@ -1,0 +1,12 @@
+- en: Part 2 Authentication and authorization
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'This second part of the book is the most commercially useful. I say this because
+    it is loaded with hands-on examples of workflows that most systems need to have:
+    registering and authenticating users, managing user sessions, changing and resetting
+    passwords, administering permissions and group membership, as well as sharing
+    resources. This portion of the book is focused primarily on getting work done,
+    securely.'
+  prefs: []
+  type: TYPE_NORMAL

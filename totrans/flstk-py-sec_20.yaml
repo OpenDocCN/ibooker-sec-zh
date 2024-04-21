@@ -1,0 +1,740 @@
+- en: 17 Cross-Origin Resource Sharing
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Understanding the same-origin policy
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Sending and receiving simple CORS requests
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Implementing CORS with `django-cors-headers`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Sending and receiving preflighted CORS requests
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: In chapter 15, you learned that an origin is defined by the protocol (scheme),
+    host, and port of a URL. Every browser implements a *same-origin policy* (*SOP*).
+    The goal of this policy is to ensure that certain resources are accessible to
+    documents with only the “same origin.” This prevents a page with an origin of
+    mallory.com from gaining unauthorized access to a resource originating from ballot.charlie.com.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Think of *Cross-Origin Resource Sharing* (CORS) as a way to relax the browser’s
+    SOP. This allows social.bob.com to load a font from https:/./fonts.gstatic.com.
+    It also lets a page from alice.com send an asynchronous request to social.bob.com.
+    In this chapter, I’ll show you how to safely create and consume shared resources
+    with `django-cors-headers`. Because of the nature of CORS, this chapter contains
+    more JavaScript than Python.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 17.1 Same-origin policy
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: By now, you’ve seen Mallory gain unauthorized access to many resources. She
+    cracked Charlie’s password with a rainbow table. She took over Bob’s account with
+    a `Host` header attack. She figured out who Alice voted for with XSS. In this
+    section, Mallory launches a much simpler attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose Mallory wants to know who Bob voted for in the 2020 US presidential
+    election. She lures him back to mallory.com, and his browser renders the following
+    malicious web page. This page quietly requests Bob’s ballot form from ballot.charlie.com,
+    a site Bob is currently logged in to. The ballot form, containing Bob’s vote,
+    is then loaded into a hidden iframe. This triggers a JavaScript event handler,
+    which *attempts* to read Bob’s vote and send it to Mallory’s server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mallory’s attack fails miserably, as shown in the following listing. Bob’s browser
+    blocks her web page from accessing the iframe document property, raising a `DOMException`
+    instead. The SOP saves the day.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 17.1 Mallory fails to steal Bob’s private information
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Raises DOMException instead of accessing Bob’s vote
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Tries to capture Bob’s vote but never executes
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Loads Bob’s ballot page
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Invoked after ballot page loads
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❺ Hides ballot page
+  prefs: []
+  type: TYPE_NORMAL
+- en: Long ago, there was no SOP. If Mallory had tried this technique in the mid-1990s,
+    she would have succeeded. Attacks like this were so easy to execute that someone
+    like Mallory usually didn’t have the need for techniques such as XSS. Obviously,
+    it didn’t take each browser vendor very long to adopt an SOP.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Contrary to popular belief, the browser’s SOP does not apply to all cross-origin
+    activity; most embedded content is exempt. For example, suppose Mallory’s malicious
+    web page loads an image, script, and stylesheet from ballot.charlie.com; the SOP
+    would have no problem displaying, executing, and applying all three of these resources.
+    This is exactly how a website integrates with a CDN. It happens all the time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For the remainder of this chapter, I cover functionality that *is* subject to
+    the SOP. In these scenarios, the browser and the server must cooperate via CORS.
+    Like CSP, CORS is a W3C Recommendation ([www.w3.org/TR/2020/SPSD-cors-20200602/](https://www.w3.org/TR/2020/SPSD-cors-20200602/)).
+    This document defines a standard for sharing resources between origins, giving
+    you a mechanism to relax the browser’s SOP in precise ways.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 17.2 Simple CORS requests
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'CORS is a collaboration effort between the browser and server, implemented
+    by a group of request and response headers. In this section, I introduce the most
+    commonly used CORS header with two simple examples:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using a font from Google
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Sending an asynchronous request
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Embedded content generally doesn’t require CORS; fonts are an exception. Suppose
+    Alice requests the web page in listing 17.2 from bob.com (this page also appeared
+    in chapter 15). As shown in bold, the web page triggers a second request to https://fonts.googleapis.com
+    for a stylesheet. Google’s stylesheet triggers a third request to https://fonts.gstatic.com
+    for a web font.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 17.2 A web page embeds a stylesheet and font from Google
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ A public stylesheet hosted by Google
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ An inline stylesheet
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Google sends the third response with two interesting headers. The `Content-Type`
+    header indicates that the font is in Web Open Font Format (you learned about this
+    header in chapter 14). More importantly, the response also contains a CORS-defined
+    `Access-Control-Allow-Origin` header. By sending this header, Google informs the
+    browser that a resource from any origin is allowed to access the font:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Relaxes the same-origin policy for all origins
+  prefs: []
+  type: TYPE_NORMAL
+- en: This solution works fine if your goal is to share a resource with the entire
+    world; but what if you want to share a resource with only a single trusted origin?
+    This use case is covered next.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 17.2.1 Cross-origin asynchronous requests
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Suppose Bob wants his social media site users to stay informed about the latest
+    trends. He creates a new read-only /trending/ resource, serving a short list of
+    popular social media posts. Alice wants to display this information to users of
+    alice.com as well so she writes the following JavaScript. Her code retrieves Bob’s
+    new resource with an asynchronous request. An event handler populates a widget
+    with the response.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 17.3 A web page sends a cross-origin asynchronous request
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Sends a cross-origin request
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Renders response items to the user
+  prefs: []
+  type: TYPE_NORMAL
+- en: To Alice’s surprise, her browser blocks the response, and the response handler
+    is never called. Why? The SOP simply has no way to determine whether the response
+    contains public or private data; `social.bob.com/trending/` and `social.bob .com/direct-messages/`
+    are treated the same. Like all cross-origin asynchronous requests, the response
+    must contain a valid `Access-Control-Allow-Origin` header or the browser will
+    block access to it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Alice asks Bob to add an `Access-Control-Allow-Origin` header to `/trending/`.
+    Notice that Bob is more restrictive of `/trending/` than Google is of its font.
+    By sending this header, social.bob.com informs the browser that a document must
+    originate from `https://alice.com` in order to access the resource:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Access-Control-Allow-Origin` is the first of many CORS headers I cover in
+    this chapter. In the next section, you’ll learn how to start using it.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 17.3 CORS with django-cors-headers
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Sharing resources between origins is easy with `django-cors-headers`. From
+    within your virtual environment, run the following command to install it. This
+    package should be installed into the shared resource producer, not the consumers:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, add the `corsheaders` app to `INSTALLED_APPS` in your `settings` module:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Finally, add `CorsMiddleware` to `MIDDLEWARE` as it appears here in bold font.
+    According to the project documentation, `CorsMiddleware` should be placed “before
+    any middleware that can generate responses such as Django''s `CommonMiddleware`
+    or WhiteNoise’s `WhiteNoiseMiddleware`”:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: 17.3.1 Configuring Access-Control-Allow-Origin
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Before configuring `Access-Control-Allow-Origin`, you must answer two questions.
+    The answers to these questions should be precise:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Which resources are you sharing?
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Which origins are you sharing them with?
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Use the `CORS_URLS_REGEX` setting to define shared resources by URL path pattern.
+    As the name implies, this setting is a regular expression. The default value matches
+    all URL paths. The following example matches any URL path starting with `shared_
+    resources`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Note I recommend hosting all shared resources with a common URL path prefix.
+    Furthermore, do not host unshared resources with this path prefix as well. This
+    clearly communicates what is shared to two groups of people: other members of
+    your team and resource consumers.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As you probably guessed, the value of the `Access-Control-Allow-Origin` should
+    be as restrictive as possible. Use `*` if you are sharing resources publicly;
+    use a single origin if you are sharing resources privately. The following settings
+    configure the value of `Access-Control-Allow-Origin`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`CORS_ORIGIN_ALLOW_ALL`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`CORS_ORIGIN_WHITELIST`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`CORS_ORIGIN_REGEX_WHITELIST`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Assigning `CORS_ORIGIN_ALLOW_ALL` to `True` sets `Access-Control-Allow-Origin`
+    to `*`. This also disables the other two settings.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `CORS_ORIGIN_WHITELIST` setting shares resources with one or more specific
+    origins. If the origin of a request matches any item in this list, it becomes
+    the value of the `Access-Control-Allow-Origin` header. For example, Bob would
+    use the following configuration to share resources with sites owned by Alice and
+    Charlie:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: The `Access-Control-Allow-Origin` header will not accommodate the entire list;
+    it accepts only one origin. How does `django-cors-headers` know the origin of
+    the request? If you guessed the `Referer` header, you are pretty close. Actually,
+    the browser designates the request origin with a header named `Origin`. This header
+    behaves like `Referer` but does not reveal the URL path.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `CORS_ORIGIN_REGEX_WHITELIST` setting is analogous to `CORS_ORIGIN_WHITELIST`.
+    As the name indicates, this setting is a list of regular expressions. If the origin
+    of the request is matched by any expression in this list, it becomes the value
+    of `Access-Control-Allow-Origin`. For example, Bob would use the following to
+    share resources with all subdomains of alice.com:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: Note You may be surprised to learn that WhiteNoise serves every static resource
+    with an `Access-Control-Allow-Origin` header set to `*`. The original intent was
+    to grant cross-origin access to static resources such as fonts. This should not
+    be a problem as long as you are using WhiteNoise to serve public resources. If
+    this is not the case, you can remove this behavior by setting `WHITENOISE_ALLOW_ALL_ORIGINS`
+    to `False`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next section, I cover use cases too complicated for `Access-Control-Allow-Origin`
+    alone. I introduce you to several more response headers, two request headers,
+    and a rarely used request method, `OPTIONS`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 17.4 Preflight CORS requests
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Before I dive into this subject, I’m going to provide a little background about
+    the problem it solves. Imagine it is 2003 and Charlie is building ballot.charlie.com.
+    The /vote/ endpoint handles POST and PUT requests, allowing users to create and
+    change their vote, respectively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Charlie knows that the SOP doesn’t block cross-origin form submission, so he
+    guards his POST handler with `Referer` validation. This blocks malicious sites
+    such as mallory.com from successfully submitting forged votes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Charlie also knows that the SOP does block cross-origin PUT requests, so he
+    doesn’t bother guarding his PUT handler with `Referer` validation. He forgoes
+    this layer of defense, relying on the fact that browsers block all cross-origin
+    unsafe non-POST requests. Charlie completes ballot.charlie.com and pushes it to
+    production.
+  prefs: []
+  type: TYPE_NORMAL
+- en: CORS is born in the following year (2004). Over the next 10 years, it matures
+    into a W3C Recommendation. During this time, the specification authors had to
+    find a way to roll out CORS without endangering defenseless endpoints like Charlie’s
+    PUT handler.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Obviously, CORS couldn’t simply unleash cross-origin unsafe requests for a new
+    generation of browsers. Older sites such as ballot.charlie.com would suffer a
+    new wave of attacks. Inspecting a response header such as `Access-Control-Allow-Origin`
+    couldn’t protect these sites because the attack would be finished before the browser
+    received the response.
+  prefs: []
+  type: TYPE_NORMAL
+- en: CORS had to enable the browser to discover if the server was prepared *before*
+    sending a cross-origin unsafe request. This discovery mechanism is called a *preflight
+    request*. The browser sends a preflight request to determine whether it is safe
+    to send a potentially harmful cross-origin resource request. In other words, the
+    browser asks for permission instead of forgiveness. The original cross-origin
+    resource request is sent only if the server responds favorably to the preflight
+    request.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The preflight request method is always `OPTIONS`. Like `GET` and `HEAD`, the
+    `OPTIONS` method is safe. The browser automatically assumes all responsibility
+    for sending the preflight request and processing the preflight response. Client-side
+    code never deliberately performs these tasks. The next section examines a preflight
+    request in more technical detail.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 17.4.1 Sending the preflight request
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Suppose Bob wants to improve his social networking site with a new feature,
+    anonymous comments. Anyone can say anything without consequence. Let’s see what
+    happens.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Bob deploys social.bob.com/comment/, allowing anyone to create or update a comment.
+    He then writes the JavaScript in listing 17.4 for his public website www.bob.com.
+    This code lets the public anonymously comment on photos posted by his social network
+    users.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Notice two important details:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `Content-Type` header is explicitly set to `application/json`. A cross-origin
+    request with either of these properties requires a preflight request.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: www.bob.com sends the comment with a PUT request.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'In other words, this code sends two requests: the preflight request and the
+    actual cross-origin resource request.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 17.4 A web page from www.bob.com adds a comment to a photo
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Reads the comment from the DOM
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ A preflight triggering Content-Type request header value
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ A preflight triggering request method
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note If you want to understand CORS, let the headers tell the story.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here are some interesting headers of the preflight request. You learned about
+    two of them previously. The `Host` header designates where the request is going;
+    the `Origin` header designates where the request comes from. `Access-Control-Request-Headers`
+    and `Access-Control-Request-Method`, shown in bold font, are CORS headers. The
+    browser uses these headers to ask if the server is prepared for a PUT request
+    bearing an atypical content type:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Here are some interesting headers from the preflight response. `Access-Control-Allow-Headers`
+    and `Access-Control-Allow-Methods` are replies to `Access-Control-Request-Headers`
+    and `Access-Control-Request-Method`, respectively. These response headers communicate
+    which methods and request headers Bob’s server can handle. This includes the PUT
+    method and the `Content-Type` header, shown in bold font. You already know plenty
+    about the third response header, `Access-Control-Allow-Origin`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: Finally, the browser is given permission to send the original cross-origin asynchronous
+    PUT request. Figure 17.1 illustrates both requests.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH17_F01_Byrne](Images/CH17_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 17.1 A successful preflighted CORS request
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'So, exactly what conditions trigger a preflight request? Table 17.1 enumerates
+    various triggers. If the browser discovers more than one trigger, it sends at
+    most only one preflight request. Small browser differences do exist (see MDN Web
+    Docs for the details: [http://mng.bz/0rKv](https://shortener.manning.com/0rKv)).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 17.1 Preflight request triggers
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Request property | Trigger condition |'
+  prefs: []
+  type: TYPE_TB
+- en: '| method | The request method is anything other than GET, HEAD, or POST. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| headers | The request contains a header that is neither safelisted or forbidden.
+    The CORS specification defines safelisted request headers as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Accept
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Accept-Language
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Content-Language
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Content-Type (further restrictions follow)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The CORS specification defines 20 forbidden headers, including Cookie, Host,
+    Origin, and Referer [(https://fetch.spec.whatwg.org/#forbidden-header-name).](https://fetch.spec.whatwg.org/#forbidden-header-name)
+    |
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Content-Type header | The Content-Type header is anything other than these:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: application/x-www-form-urlencoded
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: multipart/form-data
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: text/plain
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '|'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| ReadableStream | The browser requests a data stream via the Streams API.
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| XMLHttpRequestUpload | The browser attaches an event listener to XMLHttpRequest.upload.
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: As a resource consumer, you are not responsible for sending the preflight request;
+    as a resource producer, you are responsible for sending the preflight response.
+    The next section covers how to fine-tune various preflight response headers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 17.4.2 Sending the preflight response
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'In this section, you’ll learn how to manage several preflight response headers
+    with `django-cors-headers`. The first two headers were covered in the previous
+    section:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Access-Control-Allow-Methods`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`Access-Control-Allow-Headers`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`Access-Control-Max-Age`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'The `CORS_ALLOW_METHODS` setting configures the `Access-Control-Allow-Methods`
+    response header. The default value is a list of common HTTP methods, shown here.
+    You should apply the principle of least privilege when configuring this value;
+    allow only the methods you need:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `CORS_ALLOW_HEADERS` setting configures the `Access-Control-Allow-Headers`
+    response header. The default value for this setting is a list of common harmless
+    request headers, shown here. `Authorization`, `Content-Type`, `Origin`, and `X-CSRFToken`
+    have been covered previously in this book:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Introduced alongside OAuth 2
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Introduced alongside XSS
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Introduced in this chapter
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Introduced alongside CSRF
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Extending this list with a custom request header doesn’t require copying the
+    entire thing into your settings file. The following code demonstrates how to do
+    this cleanly by importing the `default_headers` tuple:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `Access-Control-Max-Age` response header limits how long the preflight
+    response is cached by the browser. This header is configured by the `CORS_PREFLIGHT
+    _MAX_AGE` setting. The default value for this setting is `86400` (one day, in
+    seconds):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: Caching for a long time period may potentially complicate your releases. For
+    example, suppose your server tells a browser to cache a preflight response for
+    one day. Then you modify the preflight response in order to roll out a new feature.
+    It could take up to one day before the browser can use the feature. I recommend
+    setting `CORS_PREFLIGHT_MAX_AGE` to 60 seconds or less in production. This avoids
+    a potential headache and the performance hit is typically negligible.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Debugging your way through local development issues is next to impossible when
+    your browser is caching the preflight response. Do yourself a favor and assign
+    `CORS_PREFLIGHT_MAX_AGE` to `1` in your development environment:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: 17.5 Sending cookies across origins
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Bob realizes he made a big mistake. People are using anonymous comments to say
+    really bad things to one another on his social networking site. Everyone is upset.
+    He decides to replace anonymous comments with authenticated comments. From now
+    on, requests to /comment/ must bear a valid session ID.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unfortunately for Bob, each request from www.bob.com already omits the user’s
+    session ID, even for users currently logged in to social.bob.com. By default,
+    browsers omit cookies from cross-origin asynchronous requests. They also ignore
+    cookies arriving from cross-origin asynchronous responses.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Bob adds the `Access-Control-Allow-Credentials` header to the /comment/ preflight
+    response. Like other CORS headers, this one is designed to relax the SOP. Specifically,
+    this header permits the browser to include credentials in the subsequent cross-origin
+    resource request. Client-side credentials include cookies, authorization headers,
+    and client TLS certificates. An example header is shown here:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `CORS_ALLOW_CREDENTIALS` setting instructs `django-cors-headers` to add
+    this header to all CORS responses:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`Access-Control-Allow-Credentials` *allows* the browser to send cookies; it
+    doesn’t *force* the browser to do anything. In other words, the server and browser
+    must both opt in. `Access-Control-Allow-Credentials` is intended to be used in
+    conjunction with `fetch(credentials)` or `XmlHttpRequest.withCredentials`. Finally,
+    Bob adds one line of JavaScript to www.bob.com, shown here in bold font. Problem
+    solved:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ An opt-in setting for sending and receiving cookies
+  prefs: []
+  type: TYPE_NORMAL
+- en: I chose to isolate CORS and CSRF from each other in this book. I also chose
+    to present these topics back-to-back because CORS and CSRF resistance are often
+    confused for each other. Despite some overlap, these subjects are not the same.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 17.6 CORS and CSRF resistance
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Some of the confusion between CORS and CSRF is to be expected. Both topics
+    fall under web security; both topics apply to traffic between websites. These
+    similarities are overshadowed by many differences:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: CORS headers cannot resist common forms of CSRF.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: CSRF resistance cannot relax the same-origin policy.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: CORS is a W3C Recommendation; CSRF protection is unstandardized.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Request forgery requires a session ID; resource sharing does not.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: CORS is no substitute for CSRF resistance. In chapter 16, you saw Mallory trick
+    Alice into submitting a hidden form from mallory.com to admin.alice.com. The SOP
+    does not regulate this kind of request. There is no way to stop attacks like this
+    with CORS headers. CSRF resistance is the only way.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Likewise, CSRF resistance is no substitute for CORS. In this chapter, you saw
+    Bob use CORS to relax the SOP, sharing a /trending/ resource with https:/./alice.com.
+    Conversely, no form of CSRF resistance would have allowed Bob to relax the SOP.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Furthermore, CORS is a W3C Recommendation. This standard has been implemented
+    in a relatively uniform manner by every browser and countless server-side frameworks,
+    including `django-cors-headers`. There is no equivalent for CSRF resistance. Django,
+    Ruby on Rails, ASP.NET, and every other web framework is free to resist CSRF in
+    its own unique way.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finally, a successful forged request must bear a valid session ID; the user
+    must be logged in. Conversely, many successful CORS requests do not, and should
+    not, bear a session ID. In this chapter, you saw Google share a font with Alice
+    even though she was not logged in to Google. Bob originally shared /trending/
+    with www.bob.com users even though many of them were not logged in to social.bob.com.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In short, the purpose of CSRF resistance is to reject unintentional malicious
+    requests for the sake of safety. The purpose of CORS is to accept intentional
+    requests to support feature functionality. In the next chapter, I cover clickjacking,
+    yet another topic that is confused with CSRF and CORS.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The internet would be a very dangerous place without the SOP.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: CORS can be thought of as a way to relax the SOP.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Simple CORS use cases are accommodated by `Access-Control-Allow-Origin`.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The browser precedes a potentially harmful CORS request with a preflight request.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Host all shared resources with a common URL path prefix.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

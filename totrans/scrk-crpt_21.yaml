@@ -1,0 +1,85 @@
+- en: Epilogue
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'This book has presented some 140 different ciphers, along with innumerable
+    variations. This may bewilder some readers. They may want to know just one thing:
+    “What is the best cipher for me?” That question is complicated, because the book
+    is intended for such a wide range of readers. In this epilogue I hope to provide
+    some useful answers.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Children**: There are several ciphers here that children can understand and
+    use. They can use simple substitution ciphers, especially the Caesar cipher. Children
+    particularly like ciphers where the letters are replaced by pictures or symbols,
+    such as 🙂☽♡⚇⚓🎾🧙☼◈☆. Children also like route transpositions. Teens may like columnar
+    transpositions and the Belaso cipher.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Hobbyists**: Hobbyists may enjoy exchanging ciphers with friends, challenging
+    one another to solve them. Ciphers that are best suited for this are simple substitution,
+    polyalphabetic substitution, autokey, running key, Playfair, bifid, diagonal bifid,
+    trifid, Two Square, route transposition, columnar transposition, Bazeries, and
+    fractionated Morse.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: I encourage hobbyists to join the American Cryptogram Association, [www.cryptogram.org](https://www.cryptogram.org),
+    where they can submit their ciphers for other members to solve, and solve the
+    cryptograms that other members have submitted. Their webpage [https://www.cryptogram.org/resource-area/cipher-types/](https://www.cryptogram.org/resource-area/cipher-types/)
+    has a list of the cipher types they accept.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Developers**: People who want to develop or invent their own ciphers will
+    find scores of methods here, which can be combined in myriad ways. Letters can
+    be replaced by other letters, or by fixed-length or variable-length groups of
+    bits, Morse symbols, digits in any number base, or elements of a mathematical
+    ring. All of these may be transposed and regrouped. Groups may be substituted
+    again, compressed, multiplied by large integers or by matrices, converted into
+    other number bases, or chained together. Parts of some groups may be used to encipher
+    parts of other groups.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Crypto service providers**: Companies that provide encrypted communication
+    services typically use their own proprietary algorithms. They may use any of the
+    techniques just listed for developers, but they must ensure that their cipher
+    meets all of the criteria of chapter 12\. The cipher should have large blocks
+    and long keys. It should be highly non-linear, and have good diffusion and saturation.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the service provider uses a standard algorithm such as 3DES or AES, then
+    the standard cipher should be preceded and followed by a keyed secret substitution
+    or a keyed secret transposition.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Banking**: Banking and financial companies are required to use AES for all
+    communications so that they can interchange information among themselves, as well
+    as with the Federal Reserve, the SEC, the IRS and other government agencies. Banks
+    also make wide use of public key cryptography to establish encryption keys and
+    for authentication and verification.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Military and diplomatic**: The US military and State Department are mandated
+    by NSA regulations to use 256-bit AES. This has the force of law. This is done
+    on PCs, laptops and even smartphones with an AES chip, or with AES software. However,
+    the military and the intelligence services operate in places and conditions where
+    computers and cell phones may not work, or where a phone equipped with AES would
+    be suspicious or illegal. Possession of any form of cryptographic equipment, literature
+    or work product is illegal in many countries. Additionally, foreign armies and
+    diplomatic corps may distrust any AES hardware or software, all of which can come
+    only from the NSA or suppliers regulated by the NSA.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For these reasons, armies and intelligence services have both codes and ciphers
+    to back up their electronic cryptographic equipment. Hand ciphers suitable for
+    use in combat conditions include diagonal bifid, TwoSquare+1, Two Square ripple,
+    and Playfair TwoSquare. Another idea is to use bifid or Two Square followed by
+    a piecewise transposition.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**Large files**: For very large files it is much faster to use a stream cipher
+    rather than a block cipher. You generate a stream of pseudorandom numbers and
+    combine this with the data file to simulate a one-time pad. You can use Xorshift,
+    FRand or Gen5 for the PRNG, and you can use **xors**, **adds** or **poly** for
+    the combining function. Or, you could use GenX for both generating and combining.'
+  prefs: []
+  type: TYPE_NORMAL

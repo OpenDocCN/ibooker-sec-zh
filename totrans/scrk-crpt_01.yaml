@@ -1,0 +1,140 @@
+- en: 1 Introduction
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: I have been doing cryptography for more than 50 years. I have learned a great
+    deal in that time. In this book I try to pass along that knowledge to the next
+    generation of cryptographers. Much of this is new discoveries, not found anywhere
+    else in the literature.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I know that there are many cryptography books already available. If I want people
+    to read my book, I need to offer ideas that other books don’t have, ideas other
+    authors don’t know, or believe are impossible. I need to make the book ***SENSATIONAL***.
+    Here goes. I will
+  prefs: []
+  type: TYPE_NORMAL
+- en: Tell you in simple non-technical language how to construct an unbreakable cipher.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Provide 140 ciphers that you can use as is. 30 of them are rated Unbreakable.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Give you a set of tools and techniques so you can combine and strengthen them.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Describe a computation that can precisely measure the strength of your cipher,
+    and guarantee that it is unbreakable.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Show how to construct and incorporate data-compression codes.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Reveal a practical method to achieve the unbreakable One-Time Pad cipher.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Tell how to generate true random numbers in bulk.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Show how to construct huge primes and safe primes.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Teach you how to add an undetectable backdoor to a cipher.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Expose a possibly fatal flaw in quantum cryptography.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Explain ways to defeat hypothetical ultracomputers that could be developed decades
+    from now. (Or, that may already exist, but are classified.)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: I use a conversational tone throughout the book, as though you and I were speaking
+    face-to-face. When I say “us” or “we,” that means you, the reader, and me, the
+    author, working together, cooperating to solve a problem or to guard a secret.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is not intended to be a scholarly work. I give credit for the methods and
+    ideas when I know the sources, and dates as close as I can remember them, but
+    much of what I have learned was acquired informally. There is little in the way
+    of references, footnotes or erudite exegesis. This is written to be a practical
+    book. Follow its recommendations, and you will produce a secure cipher. Guaranteed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I also throw in an occasional historical tidbit, partly to lighten the mood,
+    and partly to set the historic record straight. I know a heavy subject like cryptography
+    can be hard going. I hope the use of first person, the little anecdotes and a
+    bit of humor make it easier to absorb.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Much of the material in this book is new. It has methods for constructing ciphers
+    and methods for cracking ciphers that have never been published before. There
+    are even a few of my own mathematical discoveries. You can find them only in this
+    book. There are lots of practical tips on how to do stuff, and a few computer
+    methods to do things faster or using less storage.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The emphasis in this book is on high-security cryptography. You have information
+    that you need to keep secret against opponents who could have supercomputers,
+    or even quantum computers. This book tells you how. I provide a toolbox of methods,
+    both new and historical, that can be combined in myriad ways to make arbitrarily
+    strong ciphers. Cryptography students and developers will find the broadest possible
+    range of practical methods that can be used to develop new cryptographic products
+    and services.
+  prefs: []
+  type: TYPE_NORMAL
+- en: That said, I want to make this material accessible to both professionals and
+    hobbyists alike. There are plenty of methods that can be done by hand using only
+    paper and pencil. You can find such a method at the end of section 9.6.1\. These
+    methods are suitable for field use, when electricity and electronic devices may
+    be unavailable. There are even a few ciphers that children can use.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Anybody can create an unbreakable cipher.*'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*You* can create an unbreakable cipher. All you need is the right knowledge.
+    If you can read and understand this book, or even half of it, then you can create
+    an unbreakable cipher. The book teaches anyone who has the desire how to construct
+    a cipher that will stand up to a serious attack by trained cryptographers with
+    supercomputers. No other book does that. In fact, you can develop your own secure
+    cipher using only paper-and-pencil methods. I build up a large inventory of methods
+    and concepts starting with historical ciphers from the 15th century onward, and
+    teach you what combinations reinforce your ciphers, and which are merely wasted
+    effort. I am going to give you an armory of tried-and-true techniques plus fresh-and-new
+    techniques that you can use to build an impregnable fortress.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Fair warning: I am a mathematician by training, and a computer scientist by
+    occupation, so I tend to use mathematical notation and mathematical concepts liberally.
+    This book is intended for a broader audience, not just engineers and scientists.
+    I will try to explain all of the needed math so that the book is self-contained.
+    If you understand subscripts and exponents, and you can read expressions containing
+    parentheses, that is about as much math background as you will need. I explain
+    all of the math beyond that, such as prime numbers, modular arithmetic, and, for
+    the more advanced chapters, matrix arithmetic and mathematical rings.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'If you don’t understand a particular mathematical concept, you have three choices:
+    (1) take my word for it, (2) skip that section entirely, or (3) don’t use the
+    related cryptographic method. There are still plenty of methods. Some are sure
+    to fit your needs.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Or, just plunge in and read the math sections anyway. You may surprise yourself
+    with how much you learn. Don’t be discouraged if you don’t understand some topic.
+    You may find the next one easy. Even professional mathematicians don’t understand
+    every topic.
+  prefs: []
+  type: TYPE_NORMAL

@@ -1,0 +1,649 @@
+- en: 12 Working with the operating system
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Enforcing filesystem-level authorization with the `os` module
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Creating temp files with the `tempfile` module
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Invoking external executables with the `subprocess` module
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Resisting shell injection and command injection
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The last few chapters were a lot about authorization. You learned about users,
+    groups, and permissions. I start this chapter by applying these concepts to filesystem
+    access. Afterward, I show you how to safely invoke external executables from within
+    Python. Along the way, you’ll learn how to identify and resist two types of injection
+    attacks. This sets the tone for the rest of the book, which focuses exclusively
+    on attack resistance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 12.1 Filesystem-level authorization
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Like most programming languages Python natively supports filesystem access;
+    third-party libraries are not necessary. Filesystem-level authorization involves
+    less work than application-level authorization because you don’t need to enforce
+    anything; your operating system already does this. In this section, I’ll show
+    you how to do the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Open a file securely
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Safely create temporary files
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Read and modify file permissions
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 12.1.1 Asking for permission
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Over the past few decades, many acronyms have become popular within the Python
+    community. One represents a coding style known as *easier to ask for forgiveness
+    than permission* (*EAFP*). EAFP style assumes preconditions are true, then catches
+    exceptions when they are false.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For example, the following code opens a file with the assumption of sufficient
+    access permissions. The program makes no attempt to ask the operating system if
+    it has permission to read the file; instead, the program asks for forgiveness
+    with an `except` statement if permission is denied:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Assumes permission, doesn’t ask for it
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Asks for forgiveness
+  prefs: []
+  type: TYPE_NORMAL
+- en: EAFP contrasts with another coding style known as *look before you leap* (*LBYL*).
+    This style checks for preconditions first, then acts. EAFP is characterized by
+    `try` and `except` statements; LBYL is characterized by `if` and `then` statements.
+    EAFP has been called *optimistic*; LBYL has been called *pessimistic*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code is an example of LBYL; it opens a file, but first it looks
+    to see if it has sufficient access permissions. Notice that this code is vulnerable
+    to accidental and malicious race conditions. A bug or an attacker may take advantage
+    of the time between the return of the `os.access` function and the call to the
+    `open` function. This coding style also results in more trips to the filesystem:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Looks
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Leaps
+  prefs: []
+  type: TYPE_NORMAL
+- en: Some people in the Python community have a strong preference for EAFP over LBYL;
+    I’m not one of them. I have *no* preference and I use *both* styles on a case-by-case
+    basis. In this particular case, I use EAFP instead of LBYL for the sake of security.
+  prefs: []
+  type: TYPE_NORMAL
+- en: EAFP vs. LBYL
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Apparently, Guido van Rossum, the creator of Python, doesn’t have a strong
+    preference for EAFP either. Van Rossum once wrote the following to the Python-Dev
+    mailing list ([https://mail.python.org/pipermail/python-dev/2014-March/133118.html](https://mail.python.org/pipermail/python-dev/2014-March/133118.html)):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: . . . I disagree with the position that EAFP is better than LBYL, or “generally
+    recommended” by Python. (Where do you get that? From the same sources that are
+    so obsessed with DRY they'd rather introduce a higher-order-function than repeat
+    one line of code? :-)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 12.1.2 Working with temp files
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Python natively supports temp file usage with a dedicated module, `tempfile`;
+    there is no need to spawn a subprocess when working with temp files. The `tempfile`
+    module contains a handful of high-level utilities and some low-level functions.
+    These tools create temp files in the safest way possible. Files created this way
+    are not executable, and only the creating user can read or write to them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `tempfile.TemporaryFile` function is the preferred way to create temp files.
+    This high-level utility creates a temp file and returns an object representation
+    of it. When you use this object in a `with` statement, as shown in bold in the
+    following code, it assumes the responsibility of closing and deleting the temp
+    file for you. In this example, a temporary file is created, opened, written to,
+    read from, closed, and deleted:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Creates and opens a temp file
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Writes to the file
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Reads from the file
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Exits the block, closing and deleting the file
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`TemporaryFile` has a couple of alternatives to address corner cases. Replace
+    it with `NamedTemporaryFile` if you require a temp file with a visible name. Replace
+    it with `SpooledTemporaryFile` if you need to buffer data in memory before writing
+    it to the filesystem.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `tempfile.mkstemp` and `tempfile.mkdtemp` functions are low-level alternatives
+    for creating temp files and temp directories, respectively. These functions safely
+    create a temp file or directory and return the path. This is just as secure as
+    the aforementioned high-level utilities, but you must assume responsibility for
+    closing and deleting every resource you create with them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Do not confuse `tempfile.mkstemp` or `tempfile.mkdtemp` with `tempfile.mktemp`.
+    The names of these functions differ by only one character, but they are very different.
+    The `tempfile.mktemp` function was deprecated by `tempfile.mkstemp` and `tempfile.mkdtemp`
+    for security reasons.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Never use `tempfile.mktemp`. In the past, this function was used to generate
+    an unused filesystem path. The caller would then use this path to create and open
+    a temp file. This, unfortunately, is another example of when you shouldn’t use
+    LBYL programming. Consider the window of time between the return of `mktemp` and
+    the creation of the temp file. During this time, an attacker can create a file
+    at the same path. From this position, the attacker can write malicious content
+    to a file your system will eventually trust.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 12.1.3 Working with filesystem permissions
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Every operating system supports the notion of users and groups. Every filesystem
+    maintains metadata about each file and directory. Users, groups, and filesystem
+    metadata determine how an operating system enforces filesystem-level authorization.
+    In this section, I cover several Python functions designed to modify filesystem
+    metadata. Unfortunately, much of this functionality is fully supported on only
+    UNIX-like systems
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'UNIX-like filesystem metadata designates an owner, a group, and three classes:
+    user, group, and others. Each *class* represents three permissions: read, write,
+    and execute. The user and group classes apply to the owner and group assigned
+    to the file. The other class applies to everyone else.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For example, suppose Alice, Bob, and Mallory have operating system accounts.
+    A file owned by Alice is assigned to a group named `observers`. Bob is a member
+    of this group; Alice and Mallory are not. The permissions and classes of this
+    file are represented by the rows and columns of table 12.1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 12.1 Permissions by class
+  prefs: []
+  type: TYPE_NORMAL
+- en: '|  | Owner | Group | Others |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Read | Yes | Yes | No |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Write | Yes | No | No |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Execute | No | No | No |'
+  prefs: []
+  type: TYPE_TB
+- en: 'When Alice, Bob, or Mallory try to access the file, the operating system applies
+    the permissions of only the most local class:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: As the owner of the file, Alice can read and write to it, but she cannot execute
+    it.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: As a member of `observers`, Bob can read the file but cannot write to or execute
+    it.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Mallory can’t access the file at all because she isn’t the owner or in `observers`.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Python’s `os` module features several functions designed to modify filesystem
+    metadata. These functions allow a Python program to talk directly to the operating
+    system, eliminating the need to invoke an external executable:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`os.chmod`—Modifies access permissions'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`os.chown`—Modifies the owner ID and group ID'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`os.stat`—Reads the user ID and group ID'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The `os.chmod` function modifies filesystem permissions. This function accepts
+    a path and at least one mode. Each mode is defined as a constant in the `stat`
+    module, listed in table 12.2\. On a Windows system, `os.chmod` can unfortunately
+    change only the read-only flag of a file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 12.2 Permission-mode constants
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Mode | Owner | Group | Others |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Read | S_IRUSR | S_IRGRP | S_IROTH |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Write | S_IWUSR | S_IWGRP | S_IWOTH |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Execute | S_IXUSR | S_IXGRP | S_IXOTH |'
+  prefs: []
+  type: TYPE_TB
+- en: 'The following code demonstrates how to work with `os.chmod`. The first call
+    grants the owner read access; all other permissions are denied. This state is
+    erased, not modified, by subsequent calls to `os.chmod`. This means the second
+    call grants the group read access; all other permissions, including the one granted
+    previously, are denied:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Only the owner can read this.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Only the group can read this.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'How do you grant more than one permission? Use the OR operator to combine modes.
+    For example, the following line of code grants read access to both the owner and
+    the group:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ The owner and group can read this.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `os.chown` function modifies the owner and group assigned to a file or
+    directory. This function accepts a path, user ID, and group ID. If -1 is passed
+    as a user ID or group ID, the corresponding ID is left as is. The following example
+    demonstrates how to change the user ID of your `settings` module while preserving
+    the group ID. It is not a good idea to run this exact line of code on your own
+    system:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `os.stat` function returns metadata about a file or directory. This metadata
+    includes the user ID and group ID. On a Windows system, these IDs are unfortunately
+    always 0\. Type the following code into an interactive Python shell to pull the
+    user ID and group ID, shown in bold, of your `settings` module:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Accesses the user ID
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Accesses the group ID
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this section, you learned how to create programs that interact with the filesystem.
+    In the next section, you’ll learn how to create programs that run other programs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 12.2 Invoking external executables
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Sometimes you want to execute another program from within Python. For example,
+    you may want to exercise the functionality of a program written in a language
+    other than Python. Python provides many ways to invoke external executables; some
+    ways can be risky. In this section, I’ll give you a few tools to identify, avoid,
+    and minimize these risks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Many of the commands and code in this section are potentially destructive.
+    At one point while testing code for this chapter, I accidentally deleted a local
+    Git repository from my laptop. Do yourself a favor and be mindful of this if you
+    choose to run any of the following examples.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When you type and execute a command on your computer, you are not communicating
+    directly to your operating system. Instead, the command you type is being relayed
+    to your operating system by another program known as a *shell*. For example, if
+    you are on a UNIX-like system, your shell is probably /bin/bash. If you are on
+    a Windows system, your shell is probably cmd.exe. Figure 12.1 depicts the role
+    of a shell. (Although the diagram shows a Linux OS, the process is similar on
+    Windows systems.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH12_F01_Byrne](Images/CH12_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 12.1 A bash shell relays a command from Alice’s terminal to the operating
+    system.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As the name implies, a shell provides only a thin layer of functionality. Some
+    of this functionality is supported by the notion of *special characters*. A special
+    character has meaning beyond its literal use. For example, UNIX-like system shells
+    interpret the asterisk (`*`) character as a wildcard. This means a command such
+    as `rm` `*` removes all files in the current directory rather than removing a
+    single file (oddly) named `*`. This is known as *wildcard expansion*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you want a special character to be interpreted literally by your shell, you
+    must use an *escape character*. For example, UNIX-like system shells treat a backslash
+    as an escape character. This means you must type `rm \*` if you want to delete
+    only a file (oddly) named `*`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Building a command string from an external source without escaping special
+    characters can be fatal. For example, the following code demonstrates a terrible
+    way to invoke an external executable. This code prompts the user for a filename
+    and builds a command string. The `os.system` function then executes the command,
+    deleting the file, and returns 0\. By convention, a return code of 0 indicates
+    that the command finishes successfully. This code behaves as intended when a user
+    types `alice.txt`, but it will delete every file in the current directory if a
+    malicious user types `*`. This is known as a *shell injection attack*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Accepts input from an untrusted source
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Executes the command successfully
+  prefs: []
+  type: TYPE_NORMAL
+- en: In addition to shell injection, this code is also vulnerable to *command injection*.
+    For example, this code will run two commands instead of one if a malicious user
+    submits `-rf` `/` `;` `dd` `if=/dev/random` `of=/dev/sda`. The first command deletes
+    everything in the root directory; the second command adds insult to injury by
+    overwriting the hard drive with random data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Shell injection and command injection are both special types of a broader category
+    of attack, generally referred to as *injection attacks*. An attacker starts an
+    injection attack by injecting malicious input into a vulnerable system. The system
+    then inadvertently executes the input in an attempt to process it, benefitting
+    the attacker in some way.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note At the time of this writing, injection attacks are number 1 on the OWASP
+    Top Ten ([https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next two sections, I demonstrate how to avoid shell injection and command
+    injection.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 12.2.1 Bypassing the shell with internal APIs
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'If you *want* to execute an external program, you should first ask yourself
+    if you *need* to. In Python, the answer is usually no. Python has already developed
+    internal solutions for the most common problems; there is no need to invoke an
+    external executable in these situations. For example, the following code deletes
+    a file with `os.remove` instead of `os.system`. Solutions like this are easier
+    to write, easier to read, less error-prone, and more secure:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Accepts input from an untrusted source
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Deletes file
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'How is this alternative more secure? Unlike `os.system`, `os.remove` is immune
+    to command injection because it does only one thing, by design; this function
+    does not accept a command string, so there is no way to inject additional commands.
+    Furthermore, `os.remove` avoids shell injection because it bypasses the shell
+    entirely; this function talks directly to the operating system without the help,
+    and risk, of a shell. As shown here in bold, special characters such as `*` are
+    interpreted literally:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ This looks bad . . .
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ . . . but nothing gets deleted.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are many other functions like `os.remove`; table 12.3 lists some. The
+    first column represents an unnecessary command, and the second column represents
+    a pure Python alternative. Some of the solutions in this table should look familiar;
+    you saw them earlier when I covered filesystem-level authorization.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 12.3 Python alternatives to simple command-line tools
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Command-line example | Python equivalent | Description |'
+  prefs: []
+  type: TYPE_TB
+- en: '| $ chmod 400 bob.txt | os.chmod(''bob.txt'', S_IRUSR) | Modifies file permissions
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| $ chown bob bob.txt | os.chown(''bob.txt'', uid, -1) | Changes file ownership
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| $ rm bob.txt | os.remove(''bob.txt'') | Deletes a file |'
+  prefs: []
+  type: TYPE_TB
+- en: '| > mkdir new_dir | os.mkdir(''new_dir'') | Creates a new directory |'
+  prefs: []
+  type: TYPE_TB
+- en: '| > dir | os.listdir() | Lists directory contents |'
+  prefs: []
+  type: TYPE_TB
+- en: '| > pwd | os.getcwd() | Current working directory |'
+  prefs: []
+  type: TYPE_TB
+- en: '| $ hostname | import socket;socket.gethostname() | Reads system hostname |'
+  prefs: []
+  type: TYPE_TB
+- en: If Python doesn’t provide you with a safe alternative for a command, chances
+    are, an open source Python library does. Table 12.4 lists a group of commands
+    and their PyPI package alternatives. You learned about two of them, `requests`
+    and `cryptography`, in earlier chapters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 12.4 Python alternatives to complex command-line tools
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Command-line example | PyPI equivalent | Description |'
+  prefs: []
+  type: TYPE_TB
+- en: '| $ curl http:/./bob.com -o bob.txt | requests | General-purpose HTTP client
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| $ openssl genpkey -algorithm RSA | cryptography | General-purpose cryptography
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| $ ping python.org | ping3 | Tests whether a host is reachable |'
+  prefs: []
+  type: TYPE_TB
+- en: '| $ nslookup python.org | nslookup | Performs DNS lookups |'
+  prefs: []
+  type: TYPE_TB
+- en: '| $ ssh alice@python.org | paramiko | SSH client |'
+  prefs: []
+  type: TYPE_TB
+- en: '| $ git commit -m ''Chapter 12'' | GitPython | Works with Git repositories
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: Tables 12.3 and 12.4 are by no means exhaustive. The Python ecosystem features
+    plenty of other alternatives to external executables. If you are looking for a
+    pure Python alternative that is not in these tables, search for it online before
+    you start writing code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Every now and then, you might face a unique challenge with no pure Python alternative.
+    For example, you might need to run a custom Ruby script that one of your coworkers
+    wrote to solve a domain-specific problem. In a situation like this, you need to
+    invoke an external executable. In the next section, I’ll show you how to do this
+    safely.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 12.2.2 Using the subprocess module
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'The `subprocess` module is Python’s answer to external executables. This module
+    deprecates many of Python’s built-in functions for command execution, listed here.
+    You saw one of these in the previous section:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`os.system`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`os.popen`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`os.spawn*` (eight functions)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The `subprocess` module supersedes these functions with a simplified API, as
+    well as a feature set designed to improve interprocess communication, error handling,
+    interoperability, concurrency, and security. In this section, I highlight only
+    the security features of this module.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code uses the `subprocess` module to invoke a simple Ruby script
+    from within Python. The Ruby script accepts the name of an archetypal character
+    such as Alice or Eve; the output of this script is a list of domains owned by
+    the character. Notice that the `run` function doesn’t accept a command string;
+    instead, it expects the command in list form, shown in bold font. The `run` function
+    returns an instance of `CompletedProcess` after execution. This object provides
+    access to the output and return code of the external process:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Builds a command
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Prints command output
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Prints commandreturn value
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `subprocess` module is secure by design. This API resists command injection
+    by forcing you to express the command as a list. For instance, if a malicious
+    user were to submit `charlie ; rm -fr /` as a character name, the `run` function
+    would still execute only *one* command, and the command it executes would still
+    get only *one* (odd) argument.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `subprocess` module API also resists shell injection. By default, the `run`
+    function bypasses the shell and forwards the command directly to the operating
+    system. In a ridiculously rare situation, when you actually need a special feature
+    such as wildcard expansion, the `run` function supports a keyword argument named
+    `shell`. As the name implies, setting this keyword argument to `True` informs
+    the `run` function to pass your command off to a shell.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In other words, the `run` function defaults to safe, but you can explicitly
+    choose a riskier option. Conversely, the `os.system` function defaults to risky,
+    and you get no other choice. Figure 12.2 illustrates both functions and their
+    behavior.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH12_F02_Byrne](Images/CH12_F02_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 12.2 Alice runs two Python programs; the first talks to the operating
+    system via the shell, and the second talks directly to the operating system.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this chapter, you learned about two types of injection attacks. As you read
+    the next chapter, you are going to see why these attacks are ranked number 1 on
+    the OWASP Top Ten. They come in so many different shapes and sizes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Prefer high-level authorization utilities over low-level methods.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Choose between EAFP and LBYL coding styles on a case-by-case basis.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Wanting to invoke an external executable is different from needing to.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Between Python and PyPI, there is usually an alternative for the command you
+    want.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: If you have to execute a command, it is highly unlikely the command needs a
+    shell.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

@@ -1,0 +1,740 @@
+- en: 14 One-time pad
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: One-time pad ciphers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The Vernam cipher, which approximates a one-time pad
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Diffie-Hellman key exchange
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Constructing the large primes needed for Diffie-Hellman and Public Key cryptography
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The best-known stream cipher is the *One-Time Pad*. Many writers restrict this
+    term to mean only a cipher where the plaintext and the key stream are exclusive-ORed
+    byte by byte. This is historically inaccurate. The first one-time pad cipher was
+    published in 1882 by Frank Miller, a Sacramento, CA banker, for the purpose of
+    saving money by shortening telegraph messages. Miller’s telegraph code used 5-digit
+    code groups to represent words and phrases that were common in commercial telegrams.
+    To obtain secrecy, Miller proposed a cipher that consisted of adding a 3-digit
+    number to each 5-digit group. His code values were small enough that the sum could
+    never exceed 99999\. That is, the codes were all less than 99000\. So the one-time
+    pad was originally a decimal system, not a binary system.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The system that gives the one-time pad its name was devised by cryptographer
+    Werner Kunze of the German Pers Z S (Signal Intelligence Agency) around 1922\.
+    Kunze’s system was based on a standard diplomatic code of 5-digit groups. Like
+    Miller’s cipher, Kunze’s cipher added the key groups to the code groups. Kunze
+    used 5-digit key groups that were added to the code groups digit by digit, without
+    carrying. Thus 33333+56789 would result in 89012, not 90122\. Kunze distributed
+    the keys in pads of 50 sheets, with each sheet containing 8 rows of 6 key groups
+    each. The pages of these pads were used one time for enciphering one message and
+    then discarded. Hence the name one-time pad. Later developments included the use
+    of water-soluble inks and water-soluble paper for rapid disposal.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another version of the one-time pad was invented by Leo (Leopold Samuel) Marks,
+    a British author and screenwriter (*Peeping Tom*), about 1940\. It was widely
+    used by British spies. Marks’s version used letters instead of numbers. The sender
+    would add the key letter to the plaintext letter modulo 26 to get the ciphertext
+    letter. In other words, Marks’s one-time pad was a Belaso cipher with a random
+    key. MIT professor Claude Shannon invented the same cipher sometime between 1940
+    and 1945, and Soviet information theorist Vladimir Kotelnikov invented a version
+    in or before 1941, but its details remain classified. Both Shannon and Kotelnikov
+    produced mathematical proofs that the one-time pad cannot be broken. It remains
+    the only cipher method that has been proved unbreakable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since Miller’s 1882 one-time pad and Kunze’s 1922 one-time pad both used decimal
+    addition for their combining functions, and since Marks’s 1940 one-time pad used
+    addition modulo 26, it is hardly reasonable for anyone to assert that the one-time
+    pad is restricted to combining the key and the plaintext with exclusive-OR. The
+    defining features of the one-time pad are
+  prefs: []
+  type: TYPE_NORMAL
+- en: The key is at least as long as the message,
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The key is indistinguishable from true random,
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Each character or block of the key is combined with one character or equal-sized
+    block of the plaintext, and
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The key is used only one time.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 'Any cipher that meets these 4 criteria is a one-time pad. To prove that the
+    one-time pad cannot be broken, however, requires another, stronger condition:'
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+- en: There is an equal probability that any given plaintext character is transformed
+    into any given ciphertext character.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: With that much said, let’s look at a historical cipher, based on the exclusive-OR,
+    that is closely related to the one-time pad system.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.1 The Vernam cipher
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: By 1918 many diplomatic missions had moved away from having human telegraph
+    operators send and receive messages that then needed to be hand-typed. Instead,
+    messages were punched into reels of paper tape in a 5-column Baudot code, invented
+    by French telegraph engineer Émile Baudot in 1870, or Baudot-Murray code, invented
+    by Donald Murray, a New Zealand journalist, in 1901\. (I won’t cover the details
+    of these codes, since they changed several times between 1870 and the 1950s, when
+    Western Union ceased using them. Baudot-style codes were abandoned entirely after
+    1963 when ASCII code supplanted them.) The important feature is that a human typist
+    keyed the message onto a 5-column paper tape from which it could be directly transmitted
+    and printed out at the receiving end without any further human involvement.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Like Morse code, neither Baudot code nor Baudot-Murray code offered any secrecy.
+    Anyone could read the message directly from the tape. Up to 1918, if secrecy were
+    required, the message would have to be enciphered by hand by a human cipher clerk
+    before being typed onto the tape, and then printed out and deciphered by hand
+    by another clerk at the receiving end. A method was needed to speed up that process.
+    Enter Vernam.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The *Vernam* cipher was developed by Gilbert Sandford Vernam of AT&T Bell Labs
+    in 1918 at the request of Joseph O. Mauborgne of the Army Signal Corps. The idea
+    was simple and ingenious. A human typist would key the message onto a tape as
+    before, but what got transmitted was the exclusive-OR of the character code with
+    a key code. The key codes were supplied from a separate paper tape that had a
+    seeming random sequence of characters punched into it. At the receiving end the
+    transmitted characters would be exclusive-ORed with a copy of that tape, which
+    deciphered them. Each tape had 1000 random-ish characters so that long messages
+    would repeat the key every 1000 characters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This diagram shows two tapes containing the plaintext and the key, pickups for
+    reading the tapes, circuits for exclusive-ORing the key with the plaintext, and
+    a hole punch at the receiving end, which may be at a distant location. The hole
+    punch could be replaced by a printer or a transmitter, depending on the setup.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![14-unnumb-1](../Images/14-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This my own diagram, since I could find no picture of the Vernam machine itself,
+    presumably because it had been classified.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I called the key tapes “random-ish” because they were produced by a person tapping
+    away at a typewriter-style keyboard, a forerunner of the Friden Flexowriter. The
+    result is that the characters near the center of the keyboard were used more often
+    than the characters near the corners. Humans are poor at producing random numbers
+    or characters. But for 1918, this was a very strong cipher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Many sources mistakenly refer to the Vernam cipher as a one-time pad, probably
+    because it was the first cipher to exclusive-OR a message expressed in binary
+    with a binary key. However, the Vernam cipher was not a one-time pad because it
+    repeated. It had a fixed period of 1000 characters. Besides, the one-time pad
+    had been invented by Miller 36 years earlier, and was originally a decimal-based
+    system.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For a busy embassy, there could be 100 or more cipher messages per day. If the
+    embassy corresponded with several other embassies, multiple sets of tapes were
+    needed. The tapes for Washington-to-Berlin would be separate from the tapes for
+    Berlin-to-Washington traffic. The tapes were all marked with 6-digit serial numbers.
+    Before each message was sent, the tape number would be transmitted in *clear*,
+    that is, unenciphered. The clerks would need to keep straight which tapes were
+    for which embassy, and which tapes had already been used and needed to be destroyed.
+    New tapes had to be supplied continually to each embassy.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vernam soon devised a second version that used two tapes, both of which were
+    exclusive-ORed with the plaintext. One tape had 1000 characters and the other
+    tape had 999 characters, making an effective period of 999,000 characters. The
+    same two tapes could be used for an entire day, just by starting each message
+    at a different point on each tape. If an embassy had, say, 100 tapes, different
+    combinations of tapes could be used on different days for as long as the paper
+    tapes held up.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is easy to see how Vernam’s 2-tape machines could be extended to 3 or 4 tapes.
+    So far as I know, this never happened because these tape-based machines were soon
+    supplanted by rotor machines (see section 5.10).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.2 Key supply
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The big problem with the one-time pad is supplying enough keys. The paper tape
+    method may be adequate for 10 stations, each sending 100 messages a day, but it
+    is unworkable for 100 stations, each sending 1000 messages a day.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Many books and papers on cryptography describe the following conundrum: Sandra
+    and Riva decide to exchange messages using a one-time pad. They each have a copy
+    of a long random key. They use this key section by section until they use it up.
+    Now they need another random key. Sandra can choose it and send it to Riva, but
+    it needs to be encrypted so that Emily cannot get it. The safest way is to encrypt
+    it using a one-time pad, so they need another key of the same length to encrypt
+    the new key. Again, Sandra can choose it and send it to Riva, but that key also
+    needs to be encrypted. So they need yet another key, ad infinitum.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The solution to this dilemma is two-pronged. First, the random key stream can
+    be refreshed using the techniques of section 13.15, such as lagged addition. For
+    example, once per day, or whenever the parties decide, a new key can be derived
+    from the base key. Second, these derived daily keys need not be used directly
+    as message keys. Instead, message keys can be constructed from the daily keys.
+    This way, even if Emily recovers any of the message keys, she will be two layers
+    away from recovering the base key. The next few sections will describe some methods
+    for producing message keys.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Each method is designed to meet two goals: Either (1a) the method must be able
+    to generate enough message key material each day that no two message keys overlap,
+    or (1b) it must not be feasible for Emily to detect overlapping sections of the
+    message keys, and (2) it must not be feasible for Emily to reconstruct sections
+    of the derived keys or of the base key.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.2.1 Circulating key
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The daily key is derived using the technique of section 13.14\. Consecutive
+    sections of the daily key are used to generate the message keys, for example by
+    lightly encrypting them. A keyed simple substitution is sufficient. I recommend
+    leaving a gap of random width, perhaps 1 to 32 bytes, between successive keys.
+    When the end of the daily key is reached, it wraps around using a single pass
+    of lagged linear addition (section 13.14.1) to extend it for use on days with
+    heavy message volume. You can visualize this by imagining that each time a message
+    is sent, its key, plus any gap, is moved from the front of the daily key to the
+    end of the daily key, and then refreshed using lagged linear addition. Sandra
+    and Riva must do this in sync.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This works well for low message volumes when there is little chance that Sandra
+    and Riva will send messages to each other at the same time. For higher message
+    volumes, it is better to use two base keys and two daily keys, one for Sandra-to-Riva
+    messages and the other for Riva-to-Sandra.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.2.2 Combined key
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: For each message of length *L*, three segments of length *L* are taken from
+    the daily key. Call these segments x, y and z, and call their starting positions
+    in the daily key p[x], p[y] and p[z]. If any of these positions is near the end
+    of the daily key, that segment may wrap back to the beginning. Each byte of the
+    message key is formed by taking a linear combination of the corresponding bytes
+    in x, y and z. That is,
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![14-unnumb-1-equation-14-1](../Images/14-unnumb-1-equation-14-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: where the coefficients a, b, and c may be any odd integers from 1 to 255\. The
+    values of the three coefficients a, b and c and the three starting positions p[x],
+    p[y] and p[z] must be different for each message. These may be agreed upon beforehand,
+    or enciphered and sent with each message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.2.3 Selection key
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: For each message of length L, two non-overlapping segments are taken from randomly
+    chosen locations in the daily key. The first segment is the *selector*, s, which
+    has length L. The second segment is the *stock*, x, which has length 256\. To
+    encipher the n^(th) character m[n] in the message we first take the corresponding
+    byte p = s[n] from the selector. This p selects the position in the stock where
+    the key byte is taken, namely k[n] = x[p]. The key byte k[n] is combined with
+    the message byte m[n] using any of the combining functions such as **xors** or
+    **adds**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: After the key byte k[n] is used, x[p] is replaced in the stock by (ax[p]+b)
+    mod 256\. The coefficients a and b must satisfy the Hull-Dobell conditions (section
+    13.4), namely a≡1(mod 4) and b≡1(mod 2). In effect, each of the 256 positions
+    in the stock, x, becomes a separate linear congruential pseudorandom number generator
+    (PRNG). The coefficients a and b may be the same for all 256 positions in the
+    stock, or they may vary. One option is to use two different pairs of values for
+    a and b, and choose either the first or second pair according to some fixed pattern.
+    Regardless of how many pairs of values are used, they should be different for
+    different messages.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another scheme for updating the stock is to replace x[p] by (ax[p]+bx[p-1])
+    mod 256, where a and b are any odd integers from 1 to 255\. You might also choose
+    to replace x[p] by (ax[p]+bx[p-i]) mod 256 where i is any integer from 2 to 255.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since there are only 8192 possible values for a and b, and since the value a
+    = 1 should be avoided, duplication is inevitable. This is not a problem, however,
+    as long as Emily cannot tell which pair of values is used for each message. The
+    important point is that Emily cannot accumulate multiple messages that she knows
+    have the same values of a and b. One downside of using indicators is that opponents
+    may collect several messages with the same indicator, so they know those messages
+    have the same key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.3 Indicators
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In classical cryptography, the same key was often used for a long time, sometimes
+    for months or years. In modern times, keys are usually used for a single message.
+    With the one-time pad, message keys must be used only once. Otherwise, Emily could
+    slide one message against another and use the index of coincidence (section 5.7)
+    to detect the overlap.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For moderate 2-way message traffic Sandra and Riva could use a small book that
+    would list the keys to be used according to, say, the time of day and the day
+    of the week. A common practice before computers was to number each message. The
+    message number could be enciphered and sent with the message. Sandra and Riva
+    would use the message number to look up the key in the book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The key book becomes unworkable when the message traffic becomes higher, or
+    when there are many parties exchanging messages. This stays true even when the
+    book is replaced by a computer file. One solution to this problem is to use indicators.
+    An *indicator* is a piece of information that is sent along with the message that
+    the recipient can use to determine the key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the early days, the indicator was just the key itself, hidden inside the
+    message. For example, the third group of the message was the key, or the first
+    characters of the first 8 groups formed the key. A slightly more sophisticated
+    version might be that the middle digit of the second group told you which group
+    was the key. The obvious problem with these types of indicators is that once Emily
+    learned the system, she could read all of the messages. Even if Emily does not
+    know the system, she can simply try all of the groups in the message to see if
+    one of them is the key. If she finds a few of these keys, then she may be able
+    to deduce the pattern.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A safer approach is to encrypt the key and use that as the indicator. That is
+    what the Germans did during World War II with their Enigma machines. They had
+    a special setting, which they changed each day, for encrypting the message key.
+    They would first set the Enigma to the daily setting and encrypt the message key
+    twice with that setting. Then they would reset the machine to the message key,
+    which the individual operator would choose at random, and encrypt the message.
+    The Polish *Bomba* exploited this double encryption of the message key to deduce
+    those keys. (The *bomba kryptologiczna* was an electromechanical device devised
+    by Polish chief cryptographer Marian Rejewski in 1938 for cracking German Enigma
+    messages.) When the Germans realized this, they stopped the practice, and the
+    Poles were blacked out; they could no longer read Enigma messages. Alan Turing
+    anticipated this problem and designed his *Bombe* to work with cribs, or probable
+    plaintext, instead. The French Enigma-cracking machine was also called a bombe,
+    supposedly named for *bombe glacée*, a frozen dessert with a similar dome shape,
+    like Baked Alaska.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Section 14.2 described several methods for generating message keys from the
+    daily key. Each of these methods used a small set of parameters to generate each
+    message key, such as the coefficients for lagged linear addition, or a location
+    within the daily key. These sets of parameters are ideal for use as indicators.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.4 Diffie-Hellman key exchange
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: So much for classical methods. Let’s talk about a more modern method. *Diffie-Hellman
+    key exchange* was invented in 1976 by Martin Hellman, a professor at Stanford
+    University, and Bailey Whitfield Diffie, his research assistant, later of Sun
+    Microsystems. The underlying concept of Public-Key cryptography was invented in
+    1974 by Ralph Merkle, then an undergrad at UC Berkeley.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The essential feature of Diffie-Hellman key exchange is that Sandra and Riva
+    can establish a secure encryption key even if Emily intercepts all of the messages
+    they exchange. To set up the exchange, Sandra and Riva must agree on a large prime,
+    P, and a primitive root, w, of that prime. Or, Sandra can simply choose P and
+    w and send them to Riva. P and w can be sent in clear. Recall from section 13.3
+    that it is easy to find primitive roots. For most primes at least one of 2, 3,
+    5 or 7 is a primitive root.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sandra chooses a secret exponent s and computes x = w^s mod P. She sends the
+    value x to Riva, but keeps the value of s to herself. Riva chooses a secret exponent
+    r and computes y = w^r mod P. She sends the value y to Sandra, but keeps the value
+    of r to herself. Now Sandra can compute y^s mod P, which is w^(rs) mod P, and
+    Riva can compute x^r mod P, which is w^(sr) mod P. Since w^(rs) = w^(sr), Sandra
+    and Riva have computed the same value, which they can use as an encryption key,
+    or which they can split into several encryption keys. An efficient way of performing
+    the exponentiations is described in section 13.3.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Some authors (and Wikipedia) describe Diffie-Hellman key exchange as a public
+    key method. They talk about combining Sandra’s and Riva’s public keys and their
+    private keys. This is not true. There are no public keys involved in Diffie-Hellman.
+    Even if you consider the exponents r and s to be keys, they are both secret keys.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose Emily has intercepted all of the messages between Sandra and Riva. Then
+    Emily knows P, w, x and y, that is, w^s mod P and w^r mod P, but she does not
+    know s, r or w^(rs) mod P. Determining w^(rs) mod P is called the *Diffie-Hellman
+    problem*. It is not known if this is the same as determining r and s, but they
+    are believed to be equally difficult problems. Determining s and r, given P, w,
+    and either x or y is known as the *discrete logarithm problem*. It is known to
+    be a very difficult problem. When P, r and s are sufficiently large, the problem
+    is believed to be computationally infeasible. Experts disagree on how large P
+    must be, but common recommendations are 300 and 600 decimal digits. Some implementations
+    allow for P to be up to 1234 decimal digits, which is 4096 bits. The exponents
+    r and s can be much smaller. Expert recommendations range from 40 decimal digits
+    up to 150 decimal digits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: An algorithm called the *Silver-Pohlig-Hellman* algorithm, for Roland Silver,
+    Stephen Pohlig and Martin Hellman, makes it easy to solve the discrete logarithm
+    problem when P-1 has only small factors. The algorithm lets you solve for each
+    of the small factors separately. Therefore, Sandra must make certain that P is
+    a *safe* prime, meaning that P-1 has at least one large factor, say q > 10^(35).
+    Ideally, Sandra should choose P to be a prime of the form 2Q+1 where Q is also
+    prime. The corresponding prime Q is called a Sophie Germain prime, named for French
+    number theorist Marie-Sophie Germain, who also studied acoustics and elasticity.
+    It is even stronger if Q-1 and Q+1 both have large prime factors. In the next
+    section we will explicitly construct Q so that Q-1 has a large prime factor. It
+    is highly likely that Q+1 also has a large prime factor, simply by chance, just
+    because Q is so large. Numbers that have only small factors are called *smooth
+    numbers*. They become very rare as the numbers get large.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*14.4.1 Constructing large primes, old'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The conventional method for constructing large primes, which you can find on
+    many websites, begins by randomly choosing an odd number N of the desired size,
+    and then testing whether N is prime. First you try a few hundred small primes.
+    If N is divisible by any of these, then it’s not prime. Choose again. This preliminary
+    test is worthwhile because it is so fast. Next, you test whether N is prime by
+    applying a probabilistic primality test. The most common test is the *Miller-Rabin*
+    test invented by Gary L. Miller and Michael O. Rabin. Let N-1 = 2^hd, where d
+    is odd. That is, 2^h is the largest power of 2 that evenly divides N-1\. The first
+    step is to choose a base b in the range 2 to N-2, and test whether b^d≡1(mod N).
+    If this is true, then N passes. If not, then see whether b^(2d)≡-1(mod N), or
+    b^(4d)≡-1(mod N), etc. Keep going as long as the exponent 2^gd remains less than
+    2^hd. If you find such a value g, then N passes the test, and b is called a *witness*
+    for the primality of N. If no such g is found, then you know for certain that
+    N is not prime, so you must start again with a new value for N.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If N passes, there is still a 1/4 probability that N is composite. If you want
+    to push the probability that N is not prime down to 1 in 2^(128), you will need
+    64 Miller-Rabin tests, each with a different base, b. Unfortunately, this is still
+    no guarantee. The Miller-Rabin test falsely identifies the Carmichael numbers
+    as prime. These are numbers that are not prime, but for which every b is a witness.
+    They were discovered by Robert Carmichael of the University of Illinois in 1910\.
+    The first few Carmichael numbers are 561, 1105, 1729, 2465, 2821, 6601, 8911,
+    10585, 15841, 29341 and 41041\. Carmichael numbers tend to have small prime divisors,
+    so passing 64 Miller-Rabin tests, and also finding that N is not divisible by
+    any of the first few hundred primes, makes it overwhelmingly probable that N is
+    a prime.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is a good method for finding primes of a particular size, but it does not
+    guarantee that N is a safe prime, and it is much slower than the method of this
+    section. If S is the size of the primes you need, the number of trials you need
+    to find a prime is about ln(S). So, for a 500-digit prime you need about ln(10^(500))
+    or about 1151 trials, each requiring 64 Miller-Rabin tests and hundreds of trial
+    divisions. Using the method I present in this section can save you hours or even
+    weeks of computer time, depending on what kind of computer you are using and how
+    large the primes need to be.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.4.2 Constructing large primes, new
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: One way you could attempt to find a large prime is to start with any large integer
+    N, then try 2N+1, 2N+3, 2N+5, ... testing each one until you hit a prime. A small
+    improvement on this is to test 6N+1, 6N+5, 6N+7, 6N+11, 6N+13, ... . That eliminates
+    all the multiples of 2 and 3 from the testing. You can also try 30N+1, 30N+7,
+    30N+11, 30N+13, ... to eliminate the multiples of 2, 3 and 5, and similarly for
+    2×3×5×7 = 210, and so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are a variety of ways to test whether a given integer N is a prime. The
+    simplest method is trial division. To test if N is a prime, try dividing N by
+    each of the primes up to √N. If any of these primes evenly divides N, then N is
+    composite, otherwise N is prime. Trial division is useful up to about N = 10^(12),
+    possibly 10^(14), but for larger N, trial division is too time-consuming. Most
+    other prime tests are merely probabilistic tests that can tell you that the number
+    is *probably* a prime.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'There is one test that tells you with certainty that a number is prime: an
+    integer N > 1 is prime if it has a primitive root. Recall from section 13.3 that
+    r is a primitive root of N if r^(N-1) mod N = 1, and r^((N-1)/p) mod N ≠ 1 for
+    any prime p that divides N-1\. To test N for primality you only need to evaluate
+    r^x mod N for the values x = N-1 and x = (N-1)/p for each distinct prime factor
+    p of N-1\. Let’s call this method the *primitive root primality test*, or *root
+    test* for short. It was invented by French mathematician Edouard Lucas in 1876,
+    the same Edouard Lucas who coined the term *Fibonacci number* (section 3.4). Lucas
+    died in 1891 from a tragic soup accident.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is sufficient to try 2, 3, 5, 7, 11 and 13 as possible primitive roots. If
+    N has any primitive roots, it is very probable that at least one of these 6 values
+    will be a primitive root. If none of these values is a primitive root, don’t waste
+    time trying other values. It is more efficient to move on to the next candidate
+    for a prime.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The problem with Lucas’s root test is that you need to factor N-1, and if N
+    has 300 or more digits, then factoring N-1 is effectively impossible, at least
+    without a quantum computer. That’s why you don’t see this test mentioned in many
+    books or websites that discuss prime testing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is a way around this hurdle. Remember that your goal is not to find a
+    general way to test for primes. Your goal is to obtain just one large prime to
+    use as the modulus for Diffie-Hellman key exchange. So, instead of *finding* that
+    prime, you can *construct* the prime.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The trick is to choose N-1 with known factors. For example, you could choose
+    N-1 to have the form 2^n so N would have the form 2^n+1\. The only prime factor
+    of N-1 would be 2\. To find primes of the form 2^n+1 you only need to find a number
+    b such that b^(N-1) mod N = 1 and b^((N-1)/2) mod N ≠ 1\. I suggest that you try
+    b = 2, 3, 5, 7, 11 and 13\. If none of these is a primitive root, then skip N
+    = 2^n+1 and see if N = 2^(n+1)+1 is a prime. That search will net you the primes
+    3, 5, 17, 257 and 65537\. It is not known whether there are others, although people
+    have spent thousands of hours of computer time searching. These 5 primes are called
+    Fermat primes for French mathematician Pierre de Fermat, famed for his margin
+    note about the equation a^n+b^n = c^n.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Outline
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Before I get into the details, let me outline the general method for constructing
+    a large prime, P. The method must accomplish three things:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: P-1 must have a large prime factor so that P is safe,
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Each candidate P should have a high probability of being prime so that you need
+    to do as few prime tests as possible, and
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: P-1 should have few distinct prime factors so that each prime test is as fast
+    as possible.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Any search for a large prime will involve testing hundreds or even thousands
+    of candidates. Let’s call the expected number of tests E. The approach here will
+    be to make each candidate for P-1 the product cK of two numbers. The coefficient
+    c will be stepped through a sequence of relatively small numbers, typically comparable
+    to E. The kernel K will be either a large prime, the product of two large primes,
+    or the product of powers of at most 2 primes, p^aq^b, where at least one of p
+    and q is a large prime. Let’s look at how to choose the coefficients first, and
+    then at how to choose the kernel.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Coefficients
+  prefs: []
+  type: TYPE_NORMAL
+- en: The simplest way to choose the coefficients is to step through the primes, one
+    at a time. Since the coefficients must be even, you use twice each prime, 2×2,
+    2×3, 2×5, 2×7, ... . Let’s call this method *PickPrimes*. PickPrimes minimizes
+    the number of distinct prime factors in cK. There are at most 2 distinct prime
+    factors in c, and at most 2 distinct prime factors in K. However, PickPrimes does
+    little to reduce the number of tests needed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A second way to choose the coefficients is to make them of the form p^aq^b,
+    or p^aq^br^c, or similar. Here p, q and r are small primes such as 2, 3 and 5,
+    or 2, 5 and 7\. (Later in this section we will see a case where 3 must be omitted.)
+    This way, P can never be a multiple of 2, 3 or 5, which significantly increases
+    the chance that P will be prime. If you use this method, you may want to precompute
+    and sort the list of coefficients.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Kernel
+  prefs: []
+  type: TYPE_NORMAL
+- en: The kernel, K, must have at least one large prime factor, R. I suggest that
+    R be at least 2^(128), about 3.4×10^(38). If your opponent has a quantum computer,
+    make R at least 2^(256) = 1.16×10^(77). So, where do you get these primes? If
+    you are willing to settle for 30-digit primes, you can get some online from bigprimes.org.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you expect to generate many large primes, or very large primes, you can grow
+    your own. Prepare ahead of time by building up a table of primes of various sizes.
+    Call this table PrimeTab. Be sure to save PrimeTab so whenever you need more primes
+    you don’t have to repeat this process. You can start your prime table with the
+    25 primes under 100\. You probably know these by heart, so just type them into
+    your program. Next, if you like, you could generate some primes of 3 to 12 digits,
+    say 2 or 3 primes of each size, using trial division. I suggest that you do this
+    randomly so that you don’t construct the same primes every time you use this method
+    (and so that every reader who uses this method doesn’t generate the same primes).
+    At this stage PrimeTab might have about 50 primes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Constructing R (Small step method)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now let’s start trying to construct R, the large prime factor of Q-1\. You can
+    build up to R in small steps by finding primes that are each a little bigger than
+    the last prime, or you can jump there in one leap. If you expect to generate many
+    large primes, build in small steps so that PrimeTab will have lots of entries
+    for use later. To illustrate both techniques, let’s construct R in small steps,
+    and construct Q in a giant leap.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose that PrimeTab contains k primes, p[1] < p[2] < p[3] < ... < p[k]. To
+    construct the next prime, start by choosing any two primes from the table, say
+    p[i] and p[j]. Let r be the product p[i]p[j]. If r < p[k], you might want to use
+    a larger i or j so that you don’t generate too many small primes. Of course you
+    need some small primes, so I suggest choosing a larger i or j when p[i]p[j] <
+    p[k]^(2/3). First, use the Lucas test to see whether R = 2r+1 is a prime. This
+    is easy since you know the only prime factors of R-1 are 2, p[i] and p[j]. If
+    2r+1 is not a prime, try 4r+1, 6r+1, 10r+1, ... using the PickPrimes method to
+    choose the coefficients. When the numbers start to get over 20 digits, finding
+    a prime may take 50 or more trials per prime.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reducing the number of tests
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the numbers get very large, you can save time by checking whether each
+    candidate nr+1 is divisible by many small primes before you search for a primitive
+    root. For example, you could verify that nr+1 is not divisible by any of the first
+    100 primes. You can make this test much faster by calculating x[i] = r mod p[i]
+    ahead of time for each of the first 100 primes. Then, instead of computing (nr+1)
+    mod p[i], where r may have several hundred digits, you compute (nx[i]+1) mod p[i],
+    where x[i] has only 1 to 3 digits. That is, you do the trial divisions (r mod
+    p[i]) only once instead of once for each value of n. Let’s call this method *PrimeCheck*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: PrimeCheck works because the candidate primes are chosen in sequence. You cannot
+    do this with the conventional method for finding large primes, because the candidate
+    primes are chosen at random. That makes the trial division by small primes much
+    faster for this method, and since it is faster you can use more small primes,
+    say 300 instead of 100, and thereby reduce the number of trials needed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As before, if none among 2, 3, 5, 7, 11 or 13 is a primitive root of nr+1, skip
+    that candidate and try the next value of n, until you find the next prime. Since
+    this method uses only 6 tests per candidate, and the conventional method uses
+    64 tests, this method is more than 10 times as fast. Add each prime you find to
+    PrimeTab.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Constructing P and Q (Giant leap method)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose your goal is to find a 300-digit Sophie Germain prime. Continue growing
+    PrimeTab until it has at least one large prime, say R > 2^(128). Now you are ready
+    to generate your 300-digit prime using a giant leap. Start by choosing a target
+    T of the desired size, say T = 10^(300). It is possible to make P arbitrarily
+    close to the target value, but that is not needed for Diffie-Hellman key exchange.
+    T will simply be a desired minimum size.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The next step is to find Q. Recall that Q must meet three requirements: Q must
+    be prime, Q-1 must be a multiple of the large prime R, and P = 2Q+1 must also
+    be prime. The strategy to find Q is to start with some seed number t whose prime
+    divisors are all known and try 2t+1, 4t+1, 6t+1, 10t+1, ... using PickPrimes.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING If you make t a multiple of 3, then Q will have the form 3x+1\. That
+    makes P = 2Q+1 = 6x+3 a multiple of 3\. Making t a multiple of 3 means P can never
+    be prime.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since T is the minimum value for P, and Q is about P/2, then t should be about
+    T/2\. To construct t, begin with the largest prime in PrimeTab, namely R. Take
+    the largest power of R that is less than T/2, say R^r. For example, if T is 10^(300),
+    and R is about 10^(40), then T/2 is about 5×10^(299), so r is 7\. This means R^r
+    is about 10^(280). Getting from 10^(40) directly to 10^(280) is the giant leap.
+    This R^r is well short of 5×10^(299), so set t = R⁷S, where S is about 5×10^(19).
+    When S < 10^(12), you can use trial division to find the next prime greater than
+    S. If this is S' , then t is R⁷S' . When S > 10^(12), you can make S' the product
+    of a prime from PrimeTab and a prime less than 10^(12) that you must choose, or
+    you can make S' the square or cube of a prime. Suppose the latter. In this example
+    S is about 5×10^(19). The square root of this is about 7,071,067,812\. The next
+    higher prime is U = 7,071,067,851\. So t will be R⁷U².
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now that you have constructed t, and you know all of its prime factors, you
+    can begin the search for Q, by testing 2t+1, 4t+1, 6t+1, 10t+1, ... using the
+    root test. A number N chosen at random has a probability of about 1/ln(N) of being
+    prime. When N is on the order of 10^(300), ln(N) is about 690\. This means it
+    will take about 690 tries to find a prime of the form nt+1\. It is also necessary
+    for P to be prime, which also has a probability of about 1/690\. This means it
+    will take about 690² = 476100 tries to find Q = nt+1 and P = 2Q+1, which are both
+    prime. That’s a lot of tests.
+  prefs: []
+  type: TYPE_NORMAL
+- en: These tests are time-consuming, so any technique to cut down on the number of
+    tests is valuable. In this case we can use a natural extension of PrimeCheck.
+    For each prime p[i], calculate x[i] = t mod p[i] as before. For each value of
+    n, check whether nx[i]+1 is divisible by p[i] to verify that Q is not a multiple
+    of p[i], and also check whether 2(nx[i]+1)+1, which is 2nx[i]+3, is divisible
+    by p[i] to verify that P is not a multiple of p[i]. This way you get double value
+    from the x[i] list.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Secret primes
+  prefs: []
+  type: TYPE_NORMAL
+- en: For some ciphers you may need to use a secret prime, known only to yourself
+    and your legitimate correspondents. You can still use the methods of this section
+    to construct your prime, however, you need to make certain that any opponent cannot
+    follow the same steps and discover your prime. I recommend two precautions. (1)
+    When you initialize PrimeTab, instead of 2 or 3 primes each of sizes 3 to 12 digits,
+    randomly choose 5 to 10 primes each of sizes 3 to 14 digits. Aim for at least
+    100 initial primes in PrimeTab. (2) Use the small step method for constructing
+    P, Q and R, preferably using at least 100 additional steps beyond the initial
+    primes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Exact size
+  prefs: []
+  type: TYPE_NORMAL
+- en: The giant leap method for constructing primes can easily be modified to find
+    primes of a precise size. Here is an example. Suppose you need a prime between
+    10^(300) and 1.1×10^(300). Choose r slightly larger than 10^(300)/2000000, that
+    is, 5×10^(294). Use PickPrimes, but start your primes at 1000000, that is, 1000003,
+    1000033, 1000037, 1000039, ... . Use PrimeCheck to reduce the number of tests.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are about 6700 primes between 1,000,000 and 1,100,000, and about 1 out
+    of every 690 numbers between 10^(300) and 1.1×10^(300) is prime, so it is a near
+    certainty that you will find a prime of the required size. The probability can
+    be easily calculated. The odds that any given number in the desired range is not
+    prime is 689/690\. The odds that all 6700 chosen numbers are not prime is (689/690)^(6700),
+    or .00006\. So the chance of success is 99.994%.******
+  prefs: []
+  type: TYPE_NORMAL

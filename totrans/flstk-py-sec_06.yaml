@@ -1,0 +1,583 @@
+- en: 5 Asymmetric encryption
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Introducing the key-distribution problem
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Demonstrating asymmetric encryption with the `cryptography` package
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Ensuring nonrepudiation with digital signatures
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: In the previous chapter, you learned how to ensure confidentiality with symmetric
+    encryption. Symmetric encryption, unfortunately, is no panacea. By itself, symmetric
+    encryption is unsuitable for key distribution, a classic problem in cryptography.
+    In this chapter, you’ll learn how to solve this problem with asymmetric encryption.
+    Along the way, you’ll learn more about the Python package named `cryptography`.
+    Finally, I’ll show you how to ensure nonrepudiation with digital signatures.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.1 Key-distribution problem
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Symmetric encryption works great when the encryptor and decryptor are the same
+    party, but it doesn’t scale well. Suppose Alice wants to send Bob a confidential
+    message. She encrypts the message and sends the ciphertext to Bob. Bob needs Alice’s
+    key to decrypt the message. Alice now has to find a way to distribute the key
+    to Bob without Eve, an eavesdropper, intercepting the key. Alice could encrypt
+    her key with a second key, but how does she safely send the second key to Bob?
+    Alice could encrypt her second key with a third key, but how does she . . . you
+    get the point. Key distribution is a recursive problem.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The problem gets dramatically worse if Alice wants to send a message to 10 people
+    like Bob. Even if Alice physically distributes the key to all parties, she would
+    have to repeat the work if Eve obtains the key from just one person. The probability
+    and cost of having to rotate the keys would increase tenfold. Alternatively, Alice
+    could manage a different key for each person—an order of magnitude more work.
+    This *key-distribution problem* is one of the inspirations for asymmetric encryption.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.2 Asymmetric encryption
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: If an encryption algorithm, like AES, encrypts and decrypts with the same key,
+    we call it *symmetric*. If an encryption algorithm encrypts and decrypts with
+    two different keys, we call it *asymmetric*. The keys are referred to as a *key
+    pair*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The key pair is composed of a *private key* and a *public key*. The private
+    key is hidden by the owner. The public key is distributed openly to anyone; it
+    is not a secret. The private key can decrypt what the public key encrypts, and
+    vice versa.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Asymmetric encryption*, depicted in figure 5.1, is a classic solution to the
+    key-distribution problem. Suppose Alice wants to safely send a confidential message
+    to Bob with public-key encryption. Bob generates a key pair. The private key is
+    kept secret, and the public key is openly distributed to Alice. It’s OK if Eve
+    sees the public key as Bob sends it to Alice; it’s just a public key. Alice now
+    encrypts her message by using Bob’s public key. She openly sends the ciphertext
+    to Bob. Bob receives the ciphertext and decrypts it with his private key—the only
+    key that can decrypt Alice’s message.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH05_F01_Byrne](Images/CH05_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5.1 Alice confidentially sends a message to Bob with public-key encryption.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This solution solves two problems. First, the key-distribution problem has been
+    solved. If Eve manages to obtain Bob’s public key and Alice’s ciphertext, she
+    cannot decrypt the message. Only Bob’s private key can decrypt ciphertext produced
+    by Bob’s public key. Second, this solution scales. If Alice wants to send her
+    message to 10 people, each person simply needs to generate their own unique key
+    pair. If Eve ever manages to compromise one person’s private key, it does not
+    affect the other participants.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This section demonstrates the basic idea of public-key encryption. The next
+    section demonstrates how to do this in Python with the most widely used public-key
+    cryptosystem of all time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.2.1 RSA public-key encryption
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*RSA* is a classic example of asymmetric encryption that has stood the test
+    of time. This public-key cryptosystem was developed in the late 1970s by Ron Rivest,
+    Adi Shamir, and Leonard Adleman. The initialism stands for the last names of the
+    creators.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `openssl` command that follows demonstrates how to generate a 3072-bit
+    RSA private key with the `genpkey` subcommand. At the time of this writing, RSA
+    keys should be at least 2048 bits:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Generates an RSA key
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Generates private-key file to this path
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Uses a key size of 3072 bits
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Notice the size difference between an RSA key and an AES key. An RSA key needs
+    to be much larger than an AES key in order to achieve comparable strength. For
+    example, the maximum size of an AES key is 256 bits: an RSA key of this size would
+    be a joke. This contrast is a reflection of the underlying math models these algorithms
+    use to encrypt data. RSA encryption uses integer factorization; AES encryption
+    uses a substitution-permutation network. Generally speaking, keys for asymmetric
+    encryption need to be larger than keys for symmetric encryption.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following `openssl` command demonstrates how to extract an RSA public key
+    from a private-key file with the `rsa` subcommand:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Private and public keys are sometimes stored in a filesystem. It is important
+    to manage the access privileges to these files. The private-key file should not
+    be readable or writable to anyone but the owner. The public-key file, on the other
+    hand, can be read by anyone. The following commands demonstrate how to restrict
+    access to these files on a UNIX-like system:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Owner has read and write access.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Anyone can read this file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note Like symmetric keys, asymmetric keys have no place in production source
+    code or filesystems. Keys like this should be stored securely in key management
+    services such as Amazon’s AWS Key Management Service ([https://aws.amazon.com/kms/](https://aws.amazon.com/kms/))
+    and Google’s Cloud Key Management Service ([https://cloud.google.com/security-key-management](https://cloud.google.com/security-key-management)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'OpenSSL serializes the keys to disk in a format known as *Privacy-Enhanced
+    Mail* (*PEM*). PEM is the de facto standard way to encode key pairs. You may recognize
+    the `-----BEGIN` header of each file, shown here in bold, if you’ve worked with
+    PEM-formatted files already:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: Alternatively, the `cryptography` package can be used to generate keys. Listing
+    5.1 demonstrates how to generate a private key with the `rsa` module. The first
+    argument to `generate_private_key` is an RSA implementation detail I don’t discuss
+    in this book (for more information, visit [www.imperialviolet.org/2012/03/16/rsae.html](https://cloud.google.com/security-key-management)).
+    The second argument is the key size. After the private key is generated, a public
+    key is extracted from it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 5.1 RSA key-pair generation in Python
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Complex low-level API
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Private-key generation
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Public-key extraction
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note Production key-pair generation is rarely done in Python. Typically, this
+    is done with command-line tools such as `openssl` or `ssh-keygen`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The following listing demonstrates how to serialize both keys from memory to
+    disk in PEM format.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 5.2 RSA key-pair serialization in Python
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Private-key serialization
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Public-key serialization
+  prefs: []
+  type: TYPE_NORMAL
+- en: Regardless of how a key pair is generated, it can be loaded into memory with
+    the code shown in the next listing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 5.3 RSA key-pair deserialization in Python
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Private-key deserialization
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Public-key deserialization
+  prefs: []
+  type: TYPE_NORMAL
+- en: The next listing demonstrates how to encrypt with the public key and decrypt
+    with the private key. Like symmetric block ciphers, RSA encrypts data with a padding
+    scheme.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note Optimal asymmetric encryption padding (OAEP) is the recommended padding
+    scheme for RSA encryption and decryption.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 5.4 RSA public-key encryption and decryption in Python
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Uses OAEP padding
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Encrypts with the public key
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Decrypts with the private key
+  prefs: []
+  type: TYPE_NORMAL
+- en: Asymmetric encryption is a two-way street. You can encrypt with the public key
+    and decrypt with the private key, or, you can go in the opposite direction—encrypting
+    with the private key and decrypting with the public key. This presents us with
+    a trade-off between confidentiality and data authentication. Data encrypted with
+    a public key is *confidential*; only the owner of the private key can decrypt
+    a message, but anyone could be the author of it. Data encrypted with a private
+    key is *authenticated*; receivers know the message can be authored only with the
+    private key, but anyone can decrypt it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This section has demonstrated how public-key encryption ensures confidentiality.
+    The next section demonstrates how private-key encryption ensures nonrepudiation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.3 Nonrepudiation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'In chapter 3, you learned how Alice and Bob ensured message authentication
+    with keyed hashing. Bob sent a message along with a hash value to Alice. Alice
+    hashed the message as well. If Alice’s hash value matched Bob’s hash value, she
+    could conclude two things: the message had integrity, and Bob is the creator of
+    the message.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now consider this scenario from the perspective of a third party, Charlie. Does
+    Charlie know who created the message? No, because both Alice and Bob share a key.
+    Charlie knows the message was created by one of them, but he doesn’t know which
+    one. There is nothing to stop Alice from creating a message while claiming she
+    received it from Bob. There is nothing to stop Bob from sending a message while
+    claiming Alice created it herself. Alice and Bob both know who the author of the
+    message is, but they cannot prove who the author is to anyone else.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When a system prevents a participant from denying their actions, we call it
+    *nonrepudiation*. In this scenario, Bob would be unable to deny his action, sending
+    a message. In the real world, nonrepudiation is often used when the message represents
+    an online transaction. For example, a point-of-sales system may feature nonrepudiation
+    as a way to legally bind business partners to fulfill their end of agreements.
+    These systems allow a third party, such as a legal authority, to verify each transaction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If Alice, Bob, and Charlie want nonrepudiation, Alice and Bob are going to have
+    to stop sharing a key and start using digital signatures.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.3.1 Digital signatures
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Digital* *signatures* go one step beyond data authentication and data integrity
+    to ensure nonrepudiation. A digital signature allows anyone, not just the receiver,
+    to answer two questions: Who sent the message? Has the message been modified in
+    transit? A digital signature shares many things in common with a handwritten signature:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Both signature types are unique to the signer.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Both signature types can be used to legally bind the signer to a contract.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Both signature types are difficult to forge.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Digital signatures are traditionally created by combining a hash function with
+    public-key encryption. To digitally sign a message, the sender first hashes the
+    message. The hash value and the sender’s private key then become the *input* to
+    an asymmetric encryption algorithm; the *output* of this algorithm is the message
+    sender’s digital signature. In other words, the plaintext is a hash value, and
+    the ciphertext is a digital signature. The message and the digital signature are
+    then transmitted together. Figure 5.2 depicts how Bob would implement this protocol.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH05_F02_Byrne](Images/CH05_F02_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5.2 Bob digitally signs a message with private-key encryption before
+    sending it to Alice.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The digital signature is openly transmitted with the message; it is not a secret.
+    Some programmers have a hard time accepting this. This is understandable to a
+    degree: the signature is ciphertext, and an attacker can easily decrypt it with
+    the public key. Remember, although ciphertext is often concealed, digital signatures
+    are an exception. The goal of a digital signature is to ensure nonrepudiation,
+    not confidentiality. If an attacker decrypts a digital signature, they do not
+    gain access to private information.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.3.2 RSA digital signatures
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Listing 5.5 demonstrates Bob’s implementation of the idea depicted in figure
+    5.2\. This code shows how to sign a message with SHA-256, RSA public-key encryption,
+    and a padding scheme known as probabilistic signature scheme (PSS). The `RSAPrivateKey.sign`
+    method combines all three elements.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 5.5 RSA digital signatures in Python
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Uses PSS padding
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Loads a private key using the method shown in listing 5.3
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Signs with SHA-256
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Prepares message with digital signature for Alice
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING The padding schemes for RSA digital signing and RSA public-key encryption
+    are not the same. OAEP padding is recommended for RSA encryption; PSS padding
+    is recommended for RSA digital signing. These two padding schemes are not interchangeable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: After receiving Bob’s message and signature, but before she trusts the message,
+    Alice verifies the signature.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.3.3 RSA digital signature verification
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'After Alice receives Bob’s message and digital signature, she does three things:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: She hashes the message.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: She decrypts the signature with Bob’s public key.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: She compares the hash values.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: If Alice’s hash value matches the decrypted hash value, she knows the message
+    can be trusted. Figure 5.3 depicts how Alice, the receiver, implements her side
+    of this protocol.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH05_F03_Byrne](Images/CH05_F03_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 5.3 Alice receives Bob’s message and verifies his signature with public-key
+    decryption.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 5.6 demonstrates Alice’s implementation of the protocol depicted in
+    figure 5.3\. All three steps of digital signature verification are delegated to
+    `RSAPublicKey .verify`. If the computed hash value does not match the decrypted
+    hash value from Bob, the `verify` method will throw an `InvalidSignature` exception.
+    If the hash values do match, Alice knows the message has not been tampered with
+    and the message could have been sent only by someone with Bob’s private key—presumably,
+    Bob.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 5.6 RSA digital signature verification in Python
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Receives message and signature
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Uses PSS padding
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Loads a private key using the method shown in listing 5.3
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Delegates signature verification to the verify method
+  prefs: []
+  type: TYPE_NORMAL
+- en: Charlie, a third party, can verify the origin of the message in the same way
+    Alice does. Bob’s signature therefore ensures nonrepudiation. He cannot deny he
+    is the sender of the message, unless he also claims his private key was compromised.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Eve, an intermediary, will fail if she tries to interfere with the protocol.
+    She could try modifying the message, signature, or public key while in transit
+    to Alice. In all three cases, the signature would fail verification. Altering
+    the message would affect the hash value Alice computes. Altering the signature
+    or the public key would affect the hash value Alice decrypts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This section delved into digital signatures as an application of asymmetric
+    encryption. Doing this with an RSA key pair is safe, secure, and battle tested.
+    Unfortunately, asymmetric encryption isn’t the optimal way to digitally sign data.
+    The next section covers a better alternative.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.3.4 Elliptic-curve digital signatures
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: As with RSA, elliptic-curve cryptosystems revolve around the notion of a key
+    pair. Like RSA key pairs, elliptic-curve key pairs sign data and verify signatures;
+    unlike RSA key pairs, elliptic-curve key pairs do not asymmetrically encrypt data.
+    In other words, an RSA private key decrypts what its public key encrypts, and
+    vice versa. An elliptic-curve key pair does not support this functionality.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Why, then, would anyone use elliptic curves over RSA? Elliptic-curve key pairs
+    may not be able to asymmetrically encrypt data, but they are way faster at signing
+    it. For this reason, elliptic-curve cryptosystems have become the modern approach
+    to digital signatures, luring people away from RSA, with lower computational costs.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is nothing insecure about RSA, but elliptic-curve key pairs are substantially
+    more efficient at signing data and verifying signatures. For example, the strength
+    of a 256-bit elliptic-curve key is comparable to a 3072-bit RSA key. The performance
+    contrast between elliptic curves and RSA is a reflection of the underlying math
+    models these algorithms use. Elliptic-curve cryptosystems, as the name indicates,
+    use elliptic curves; RSA digital signatures use integer factorization.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 5.7 demonstrates how Bob would generate an elliptic-curve key pair and
+    sign a message with SHA-256\. Compared to RSA, this approach results in fewer
+    CPU cycles and fewer lines of code. The private key is generated with a NIST-approved
+    elliptic curve known as SECP384R1, or P-384.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 5.7 Elliptic-curve digital signing in Python
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Signing with SHA-256
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 5.8, picking up where listing 5.7 left off, demonstrates how Alice would
+    verify Bob’s signature. As with RSA, the public key is extracted from the private
+    key; the `verify` method throws an `InvalidSignature` if the signature fails verification.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 5.8 Elliptic-curve digital signature verification in Python
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Extracts public key
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Handles verification failure
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sometimes rehashing a message is undesirable. This is often the case when working
+    with large messages or a large number of messages. The `sign` method, for RSA
+    keys and elliptic-curve keys, accommodates these scenarios by letting the caller
+    take responsibility for producing the hash value. This gives the caller the option
+    of efficiently hashing the message or reusing a previously computed hash value.
+    The next listing demonstrates how to sign a large message with the `Prehashed`
+    utility class.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 5.9 Signing a large message efficiently in Python
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Caller hashes message efficiently
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Signs with the Prehashed utility class
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'By now, you have a working knowledge of hashing, encryption, and digital signatures.
+    You’ve learned the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Hashing ensures data integrity and data authentication.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Encryption ensures confidentiality.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Digital signatures ensure nonrepudiation.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: This chapter presented many low-level examples from the `cryptography` package
+    for instructional purposes. These low-level examples prepare you for the high-level
+    solution I cover in the next chapter, Transport Layer Security. This networking
+    protocol brings together everything you have learned so far about hashing, encryption,
+    and digital signatures.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Asymmetric encryption algorithms use different keys for encryption and decryption.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Public-key encryption is a solution to the key-distribution problem.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: RSA key pairs are a classic and secure way to asymmetrically encrypt data.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Digital signatures guarantee nonrepudiation.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Elliptic-curve digital signatures are more efficient than RSA digital signatures.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

@@ -1,0 +1,1278 @@
+- en: 11 Block ciphers
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: The DES and AES encryption standards
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Ciphers based on matrix multiplication
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Involutory ciphers, where encryption and decryption are identical
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Ripple ciphers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Block chaining
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: We have already seen several ciphers that operate on text that has been divided
+    into blocks of characters. Some operate on small blocks of just 2 or 3 characters,
+    such as Playfair, Two Square, Three Square and Four Square. Some operate on longer
+    blocks, but change only 2 or 3 characters at a time, such as bifid, trifid or
+    FR-Actionated Morse. These ciphers act locally, on just one portion of each block.
+    A change in one character of the plaintext typically changes at most 2 or 3 characters
+    of the ciphertext.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This chapter deals with much stronger types of block ciphers. In these ciphers,
+    changing even a single bit of the plaintext, or a single bit of the key, will
+    change roughly half of the bits of the ciphertext, and nearly all of the bytes
+    of the ciphertext. This indicates that the cipher is highly non-linear (see section
+    12.3). These ciphers are intended only for computer use, often with special-purpose
+    hardware to speed the encryption.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Most of the remainder of this book is concerned with computer ciphers and methods.
+    If you are not concerned about computer methods, simply skip those sections.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.1 Substitution-permutation network
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Many block ciphers take the form of a *substitution-permutation network* (SPN).
+    This idea was first described by Horst Feistel of IBM in 1971\. Encipherment consists
+    of several rounds, each of which may consist of one or more substitution steps
+    and/or one or more permutation steps. There is usually a main key that controls
+    the overall operation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The most common choices for the substitution step are (1) simple substitution,
+    (2) exclusive-ORing part of the block with part of the key, or (3) polyalphabetic
+    substitution under the control of a key. The key may consist of bits taken from
+    the main key and/or bits taken from a part of the block that is not being substituted.
+    For example, the odd-numbered bytes in the block may be used as keys to encipher
+    the even-numbered bytes, or vice versa. A slightly more complex form of substitution
+    takes some bits from the key, exclusive-ORs them with an equal number of bits
+    from the block, and uses that result as a polyalphabetic key to substitute a different
+    part of the block.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The substitution alphabets are usually chosen beforehand and never change. These
+    are called *S-boxes*. They may be simple substitutions, or they may be polyalphabetic
+    substitutions, so the S-box is the computer equivalent of a tableau. They commonly
+    take 4 to 8 key bits to select the row of the tableau and either 4 or 8 bits of
+    the block as input, and the same number of bits as output. Often some sophisticated
+    mathematics goes into the construction of the substitution alphabets. In particular,
+    the alphabets are designed to be non-linear, which is detailed in section 12.3.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The permutations for each round are also usually predetermined and unchanging.
+    The permutations may operate on units that are single bits, 4-bit groups or 8-bit
+    bytes. In most block ciphers there are no keys for the permutations; they are
+    hard-coded in software or hard-wired into the encryption chip.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The earliest of the modern block ciphers was *Lucifer*, designed by Horst Feistel
+    of IBM. The name was changed several times before Feistel settled on Lucifer because
+    he wanted a name that embodied the diabolic nature of the design. Feistel also
+    changed the design of Lucifer repeatedly, from an original 48-bit key working
+    on a 128-bit block to a 128-bit key working on a 128-bit block. You can read more
+    about Lucifer at [https://derekbruff.org/blogs/fywscrypto/tag/lucifer](https://derekbruff.org/blogs/fywscrypto/tag/lucifer)
+    (accessed May 2022).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is a diagram of a miniature substitution-permutation network cipher. This
+    cipher takes a 16-bit plaintext and produces a 16-bit ciphertext. It has 4 substitution
+    rounds and 3 transposition rounds. The substitutions and transpositions are fixed;
+    they are built into the hardware. There are 4 different substitutions used, S[1],
+    S[2], S[3] and S[4]. Each substitution takes 4 input bits plus a key, K[11] through
+    K[44], typically 4, 6 or 8 bits, so the cipher could potentially have 64, 96 or
+    128 key bits if all of the keys were independent. The transpositions are different
+    for each round.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-1](../Images/11-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This mini network cipher is rated Three, because it is equivalent to a bigram
+    substitution, but it can be scaled up from 16 bits to 64 bits with 6 substitution
+    rounds, rated Eight, or 128 bits with 8 substitution rounds, rated Ten.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The design of the final version of Lucifer led directly to the *Data Encryption
+    Standard* (DES) which was formally adopted by the National Bureau of Standards
+    (NBS) in 1977\. Therefore, let’s jump directly to it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.2 Data Encryption Standard (DES)
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The DES was developed at IBM in 1976 by trimming down the then-current version
+    of Lucifer. That version used 128-bit keys and worked on 128-bit blocks of the
+    message. The block size was reduced to 64 bits, which can be justified because
+    that reduced the hardware cost. IBM wanted to use a 64-bit key, but the NSA insisted
+    on reducing the key further, down to 56 bits, on the flimsy rationale that the
+    extra 8 bits could be used as a checksum. It is generally accepted that the actual
+    reason was that the NSA had the ability to solve 56-bit DES, but not 64-bit DES.
+  prefs: []
+  type: TYPE_NORMAL
+- en: IBM originally planned to make DES a 6-round cipher. When the NSA told IBM that
+    it could crack the 6-round version, IBM jumped straight to 16 rounds, the same
+    number of rounds that Feistel had used in his final version of Lucifer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A new feature of DES, not found in any version of Lucifer, is a bit transposition
+    before the first and after the last substitution steps. These are 8×8 columnar
+    transpositions in which the order of the columns and the order of the rows are
+    both changed. For the initial transposition the 64 bits of the block are written
+    into the grid from left to right. The columns are read out in reverse order, namely
+    8,7,6,5,4,3,2,1\. The rows are read out in the order 2,4,6,8,1,3,5,7\. The final
+    transposition is the inverse of this.
+  prefs: []
+  type: TYPE_NORMAL
+- en: These transpositions have no cryptographic value. They add nothing to the strength
+    of DES. They were added because the NSA had told IBM that the encryption should
+    be fast when done in hardware, but slow to simulate in software. The idea was
+    to make it more time-consuming for Emily to crack the cipher by brute force, that
+    is, by trying all possible keys in software. IBM believed that permuting the bits
+    would make any software implementation very slow. IBM probably envisioned a process
+    where the bits were extracted one by one by masking, and then shifted into place.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This turned out to be all wrong. First, enemies wishing to crack DES could simply
+    purchase the encryption chips through proxies. Second, for some legitimate applications
+    DES needed to be embedded in software, so the software had to be fast. Third,
+    bit transpositions can be done quickly, without extracting individual bits or
+    shifting. I will show how in section 11.2.3.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Between the initial and final transpositions, DES has 16 substitution rounds.
+    The 64-bit block is split into two 32-bit halves. In each round the right half
+    serves to encipher the left half. The right half is first expanded from 32 bits
+    to 48 bits, as follows. The 32 bits are treated as eight 4-bit groups. Each of
+    these groups is expanded from 4 bits to 6 bits by appending the bit before and
+    the bit after, taken from the adjacent groups. For example, the third group would
+    consist of bits 9 through 12\. This 4-bit group would be expanded from 4 bits
+    to six bits by appending bit 8 to the left and bit 13 to the right. In other words,
+    the 6-bit group would be bits 8,9,10,11,12,13\. Eight such 6-bit groups form a
+    48-bit block.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This 48-bit block is then exclusive-ORed with 48 bits taken from the 56-bit
+    key. Which 48 bits are used for each round is determined by a *key schedule*,
+    which is basically shifting the full 56-bit key a few positions after each round.
+    The resulting eight 6-bit groups are then fed into eight fixed S-boxes, that is,
+    substitutions. Each S-box gives a 4-bit result, so the eight 4-bit results taken
+    together form a 32-bit block. This block is then exclusive-ORed with the left
+    half of the whole 64-bit block.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Historic aside
+  prefs: []
+  type: TYPE_NORMAL
+- en: IBM did not design DES to have a key schedule. The original idea was to cycle
+    the 64-bit key by 4 bit positions after each of the 16 rounds. That left the key
+    in its original position, ready for enciphering the next block. IBM was forced
+    to introduce the key schedule when the NSA made IBM reduce the key size to 56
+    bits. Four-bit shifts no longer worked. Of course IBM called the key schedule
+    a “feature.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another way to look at each S-box is to picture it as a 4×16 tableau. Like a
+    Belaso or Vigenère tableau, each row is a substitution table for 4-bit groups.
+    The two extra bits that were appended to the 4-bit groups are used to select which
+    one of the 4 rows of the tableau is used.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Each S-box was carefully designed so that there would be as little correlation
+    as possible between the 6 input bits and the 4 output bits. The NSA had found
+    a top-secret way of designing the S-boxes to give the lowest possible correlation.
+    Because DES was so important, the NSA decided to share this secret with the IBM
+    designers of DES. However, after examining the IBM design, the NSA realized that
+    IBM had also discovered this method and had used it in its design.
+  prefs: []
+  type: TYPE_NORMAL
+- en: After each round, except the last, the left and right halves of the 64-bit block
+    are swapped.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.2.1 Double DES
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: It was understood from the outset that a 56-bit key was too small for strong
+    security. Only 4 months after DES was adopted, Electronic Frontier Foundation
+    built a $250,000 special-purpose computer called Deep Crack that solved a DES
+    message in only 56 hours.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The first proposed solution to this apparent weakness was to encipher a message
+    twice with DES using two different keys. This idea was rejected because it was
+    theoretically possible to mount a meet-in-the-middle attack that would crack DES.
+    That is, you work forward from the plaintext and backward from the ciphertext
+    and meet in the middle. You do this by taking a block of ciphertext whose plaintext
+    is known. You encipher the plaintext with all 2^(56) possible keys, and you decipher
+    the ciphertext with all 2^(56) possible keys. You compare these results, and wherever
+    you find a match you have a possible pair of keys.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This attack was only theoretical. You would need to store 2 sets of 2^(56) solutions,
+    meaning 2^(60) bytes, to make all of the comparisons. No computer in the 1970s
+    approached that level of storage. Further, you would expect about 2^(48) matches.
+    These would all need to be checked out. That is a daunting task. But IBM and the
+    NSA were hoping that DES could last 20 to 30 years, and it was plausible that
+    this attack would become practical in that timespan. Double DES may be used, but
+    it has never been accepted as a standard.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.2.2 Triple DES
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Triple DES*, or *3DES*, was another attempt to compensate for the small 56-bit
+    key size of DES. It consists of taking a 64-bit block and encrypting it with one
+    DES key, decrypting it with a second DES key, then encrypting it with a third
+    DES key. Obviously this takes 3 times as long as ordinary DES. It is not widely
+    used because this makes it so slow.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is a much faster way of increasing the security of DES. Simply exclusive-OR
+    the 64-bit block with a 64-bit key before the DES step, and with a different 64-bit
+    key after the DES step. There would be 3 independent keys, the two 64-bit exclusive-OR
+    keys and the 56-bit DES key, for a total of 184 bits. This method takes only marginally
+    longer than a single DES encipherment.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Even if the second exclusive-OR key could be determined by looking at the waveforms,
+    this is still far stronger than single DES. You can eliminate the danger of the
+    waveforms undoing the exclusive-OR by performing keyed simple substitutions before
+    and after the DES step.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*11.2.3 Fast bit transposition'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: DES starts and ends with a bit transposition. The naive way of doing this would
+    be to unpack the bits one by one, shift them into the desired position, and OR
+    them into place. There is a much faster method, invented independently by me and
+    by David Stevenson of IBM Research in Yorktown, NY circa 1975\. I will demonstrate
+    this technique using a transposition of a 32-bit block. Suppose that the plaintext,
+    expressed in bit form, is
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-2](../Images/11-unnumb-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: where each Latin or Greek letter represents the value of one bit, that is, it
+    can be either 0 or 1\. Let’s see how this can be transposed so that a moves to
+    the third position, b moves to the sixth position, c moves to the ninth position,
+    and so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The transposition can be accomplished by using 4 special tables, each with
+    256 entries. Each entry is a 32-bit block or computer word. The first table shows
+    the transposed positions of the 8 bits in the first byte of the 32-bit block,
+    like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-3](../Images/11-unnumb-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'The second table shows the positions of the 8 bits in the second byte of the
+    32-bit block:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-4](../Images/11-unnumb-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'The third table shows the positions of the 8 bits in the third byte of the
+    32-bit block:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-5](../Images/11-unnumb-5.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'The fourth table shows the positions of the 8 bits in the fourth byte of the
+    32-bit block:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-6](../Images/11-unnumb-6.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'The dots are there to make it easy for you to see where the 32 bits are placed.
+    They represent zeros in the computer word. The transposition can now be accomplished
+    by looking up the 4 bytes in these special tables and ORing the four resulting
+    32-bit blocks together, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-7](../Images/11-unnumb-7.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'This requires no shifts and no masking. The entire 32-bit transposition uses
+    only 4 table look-ups and 3 OR operations. One use of this technique is to flip
+    an 8×8 block of bits. This can be done using 8 tables of 256 entries, or just
+    a single table, shifting the bits into the correct positions within each byte,
+    like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-8](../Images/11-unnumb-8.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '******'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.2.4 Short blocks
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: An issue that comes up with DES, and other block ciphers, is what to do with
+    short blocks. With DES, all of the blocks must have exactly 8 characters. Suppose
+    your message has 803 characters, 100 blocks of 8 characters plus 3 over. How do
+    you handle those last 3 characters?
+  prefs: []
+  type: TYPE_NORMAL
+- en: The traditional solution is to pad the last block with nulls. With paper-and-pencil
+    cryptography, some favorite techniques were to append XXXXX or NULLS as the last
+    5 characters. Unfortunately, this gives Emily 5 letters of known plaintext. Some
+    better solutions for manual ciphers are to use a marker such as XX or JQ, then
+    make the rest of the remaining padding characters random, like XXESV, or simply
+    to pad with any combination of low-frequency characters, like ZPGWV. Deciphering
+    depends on Riva’s ability to recognize where the real message ends and the padding
+    begins.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In the computer, there are two issues that padding must address. First, Riva
+    must be able to tell where the message ends, or, equivalently, how many bytes
+    of padding there are. Second, Sandra wants to give Emily as little known plaintext
+    as possible. Some of the proposed schemes fail on both scores. For example, one
+    scheme proposed padding a message on the end with one of the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-9](../Images/11-unnumb-9.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This can give Emily up to 31 bytes of known plaintext when the block size is
+    32\. In a general file the last block could be a full block ending in 01, or even
+    02 02, which could be mistaken for padding.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A better solution is to place a length field somewhere in the plaintext file.
+    This need not be the number of bytes in the file, which could require a 4-byte
+    length field, it can be the number of padding bytes in the last block. For DES
+    this is a number from 0 to 7, so it would require only 3 bits. The length field
+    can be anywhere in the file. The most common places are the first byte, the last
+    byte, and the first byte of the last block. The padding bytes themselves can be
+    chosen at random.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To avoid giving Emily even one byte of known plaintext, the length can be coded
+    in either the low-order or the high-order bits of the length indicator, and the
+    remaining unused bits can be random. This lets the length indicator take any value
+    from 0 to 255.
+  prefs: []
+  type: TYPE_NORMAL
+- en: By the way, there is no law that you have to pad at the end of the file. If
+    you want to pad at the front, at the start of the last block, or in the middle
+    of 13th block, go ahead. As long as Sandra and Riva agree, they can do whatever
+    they feel will hinder Emily the most. One possibility is to spread the padding
+    bytes around. For example, if the file requires 4 padding bytes, you could put
+    them at the end of the second, fourth, sixth and eighth blocks of the file, as
+    long as Riva can tell how many padding bytes were added.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The *overlap method* is an alternative to padding. Suppose, again, that the
+    block size B is 8 and the message has 803 characters, and you encipher the first
+    800 characters as 100 blocks of 8 characters. Then you encipher characters 796
+    through 803 as the 101st block. This way, the length of the message does not change,
+    but Riva must decipher block 101 before deciphering block 100.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.3 Matrix multiplication
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The next block cipher we will look at is the *Advanced Encryption Standard*
+    (AES). However, AES uses a mathematical operation called matrix multiplication,
+    which has not yet been covered in this book. I promised in the introduction that
+    I would present each mathematical concept that was needed, so in that spirit I
+    will cover matrix multiplication here. This concept is needed in several later
+    chapters. Unless you already know matrix multiplication well, it is best not to
+    skip this.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A *matrix* is simply a rectangular array of elements called *scalars*. A sequence
+    of scalars forms a *vector*, so each row and each column of a matrix is a vector.
+    These are called *row vectors* and *column vectors*, respectively. A matrix with
+    m rows and n columns is called an m×n matrix. If m = n, the matrix is called a
+    *square matrix*. Here is an example of a matrix M with 3 rows and 5 columns, called
+    a 3×5 matrix. It has 15 scalar elements denoted here by the letters a through
+    o.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-9-equation-11-1](../Images/11-unnumb-9-equation-11-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: In this matrix the 3 row vectors are [a,b,c,d,e], [f,g,h,i,j] and [k,l,m,n,o],
+    and the 5 column vectors are [a,f,k], [b,g,l], [c,h,m], [d,i,n] and [e,j,o]. The
+    rows of a matrix are numbered from top to bottom, and the columns are numbered
+    from left to right. The element of M found on row i in column j is denoted M[ij],
+    so M[11] is a, M[15] is e, and M[31] is k.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Types of scalars include numbers such as integers, integers modulo N, rational
+    numbers, real numbers, complex numbers and other types that are described later.
+    Matrix multiplication works the same for every type of number.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The product of two matrices X and Y, denoted XY, is formed by multiplying the
+    rows of X by the columns of Y. Let’s look at how this works in detail. The rows
+    of a matrix are vectors, and the columns of a matrix are vectors. Two vectors
+    that have the same length can be multiplied by what is called an *inner product*,
+    also called a *dot product* since vector multiplication is sometimes denoted by
+    a ● dot. This operation takes the elements of one vector, multiplies them pairwise
+    by the corresponding elements of the second vector, and then takes the sum of
+    those products.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose the first vector is [a,b,c,d] and the second vector is [e,f,g,h]. They
+    have the same length, 4 elements, so they can be multiplied. Their inner product
+    is
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-9-equation-11-2](../Images/11-unnumb-9-equation-11-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Let X and Y be 4×4 matrices, and let P be their product. That is, P = XY. Suppose
+    [a,b,c,d] is row i of X and [e,f,g,h] is column j of Y. Their product is denoted
+    P[ij]. In other words, the element at row i, column j is the product of row i
+    of X and column j of Y. This can be written using subscripts as
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-9-equation-11-3](../Images/11-unnumb-9-equation-11-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: A similar expression is used for other matrix sizes. Two matrices of sizes a×b
+    and c×d can be multiplied whenever b = c.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.4 Matrix multiplication
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: No, this duplicate section title is not a mistake. There are many other objects
+    in mathematics besides numbers that can be added and multiplied. Some examples
+    are vectors, matrices, polynomials, quaternions and, more generally, elements
+    of a ring. You can even have vectors of matrices, matrices of polynomials, and
+    so forth. There is more about rings in sections 15.6 to 15.8\. Matrix multiplication
+    can be based on these types of elements and their rules for multiplication and
+    addition. The process is the same. You take the inner product of row i of X with
+    row j of Y to get the element at row i column j of the product matrix.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Matrix multiplication is not commutative, meaning that you usually get a different
+    result when you multiply a given square matrix X by a second square matrix A on
+    the left or on the right. AX ≠ XA. These are called *left-multiplication* and
+    *right-multiplication* of X by A.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For AES we are concerned with multiplication and addition of polynomials. We
+    all learned how to add and multiply polynomials in high school algebra. People
+    who went on to careers in science and engineering probably still remember how
+    it’s done. Polynomials can also be divided. This division can leave a remainder,
+    so there is the same notion of modulus for polynomials as there is for integers.
+    (Refer back to section 3.6 if you wish to review this.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: The scalar multiplication used in AES is not integer multiplication, but polynomial
+    multiplication modulo another polynomial. This is probably as deep as we can go
+    in this book, which is aimed at a general audience.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.5 Advanced Encryption Standard (AES)
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The *Advanced Encryption Standard* is a newer block cipher that replaced DES
+    in 2001\. It was initially called *Rijndael* after its inventors, Belgian cryptographers
+    Vincent Rijmen and Joan Daemen. AES originally came in five combinations of 128-bit
+    or 256-bit blocks with 128-bit, 192-bit or 256-bit keys. However, the National
+    Institute of Standards and Technology (NIST) settled on the 128-bit block size
+    for the standard. The number of rounds depends on the key size: 10 rounds for
+    128-bit keys, 12 rounds for 192-bit keys and 14 rounds for 256-bit keys.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Each round uses a round key consisting of 128 bits chosen from the full key
+    according to a *key schedule*. Before the first round, the preliminary operation
+    AddRoundKey is performed, which is simply exclusive-ORing the block with the round
+    key. Each of the next 9, 11 or 13 rounds consists of 4 operations, SubBytes, ShiftRows,
+    MixColumns and AddRoundKey. The final round does not have the MixColumns step.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The 128-bit block is treated as a 4×4 matrix of bytes in what is called *column-major
+    order*, which simply means the bytes are written into the matrix down the columns
+    rather than across the rows, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-9-equation-11-4](../Images/11-unnumb-9-equation-11-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The first step in each round is SubBytes. This is a fixed simple substitution
+    performed on each byte individually. The substitution was designed to be highly
+    non-linear. The linearity property is discussed at length in section 12.3.1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The next step is ShiftRows. This is a transposition in which the rows of the
+    matrix are cycled left by 0, 1, 2 and 3 positions, respectively, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-9-equation-11-5](../Images/11-unnumb-9-equation-11-5.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The third step in each round, MixColumns, is the matrix multiplication. This
+    is not ordinary integer matrix multiplication as described in section 11.3\. The
+    elements in the matrix are treated as coefficients of a polynomial. The scalar
+    addition and multiplication operations are polynomial operations done modulo another
+    polynomial. This has all been carefully designed so the operations can be performed
+    rapidly in hardware. MixColumns is omitted in the last round.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The final step in each round is AddRoundKey. This is just a bitwise exclusive-OR
+    of the block with a part of the key determined by the key schedule.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I find this exclusive-OR at the end to be highly suspicious. I have been told
+    by several electrical engineers that the waveforms produced by the exclusive-OR
+    of 00 and 11 are distinct from the waveforms produced by the exclusive-OR of 01
+    and 10, so an eavesdropper could discern what both bits were. This potentially
+    reveals to the eavesdropper 128 bits of the key. When doing high-security cryptography
+    I avoid using exclusive-OR whenever possible.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When I am forced to use exclusive-OR at the end of an encipherment, for example
+    when I am implementing a standardized algorithm, I make sure to invert each bit
+    of the ciphertext an even number of times. I keep two random bit strings R1 and
+    R2, the same size as the block, and their exclusive-OR R3 = R1⊕R2\. Then I exclusive-OR
+    the ciphertext first with R1, then with R2, and finally with R3\. This gets the
+    bit string back to its original value, hopefully with the telltale waveforms obliterated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alternatively, you can use a substitution, rather than an exclusive-OR, to invert
+    all the bits of the block. You do this twice, so you use two substitution steps
+    in place of the three exclusive-ORs. If you are using AES, I highly recommend
+    adding this extra final step.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.6 Fixed vs. keyed substitution
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Early in this book all of the substitutions used alphabets that were mixed using
+    keywords or numeric keys. The ciphers in this chapter, DES and AES, use fixed
+    substitutions that can be embedded in hardware S-boxes. Which is better? Which
+    is stronger?
+  prefs: []
+  type: TYPE_NORMAL
+- en: When you use a fixed substitution, you can use sophisticated mathematics to
+    design a substitution that can resist a variety of attacks. For example, if some
+    of the output bits have a strong correlation to some of the input bits, that lets
+    Emily use a statistical attack on the cipher, such as the attack I used on the
+    Jefferson Wheel Cypher in section 8.2.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unfortunately, a fixed substitution is a sitting target for Emily. She can study
+    the substitution for months or years, and possibly find a weakness that the designer
+    missed. Carefully crafted substitutions tend to have a mathematical regularity.
+    The substitute is expressed as a specific mathematical function. This, in itself,
+    can be a weakness because it gives Emily a shortcut for simulating your cipher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: My preference is to use a substitution that is determined by a key that can
+    be changed for every message. Each instance of a keyed substitution may be weaker
+    than the fixed substitution, but Emily cannot exploit such a weakness because
+    she does not have the substitution table for study. If Emily manages to obtain
+    the plaintext, perhaps by espionage, she may be able recover the substitution
+    and learn its weakness, but by then it’s too late. The only value of knowing the
+    weakness is to decrypt the message and obtain the plaintext. If Emily already
+    has the plaintext, then the key no longer has value. Such a weakness would not
+    help her decipher the next message, because that message would have a different
+    key, hence a different weakness, if any.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Any other instance of the substitution, when the alphabet is mixed by the same
+    method but using a different key, may not have the same weakness. It may have
+    the same type of weakness, such as a correlation between some bits of the block
+    and/or bits of the key and some bits of the output, but these are different bits
+    for each instance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One argument for using fixed S-boxes is that it allows for synchronous operation
+    of the encryption hardware where one message follows another with no gap between.
+    Using mixed alphabets could involve pausing while the alphabets get mixed. Using
+    a mixed alphabet requires a setup. The pause can be eliminated or at least reduced
+    if mixing the alphabet can be done in parallel. That is, the alphabet for the
+    next message can be mixed while the current message is being enciphered or deciphered.
+    Or, let the user mix the alphabets and include the mixed alphabets as part of
+    a long key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If synchronous operation is required, and mixing the alphabets in parallel is
+    not feasible, then the fallback technique is to exclusive-OR the block with keys
+    the same size as the block, both before and after the DES or AES step. I call
+    this method *XDESX* or *XAESX*, as appropriate. These exclusive-ORs are extremely
+    fast, and offer a significant boost in security. The total key size is 184 bits,
+    16 bits larger than 3DES. I suggest that the final output be inverted twice to
+    mask the waveforms.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.7 Involutory ciphers
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Involutory cipher* is a fancy-pants way of saying “a cipher that is its own
+    inverse.” In other words, enciphering is identical to deciphering. If you encipher
+    twice using an involutory cipher (using the same key), you get back the original
+    plaintext. This is also called *self-inverse* or *self-reciprocal*. We have already
+    seen a few involutory ciphers. Exclusive-ORing the plaintext with a binary key
+    is involutory (section 3.3). The piecewise reversal transposition in the Bazeries
+    type 4 cipher (section 4.6.1) is involutory. Flipping a square matrix, that is,
+    writing the characters into a square grid left-to-right and reading them out top-to-bottom
+    is involutory. Here is a 3×3 example of flipping a matrix:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-10](../Images/11-unnumb-10.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Mathematicians call this operation *transposing* the matrix. Since transposition
+    has a different meaning in cryptography, I will call this *flipping* the matrix.
+    A fast method for flipping a matrix was described in section 11.2.3.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you are building your cipher in hardware, using involutory ciphers can reduce
+    the cost and simplify the operation. Your cipher machine does not need to have
+    separate encipher and decipher modes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s look at how to construct some types of involutory ciphers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.7.1 Involutory substitution
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In an involutory substitution, if a letter X changes to a Y, then Y must change
+    to X. This means that the letters have to pair off. To construct an involutory
+    substitution, first list all of the letters or characters. Choose any letter and
+    then choose its mate. Cross these off the list. Then choose another letter and
+    its mate. Cross those off the list. Continue this way until most of the letters
+    have been paired. Any remaining letters are their own inverses. Selecting the
+    successive letters can be done using a numeric key the same way that SkipMix does
+    (section 5.2).
+  prefs: []
+  type: TYPE_NORMAL
+- en: An involutory substitution can conveniently be represented in two rows. The
+    letters in the top row get the substitute directly below, and the letters in the
+    bottom row get the substitute directly above. Here is an example formed using
+    the keywords WORDGAME and TULIP. In this example, R would become L and L would
+    become R.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-11](../Images/11-unnumb-11.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: In other words, the key for this involutory substitution is this 2-row array.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is not necessary that every letter is paired with a different letter. A few
+    letters could remain unchanged by the substitution. These are called *invariants*
+    or *fixed points*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: An involutory bigram substitution can be constructed by the same method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.7.2 Involutory polyalphabetic substitution
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: To construct a polyalphabetic cipher that is involutory, simply make every row
+    of the tableau an involutory substitution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.7.3 Involutory transposition
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Involutory transpositions are easiest to construct if the message is broken
+    into blocks of a fixed size. Let’s assume that. Call the fixed block size B. The
+    transposition is involutory if for every letter that moves from position X to
+    position Y, the letter in position Y moves to position X. In other words, the
+    transposition will consist of pairwise swaps of letters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To construct an involutory transposition, first write the numbers from 1 to
+    B in a list. Select any 2 numbers from the list. They are the first pair of positions
+    that interchange. Delete those 2 numbers from the list and select another pair
+    of numbers from the list. These are the second pair. Delete them from the list.
+    Continue doing this until the list has at most 1 number left. If you choose to
+    have some fixed points in your transposition, just stop the pairing sooner. Another
+    way to create fixed points is to select 2 numbers at a time randomly from the
+    list. If those two numbers are the same, that becomes a fixed point.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One way to represent a general transposition cipher is to list all of the positions
+    in the block, and below them show their new positions. For example,
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-12](../Images/11-unnumb-12.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'This is the best format for computer use. When a person is doing the transposition,
+    it may be more convenient to collapse this down to half-width like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-13](../Images/11-unnumb-13.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This is the same transposition, but in half the space. Either form may be used
+    as the key for the transposition. In both cases, the letter in the first position
+    moves to 13th place, while the letter in 13th position moves to first place, the
+    letter in second position moves to 7th place, while the letter in 7th place moves
+    to second position, and so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*11.7.4 Involutory block cipher'
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Now that we have seen how to construct involutory substitutions and transpositions,
+    we are ready to pull those elements together to make an involutory block cipher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It will help, at this point, to introduce some more notation. Let M be any message,
+    either a plaintext or a ciphertext. We will denote applying a cipher C to that
+    message as CM. If D is another cipher, then applying D to the text CM would be
+    denoted DCM. This notation looks a little strange because DCM means applying C
+    first and then D, but it works well. You can think of DCM as a shorthand for D(C(M)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: DC is then the cipher formed by enciphering with C and then with D. This new
+    cipher is called the *composition* of D and C. Composition is an operation that
+    combines two ciphers and forms a new cipher. (Some authors call this the *product*
+    of the ciphers C and D, and denote it C◦D.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'For example, Bazeries type 4 (section 4.6.1) combines a substitution with a
+    transposition. Composition has one mathematical property that is important for
+    forming an involutory cipher: composition is associative. This means that if A,
+    B and C are ciphers, then (AB)C = A(BC). Because of this property, compositions
+    of multiple ciphers can be written without parentheses, like ABC or even ABCDEFGH.
+    Parentheses can be inserted in such a composition without changing the result.
+    For instance, ABCDEFGH could be written as A((BC)(DE))F(GH).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let I represent the *identity cipher*, the cipher that transforms every plaintext
+    into itself. That is, IM = M for any message M. Let C be any cipher whatsoever.
+    Denote its inverse by C'. (C must have an inverse, otherwise messages could not
+    be read.) Then CC' = C'C = I. The cipher C is involutory when C = C'.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose that T is an involutory cipher and C is any cipher. Then the cipher
+    CTC' is an involutory cipher. This is because
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-13-equation-11-6](../Images/11-unnumb-13-equation-11-6.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Similarly, if A and B are any ciphers, then BCTC'B' and ABCTC'B'A' are involutory
+    ciphers, and so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.7.5 Example, poly triple flip
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Let’s look at an example of an involutory block cipher that I call *Poly Triple
+    Flip*. This cipher operates on 64-bit blocks, and has the form ABCTC'B'A', where
+    A and C are general polyalphabetic ciphers, B is a columnar transposition operating
+    on the 64 bits, and T is flipping the 64-bit square matrix.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Ciphers A and C are polyalphabetic ciphers of period 8\. That is, there is a
+    separate alphabet for enciphering each row of the block. The tableau for each
+    cipher will have 8 rows, which are used in order. There are no keys for selecting
+    the rows of the tableau. Instead, the 8 keys are used for mixing the 8 alphabets.
+    Together, A and C require 16 different keys, each of which might be a sequence
+    of numbers to use with the SkipMix algorithm (section 5.2). I recommend that these
+    16 keys each contain 3 to 8 numbers, each in the range 0 to 255.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cipher B is a columnar transposition that treats the 64-bit block as a 4×16
+    grid, so there are 16! possible permutations of the columns. The 64 bits are written
+    into the grid left to right across the rows and read out top to bottom down the
+    columns. The order of the columns is determined by a keyword or keyphrase, or
+    an equivalent string of 16 numbers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Poly triple flip is rated Ten.******
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.8 Variable-length substitutions
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Block ciphers can be built using either fixed-length or variable-length substitutions.
+    *VLA* and *VLB* are examples of block ciphers that use variable-length substitution.
+    Both the VLA and VLB block ciphers use 128-bit blocks viewed as 4 rows of 32 bits
+    each. The idea is to use a variable-length substitution in the rows, and then
+    mix the block by performing 4-bit substitutions in the columns. The keys for each
+    cipher are the keys used to mix the sets of tags and the 4-bit substitution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: VLA and VLB use same-length Post tag substitution, as described in section 10.5.1\.
+    Thus a 4-bit tag is replaced by a 4-bit substitute, a 5-bit tag is replaced by
+    a 5-bit substitute, and so forth. That way, each row in the block remains a constant
+    32 bits long. After each substitution the new tag is moved to the end of its row,
+    and the row is shifted left to keep it on a 4-byte boundary. The tags should have
+    an average length of at least 6 bits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: VLA is the simpler version. In each round, you first do the 4-bit substitution
+    on the leftmost (high-order) bit of the row. Then you perform one Post tag substitution
+    on each row, with the shift. This is repeated for 32 rounds. The entire encipherment
+    uses 128 variable-length substitutions and 32 fixed-length 4-bit substitutions.
+    This cipher is rated Eight.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the average tag length is 6 bits, I suggest that VLB should have 4 rounds,
+    each round having 6 substitution steps in row 1, 7 substitution steps in row 2,
+    8 substitutions in row 3, and 9 in row 4.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The vertical substitutions in the columns should be done after rounds 1, 2 and
+    3\. For speed, it is not necessary to perform the column substitutions in every
+    column on every round. One reasonable choice would be to substitute in every 3rd
+    column, for example, in columns 1,4,7, ... ,31 after round 1, in columns 2,5,8,
+    ... ,32 after round 2, and in columns 3,6,9, ... ,30 after round 3.
+  prefs: []
+  type: TYPE_NORMAL
+- en: VLB is rated Ten, and is perhaps the fastest cipher with this rating. It requires
+    120 variable-length substitutions, with shifts, and 32 vertical 4-bit substitutions,
+    so it is slightly faster than VLA.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.9 Ripple ciphers
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Ripple* ciphers, also called *wraparound* ciphers or *end-around* ciphers,
+    are block ciphers based on a principle entirely different from the ciphers earlier
+    in this chapter. The basic idea is that each 8-bit character in the block is used
+    as a key to encipher the next character to its right. This in turn is used to
+    encipher the next character, and so forth, rippling down the length of the block
+    and wrapping around at the end. That is, the last character in the block is used
+    as a key to encipher the first character. Ripple ciphers are best suited for software
+    implementations since they offer little opportunity for parallel operation.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are a wide variety of ripple ciphers. They may have any block length from
+    2 up, and the block lengths may vary periodically or randomly. I suggest a minimum
+    block length of 5 characters, but you might prefer to start at 8\. For example,
+    you could use the chained digit generator to choose the block lengths. When the
+    generator produces the digit D, you could make the length of the next block D+5,
+    or perhaps D+8 or even 20-D.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Blocks may overlap. For example, you could use a fixed block length of 8, with
+    blocks starting at positions 1, 6, 11, 16, ... every 5 characters. The last block
+    could wrap around to the start of the message. When the message length is 20,
+    the last block could consist of characters 16, 17, 18, 19, 20, 1, 2, 3.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Ripple ciphers are purely substitution ciphers; they involve no transposition
+    at all. The simplest form of a ripple cipher is to exclusive-OR each successive
+    character to the next one, so x[n] gets replaced by x[n-1]⊕x[n]. Then x[n+1] is
+    replaced by x[n]⊕x[n+1], and so forth, rippling through the block.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are many ways to use the preceding character to encipher the next character.
+    A partial list follows. Here A, B and C are simple substitution ciphers and P
+    is a general polyalphabetic cipher. A(x), B(x) and C(x) represent the character
+    x enciphered with A, B and C, respectively, and P(k,x) represents the character
+    x enciphered with P using the key k to select the row in the tableau.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| **xor** | Exclusive-OR | x[n] is replaced by x[n-1]⊕x[n]. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **sxor** | Substitute and exclusive-OR | There are three variations, x[n]
+    may be replaced by A(x[n-1])⊕x[n], or x[n-1]⊕B(x[n]) or A(x[n-1])⊕B(x[n]). |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **xors** | Exclusive-OR and substitute | x[n] is replaced by A(x[n-1]⊕x[n]).
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **add** | Add | x[n] is replaced by x[n-1]+x[n]. As always, addition is modulo
+    256. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **madd** | Multiply and add, also called **linear replacement** | x[n] is
+    replaced by px[n-1]+x[n], or x[n-1]+qx[n], or px[n-1]+qx[n], where p may be any
+    integer and q may be any odd integer. (If you are using an alphabet whose size
+    is different from 256, q must be coprime to the alphabet size.) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **sadd** | Substitute and add | x[n] is replaced by A(x[n-1])+x[n], or x[n-1]+B(x[n])
+    or A(x[n-1])+B(x[n]). |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **adds** | Add and substitute | x[n] is replaced by A(x[n-1]+x[n]). |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **poly** | General polyalphabetic substitution | x[n] is replaced by P(x[n-1],
+    x[n]). |'
+  prefs: []
+  type: TYPE_TB
+- en: Since **xor** or **sxor** may leak information about its operands, I recommend
+    using **xors** instead, so that the simple substitution is done after the exclusive-OR
+    to mask the waveforms, namely A(x[n-1]⊕x[n]).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Notice that **madd** is simply a special case of **sadd**. That is, px[n-1]
+    is just a particular choice for A(x[n-1]). The advantage of **madd** is that it
+    does not require a preliminary setup phase to mix the substitution alphabet. In
+    the same vein, note that P(A(x[n-1]), B(x[n])) simply permutes the rows and columns
+    of the tableau, so it is equivalent to P(x[n-1], x[n]), just using a different
+    tableau.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The strongest of these ripple methods is **poly**, where the preceding character
+    x[n-1] is used as the key to select the row in the tableau used to encipher x[n].
+    I call this method a *Key Ripple*. This would require a tableau of 256×256 bytes.
+    If this is too large, x[n-1] can be reduced to a smaller range by applying a *reduction
+    substitution* to x[n-1] before using it as a key. For example, x could be reduced
+    to x mod 16, or to (13x+5) mod 32\. Suitable reduced ranges are 0 to 15, 0 to
+    31, and 0 to 63\. If R is the reduction substitution, and P is the polyalphabetic
+    substitution, then x[n] will get replaced by Q(R(x[n-1]),x[n]), where Q is a polyalphabetic
+    cipher with a reduced tableau consisting of the top 16, 32 or 64 rows of P’s tableau.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you cannot use a polyalphabetic cipher, perhaps because even the reduced
+    tableau uses too much space, or because the setup time is too long, the next-best
+    choice is to use 3 simple substitutions. Replace x[n] by either A(B(x[n-1])+C(x[n]))
+    or A(B(x[n-1])⊕C(x[n])). This is called a *space-time tradeoff*. The 3 simple
+    substitutions may take a little longer than the single polyalphabetic substitution,
+    but they reduce the space needed from 65,536 bytes to 768 bytes, a 98.8% reduction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Ripple ciphers are not restricted to using only the preceding character to encipher
+    the current character. You can go back several characters if you wish, for example
+    replacing x[n] by A(x[n-i]⊕x[n]), where i can be any value less than the block
+    size. It is also possible to use more than one previous character, for example
+    x[n-2]+x[n-1]+x[n] or, more generally, x[n-j]+x[n-k]+x[n]. Using general polyalphabetic
+    substitutions, x[n] could be replaced by P(x[n-4]⊕x[n-2],x[n]), or P(x[n-5],P(x[n-1],x[n]))
+    or endless other combinations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As I mentioned, any block size can be used. The substitutions can begin at any
+    character in the block, and end at any character in the block, provided that every
+    character gets substituted at least once. You may go several times around the
+    block if you desire, wrapping from the last character to the first where needed.
+    It is even possible to overlap more than 2 blocks, or to have a block lie entirely
+    within another block or set of blocks. The block sizes, the starting positions
+    within the block, the number of characters to be substituted, and the overlap
+    with the preceding and/or following block can be fixed, can be varied periodically,
+    or can be generated randomly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Ripple ciphers can be taken even further. A message could be enciphered using
+    several rounds of a ripple cipher. In each round the message could be divided
+    into blocks of different sizes so that the block boundaries line up infrequently
+    or never, and encipherment begins and ends at different points in the blocks.
+    This gives a mosaic or even kaleidoscopic effect.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are too many variations of ripple ciphers to enumerate. The ratings for
+    these ciphers can range from Four to Ten. Here are a few examples. The simple
+    **xor** ripple using fixed-size blocks with 2 rounds of substitution starting
+    at the first byte of the block and ending at the last byte, and using only the
+    preceding byte as substitution key, is rated Four. A **sadd** ripple cipher using
+    varying-sized blocks, starting at a variable position in the block, going for
+    at least 3 rounds of substitutions, ending at a variable position, and using the
+    preceding byte as the substitution key is rated Seven. A **poly** ripple cipher
+    using varying-sized blocks, starting at a variable position in the block, going
+    for at least 3 rounds of substitutions, ending at a variable position, and using
+    the preceding byte plus one other byte that varies from block to block as the
+    substitution key is rated Ten. Mosaic methods are stronger than single-layer methods.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.10 Block chaining
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Block chaining is a valuable tool that strengthens any block cipher. Block chaining
+    means using each block to help encipher the next block. In effect, chaining is
+    a ripple cipher operating on blocks rather than on individual characters. The
+    group of bytes carried forward from block N to block N+1 is called the *chain
+    vector*. Since the first block in a message does not have a predecessor, most
+    chaining schemes use an *initialization vector* (IV) for enciphering the first
+    block as though it were the chain vector from some imaginary predecessor block.
+    The initialization vector can be derived from the encryption key, or may be treated
+    as an additional key for the encipherment.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Aside The block chaining used for Bitcoin and other cryptocurrencies is a specialized
+    form of the block chaining used in cryptography. Here is where they got the idea.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-14](../Images/11-unnumb-14.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The most common form of chaining is combining the chain vector with the next
+    block character by character. The most common method of combining characters is
+    exclusive-OR. However, any of the combining methods described in section 11.8
+    can be used. This is normally done in one of four modes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| **Mode** | **Description** |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **PP** | The plaintext of block N is combined with the plaintext of block
+    N+1 before enciphering block N+1. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **PC** | The plaintext of block N is combined with the ciphertext of block
+    N+1 after enciphering block N+1. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **CP** | The ciphertext of block N is combined with the plaintext of block
+    N+1 before enciphering block N+1. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| **CC** | The ciphertext of block N is combined with the ciphertext of block
+    N+1 after enciphering block N+1. |'
+  prefs: []
+  type: TYPE_TB
+- en: For the greatest strength, the chaining operation should be cumulative. First
+    the chain vector from block N-1 is combined with block N. This result becomes
+    the new chain vector, which is combined with block N+1\. Chaining mode **PP**
+    is the strongest, and chaining mode **PC** is second-best. Modes **CP** and **CC**
+    are far weaker because Emily can see the chain vector. I recommend that modes
+    **CP** and **CC** be used only with the combining functions **xors**, **adds**
+    and **poly**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Although modes **CC** and **CP** are weaker, there is an advantage to using
+    them. In modes **CC** and **CP** it is not necessary to have a separate initialization
+    vector. Sandra can use the last block of the plaintext message as the initialization
+    vector. Riva can simply decipher the last block first. In fact, Riva can decipher
+    any block without needing to decipher the block before. This can be valuable if
+    the cipher uses indicators (section 14.3). Riva would decipher the indicator block
+    first.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s look at some stronger ways of chaining blocks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.10.1 Polyalphabetic chaining
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Exclusive-OR is a weak way of combining block N with block N+1\. A better way
+    is **xors**, namely using exclusive-OR first, then using a simple substitution
+    on the resulting characters. Far better than that is to use **poly**, a general
+    polyalphabetic cipher. Use each character in the chain vector as a key to select
+    the row in the tableau for enciphering the corresponding character in block N+1\.
+    Any of the 4 chaining modes can be used. Mode PP is strongest.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.10.2 Enciphered chaining
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The standard modes for chaining use either the plaintext or the ciphertext of
+    block N as the chain vector as is, with no modification. It is far stronger to
+    apply some encipherment to the chain vector. This can be rudimentary, such as
+    a simple substitution or a piecewise reversal (section 4.6). Such simple methods
+    can be effective if the substitution or transposition is different for each block.
+    A key ripple is well-suited for this purpose (section 11.8). The encipherment
+    used for the chain vector should have its own independent key. If the chain vector
+    is more strongly enciphered, modes **CC** and **CP** will no longer be weak.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.10.3 Lagged chaining
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Chaining is not restricted to the preceding block. Chaining may also utilize
+    earlier block(s). Block N may be combined with block N-i, or with multiple previous
+    blocks, say block N-i and block N-j. If i > j, this requires an initialization
+    vector of i blocks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Similarly, the chain vector can straddle several previous blocks. For example,
+    the chain vector can come from the last half of block N-2 and the first half of
+    block N-1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.10.4 Interior taps
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: One weakness of using either the plaintext or the ciphertext as the chain vector
+    is that these are, or may become, known to Emily. One solution is to encipher
+    the chain vector, as in section 11.10.2\. A second solution is to take the chain
+    vector from some intermediate round of the block encipherment. This is called
+    a *tap*. For example, if the block cipher has 10 rounds, you could use the output
+    of the 5th round as the chain vector. Combine this chain vector with the plaintext
+    of the next block before starting to encipher the next block. This is mode **IP**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This can be taken a step further. You can use multiple taps, and they can be
+    combined with the following block in multiple places, either with the plaintext,
+    with the ciphertext or between rounds of the encipherment. Each tap produces a
+    separate chain vector, so for N taps you must have N initialization vectors. Any
+    or all of these chain vectors can be enciphered. The chain vectors can be enciphered
+    using the same key, or each one can have its own independent key. A ripple cipher
+    (section 11.8) is well-suited for enciphering the chain vectors.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.10.5 Key chaining
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Normally, chaining is done on the text of each block. However, it is also possible
+    to use chaining with the keys. Suppose that you have a block cipher where the
+    same key, K, is used for every block. That cipher could be greatly strengthened
+    by using a different key for each block. One way to accomplish this is by chaining.
+    You encipher the first block using K as the key. (An initialization vector is
+    optional for key chaining.) Then you can encipher the second block using K●P[1],
+    K●C[1] or K●I[1] for the key, where ● represents one of the combining functions,
+    such as **xors** or **adds** performed byte by byte. Likewise, you encipher the
+    third block using K●P[2], K●C[2] or K●I[2] for the key, and so forth. This gives
+    you three new chaining modes, **PK**, **CK** and **IK**. It is possible to use
+    both key chaining and block chaining at the same time, say **PK** with **IP**.
+    This is an extremely powerful combination.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.10.6 Chaining mode summary
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Together there are 12 possible modes for chaining. The chaining vector may
+    be taken from any of three sources: the plaintext, an internal stage or the ciphertext
+    of the current block. The chaining vector may be combined with any of four targets:
+    the key, the plaintext, an internal stage or the ciphertext of the following block.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Beyond these choices, the chain vector may be taken fresh each time, or it may
+    be combined with the chain vector from the previous block. The chain vector may
+    be used as is, or it may be enciphered before combining it with the target. The
+    chaining may operate on consecutive blocks, or it may be lagged. Lots and lots
+    of options.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.10.7 Chaining short blocks
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: When the last block in the message is short, and you use the overlap method
+    (section 11.2.4) for handling short blocks, it is not clear how to chain the overlapped
+    block. The solution is to chain from 2 blocks back. If there are N blocks, the
+    chain vectors from block N-2 are used for both block N-1 and block N.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.10.8 Chaining variable-length blocks
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: One last issue needs to be covered before we leave the topic of block chaining,
+    namely variable block sizes. I suggest that the chain vector be kept at a fixed
+    length. If the length L of the message block is less than the length of the chain
+    vector, combine the first L bytes of the chain vector with the message block.
+    Replace those L bytes of the chain vector, leaving the remainder unchanged. For
+    example, if the chain vector is **1234567890** and the block is **SAMPLE**, combine
+    **123456** with **SAMPLE**. If this yields **ZQm”w+** then the block becomes **ZQm”w+**
+    and the chain vector becomes **ZQm”w+7890**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-15](../Images/11-unnumb-15.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: If the chain vector is shorter than the message block, extend the chain vector
+    for this block with as many copies of itself as needed. For example, if the chain
+    vector is **123456** and the block is **CONVENTION**, combine **1234561234** with
+    **CONVENTION**. If this yields **qA&Vm!7^oS** the block becomes **qA&Vm!7^oS**
+    and the chain vector becomes **qA&Vm!**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![11-unnumb-16](../Images/11-unnumb-16.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: In both cases, the block remains the same length after chaining, and the chain
+    vector remains the same length.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.11 Strengthening a block cipher
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Once you have a strong block cipher, it can be strengthened further with very
+    little extra effort. All that is needed is to encipher the plaintext lightly before
+    applying the block cipher, and to encipher the ciphertext lightly after completing
+    the block cipher. I call this the *sandwich* technique, and the extra steps are
+    called the *precipher* and *postcipher* steps. If you are feeling impish, you
+    might call this the *Rubin sandwich*. By “lightly” I mean using a simple one-round
+    one-step cipher such as simple substitution or key transposition (section 7.6).
+    For example, you could use simple substitution before the block cipher and key
+    transposition after, or vice versa. A stronger, but faster option is to treat
+    the first 8 bytes of the block as two 32-bit integers, and multiply each integer
+    by an odd multiplier in the range 3 to 2^(32)-1 modulo 2^(32).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since the block cipher is already strong, the main purpose of these extra steps
+    is to increase the total key size in order to foil brute-force attacks and meet-in-the-middle
+    attacks. This works best when the precipher and postcipher steps have long keys
+    that are independent of the block cipher key. For example, if the precipher or
+    postcipher is simple substitution, it could have a long SkipMix key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As a practical example, DES used a small 56-bit key. If you added simple substitution
+    precipher and postcipher steps, each with an independent 64-bit mixing key, that
+    would bring the total key size to 184 bits. This is stronger than 3DES, and nearly
+    3 times as fast.
+  prefs: []
+  type: TYPE_NORMAL
+- en: DES, however, was designed without any setup phase. The precipher can easily
+    be done with no setup. Simply exclusive-OR a 64-bit precipher key with the plaintext.
+    This increases the total key size from 56 bits to 120 bits. This, alone, is stronger
+    than 2DES and more resistant to a meet-in-the-middle attack. The postcipher step
+    is a little trickier. We want to avoid using exclusive-OR as the final step, for
+    reasons discussed earlier, and we also want no setup. This can be accomplished
+    by using a fixed polyalphabetic cipher. That is, the tableau is chosen beforehand
+    and built into the device or software.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One possibility is to use a 16×16 tableau of 4-bit groups. The 64-bit block
+    is treated as sixteen 4-bit groups. Each 4-bit group is enciphered using 4 bits
+    of the 64-bit postcipher key. Thus the total key size is again 184 bits. This
+    is also stronger than 3DES, and nearly 3 times as fast.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The reason this works is that DES is itself strong enough so that the only practical
+    attack is brute force. Adding an extra 128 bits to the key makes brute force infeasible.
+  prefs: []
+  type: TYPE_NORMAL

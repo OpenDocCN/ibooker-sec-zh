@@ -1,0 +1,363 @@
+- en: front matter
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: foreword
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: From secret decoder rings to government policy statements, the challenges of
+    hiding and discovering information within other information have long compelled
+    the intellect. Cryptology is a fascinating subject with which almost every schoolchild
+    has some hands-on familiarity. And yet, for good reasons, it is a discipline that
+    throughout time has been shrouded in the deepest levels of secrecy and used by
+    governments to protect their most sensitive weapons. Cryptography’s role in military
+    and diplomatic affairs has always been deadly serious. It is no exaggeration to
+    declare that successes and failures of cryptography have shaped the outcome of
+    wars and the course of history; nor is it an exaggeration to state that the successes
+    and failures of cryptography are setting our current course of history.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Consider the American Civil war battle of Antietam in September of 1862, when
+    George McClellan commanded the Union forces against Robert E. Lee’s Confederate
+    forces near Sharpsburg, Maryland. A few days earlier, two Union soldiers had found
+    a piece of paper near their camp, which turned out to be a copy of an order issued
+    by Lee detailing his plans for the invasion of Maryland. The order had not been
+    encrypted. With the information it contained, McClellan precisely knew the location
+    of the commands of Lee’s scattered army and was able to destroy Lee’s army before
+    they reunited.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cryptographic successes and failures have shaped more recent history as well.
+    The terrible Russian failure at Tannenberg in August 1914 was the direct result
+    of the German army’s intercept of Russian communications. Amazingly, the Russian
+    communications were totally in the clear because the Russians had not equipped
+    their field commanders with ciphers and keys. The Russians were thus unable to
+    securely coordinate the activities of neighboring units within each army.
+  prefs: []
+  type: TYPE_NORMAL
+- en: What was to become 50 years of Cold War following WWII was also set up by a
+    cryptographic failure, this time on the Japanese at the Battle of Midway in 1942\.
+    American cryptanalysts broke the Japanese codes and were reading many of the messages
+    of the Combined Fleet. Stories like these are within the purview of classical
+    cryptography. *Secret Key Cryptography* plays in this sandbox.
+  prefs: []
+  type: TYPE_NORMAL
+- en: No one is more capable of enlightening an interested reader in all of the dimensions
+    of recreational classical cryptology, from its mathematical heritage to its sociological
+    implications, than Dr. Frank Rubin. Dr. Rubin’s education is in mathematics and
+    computer science. He worked for 30 years at IBM in the Design Automation field
+    and did cryptography for over 50 years. Dr. Rubin served as an editor for Cryptologia
+    and other publications. He has written dozens of mathematics and computer algorithms
+    and has created thousands of mathematical puzzles.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Secret Key Cryptography* is more than an update to the classic *Elementary
+    Cryptanalysis* by Helen F. Gaines. It covers the field from ancient times through
+    the era of quantum computers. *Secret Key Cryptography* presents new methods and
+    “cracking” technologies. Lastly, it explains a unique method to measure the strength
+    of a cipher.^([1](#pgfId-1080257),[2](#pgfId-1080260))'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The book comes at a strategic point in this evolving history. It provides a
+    timely and important contribution to understanding this critical technology. Whether
+    the reader is seeking edification about cryptology itself or is a practitioner
+    of information security, the depth, and breadth of knowledge included in these
+    pages will be a welcome source of useful information and valuable addition to
+    a library.
+  prefs: []
+  type: TYPE_NORMAL
+- en: —Randall K. Nichols, DTM
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Randall K. Nichols is a former president, aristocrat, and book review editor
+    for the American Cryptogram Association (ACA); the director of the Unmanned Aircraft
+    Systems Cybersecurity Certificate Program at Kansas State University, Salina;
+    and professor emeritus of Graduate Cybersecurity and Forensics at Utica College.*'
+  prefs: []
+  type: TYPE_NORMAL
+- en: References
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Gaines, H. F. (1956). *Cryptanalysis: A Study of Ciphers and their Solution*.
+    NYC: Dover.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'LANAKI. (1998). *Classical Cryptography Course Vol. I.* Laguna Hills, CA: Aegean
+    Park Press.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'LANAKI. (1999). *Classical Cryptography Course Vol. II*. Laguna Hills, CA:
+    Aegean Park Press.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Nichols, R. K. (1999). *ICSA Guide to Cryptography*. New York City: McGraw
+    Hill.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Rubin, F. (2022). *Secret Key Cryptography*. Shelter Island, New York: Manning
+    Books.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Schneier, B. (1995). *Applied Cryptography: Protocols, Algorithms and Source
+    Code in C*. New York: John Wiley & Sons.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: preface
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: There are several threads that led to the writing of this book. Let’s begin
+    with my high school friend Charlie Rose. Charlie worked in the school bookstore.
+    One day, while ordering books for the store, he noticed the book *Cryptanalysis*
+    by Helen F. Gaines. Charlie wanted the book, and he also wanted the employee discount.
+    But there was a hitch. The minimum order the store could place was three copies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Charlie needed to get two other people to buy the book. He promised that we
+    would all read the book together, then make up cryptograms that the others would
+    solve. I bought the book, read it, and made up cryptograms, but Charlie had lost
+    interest.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The back cover of *Cryptanalysis* had a long-outdated street address for the
+    American Cryptogram Association ([www.cryptogram.org](http://www.cryptogram.org/))
+    but I tracked them down and joined. I started solving the many types of cryptograms
+    they published in their hobbyist newsletter, *The Cryptogram*, and after a few
+    years I became an assistant editor. I remained a member for over 40 years.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In 1977 a more professional journal of cryptography, called *Cryptologia*, began.
+    You can find it at [https://www.tandfonline.com/toc/ucry20/current](https://www.tandfonline.com/toc/ucry20/current).
+    I started reading the articles, then contributing articles, and then became an
+    editor. Somehow I became the “crackpot handler.” Those articles all came to me,
+    and I had to find my way through the illogical logic to see if a good idea was
+    hidden inside. In just one case there was. I turned that into an article for *The
+    Cryptogram*. The author was so grateful he planted a tree in Israel in my honor.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This experience taught me how to separate those articles that were just badly
+    written or where the author had simply overestimated the strength of the cipher
+    from those that were truly off the wall. This is what I learned: the amateur with
+    a weak cipher can describe the cipher and write out the steps. The true crackpots
+    cannot get their vague and grandiose imaginings onto paper. They can write reams
+    about how wonderful their ciphers are, but they cannot write out the steps. They
+    cannot turn their inchoate thoughts into a concrete algorithm.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Starting around 2005, I started taking courses at Marist College CLS, Continuing
+    Life Studies. Soon I was giving lectures on Sudoku, SumSum and other puzzles (I
+    have written three books of Sudoku puzzles); my travels in Tanzania and Mongolia;
+    the construction of the Empire State Building; the life of Alan Turing; and other
+    subjects. I became part of the curriculum committee.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In 2018 I volunteered to give a two-semester course on cryptography. While creating
+    the nearly 450 slides I needed for the course, I realized I had enough material
+    for a book. Fortunately, I discovered that a year earlier I had started writing
+    just such a book. This one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: acknowledgments
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The other day I overheard my wife, Miriam, speaking to a friend on the phone,
+    “It is like I am in a *ménage à trois*, me, Frank and the book.” Thank you, Miriam,
+    for your forbearance during the 18 months it took to write the book, the year
+    searching for a publisher, the 6 months hunting for a literary agent, the year
+    watching the literary agent get no results, and finally the single month to find
+    a home for this book at Manning. Plus over 18 months of reviewing, revising, editing,
+    revising, typesetting, revising, indexing, writing marketing copy, and more.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'I thank all of the people at Manning Publications who helped with this book,
+    especially Michael Stephens who took a chance and offered me a contract, and who
+    helped at every stage of the process; Marina Michaels for her many editorial improvements;
+    Rebecca Rinehart for smoothing the path; Jen Houle and Susan Honeywell for their
+    work on the illustrations; Tiffany Taylor for her many valuable suggestions on:
+    grammar and punctuation; Paul Wells and Keri Hales for their work on the production
+    of the book; Sam Wood for the marketing copy; Dennis Dalinnik for the typesetting;
+    and, of course, Marjan Bace, the publisher.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Special thanks to Prof. Randall K. Nichols for writing the book’s foreword and
+    a review in *The Cryptogram* on very short notice. Thanks also to Prof. Thomas
+    Perera of the Enigma Museum for providing the Fialka images.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Thanks to the reviewers who read the manuscript and made numerous suggestions
+    and useful criticisms: Christopher Kardell, Alex Lucas, Gabor Hajba, Michal Rutka,
+    Jason Taylor, Roy Prins, Matthew Harvell, Riccardo Marotti, and Paul Love. Your
+    suggestions helped make this a better book.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finally, I must acknowledge the unwitting role of Lee Harvey Oswald, whose heinous
+    assassination of Pres. John F. Kennedy prevented me from taking a security interview
+    at FBI headquarters, which prevented me from joining the NSA, which would have
+    made it a felony for me to write this book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: about this book
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Who should read this book?
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'This book is aimed at a broad range of readers: general readers, cryptography
+    hobbyists, history buffs, computer science students, electrical engineers, mathematicians,
+    and professional cryptographers. This makes my job harder, because it is impossible
+    to make every part of the book suitable for every type of reader. Some parts of
+    the book may need too much math for some readers. Some parts may be too elementary
+    for some readers. In this section I attempt to guide readers to what I think is
+    the most appropriate material for them.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**General readers** can read straight through to the end of chapter 8\. Simply
+    skip anything where the math is too hard, or the exposition is too technical.
+    From chapter 9 on it starts to get sticky. They can skim from this point on, and
+    pick out the topics of interest. They may want to read chapter 12 to get the general
+    gist, without getting into the details.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '**Cryptography hobbyists** will probably want to read the entire book, then
+    come back for a more detailed look at sections 4.2 to 5.11, 6.1 to 6.5, 6.7, most
+    of chapter 7, and sections 9.1 to 9.9, plus the Fun Pages and the Challenge page.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '**History buffs** can read the entire book, ignoring the math, to get the timeline
+    of when each method was developed, and by whom.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '**Computer science students** may put special emphasis on sections 5.6 to 5.11,
+    chapter 8, and chapters 11 to 16.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '**Electrical engineers** will be looking for practical methods. They should
+    first read chapters 2 and 4 for a basic grounding, then read sections 7.2 to 7.8,
+    chapter 9, and chapters 11 to 16, with special emphasis on chapter 12.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '**Mathematicians** will be most interested in section 4.5, sections 5.6 to
+    5.12, sections 10.4 to 10.7, sections 11.7 to 11.10, sections 12.3 to 12.6, chapters
+    13 to 16, especially section 16.4.6, and chapter 18.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '**Professional cryptographers** will be most interested in sections 7.8, 8.2,
+    10.5, 10.7, 11.4, 12.3 to 12.6, 13.8, 13.15, 14.2, 14.4, 15.4 to 15.14, 16.4,
+    16.5, and 18.12.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: About the ciphers
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: I have included a number of Fun Ciphers and Challenge Ciphers for readers who
+    want to try their hand at solving. The Fun Ciphers use standard methods described
+    in the book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Challenge Ciphers use methods that I have invented myself. They are simple
+    enough that an amateur hobbyist could both guess the methods, and solve them.
+    I have tried to be fair so that interested readers can solve them. Nothing bizarre
+    or complex. No weird words or distorted letter frequencies. And sufficient material
+    for solving them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You may notice some sections that begin with a bold ***** and end with ******.
+    These are optional sections that may contain computer algorithms or deeper math.
+    Some readers may choose to skip these.
+  prefs: []
+  type: TYPE_NORMAL
+- en: liveBook discussion forum
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Purchase of *Secret Key Cryptography* includes free access to liveBook, Manning’s
+    online reading platform. Using liveBook’s exclusive discussion features, you can
+    attach comments to the book globally or to specific sections or paragraphs. It’s
+    a snap to make notes for yourself, ask and answer technical questions, and receive
+    help from the author and other users. To access the forum, go to [https://livebook.manning.com/book/secret-key-cryptography/discussion](https://livebook.manning.com/book/secret-key-cryptography/discussion).
+    You can also learn more about Manning’s forums and the rules of conduct at [https://livebook.manning.com/discussion](https://livebook.manning.com/discussion).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Manning’s commitment to our readers is to provide a venue where a meaningful
+    dialogue between individual readers and between readers and the author can take
+    place. It is not a commitment to any specific amount of participation on the part
+    of the author, whose contribution to the forum remains voluntary (and unpaid).
+    The forum and the archives of previous discussions will be accessible from the
+    publisher’s website as long as the book is in print.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Other online resources
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: You can find the author's cryptographic products at his website, [www.mastersoftware.biz](http://www.mastersoftware.biz).
+  prefs: []
+  type: TYPE_NORMAL
+- en: about the author
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '![Rubin](../Images/Rubin.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Frank Rubin holds a BS and MS in mathematics and a PhD in computer science.
+    He worked for 28 years at IBM in the design automation field, where he designed
+    and wrote specialized software that IBM engineers used to design computers and
+    circuits. He is the owner of Master Software Corp. which produces cryptographic
+    software. Frank has been issued four U.S. patents on cryptographic methods. Frank
+    has about 50 papers published in refereed journals on cryptography, computer circuits,
+    graph theory and pure mathematics, plus several books (user manuals and project
+    specifications) published internally at IBM. In cryptography he is best known
+    for solving the Jefferson Cypher Wheel. In computer science Frank is best known
+    for arithmetic coding, now one of the standard methods for text compression, and
+    for his algorithm for finding Hamilton paths. In pure mathematics he is probably
+    best known for introducing the concept of a finite-state recognizer to measure
+    theory. Frank has three published books of Sudoku puzzles and two self-published
+    books of SumSum puzzles. He is the author of more than 3,500 puzzles published
+    in *The Cryptogram, Technology Review*, and *Journal of Recreational Mathematics*,
+    and he is the only person ever honored by having a special issue of *JRM* dedicated
+    entirely to his own puzzles.
+  prefs: []
+  type: TYPE_NORMAL
+- en: about the cover illustration
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The figure on the cover of *Secret Key Cryptography* is “Le Garçon de Bureau,”
+    or “Office Assistant,” taken from a book edited by Louis Curmer, published in
+    1841\. Each illustration is finely drawn and colored by hand.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In those days, it was easy to identify where people lived and what their trade
+    or station in life was just by their dress. Manning celebrates the inventiveness
+    and initiative of today’s computer business with book covers based on the rich
+    diversity of regional culture centuries ago, brought back to life by pictures
+    from collections such as this one.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '* * *'
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^(1.) Both *ICSA Guide to Cryptography* by R. K. Nichols and *Applied Cryptography*
+    by Bruce Schneier present cipher strength and randomness methods. The former concentrates
+    on classical cryptography, and the latter concentrates on modern ciphers (Nichols,
+    1999; Schneier, 1995).
+  prefs: []
+  type: TYPE_NORMAL
+- en: ^(2.) *Secret Key Cryptography* is better defined and written than my first
+    two books on classical cryptography, namely, *Classical Cryptography Course Vols.
+    I & II* (LANAKI, 1998; 1999).
+  prefs: []
+  type: TYPE_NORMAL

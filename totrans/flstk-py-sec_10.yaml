@@ -1,0 +1,920 @@
+- en: 8 User authentication
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Registering and activating new user accounts
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Installing and creating Django apps
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Logging into and out of your project
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Accessing user profile information
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Testing authentication
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Authentication and authorization are analogous to users and groups. In this
+    chapter, you’ll learn about authentication by creating users; in a later chapter,
+    you’ll learn about authorization by creating groups.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note At the time of this writing, *broken authentication* is number 2 on the
+    OWASP Top Ten ([https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)).
+    What is the OWASP Top Ten? It’s a reference designed to raise awareness about
+    the most critical security challenges faced by web applications. The Open Web
+    Application Security Project (OWASP) is a nonprofit organization working to improve
+    software security. OWASP promotes the adoption of security standards and best
+    practices through open source projects, conferences, and hundreds of local chapters
+    worldwide.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You’ll begin this chapter by adding a new user-registration workflow to the
+    Django project you created previously. Bob uses this workflow to create and activate
+    an account for himself. Next, you’ll create an authentication workflow. Bob uses
+    this workflow to log in, access his profile information, and log out. HTTP session
+    management, from the previous chapter, makes an appearance. Finally, you’ll write
+    tests to verify this functionality.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 8.1 User registration
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In this section, you’ll leverage `django-registration`, a Django extension library,
+    to create a user-registration workflow. Along the way, you’ll learn about the
+    basic building blocks of Django web development. Bob uses your user-registration
+    workflow to create and activate an account for himself. This section prepares
+    you and Bob for the next section, where you’ll build an authentication workflow
+    for him.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The user-registration workflow is a two-step process; you have probably already
+    experienced it:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Bob *creates* his account.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Bob *activates* his account.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Bob enters the user-registration workflow with a request for a user-registration
+    form. He submits this form with a username, email address, and password. The server
+    creates an inactive account, redirects him to a registration confirmation page,
+    and sends him an account activation email.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Bob can’t log into this account yet because the account has not been activated.
+    He must verify his email address in order to activate the account. This prevents
+    Mallory from creating an account with Bob’s email address, protecting you and
+    Bob; you will know the email address is valid, and Bob won’t receive unsolicited
+    email from you.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Bob’s email contains a link he follows to confirm his email address. This link
+    takes Bob back to the server, which then activates his account. Figure 8.1 depicts
+    this typical workflow.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH08_F01_Byrne](Images/CH08_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8.1 A typical user registration workflow, complete with email confirmation
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Before you start writing code, I’m going to define a few building blocks of
+    Django web development. The workflow you are about to create is composed of three
+    building blocks:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Views
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Models
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Templates
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Django represents each inbound HTTP request with an object. The properties of
+    this object map to attributes of the request, such as the URL and cookies. Django
+    maps each request to a *view*—a request handler written in Python. Views can be
+    implemented by a class or a function; I use classes for the examples in this book.
+    Django invokes the view, passing the request object into it. A view is responsible
+    for creating and returning a response object. The response object represents the
+    outbound HTTP response, carrying data such as the content and response headers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A *model* is an object-relational mapping class. Like views, models are written
+    in Python. Models bridge the gap between the object-oriented world of your application
+    and the relational database where you store data. A *model class* is analogous
+    to a database table. A model class *attribute* is analogous to a database table
+    column. A model *object* is analogous to a row in a database table. Views use
+    models to create, read, update, and delete database records.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A *template* represents the response of a request. Unlike views and models,
+    templates are written primarily in HTML and a simple templating syntax. A view
+    often uses a template to compose a response from static and dynamic content. Figure
+    8.2 depicts the relationships among a view, model, and template.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH08_F02_Byrne](Images/CH08_F02_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8.2 A Django application server uses a model-view-template architecture
+    to process requests.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This architecture is commonly referred to as *model-view-template* (*MVT* ).
+    This can be a little confusing if you’re already familiar with *model-view-controller*
+    (MVC) architecture. These architectures agree on what to call a model: a model
+    is an object-relational mapping layer. These architectures *do not* agree on what
+    to call a view. An MVT view is roughly equivalent to an MVC controller; an MVC
+    view is roughly equivalent to an MVT template. Table 8.1 compares the vocabularies
+    of both architectures.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 8.1 MVT terminology vs. MVC terminology
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| MVT term | MVC term | Description |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Model | Model | Object-relational mapping layer |'
+  prefs: []
+  type: TYPE_TB
+- en: '| View | Controller | Request handler responsible for logic and orchestration
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Template | View | Response content production |'
+  prefs: []
+  type: TYPE_TB
+- en: In this book, I use MVT terminology. The user-registration workflow you are
+    about to build is composed of views, models, and templates. You do not need to
+    author the views or models; this work has already been done for you by the `django-registration`
+    extension library.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You leverage `django-registration` by installing it as a *Django app* in your
+    *Django project*. What is the difference between an app and a project? These two
+    terms are often confused, understandably:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Django project*—This is a collection of configuration files, such as settings.py
+    and urls.py, and one or more Django apps. I showed you how to generate a Django
+    project in chapter 6 with the django-admin script.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Django app*—This is a modular component of a Django project. Each component
+    is responsible for a discrete set of functionality, such as user registration.
+    Multiple projects can make use of the same Django app. A Django app typically
+    doesn’t become large enough to be considered an application.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'From within your virtual environment, install `django-registration` with the
+    following command:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, open your `settings` module and add the following line of code, shown
+    in bold. This adds `django-registration` to the `INSTALLED_APPS` setting. This
+    setting is a list representing the Django apps of your Django project. Make sure
+    not to remove any preexisting apps:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Installs django-registration library
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Next, run the following command from the Django project root directory. This
+    command performs all database modifications needed to accommodate `django-registration`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: Next, open urls.py in the Django root directory. At the beginning of the file,
+    add an import for the `include` function, shown in bold in listing 8.1\. Below
+    the import is a list named urlpatterns. Django uses this list to map URLs of inbound
+    requests to views. Add the following URL path entry, also shown in bold, to urlpatterns;
+    do not remove any preexisting URL path entries.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 8.1 Mapping views to URL paths
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Adds the include import
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Maps django-registration views to URL paths
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adding this line of code maps five URL paths to `django-registration` views.
+    Table 8.2 illustrates which URL patterns are mapped to which views.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 8.2 URL path to user-registration view mappings
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| URL path | django-registration view |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /accounts/activate/complete/ | TemplateView |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /accounts/activate/<activation_key>/ | ActivationView |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /accounts/register/ | RegistrationView |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /accounts/register/complete/ | TemplateView |'
+  prefs: []
+  type: TYPE_TB
+- en: '| /accounts/register/closed/ | TemplateView |'
+  prefs: []
+  type: TYPE_TB
+- en: Three of these URL paths map to `TemplateView` classes. `TemplateView` performs
+    no logic and simply renders a template. In the next section, you’ll author these
+    templates.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 8.1.1 Templates
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Every generated Django project is configured with a fully functional template
+    engine. A *template engine* converts templates into responses by merging dynamic
+    and static content. Figure 8.3 depicts a template engine generating an ordered
+    list in HTML.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH08_F03_Byrne](Images/CH08_F03_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8.3 A template engine combines static HTML and dynamic content.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Like every other major Django subsystem, the template engine is configured
+    in the `settings` module. Open the `settings` module in the Django root directory.
+    At the top of this module, add an import for the `os` module, as shown in bold
+    in the following code. Below this import, find the `TEMPLATES` setting, a list
+    of template engines. Locate the `DIRS` key for the first and only templating engine.
+    `DIRS` informs the template engine which directories to use when searching for
+    template files. Add the following entry, also show in bold, to `DIRS`. This tells
+    the template engine to look for template files in a directory called templates,
+    beneath the project root directory:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Imports the os module
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Tells the template engine where to look
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Beneath the project root directory, create a subdirectory called templates.
+    Beneath the templates directory, create a subdirectory called django_registration.
+    This is where `django-registration` views expect your templates to be. Your user-registration
+    workflow will use the following templates, shown here in the order Bob sees them:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: registration_form.html
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: registration_complete.html
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: activation_email_subject.txt
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: activation_email_body.txt
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: activation_complete.html
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Beneath the django_registration directory, create a file named registration_form.html
+    with the code in listing 8.2\. This template renders the first thing Bob sees,
+    a new user-registration form. Ignore the `csrf_token` tag; I cover this in chapter
+    16\. The `form.as_` `p` variable will render labeled form fields.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 8.2 A new user-registration form
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Necessary, but to be covered in another chapter
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Dynamically rendered as user-registration form fields
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Next, create a file named registration_complete.html in the same directory
+    and add the following HTML to it. This template renders a simple confirmation
+    page after Bob successfully registers:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Create a file named activation_email_subject.txt in the same directory. Add
+    the following line of code, which generates the subject line of the account activation
+    email. The `site` variable will render as the hostname; for you, this will be
+    `localhost`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, create a file named activation_email_body.txt in the same directory and
+    add this line of code to it. This template represents the body of the account-activation
+    email:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Finally, create a file named activation_complete.html and add the following
+    HTML to it. This is the last thing Bob sees in the workflow:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'During this workflow, your system is going to send an email to Bob’s email
+    address. Setting up an email server in your development environment would be a
+    big inconvenience. Furthermore, you don’t actually own Bob’s email address. Open
+    the settings file and add the following code to override this behavior. This configures
+    Django to redirect outbound email to your console, providing you with an easy
+    way to access the user-registration link without incurring the overhead of running
+    a fully functional mail server:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Add the following line of code to the `settings` module. This setting represents
+    the number of days Bob has to activate his account:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: Alright, you’re done writing code for the user-registration workflow. Bob will
+    now use it to create and activate his account.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 8.1.2 Bob registers his account
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Restart your server and point your browser to https:/./localhost:8000/accounts/regis
+    ter/. The user-registration form you see contains several required fields: username,
+    email, password, and password confirmation. Fill out the form as it appears in
+    figure 8.4, give Bob a password, and submit the form.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH08_F04_Byrne](Images/CH08_F04_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8.4 Bob registers an account for himself, submitting a username, his
+    email address, and a password.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Submitting the user-registration form creates an account for Bob. Bob can’t
+    log into this account yet because the account is not activated. He must verify
+    his email address in order to activate the account. This prevents Mallory from
+    creating an account with Bob’s email address; Bob won’t receive unsolicited email,
+    and you will know the email address is valid.
+  prefs: []
+  type: TYPE_NORMAL
+- en: After account creation, you are redirected to the registration confirmation
+    page. This page informs you to check your email. Earlier you configured Django
+    to direct outbound email to your console. Look in your console for Bob’s email.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Locate the account activation URL in Bob’s email. Notice that the URL suffix
+    is an activation token. This token isn’t just a random string of characters and
+    numbers; it contains a URL-encoded timestamp and a keyed hash value. The server
+    creates this token by hashing the username and account creation time with an HMAC
+    function. (You learned about HMAC functions in chapter 3.) The key to the HMAC
+    function is `SECRET_KEY`. Figure 8.5 illustrates this process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH08_F05_Byrne](Images/CH08_F05_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8.5 Bob submits a user-registration form and receives an account activation
+    email; the account activation token is an application of keyed hashing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Copy and paste the account activation email from your console to your browser.
+    This delivers the account activation token back to the server. The server now
+    extracts the username and timestamp from the URL, and recomputes the hash value.
+    If the recomputed hash value doesn’t match the inbound hash value, the server
+    knows the token has been tampered with; account activation then fails. If both
+    hash values match, the server knows it is the author of the token; Bob’s account
+    is activated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: After activating Bob’s account, you are redirected to a simple confirmation
+    page. Bob’s account has been created and activated; you have completed your first
+    workflow. In the next section, you’ll create another workflow, giving Bob access
+    to his new account.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 8.2 User authentication
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In this section, you’ll build a second workflow for Bob. This workflow allows
+    Bob to prove who he is before accessing sensitive personal information. Bob begins
+    this workflow by requesting and submitting a login form. The server redirects
+    Bob to a simple profile page. Bob logs out, and the server redirects him back
+    to the login form. Figure 8.6 illustrates this workflow.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH08_F06_Byrne](Images/CH08_F06_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8.6 In this authentication workflow, Bob logs in, accesses his profile
+    information, and logs out.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As with the user-registration workflow, the authentication workflow is composed
+    of views, models, and templates. This time, Django has done most of the work for
+    you. Django natively ships with many built-in views, models, and templates. These
+    components support common site features such as logging in, logging off, changing
+    a password, and resetting a password. In the next section, you’ll leverage two
+    built-in Django views.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 8.2.1 Built-in Django views
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'To leverage Django’s built-in views, open urls.py in the Django root directory.
+    Add the following URL path entry, shown in bold, to urlpatterns; do not remove
+    any preexisting URL path entries:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Maps URL paths to built-in Django views
+  prefs: []
+  type: TYPE_NORMAL
+- en: Adding this line of code maps eight URL paths to built-in views. Table 8.3 illustrates
+    which URL patterns are mapped to which view classes. In this chapter, you’ll use
+    the first two views, `LoginView` and `LogoutView`. You will use the other views
+    in subsequent chapters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 8.3 Mapping URL paths to views
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| URL path | Django view |'
+  prefs: []
+  type: TYPE_TB
+- en: '| accounts/login/ | LoginView |'
+  prefs: []
+  type: TYPE_TB
+- en: '| accounts/logout/ | LogoutView |'
+  prefs: []
+  type: TYPE_TB
+- en: '| accounts/password_change/ | PasswordChangeView |'
+  prefs: []
+  type: TYPE_TB
+- en: '| accounts/password_change/done/ | PasswordChangeDoneView |'
+  prefs: []
+  type: TYPE_TB
+- en: '| accounts/password_reset/ | PasswordResetView |'
+  prefs: []
+  type: TYPE_TB
+- en: '| accounts/password_reset/done/ | PasswordResetDoneView |'
+  prefs: []
+  type: TYPE_TB
+- en: '| accounts/reset/<uidb64>/<token>/ | PasswordResetConfirmView |'
+  prefs: []
+  type: TYPE_TB
+- en: '| accounts/reset/done/ | PasswordResetCompleteView |'
+  prefs: []
+  type: TYPE_TB
+- en: Many Django projects make it to production with these views. These views are
+    popular for two primary reasons. First, you get to push your code to production
+    faster without reinventing the wheel. Second, and more importantly, these components
+    protect you and your users by observing best practices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next section, you will create and configure your own view. Your view
+    will live within a new Django app. This app lets Bob access his personal information.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 8.2.2 Creating a Django app
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Previously, you generated a *Django project*; in this section, you’ll generate
+    a *Django app*. Run the following command from the project root directory to create
+    a new app. This command generates a Django app in a new directory called profile_info:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: Figure 8.7 illustrates the directory structure of the new app. Notice that a
+    separate module is generated for app-specific models, tests, and views. In this
+    chapter, you’ll modify the `views` and `tests` modules.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH08_F07_Byrne](Images/CH08_F07_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 8.7 Directory structure of a new Django app
+  prefs: []
+  type: TYPE_NORMAL
+- en: Open the `views` module and add the code in listing 8.3 to it. The `ProfileView`
+    class accesses the user object via the request. This object is a built-in model
+    defined and created by Django. Django automatically creates the user object and
+    adds it to the request before the view is invoked. If the user is unauthenticated,
+    `ProfileView` responds with a 401 status response. This status informs the client
+    it is unauthorized to access profile information. If the user is authenticated,
+    `ProfileView` responds with the user’s profile information.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 8.3 Adding a view to your app
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Programmatically accesses the user object
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Rejects unauthenticated users
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Renders a response
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Under the new app directory (not the project root directory), add a new file
+    named urls.py with the following content. This file maps URL paths to app-specific
+    views:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'In the project root directory (not the app directory), reopen urls.py and add
+    a new URL path entry, shown here in bold. This URL path entry will map `ProfileView`
+    to /accounts/profile/. Leave all preexisting URL path entries in urlpatterns intact:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: So far, you have reused Django’s built-in views and created one of your own,
+    `ProfileView`. Now it’s time to create a template for your view. Beneath the templates
+    directory, create a subdirectory called registration. Create and open a file named
+    login.html beneath registration. By default, `LoginView` looks here for the login
+    form.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Add the following HTML to login.html; Bob is going to submit his authentication
+    credentials with this form. The template expression `{{ form.as_p }}` renders
+    a labeled input field for both the username and password. As with the user-registration
+    form, ignore the `csrf_token` syntax; this is covered in chapter 16:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Necessary, but to be covered in another chapter
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Dynamically rendered as username and password form fields
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Create and open a file named profile.html beneath the templates directory.
+    Add the following HTML to profile.html; this template is going to render Bob’s
+    profile information and a logout link. The `{{ user }}` syntax in this template
+    references the same user model object accessed by `ProfileView`. The last paragraph
+    contains a built-in template tag called `url`. This tag will look up and render
+    the URL path mapped to `LogoutView`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Renders profile information, from the database, through a model object
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Dynamically generates a logout link
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now it’s time to log in as Bob. Before beginning the next section, you should
+    do two things. First, ensure that all of your changes are written to disk. Second,
+    restart the server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 8.2.3 Bob logs into and out of his account
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Point your browser to https:/./localhost:8000/accounts/login/ and log in as
+    Bob. After a successful login, `LoginView` will send a response to the browser
+    containing two important details:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Set-Cookie` response header'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Status code of 302
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The `Set-Cookie` response header delivers the session ID to the browser. (You
+    learned about this header in the previous chapter.) Bob’s browser will hold on
+    to a local copy of his session ID and send it back to the server on subsequent
+    requests.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The server redirects the browser to /accounts/profile/ with a status code of
+    302\. Redirects like this are a best practice after form submissions. This prevents
+    a user from accidentally submitting the same form twice.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The redirected request is mapped to `ProfileView` in your custom app. `ProfileView`
+    uses profile.html to generate a response containing Bob’s profile information
+    and a logout link.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Logging out
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'By default, `LogoutView` renders a generic logout page. To override this behavior,
+    open the `settings` module and add the following line of code to it. This configures
+    `LogoutView` to redirect the browser to the login page when a user logs out:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: Restart the server and click the logout link on the profile page. This sends
+    a request to /accounts/logout/. Django maps this request to `LogoutView`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Like `LoginView`, `LogoutView` responds with a `Set-Cookie` response header
+    and a 302 status code. The `Set-Cookie` header sets the session ID to an empty
+    string, invalidating the session. The 302 status code redirects the browser to
+    the login page. Bob has now logged into and out of his account, and you are finished
+    with your second workflow.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Multifactor authentication
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Passwords, unfortunately, get into the wrong hands sometimes. Many organizations
+    consequently require an additional form of authentication, a feature known as
+    *multifactor authentication* (*MFA*). You’ve probably already used MFA. MFA-enabled
+    accounts are often guarded by a username and password challenge in addition to
+    one of the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A one-time password (OTP)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Key fob, access badge, or smart card
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Biometric factors such as fingerprints or facial recognition
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'At the time of this writing, I unfortunately cannot identify a compelling Python
+    MFA library for this book. I hope this changes before the next edition is published.
+    I certainly recommend MFA, though, so here is a list of dos and don’ts if you
+    choose to adopt it:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Resist the urge to build it yourself. This warning is analogous to “Don’t roll
+    your own crypto.” Security is complicated, and custom security code is error prone.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Avoid sending OTPs via text message or voicemail. This goes for the systems
+    you build and the systems you use. Although common, these forms of authentication
+    are unsafe because telephone networks are not secure.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Avoid asking questions like “What is your mother’s maiden name?” or “Who was
+    your best friend in third grade?” Some people call these security questions, but
+    I call them insecurity questions. Imagine how easy it is for an attacker to infer
+    the answers to these questions by simply locating the victim’s social media account.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: In this section, you wrote code to support the most fundamental features of
+    a website. Now it’s time to optimize some of this code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 8.3 Requiring authentication concisely
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Secure websites prohibit anonymous access to restricted resources. When a request
+    arrives without a valid session ID, a website typically responds with an error
+    code or a redirect. Django supports this behavior with a class named `LoginRequiredMixin`.
+    When your view inherits from `LoginRequiredMixin`, there is no need to verify
+    that the current user is authenticated; `LoginRequiredMixin` does this for you.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the profile_info directory, reopen the views.py file and add `LoginRequiredMixin`
+    to `ProfileView`. This redirects requests from anonymous users to your login page.
+    Next, delete any code used to programmatically verify the request; this code is
+    now redundant. Your class should look like the one shown here; `LoginRequiredMixin`
+    and deleted code are shown in bold font.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 8.4 Prohibiting anonymous access concisely
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Add this import.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Delete this import.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Add LoginRequiredMixin.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Delete these lines of code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `login_required` decorator is the function-based equivalent of the `LoginRequiredMixin`
+    class. The following code illustrates how to prohibit anonymous access to a function-based
+    view with the `login_required` decorator:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Equivalent to LoginRequiredMixin
+  prefs: []
+  type: TYPE_NORMAL
+- en: Your application now supports user authentication. It has been said that authentication
+    makes testing difficult. This may be true in some web application frameworks,
+    but in the next section, you’ll learn why Django isn’t one of them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 8.4 Testing authentication
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Security and testing have one thing in common: programmers often underestimate
+    the importance of both. Typically, neither of these areas receive enough attention
+    when a codebase is young. The long-term health of the system then suffers.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Every new feature of a system should be accompanied by tests. Django encourages
+    testing by generating a `tests` module for every new Django app. This module is
+    where you author test classes. The responsibility of a test class, or `TestCase`,
+    is to define tests for a discrete set of functionality. `TestCase` classes are
+    composed of test methods. Test methods are designed to maintain the quality of
+    your codebase by exercising a single feature and performing assertions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Authentication is no obstacle for testing. Actual users with real passwords
+    can log into and out of your Django project programmatically from within a test.
+    Under the profile_info directory, open the tests.py file and add the code in listing
+    8.5\. The `TestAuthentication` class demonstrates how to test everything you did
+    in this chapter. The `test_authenticated_workflow` method begins by creating a
+    user model for Bob. It then logs in as him, visits his profile page, and logs
+    him out.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 8.5 Testing user authentication
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Creates a test user account for Bob
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Bob logs in.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Accesses Bob’s profile page
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Simulates HTTPS
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❺ Verifies the response
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❻ Verifies Bob is logged out
+  prefs: []
+  type: TYPE_NORMAL
+- en: Next, add the `test_prohibit_anonymous_access` method, shown in listing 8.6\.
+    This method attempts to anonymously access the profile page. The response is tested
+    to ensure that the user is redirected to the login page.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 8.6 Testing anonymous access restrictions
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Attempts anonymous access
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Verifies the response
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Run the following command from the project root directory. This executes the
+    Django test runner. The test runner automatically finds and executes both tests;
+    both of them pass:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: In this chapter, you learned how to build some of the most important features
+    of any system. You know how to create and activate accounts; you know how to log
+    users into and out of their accounts. In subsequent chapters, you’ll build upon
+    this knowledge with topics such as password management, authorization, OAuth 2.0,
+    and social login.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Verify the user’s email address with a two-step user-registration workflow.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Views, models, and templates are the building blocks of Django web development.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Don’t reinvent the wheel; authenticate users with built-in Django components.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Prohibit anonymous access to restricted resources.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Authentication is no excuse for untested functionality.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

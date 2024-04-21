@@ -1,0 +1,709 @@
+- en: 4 Symmetric encryption
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Ensuring confidentiality with encryption
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Introducing the cryptography package
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Choosing a symmetric encryption algorithm
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Rotating encryption keys
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: In this chapter, I’ll introduce you to the `cryptography` package. You’ll learn
+    how to use the encryption API of this package to ensure confidentiality. Keyed
+    hashing and data authentication, from previous chapters, will make an appearance.
+    Along the way, you’ll learn about key rotation. Finally, I’ll show you how to
+    distinguish between safe and unsafe symmetric block ciphers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.1 What is encryption?
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Encryption begins with plaintext. *Plaintext* is information that is readily
+    comprehensible. The Gettysburg Address, an image of a cat, and a Python package
+    are examples of potential plaintext. *Encryption* is the obfuscation of plaintext
+    with the purpose of hiding information from unauthorized parties. The obfuscated
+    output of encryption is known as *ciphertext*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The inverse of encryption, the transformation of ciphertext back to plaintext,
+    is known as *decryption*. An algorithm for encrypting and decrypting data is called
+    a *cipher*. Every cipher requires a *key*. A key is intended to be a secret among
+    parties who are authorized to access encrypted information (figure 4.1).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH04_F01_Byrne](Images/CH04_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4.1 Plaintext is the human-readable input to encryption and the output
+    of decryption; ciphertext is the machine-readable output of encryption and the
+    input to decryption.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Encryption ensures confidentiality. Confidentiality is an atomic building block
+    of secure system design, just like data integrity and data authentication from
+    previous chapters. Unlike the other building blocks, *confidentiality* doesn’t
+    have a complex definition; it is the guarantee of privacy. In this book, I divide
+    confidentiality into two forms of privacy:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Individual privacy
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Group privacy
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: As an example of these forms, suppose Alice wants to write and read sensitive
+    data, with no intention of letting anyone else read it. Alice can guarantee individual
+    privacy by encrypting what she writes and decrypting what she reads. This form
+    of privacy complements the *at rest* of *encryption at rest and in transit*, a
+    best practice discussed in chapter 1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alternatively, suppose Alice wants to exchange sensitive data with Bob. Alice
+    and Bob can guarantee group privacy by encrypting what they send and decrypting
+    what they receive. This form of privacy complements the *in transit* of *encryption
+    at rest and in transit*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this chapter, you’ll learn how to implement encryption at rest by using Python
+    and the `cryptography` package. To install this package, we must first install
+    a secure package manager.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.1.1 Package management
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In this book, I use Pipenv for package management. I chose this package manager
+    because it is equipped with many security features. Some of these features are
+    covered in chapter 13.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note There are many Python package managers, and you don’t have to use the same
+    one as I do to run the examples in this book. You are free to follow along with
+    tools such as `pip` and `venv`, but you will not be able to take advantage of
+    several security features offered by Pipenv.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To install Pipenv, choose the shell command from those that follow for your
+    operating system. Installing Pipenv with Homebrew (macOS) or LinuxBrew (Linux)
+    is discouraged.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ On Debian Buster+
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ On Fedora
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ On FreeBSD
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ On all other operating systems
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Next, run the following command. This command creates two files in the current
+    directory, Pipfile and Pipfile.lock. Pipenv uses these files to manage your project
+    dependencies:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'In addition to Pipfiles, the previous command also creates a *virtual environment*.
+    This is an isolated, self-contained environment for a Python project. Each virtual
+    environment has its own Python interpreter, libraries, and scripts. By giving
+    each of your Python projects its own virtual environment, you prevent them from
+    interfering with one another. Run the following command to activate your new virtual
+    environment:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: WARNING Do yourself a favor and run each command in this book from within your
+    virtual environment shell. This ensures that the code you write is able to find
+    the correct dependencies. It also ensures that the dependencies you install do
+    not result in conflicts with other local Python projects.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As in an ordinary Python project, you should run the commands in this book from
+    within your virtual environment. In the next section, you’ll install the first
+    of many dependencies into this environment, the `cryptography` package. This package
+    is the only encryption library you need as a Python programmer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.2 The cryptography package
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Unlike some other programming languages, Python has no native encryption API.
+    A handful of open source frameworks occupy this niche. The most popular Python
+    encryption packages are `cryptography` and `pycryptodome`. In this book, I use
+    the `cryptography` package exclusively. I prefer this package because it has a
+    safer API. In this section, I cover the most important parts of this API.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Install the `cryptography` package into your virtual environment with the following
+    command:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: The default backend for the `cryptography` package is OpenSSL. This open source
+    library contains implementations of network security protocols and general-purpose
+    cryptographic functions. This library is primarily written in C. OpenSSL is wrapped
+    by many other open source libraries, like the `cryptography` package, in major
+    programming languages, like Python.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `cryptography` package authors divided the API into two levels:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The hazardous materials layer, a complex low-level API
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The recipes layer, a simple high-level API
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 4.2.1 Hazardous materials layer
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'The complex low-level API, living beneath `cryptography.hazmat`, is known as
+    the *hazardous materials layer*. Think twice before using this API in a production
+    system. The documentation for the hazardous materials layer ([https://cryptography.io/en/latest/hazmat/primitives/](https://cryptography.io/en/latest/hazmat/primitives/))
+    reads: “You should *only* use it if you’re 100% absolutely sure that you know
+    what you’re doing because this module is full of land mines, dragons, and dinosaurs
+    with laser guns.” Using this API safely requires an in-depth knowledge of cryptography.
+    One subtle mistake can leave a system vulnerable.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The valid use cases for the hazardous material layer are few and far between.
+    For example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: You might need this API to encrypt files too big to fit into memory.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: You might be forced to process data with a rare encryption algorithm.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: You might be reading a book that uses this API for instructional purposes.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 4.2.2 Recipes layer
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'The simple high-level API is known as the *recipes layer*. The documentation
+    for the `cryptography` package ([https://cryptography.io/en/latest/](https://cryptography.io/en/latest/))
+    reads: “We recommend using the recipes layer whenever possible, and falling back
+    to the hazmat layer only when necessary.” This API will satisfy the encryption
+    needs of most Python programmers.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The recipes layer is an implementation of a symmetric encryption method known
+    as *fernet*. This specification defines an encryption protocol designed to resist
+    tampering in an interoperable way. This protocol is encapsulated by a class, known
+    as `Fernet`, beneath `cryptography.fernet`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `Fernet` class is designed to be your general-purpose tool for encrypting
+    data. The `Fernet.generate_key` method generates 32 random bytes. The `Fernet`
+    init method accepts this key, as shown by the following code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Beneath cryptography.fernet is the simple high-level API.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Under the hood, `Fernet` splits the key argument into two 128-bit keys. One
+    half is reserved for encryption, as expected, and the other half is reserved for
+    data authentication. (You learned about data authentication in the previous chapter.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `Fernet.encrypt` method doesn’t just encrypt plaintext. It also hashes
+    the ciphertext with HMAC-SHA256\. In other words, the ciphertext becomes a message.
+    The ciphertext and hash value are returned together as an object known as a *fernet
+    token*, shown here:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Encrypts plaintext, hashes ciphertext
+  prefs: []
+  type: TYPE_NORMAL
+- en: Figure 4.2 depicts how the ciphertext and hash value are used to construct a
+    fernet token. The keys for both encryption and keyed hashing are omitted for the
+    sake of simplicity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH04_F02_Byrne](Images/CH04_F02_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4.2 Fernet doesn’t just encrypt the plaintext; it hashes the ciphertext
+    as well.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `Fernet.decrypt` method is the inverse of `Fernet.encrypt`. This method
+    extracts the ciphertext from the fernet token and authenticates it with HMAC-SHA256\.
+    If the new hash value does not match the old hash value in the fernet token, an
+    `InvalidToken` exception is raised. If the hash values match, the ciphertext is
+    decrypted and returned:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Authenticates and decrypts ciphertext
+  prefs: []
+  type: TYPE_NORMAL
+- en: Figure 4.3 depicts how the decrypt method deconstructs a fernet token. As with
+    the previous figure, the keys for decryption and data authentication are omitted.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH04_F03_Byrne](Images/CH04_F03_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4.3 Fernet authenticates ciphertext in addition to decrypting it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You may be wondering why `Fernet` ensures ciphertext authentication rather than
+    just confidentiality. The value of confidentiality isn’t fully realized until
+    it is combined with data authentication. For example, suppose Alice plans to implement
+    personal privacy. She encrypts and decrypts whatever she writes and reads, respectively.
+    By hiding her key, Alice knows she is the only one who can decrypt the ciphertext,
+    but this alone is no guarantee that she created the ciphertext. By authenticating
+    the ciphertext, Alice adds a layer of defense against Mallory, who seeks to modify
+    the ciphertext.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose Alice and Bob want to implement group privacy. Both parties encrypt
+    and decrypt what they send and receive, respectively. By hiding the key, Alice
+    and Bob know Eve cannot eavesdrop on the conversation, but this alone doesn’t
+    guarantee that Alice is actually receiving what Bob is sending, or vice versa.
+    Only data authentication can provide Alice and Bob with this guarantee.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Fernet tokens are a safety feature. Each fernet token is an opaque array of
+    bytes; there is no formal FernetToken class with properties for the ciphertext
+    and hash value. You can extract these values if you really want to, but it’s going
+    to get messy. Fernet tokens are designed this way to discourage you from trying
+    to do anything error prone, such as decrypting or authenticating with custom code,
+    or decrypting without authenticating first. This API promotes “Don’t roll your
+    own crypto,” a best practice covered in chapter 1\. `Fernet` is intentionally
+    easy to use safely and difficult to use unsafely.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A `Fernet` object can decrypt any fernet token created by a `Fernet` object
+    with the same key. You can throw away an instance of `Fernet`, but the key must
+    be saved and protected. Plaintext is unrecoverable if the key is lost. In the
+    next section, you’ll learn how to rotate a key with `MultiFernet`, a companion
+    of `Fernet`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.2.3 Key rotation
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Key* *rotation* is used to retire one key with another. To decommission a
+    key, all ciphertext produced with it must be decrypted and re-encrypted with the
+    next key. A key may need to be rotated for many reasons. A compromised key must
+    be retired immediately. Sometimes a key must be rotated when a person with access
+    to it leaves an organization. Regular key rotation limits the damage, but not
+    the probability, of a key becoming compromised.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Fernet` implements key rotation in combination with the `MultiFernet` class.
+    Suppose an old key is to be replaced with a new one. Both keys are used to instantiate
+    separate instances of `Fernet`. Both `Fernet` instances are used to instantiate
+    a single instance of `MultiFernet`. The rotate method of `MultiFernet` decrypts
+    everything encrypted with the old key and re-encrypts it with the new key. Once
+    every token has been re-encrypted with the new key, it is safe to retire the old
+    key. The following listing demonstrates key rotation with `MultiFernet`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 4.1 Key rotation with MultiFernet
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Decrypting with the old key, encrypting with the new key
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Out with the old key, in with the new key
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ New key required to decrypt new ciphertexts
+  prefs: []
+  type: TYPE_NORMAL
+- en: The role of the key defines the category an encryption algorithm falls into.
+    The next section covers the category `Fernet` falls into.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.3 Symmetric encryption
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'If an encryption algorithm encrypts and decrypts with the same key, like the
+    one wrapped by `Fernet`, we call it *symmetric*. Symmetric encryption algorithms
+    are further subdivided into two more categories: block ciphers and stream ciphers.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.3.1 Block ciphers
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Block* *ciphers* encrypt plaintext as a series of fixed-length blocks. Each
+    block of plaintext is encrypted to a block of ciphertext. The block size depends
+    on the encryption algorithm. Larger block sizes are generally considered more
+    secure. Figure 4.4 illustrates three blocks of plaintext encrypted to three blocks
+    of ciphertext.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH04_F04_Byrne](Images/CH04_F04_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4.4 A block cipher accepts N blocks of plaintext and yields N blocks
+    of ciphertext.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'There are many kinds of symmetric encryption algorithms. It is natural for
+    a programmer to feel overwhelmed by the choices. Which algorithms are safe? Which
+    algorithms are fast? The answers to these questions are actually pretty simple.
+    As you read this section, you’ll see why. The following are all examples of popular
+    block ciphers:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Triple DES
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Blowfish
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Twofish
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Advanced Encryption Standard
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Triple DES
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Triple DES* (*3DES*) is an adaptation of the Data Encryption Standard (DES).
+    As the name indicates, this algorithm uses DES three times under the hood, earning
+    it a reputation for being slow. 3DES uses a 64-bit block size and key size of
+    56, 112, or 168 bits.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING 3DES has been deprecated by NIST and OpenSSL. Don’t use 3DES (for more
+    information, visit [http://mng.bz/pJoG](http://mng.bz/pJoG)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Blowfish
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Blowfish* was developed in the early 1990s by Bruce Schneier. This algorithm
+    uses a 64-bit block size and a variable key size of 32 to 448 bits. Blowfish gained
+    popularity as one of the first major royalty-free encryption algorithms without
+    a patent.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Blowfish lost acclaim in 2016 when its block size left it vulnerable
+    to an attack known as SWEET32\. Don’t use Blowfish. Even the creator of Blowfish
+    recommends using Twofish instead.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Twofish
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Twofish* was developed in the late 1990s as a successor to Blowfish. This
+    algorithm uses a 128-bit block size and a key size of 128, 192, or 256 bits. Twofish
+    is respected by cryptographers but hasn’t enjoyed the popularity of its predecessor.
+    In 2000, Twofish became a finalist in a three-year competition known as the Advanced
+    Encryption Standard process. You can use Twofish safely, but why not do what everyone
+    else has done and use the algorithm that won this competition?'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Advanced Encryption Standard
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Rijndael* is an encryption algorithm standardized by NIST in 2001 after it
+    beat more than a dozen other ciphers in the Advanced Encryption Standard process.
+    You’ve probably never heard of this algorithm even though you use it constantly.
+    That’s because Rijndael adopted the name of Advanced Encryption Standard after
+    it was selected by the Advanced Encryption Standard process. Advanced Encryption
+    Standard isn’t just a name; it is a competition title.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Advanced Encryption Standard* (*AES*) is the only symmetric encryption algorithm
+    a typical application programmer has to know about. This algorithm uses a 128-bit
+    block size and a key size of 128, 192, or 256 bits. It is the poster child for
+    symmetric encryption. The security track record of AES is robust and extensive.
+    Applications of AES encryption include networking protocols like HTTPS, compression,
+    filesystems, hashing, and virtual private networks (VPNs). How many other encryption
+    algorithms have their own hardware instructions? You couldn’t even build a system
+    that doesn’t use AES if you tried.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you haven’t guessed by now, `Fernet` uses AES under the hood. AES should
+    be a programmer’s first choice for general-purpose encryption. Stay safe, don’t
+    try to be clever, and forget the other block ciphers. The next section covers
+    stream ciphers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.3.2 Stream ciphers
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Stream* *ciphers* do not process plaintext in blocks. Instead, plaintext is
+    processed as a stream of individual bytes; one byte in, one byte out. As the name
+    implies, stream ciphers are good at encrypting continuous or unknown amounts of
+    data. These ciphers are often used by networking protocols.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stream ciphers have an advantage over block ciphers when plaintext is very small.
+    For example, suppose you’re encrypting data with a block cipher. You want to encrypt
+    120 bits of plaintext, but the block cipher encrypts plaintext as 128-bit blocks.
+    The block cipher will use a padding scheme to compensate for the 8-bit difference.
+    By using 8 bits of padding, the block cipher can operate as though the plaintext
+    bit count is a multiple of the block size. Now consider what happens when you
+    need to encrypt only 8 bits of plaintext. The block cipher has to use 120 bits
+    of padding. Unfortunately, this means more than 90% of the ciphertext can be attributed
+    just to padding. Stream ciphers avoid this problem. They don’t need a padding
+    scheme because they don’t process plaintext as blocks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: RC4 and ChaCha are both examples of stream ciphers. RC4 was used extensively
+    in networking protocols until a half dozen vulnerabilities were discovered. This
+    cipher has been abandoned and should never be used. ChaCha, on the other hand,
+    is considered secure and is unquestionably fast. You’ll see ChaCha make an appearance
+    in chapter 6, where I cover TLS, a secure networking protocol.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stream ciphers, despite their speed and efficiency, are in less demand than
+    block ciphers. Unfortunately, stream cipher ciphertext is generally more susceptible
+    to tampering than block cipher ciphertext. Block ciphers, in certain modes, can
+    also emulate stream ciphers. The next section introduces encryption modes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 4.3.3 Encryption modes
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Symmetric encryption algorithms run in different modes. Each mode has strengths
+    and weaknesses. When application developers choose a symmetric encryption strategy,
+    the discussion usually doesn’t revolve around block ciphers versus stream ciphers,
+    or which encryption algorithm to use. Instead, the discussion revolves around
+    which encryption mode to run AES in.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Electronic codebook mode
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Electronic* *codebook* (*ECB*) *mode* is the simplest mode. The following
+    code demonstrates how to encrypt data with AES in ECB mode. Using the low-level
+    API of the `cryptography` package, this example creates an encryption cipher with
+    a 128-bit key. The plaintext is fed to the encryption cipher via the `update`
+    method. For the sake of simplicity, the plaintext is a single block of unpadded
+    text:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Using AES in ECB mode
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Using OpenSSL
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ A single block of plaintext
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ A single block of ciphertext
+  prefs: []
+  type: TYPE_NORMAL
+- en: ECB mode is exceptionally weak. Ironically, the weakness of ECB mode makes it
+    a strong choice for instruction. ECB mode is insecure because it encrypts identical
+    plaintext blocks to identical ciphertext blocks. This means ECB mode is easy to
+    understand, but it is also easy for an attacker to infer patterns in plaintext
+    from patterns in ciphertext.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Figure 4.5 illustrates a classic example of this weakness. You are looking at
+    an ordinary image on the left and an actual encrypted version of it on the right.[1](#pgfId-1094027)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH04_F05_Byrne](Images/CH04_F05_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4.5 Patterns in plaintext produce patterns in ciphertext when encrypting
+    with ECB mode.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ECB mode doesn’t just reveal patterns *within* plaintext; it reveals patterns
+    *between* plaintexts as well. For example, suppose Alice needs to encrypt a set
+    of plaintexts. She falsely assumes it is safe to encrypt them in ECB mode because
+    there are no patterns within each plaintext. Mallory then gains unauthorized access
+    to the ciphertexts. While analyzing the ciphertexts, Mallory discovers that some
+    are identical; she then concludes the corresponding plaintexts are also identical.
+    Why? Mallory, unlike Alice, knows ECB mode encrypts matching plaintexts to matching
+    ciphertexts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Never encrypt data with ECB mode in a production system. It doesn’t
+    matter if you’re using ECB with a secure encryption algorithm like AES. ECB mode
+    cannot be used securely.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If an attacker gains unauthorized access to your ciphertext, they should not
+    be able to infer anything about your plaintext. A good encryption mode, such as
+    the one described next, obfuscates patterns within and between plaintexts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cipher block chaining mode
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Cipher* *block chaining* (*CBC*) *mode* overcomes some of the weaknesses of
+    ECB mode by ensuring that each change in a block affects the ciphertext of all
+    subsequent blocks. As illustrated by figure 4.6, input patterns do not result
+    in output patterns.[2](#pgfId-1096320)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH04_F06_Byrne](Images/CH04_F06_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 4.6 Patterns in plaintext do not produce patterns in ciphertext when
+    encrypting in CBC mode.
+  prefs: []
+  type: TYPE_NORMAL
+- en: CBC mode also produces different ciphertexts when encrypting identical plaintexts
+    with the same key. CBC mode achieves this by individualizing plaintext with an
+    *initialization vector* (IV). Like plaintext and the key, an IV is an input to
+    the encryption cipher. AES in CBC mode requires each IV to be a nonrepeatable
+    random 128-bit number.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code encrypts two identical plaintexts with AES in CBC mode.
+    Both plaintexts are composed of two identical blocks and paired with a unique
+    IV. Notice how both ciphertexts are unique and neither contains patterns:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Generates 16 random bytes
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Uses AES in CBC mode
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Two identical blocks of plaintext
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Encrypts identical plaintexts
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❺ No patterns within ciphertext
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❻ No patterns between ciphertexts
+  prefs: []
+  type: TYPE_NORMAL
+- en: The IV is needed for encryption and decryption. Like ciphertext and the key,
+    the IV is an input to the decryption cipher and must be saved. Plaintext is unrecoverable
+    if it is lost.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`Fernet` encrypts data with AES in CBC mode. By using `Fernet`, you don’t have
+    to bother generating or saving the IV. `Fernet` automatically generates a suitable
+    IV for each plaintext. The IV is embedded in the fernet token right next to the
+    ciphertext and hash value. `Fernet` also extracts the IV from the token just before
+    ciphertext is decrypted.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Some programmers unfortunately want to hide the IV as if it were a key.
+    Remember, IVs must be saved but are not keys. A key is used to encrypt one or
+    more messages; an IV is used to encrypt one and only one message. A key is secret;
+    an IV is typically kept alongside the ciphertext with no obfuscation. If an attacker
+    gains unauthorized access to the ciphertext, assume they have the IV. Without
+    the key, the attacker effectively still has nothing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: AES runs in many other modes in addition to ECB and CBC. One of these modes,
+    Galois/counter mode (GCM), allows a block cipher like AES to emulate a stream
+    cipher. You’ll see GCM reappear in chapter 6.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Encryption ensures confidentiality.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`Fernet` is a safe and easy way to symmetrically encrypt and authenticate data.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`MultiFernet` makes key rotation less difficult.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Symmetric encryption algorithms use the same key for encryption and decryption.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: AES is your first and probably last choice for symmetric encryption.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '* * *'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 1. The image on the left was obtained from [https://en.wikipedia.org/wiki/ile:Tux.jpg](https://en.wikipedia.org/wiki/File:Tux.jpg).
+    It is attributed to Larry Ewing, [lewing@isc.tamu.edu](mailto:lewing@isc.tamu.edu),
+    and the GIMP. The image on the right was obtained from [https://en.wikipe dia.org/wiki/File:Tux_ecb.jpg](https://en.wikipedia.org/wiki/File:Tux_ecb.jpg).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 2. The image on the left was obtained from [https://en.wikipedia.org/wiki/File:Tux.jpg](https://en.wikipedia.org/wiki/File:Tux.jpg).
+    It is attributed to Larry Ewing, [lewing@isc.tamu.edu](mailto:lewing@isc.tamu.edu),
+    and the GIMP. The image on the right was obtained from [https://en.wikipe dia.org/wiki/File:Tux_ecb.jpg](https://en.wikipedia.org/wiki/File:Tux_ecb.jpg).
+  prefs: []
+  type: TYPE_NORMAL

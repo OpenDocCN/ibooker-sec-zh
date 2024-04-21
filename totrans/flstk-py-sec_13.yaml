@@ -1,0 +1,1144 @@
+- en: 11 OAuth 2
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Registering an OAuth client
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Requesting authorization to protected resources
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Granting authorization without exposing authentication credentials
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Accessing protected resources
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*OAuth 2* is an industry standard authorization protocol defined by the IETF.
+    This protocol, which I refer to as just *OAuth*, enables users to authorize third-party
+    access to protected resources. Most importantly, it allows users do this without
+    exposing their authentication credentials to third parties. In this chapter, I
+    explain the OAuth protocol, walking through it with Alice, Bob, and Charlie. Eve
+    and Mallory both make an appearance as well. I also show you how to implement
+    this protocol with two great tools, Django OAuth Toolkit and `requests-oauthlib`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: You have probably already used OAuth. Have you ever visited a website such as
+    medium.com, where you could “Sign in with Google” or “Log in with Twitter?” This
+    feature, known as *social login*, is designed to simplify account creation. Instead
+    of pestering you for your personal information, these sites ask you for permission
+    to retrieve your personal information from a social media site. Beneath the hood,
+    this is often implemented with OAuth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Before we dive into this subject, I’m going to use an example to establish some
+    vocabulary terms. These terms are defined by the OAuth specification; they appear
+    repeatedly throughout this chapter. When you go to medium.com and Sign in with
+    Google
+  prefs: []
+  type: TYPE_NORMAL
+- en: Your Google account information is the *protected resource*.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: You are the *resource owner*; a resource owner is an entity, usually an end
+    user, with the power to authorize access to a protected resource.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Medium.com is the *OAuth client*, a third-party entity that can access a protected
+    resource when permitted by the resource owner.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Google hosts the *authorization server*, which allows a resource owner to authorize
+    third-party access to a protected resource.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Google also hosts the *resource server*, which guards the protected resource.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: In the real world, resource servers are sometimes called *API*s. In this chapter,
+    I avoid that term because it is overloaded. The authorization server and the resource
+    server almost always belong to the same organization; for small organizations,
+    they are even the same server. Figure 11.1 illustrates the relationships between
+    each of these roles.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH11_F01_Byrne](Images/CH11_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11.1 Google social login via OAuth
+  prefs: []
+  type: TYPE_NORMAL
+- en: Google and third-party sites collaborate by implementing a workflow. This workflow,
+    or *grant type*, is defined by the OAuth specification. In the next section, you’ll
+    learn about this grant type in detail.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.1 Grant types
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'A *grant type* defines how a resource owner grants access to a protected resource.
+    The OAuth specification defines four grant types. In this book, I cover only one,
+    authorization code. This grant type accounts for the overwhelming majority of
+    OAuth use cases; do yourself a favor and don’t focus on the other three for the
+    time being. The following list outlines each one and the use case it accommodates:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Authorization code grants* accommodate websites, mobile applications, and
+    browser-based applications.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Implicit grants* used to be the recommended grant type for mobile and browser-based
+    applications. This grant type has been abandoned.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Password grants* remove the need for an authorization server by requiring
+    the resource owner to provide their credentials through a third party.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Client credentials grants* apply when the resource owner and the third party
+    are the same entity.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: In your job and personal life, you are probably going to see only authorization
+    code grants. Implicit grants are deprecated, password grants are inherently less
+    secure, and the use case for client credentials grants is rare. The next section
+    covers authorization code flow, the lion’s share of OAuth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.1.1 Authorization code flow
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Authorization* *code flow* is implemented by a well-defined protocol. Before
+    this protocol can begin, the third party must first register as an OAuth client
+    of the authorization server. OAuth client registration establishes several prerequisites
+    for the protocol, including a name and credentials for the OAuth client. Each
+    participant in the protocol uses this information at various phases of the protocol.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The authorization code flow protocol is broken into four phases:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Requesting authorization
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Granting authorization
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Performing token exchange
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Accessing protected resources
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The first of four phases begins when a resource owner visits the OAuth client
+    site.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Requesting authorization
+  prefs: []
+  type: TYPE_NORMAL
+- en: During this phase of the protocol, illustrated in figure 11.2, the OAuth client
+    requests authorization from the resource owner by sending them to the authorization
+    server. With an ordinary link, an HTTP redirect, or JavaScript, the site directs
+    the resource owner to an *authorization URL*. This is the address of an authorization
+    form hosted by the authorization server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH11_F02_Byrne](Images/CH11_F02_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11.2 The resource owner visits a third-party site; the site directs them
+    to an authorization form, hosted by an authorization server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This next phase begins when the authorization server renders an authorization
+    form to the resource owner.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Granting authorization
+  prefs: []
+  type: TYPE_NORMAL
+- en: During this phase of the protocol, illustrated in figure 11.3, the resource
+    owner grants access to the OAuth client through the authorization server. The
+    authorization form is responsible for ensuring that the resource owner makes an
+    informed decision. The resource owner then grants access by submitting the authorization
+    form.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Next, the authorization server sends the resource owner back to where they came
+    from, the OAuth client site. This is done by redirecting them to a URL known as
+    a *redirect URI*. The third party establishes the redirect URI beforehand, during
+    the OAuth client registration process.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH11_F03_Byrne](Images/CH11_F03_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11.3 The resource owner grants authorization by submitting the authorization
+    form; the authorization server redirects the owner back to the third-party site
+    with an authorization code.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The authorization server will append an important query parameter to the redirect
+    URI; this query parameter is named `code`, as in *authorization code*. In other
+    words, the authorization server transfers the authorization code to the OAuth
+    client by reflecting it off the resource owner.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The third phase begins when the OAuth client parses the authorization code from
+    the inbound redirect URI.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Performing Token exchange
+  prefs: []
+  type: TYPE_NORMAL
+- en: During this phase, depicted in figure 11.4, the OAuth client exchanges the authorization
+    code for an access token. The code is then sent straight back to where it came
+    from, the authorization server, along with OAuth client registration credentials.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The authorization server validates the code and OAuth client credentials. The
+    code must be familiar, unused, recent, and associated with the OAuth client identifier.
+    The client credentials must be valid. If each of these criteria are met, the authorization
+    server responds with an access token.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH11_F04_Byrne](Images/CH11_F04_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11.4 After parsing the authorization code from the redirect URI, the
+    OAuth client sends it back to where it came from; the authorization server responds
+    with an access token.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The last phase begins with a request from the OAuth client to the resource server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Accessing protected resources
+  prefs: []
+  type: TYPE_NORMAL
+- en: During this phase, shown in figure 11.5, the OAuth client uses the access token
+    to access a protected resource. This request carries the access token in a header.
+    The resource server is responsible for validating the access token. If the token
+    is valid, the OAuth client is given access to the protected resource.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH11_F05_Byrne](Images/CH11_F05_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11.5 Using the access token, the third-party site requests the protected
+    resource from the resource server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Figure 11.6 illustrates the authorization code flow from start to end.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH11_F06_Byrne](Images/CH11_F06_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11.6 Our OAuth authorization code flow
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next section, I walk through this protocol again with Alice, Bob, and
+    Charlie. Along the way, I cover it in more technical detail.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.2 Bob authorizes Charlie
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In previous chapters, you made a website for Alice; Bob registered himself as
+    a user of it. During this process, Bob trusted Alice with his personal information—namely,
+    his email. In this section, Alice, Bob, and Charlie collaborate on a new workflow.
+    Alice turns her website into an authorization server and resource server. Charlie’s
+    new website asks Bob for permission to retrieve Bob’s email from Alice’s website.
+    Bob authorizes Charlie’s site without ever exposing his authentication credentials.
+    In the next section, I’ll show you how to implement this workflow.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This workflow is an implementation of the authorization grant type covered
+    previously. It begins with Charlie as he builds a new website in Python. Charlie
+    decides to integrate with Alice’s site via OAuth. This provides the following
+    benefits:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Charlie can ask Bob for his email address.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Bob is more likely to share his email address because he doesn’t need to type
+    it.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Charlie avoids building workflows for user registration and email confirmation.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Bob has one less password to remember.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Charlie doesn’t need to assume the responsibility of managing Bob’s password.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Bob saves time.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: As a superuser of authorize.alice.com, Alice registers an OAuth client for Charlie
+    via the administration console of her site. Figure 11.7 illustrates the OAuth
+    client registration form. Take a minute to observe how many familiar fields this
+    form has. This form contains fields for the OAuth client credentials, name, and
+    redirect URI. Notice that the Authorization Code option is selected for the Authorization
+    Grant Type field.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH11_F07_Byrne](Images/CH11_F07_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11.7 An OAuth client registration form in the Django administration console
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.2.1 Requesting authorization
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Bob visits Charlie’s site, client.charlie.com. Bob is unfamiliar to the site,
+    so it renders the link that follows. The address of this link is an authorization
+    URL; it is the address of an authorization form hosted by the authorization server,
+    authorize.alice.com. The first two query parameters of the authorization URL are
+    required, shown in bold font. The `response_type` parameter is set to `code`,
+    as in *authorization code*. The second parameter is Charlie’s OAuth client ID:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Required query parameters
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ An optional security feature
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `state` parameter is an optional security feature. Later, after Bob authorizes
+    Charlie’s site, Alice’s authorization server is going to echo this parameter back
+    to Charlie’s site by appending it to the redirect URI. I explain why later, at
+    the end of this section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.2.2 Granting authorization
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Bob navigates to authorize.alice.com by clicking the link. Bob happens to be
+    logged in, so authorize.alice.com doesn’t bother authenticating him; the authorization
+    form renders immediately. The purpose of this form is to ensure that Bob makes
+    an informed decision. The form asks Bob if he wants to give his email to Charlie’s
+    site, using the name of Charlie’s OAuth client.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Bob grants authorization by submitting the authorization form. Alice’s authorization
+    server then redirects him back to Charlie’s site. The redirect URI contains two
+    parameters. The authorization code is carried by the code parameter, shown in
+    bold; Charlie’s site is going to exchange this for an access token later. The
+    value of the state parameter matches the value that arrived via the authorization
+    URL:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Redirect URI
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Authorization code
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Echoes state back to Charlie’s site
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.2.3 Token exchange
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Charlie’s site begins this phase by parsing the code from the redirect URI and
+    posting it straight back to Alice’s authorization server. Charlie does this by
+    calling a service known as the *token endpoint*. Its purpose is to validate the
+    inbound authorization code and exchange it for an access token. This token is
+    delivered in the body of the token endpoint response.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The access token is important; any person or machine with this token is permitted
+    to request Bob’s email from Alice’s resource server without his username or password.
+    Charlie’s site doesn’t even let Bob see the token. Because this token is so important,
+    it is limited by *what* it can be used for and *how long* it can be used. These
+    limitations are designated by two additional fields in the token endpoint response:
+    `scope` and `expires_in`.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The token endpoint response body is shown next. The access token, scope, and
+    expiry are shown in bold. This response indicates Alice’s authorization server
+    is allowing Charlie’s site to access Bob’s email with an access token valid for
+    36,000 seconds (10 hours):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Designates power
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Limits power by scope and time
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.2.4 Accessing protected resources
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Finally, Charlie’s site uses the access token to retrieve Bob’s email from
+    Alice’s resource server. This request carries the access token to the resource
+    server via an `Authorization` request header. The access token is shown here in
+    bold:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: It is the responsibility of Alice’s resource server to validate the access token.
+    This means that the protected resource, Bob’s email, is within scope and that
+    the access token has not expired. Finally, Charlie’s site receives a response
+    containing Bob’s email. Most importantly, Charlie’s site did this without Bob’s
+    username or password.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Blocking Mallory
+  prefs: []
+  type: TYPE_NORMAL
+- en: Do you remember when Charlie’s site appended a state parameter to the authorization
+    URL? And then Alice’s authorization server echoed it back by appending the exact
+    same parameter to the redirect URI? Charlie’s site makes each authorization URL
+    unique by setting the state parameter to a random string. When the string returns,
+    the site compares it to a local copy of what was sent. If the values match, Charlie’s
+    site concludes that Bob is simply returning from Alice’s authorization server,
+    as expected.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the state value from the redirect URI does not match the state value of the
+    authorization URL, Charlie’s site will abort the flow; it won’t even bother trying
+    to exchange the authorization code for an access token. Why? Because this can’t
+    happen if Bob is getting the redirect URI from Alice. Instead, this can happen
+    only if Bob is getting the redirect URI from someone else, like Mallory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose Alice and Charlie didn’t support this optional security check. Mallory
+    registers herself as a user of Alice’s website. She then requests the authorization
+    form from Alice’s server. Mallory submits the authorization form, granting Charlie’s
+    site permission to access the email address of her account. But instead of following
+    the redirect URI back to Charlie’s site, she sends the redirect URI to Bob in
+    a malicious email or chat message. Bob takes the bait and follows Mallory’s redirect
+    URI. This takes him to Charlie’s site with a valid authorization code for Mallory’s
+    account.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Charlie’s site exchanges Mallory’s code for a valid access token. It uses the
+    access token to retrieve Mallory’s email address. Mallory is now in a position
+    to trick Charlie and Bob. First, Charlie’s site may incorrectly assign Mallory’s
+    email address to Bob. Second, Bob may get the wrong impression about his own personal
+    information from Charlie’s site. Now imagine how serious this would be if Charlie’s
+    site were requesting other forms of personal information—health records, for example.
+    Figure 11.8 illustrates Mallory’s attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH11_F08_Byrne](Images/CH11_F08_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11.8 Mallory tricks Bob into submitting her authorization code to Charlie.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this section, you watched Alice, Bob, and Charlie collaborate on a workflow
+    while resisting Mallory. This workflow covered client registration, authorization,
+    token exchange, and resource access. In the next two sections, you’ll learn how
+    to build this workflow with two new tools, Django OAuth Toolkit and `requests-oauthlib`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.3 Django OAuth Toolkit
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In this section, I’ll show you how to convert any Django application server
+    into an authorization server, resource server, or both. Along the way, I’ll introduce
+    you to an important OAuth construct known as *scopes*. Django OAuth Toolkit (DOT)
+    is a great library for implementing authorization and resource servers in Python.
+    DOT brings OAuth to Django with a collection of customizable views, decorators,
+    and utilities. It also plays nicely with `requests-oauthlib`; both frameworks
+    delegate the heavy lifting to a third component called `oauthlib`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note `oauthlib` is a generic OAuth library with no web framework dependencies;
+    this allows it to be used from within all kinds of Python web frameworks, not
+    just Django.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'From within your virtual environment, install DOT with the following command:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, install the `oauth2_provider` Django app in the `settings` module of
+    your Django project. This line of code, shown in bold, belongs in the authorization
+    and resource server, not OAuth client applications:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Turns your Django project into an authorization server, resource server, or
+    both
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Use the following command to run migrations for the installed `oauth2_provider`
+    app. The tables created by these migrations store grant codes, access tokens,
+    and the account details of registered OAuth clients:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Add the following path entry in urls.py. This includes a dozen endpoints responsible
+    for OAuth client registration, authorization, token exchange, and more:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: Restart the server and log in to the admin console at /admin/. The admin console
+    welcome page has a new menu for Django OAuth Toolkit in addition to one for authentication
+    and authorization. From this menu, administrators manage tokens, grants, and OAuth
+    clients.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note In the real world, the authorization server and the resource server almost
+    always belong to the same organization. For small- to medium-sized implementations
+    (e.g., not Twitter or Google), the authorization server and resource server are
+    the same server. In this section, I cover their roles separately but combine their
+    implementations for the sake of simplicity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next two sections, I break down the responsibilities of your authorization
+    server and your resource server. These responsibilities include support for an
+    important OAuth feature known as *scopes*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.3.1 Authorization server responsibilities
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'DOT provides web UIs, configuration settings, and utilities for handling the
+    responsibilities of an authorization server. These responsibilities include the
+    following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defining scope
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Authenticating resource owners
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Generating redirect URIs
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Managing grant codes
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Defining scope
+  prefs: []
+  type: TYPE_NORMAL
+- en: Resource owners usually want fine-grained control over third-party access. For
+    example, Bob may be comfortable sharing his email with Charlie but not his chat
+    history or health records. OAuth accommodates this need with scopes. *Scopes*
+    require each participant of the protocol to coordinate; they are defined by an
+    authorization server, requested by an OAuth client, and enforced by a resource
+    server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Scopes are defined in the `settings` module of your authorization server with
+    the `SCOPES` setting. This setting is a collection of key-value pairs. Each key
+    represents what the scope means to a machine; each value represents what the scope
+    means to a person. The keys end up in query parameters for authorization URLs
+    and redirect URIs; the values are displayed to resource owners in the authorization
+    form.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Ensure that your authorization server is configured with an email scope, as
+    shown in bold in the following code. Like other DOT configuration settings, `SCOPES`
+    is conveniently namespaced under `OAUTH2_PROVIDER`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Django OAuth Toolkit configuration namespace
+  prefs: []
+  type: TYPE_NORMAL
+- en: Scopes are optionally requested by the OAuth client. This happens by appending
+    an optional query parameter to the authorization URL. This parameter, named `scope`,
+    accompanies the `client_id` and `state` parameters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'If the authorization URL has no `scope` parameter, the authorization server
+    falls back to a set of default scopes. Default scopes are defined by the `DEFAULT_SCOPES`
+    setting in your authorization server. This setting represents a list of scopes
+    to use when an authorization URL has no scope parameter. If unspecified, this
+    setting defaults to everything in `SCOPES`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: Authenticating resource owners
+  prefs: []
+  type: TYPE_NORMAL
+- en: Authentication is a prerequisite for authorization; the server must therefore
+    challenge the resource owner for authentication credentials if they are not already
+    logged in. DOT avoids reinventing the wheel by leveraging Django authentication.
+    Resource owners authenticate with the same regular login page they use when entering
+    the site directly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Only one additional hidden input field must be added to your login page. This
+    field, shown here in bold, lets the server redirect the user to the authorization
+    form after the user logs in:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Necessary, but covered in chapter 16
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Dynamically rendered as username and password form fields
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Hidden HTML field
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generating redirect URIs
+  prefs: []
+  type: TYPE_NORMAL
+- en: DOT generates redirect URIs for you but will accommodate HTTP and HTTPS by default.
+    Pushing your system to production this way is a very bad idea.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Every production redirect URI should use HTTPS, not HTTP. Enforce this
+    once in the authorization server rather than in each OAuth client.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose Alice’s authorization server redirects Bob back to Charlie’s site with
+    a redirect URI over HTTP. This reveals both the code and state parameters to Eve,
+    a network eavesdropper. Eve is now in a position to potentially exchange Bob’s
+    authorization code for an access token before Charlie does. Figure 11.9 illustrates
+    Eve’s attack. She, of course, needs Charlie’s OAuth client credentials to pull
+    this off.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH11_F09_Byrne](Images/CH11_F09_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 11.9 Bob receives an authorization code from Alice; Eve intercepts the
+    code and sends it back to Alice before Charlie can.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Add the `ALLOWED_REDIRECT_URI_SCHEMES` setting, shown here in bold, to the
+    `settings` module to enforce HTTPS for all redirect URIs. This setting is a list
+    of strings representing which protocols the redirect URI is allowed to have:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: Managing grant codes
+  prefs: []
+  type: TYPE_NORMAL
+- en: Every grant code has an expiry. Resource owners and OAuth clients are responsible
+    for operating within this time constraint. An authorization server will not exchange
+    an expired grant code for an access token. This is a deterrent for attackers and
+    a reasonable obstacle for resource owners and OAuth clients. If an attacker manages
+    to intercept a grant code, they must be able to exchange it for an access token
+    quickly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Use the `AUTHORIZATION_CODE_EXPIRE_SECONDS` setting to configure grant code
+    expiration. This setting represents the time to live, in seconds, for authorization
+    codes. This setting is configured in, and enforced by, the authorization server.
+    The default value for this setting is 1 minute; the OAuth specification recommends
+    a maximum of 10 minutes. The following example configures DOT to reject any grant
+    code older than 10 seconds:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: DOT provides an administration console UI for grant code management. The grants
+    page is accessed from the admin console welcome page by clicking the Grants link
+    or by navigating to /admin/oauth2_provider/grant/. Administrators use this page
+    to search for and manually delete grant codes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Administrators navigate to the grant code detail page by clicking any grant.
+    This page lets administrators view or modify grant code properties such as expiry,
+    redirect URI, or scope.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.3.2 Resource server responsibilities
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'As with authorization server development, DOT provides web UIs, configuration
+    settings, and utilities for handling the responsibilities of a resource server.
+    These responsibilities include the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Managing access tokens
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Serving protected resources
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Enforcing scope
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Managing access tokens
+  prefs: []
+  type: TYPE_NORMAL
+- en: Like authorization codes, access tokens have an expiry as well. Resource servers
+    enforce this expiry by rejecting any request with an expired access token. This
+    won’t prevent the access token from falling into the wrong hands but can limit
+    the damage if this happens.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Use the `ACCESS_TOKEN_EXPIRE_SECONDS` setting to configure the time to live
+    for each access token. The default value, shown here in bold, is 36,000 seconds
+    (10 hours). In your project, this value should be as short as possible but long
+    enough to let OAuth clients do their jobs:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: DOT provides a UI for access token administration that is analogous to the page
+    for grant-code administration. The access tokens page can be accessed from the
+    admin console welcome page by clicking the Access Tokens link or by navigating
+    to /admin/oauth2_provider/accesstoken/. Administrators use this page to search
+    for and manually delete access tokens.
+  prefs: []
+  type: TYPE_NORMAL
+- en: From the access tokens page, administrators navigate to the access token detail
+    page. Administrators use the access token detail page to view and modify access
+    token properties such as expiry.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Serving protected resources
+  prefs: []
+  type: TYPE_NORMAL
+- en: Like unprotected resources, protected resources are served by views. Add the
+    view definition in listing 11.1 to your resource server. Notice that `EmailView`
+    extends `ProtectedResourceView`, shown in bold. This ensures that the email of
+    a user can be accessed by only an authorized OAuth client in possession of a valid
+    access token.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 11.1 Serving protected with ProtectedResourceView
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Requires a valid access token
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Called by OAuth clients like client.charlie.com
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Serves protected resources like Bob’s email
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the OAuth client requests a protected resource, it certainly doesn’t send
+    the user’s HTTP session ID. (In chapter 7, you learned that the session ID is
+    an important secret between one user and one server.) How, then, does the resource
+    server determine which user the request applies to? It must work backward from
+    the access token. DOT performs this step transparently with `OAuth2TokenMiddleware`.
+    This class infers the user from the access token and sets `request.user` as if
+    the protected resource request comes directly from the user.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Open your settings file and add `OAuth2TokenMiddleware`, shown here in bold,
+    to `MIDDLEWARE`. Make sure you place this component after `SecurityMiddleware`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: '`OAuth2TokenMiddleware` resolves the user with the help of `OAuth2Backend`,
+    shown next in bold. Add this component to `AUTHENTICATION_BACKENDS` in the `settings`
+    module. Make sure the built-in `ModelBackend` is still intact; this component
+    is necessary for end-user authentication:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Authenticates users
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Authenticates OAuth clients
+  prefs: []
+  type: TYPE_NORMAL
+- en: Enforcing scope
+  prefs: []
+  type: TYPE_NORMAL
+- en: DOT resource servers enforce scope with `ScopedProtectedResourceView`. Views
+    inheriting from this class don’t just require a valid access token; they also
+    make sure the protected resource is within scope of the access token.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 11.2 defines `ScopedEmailView`, a child of `ScopedProtectedResourceView`.
+    Compared with `EmailView` in listing 11.1, `ScopedEmailView` has only two small
+    differences, shown here in bold. First, it descends from `ScopedProtectedResourceView`
+    instead of `ProtectedResourceView`. Second, the `required_scopes` property defines
+    which scopes to enforce.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 11.2 Serving protected with ScopedProtectedResourceView
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Requires a valid access token and enforces scope
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Specifies which scopes to enforce
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'It is often useful to divide scopes into two categories: read or write. This
+    gives resource owners even more fine-grained control. For example, Bob might grant
+    Charlie read access to his email and write access to his name. This approach has
+    one unfortunate side effect: it doubles the number of scopes. DOT avoids this
+    problem by natively supporting the notion of read and write scope.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: DOT resource servers use `ReadWriteScopedResourceView` to enforce read and write
+    scope automatically. This class goes one step beyond `ScopedProtectedResourceView`
+    by validating the scope of the inbound access token against the method of the
+    request. For example, the access token must have read scope if the request method
+    is `GET`; it must have write scope if the request method is `POST` or `PATCH`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 11.3 defines `ReadWriteEmailView`, a child of `ReadWriteScopedResourceView`.
+    `ReadWriteEmailView` allows OAuth clients to read and write a resource owner’s
+    email by using a `get` method and a `patch` method, respectively. The inbound
+    access token must be scoped with read and email to make use of the `get` method;
+    it must be scoped with write and email to make use of the `patch` method. The
+    read and write scopes do not appear in `required_scopes`; they are implicit.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 11.3 Serving protected with ReadWriteScopedResourceView
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Requires read and email scope
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Requires write and email scope
+  prefs: []
+  type: TYPE_NORMAL
+- en: Function-based views
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'DOT provides function decorators for function-based views. The `@protected_
+    resource` decorator, shown here in bold, is functionally analogous to `ProtectedResourceView`
+    and `ScopedProtectedResourceView`. By itself, this decorator ensures that the
+    caller is in possession of an access token. The `scopes` argument ensures that
+    the access token has sufficient scope:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Requires a valid access token
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Requires a valid access token with email scope
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `rw_protected_resource` `decorator`, shown here in bold, is functionally
+    analogous to `ReadWriteScopedResourceView`. A GET request to a view decorated
+    with `rw_protected_resource` must carry an access token with read scope. A POST
+    request to the same view must carry an access token with write scope. The `scopes`
+    argument specifies additional scopes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ GET requires read scope, POST requires write scope
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ GET requires read and email scope, POST requires write and email scope
+  prefs: []
+  type: TYPE_NORMAL
+- en: Most programmers who work with OAuth primarily do so from the client side. People
+    like Charlie are more common than people like Alice; there are naturally more
+    OAuth clients than OAuth servers. In the next section, you’ll learn how to implement
+    an OAuth client with `requests-oauthlib`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.4 requests-oauthlib
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '`requests-oauthlib` is a fantastic library for implementing OAuth clients in
+    Python. This library glues together two other components: the `requests` package
+    and `oauthlib`. From within your virtual environment, run the following command
+    to install `requests_oauthlib`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Declare some constants in your third-party project, starting with the client-registration
+    credentials. In this example, I store the client secret in Python. In a production
+    system, your client secret should be stored safely in a key management service
+    instead of your code repository:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, define the URLs for the authorization form, token exchange endpoint,
+    and protected resource:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: Domain names
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this chapter, I use domain names such as authorize.alice.com and client.charlie
+    .com to avoid confusing you with ambiguous references to localhost. You don’t
+    have to do this in your local development environment in order to follow along;
+    use localhost and you will be fine.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Just remember to ensure that your third-party server is bound to a different
+    port than your authorization server. The port of your server is specified via
+    the `bind` argument, shown here in bold:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Binds server to port 8001
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next section, you’ll use these configuration settings to request authorization,
+    obtain an access token, and access protected resources.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 11.4.1 OAuth client responsibilities
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '`requests-oauthlib` handles OAuth client responsibilities with `OAuth2Session`,
+    the Swiss Army knife of Python OAuth clients. This class is designed to automate
+    the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Generating the authorization URL
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Exchanging the authorization code for an access token
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Requesting a protected resource
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Revoking access tokens
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Add the view from listing 11.4 to your third-party project. `WelcomeView` looks
+    for an access token in the user’s HTTP session. It then requests one of two things:
+    authorization from the user, or their email from the resource server. If no access
+    token is available, a welcome page is rendered with an authorization URL; if an
+    access token is available, a welcome page is rendered with the user’s email.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 11.4 OAuth client WelcomeView
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Requests authorization
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Accesses a protected resource
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`OAuth2Session` is used to generate the authorization URL or retrieve the protected
+    resource. Notice that a copy of the state value is stored in the user’s HTTP session;
+    the authorization server is expected to echo this value back at a later phase
+    in the protocol.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Next, add the following welcome page template to your third-party project.
+    This template renders the user’s email if it is known. If not, an authorization
+    link is rendered (shown in bold):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Requests authorization
+  prefs: []
+  type: TYPE_NORMAL
+- en: Requesting authorization
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are many ways to request authorization. In this chapter, I do this with
+    a link for the sake of simplicity. Alternatively, you can do this with a redirect.
+    This redirect can happen in JavaScript, a view, or a custom middleware component.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Next, add the view in listing 11.5 to your third-party project. Like `WelcomeView`,
+    `OAuthCallbackView` begins by initializing `OAuth2Session` from the session state.
+    This view delegates token exchange to `OAuth2Session`, giving it the redirect
+    URI and client secret. The access token is then stored in the users’ HTTP session,
+    where `WelcomeView` can access it. Finally, the user is redirected back to the
+    welcome page.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 11.5 OAuth client OAuthCallbackView
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Requests authorization
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Redirects the user back to the welcome page
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `fetch_token` method performs a lot of work for `OAuthCallbackView`. First,
+    this method parses the code and state parameters from the redirect URI. It then
+    compares the inbound state parameter against the state pulled from the user’s
+    HTTP session. If both values don’t match, a `MismatchingStateError` is raised,
+    and the authorization code is never used. If both state values do match, the `fetch_token`
+    method sends the authorization code and client secret to the token exchange endpoint.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Revoking tokens
+  prefs: []
+  type: TYPE_NORMAL
+- en: When you’re done with an access token, there is generally no reason to hold
+    on to it. You don’t need it anymore, and it can be used against you only if it
+    falls into the wrong hands. For this reason, it is usually a good idea to revoke
+    every access token after it has served its purpose. Once revoked, an access token
+    cannot be used to access protected resources.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'DOT accommodates token revocation with a specialized endpoint. This endpoint
+    expects an access token and the OAuth client credentials. The following code demonstrates
+    how to access token revocation. Notice that the resource server responds to a
+    subsequent request with a 403 status code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE28]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Revokes access token
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Access subsequently denied
+  prefs: []
+  type: TYPE_NORMAL
+- en: Large OAuth providers often let you manually revoke access tokens issued for
+    your personal data. For example, visit [https://myaccount.google.com/permissions](https://myaccount.google.com/permissions)
+    to view a list of all valid access tokens issued for your Google account. This
+    UI lets you review the details of, and revoke, each access token. For the sake
+    of your own privacy, you should revoke access to any client application you do
+    not plan to use soon.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In this chapter, you learned a lot about OAuth. You learned how this protocol
+    works from the perspective of all four roles: resource owner, OAuth client, authorization
+    server, and resource server. You also got exposure to Django OAuth Toolkit and
+    `requests-oauthlib`. These tools are very good at their jobs, well-documented,
+    and play nicely with each other.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: You can share your data without sharing your password.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Authorization code flow is by far the most commonly used OAuth grant type.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: An authorization code is exchanged for an access token.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Reduce risk by limiting access tokens by time and scope.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Scope is requested by an OAuth client, defined by an authorization server, and
+    enforced by a resource server.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

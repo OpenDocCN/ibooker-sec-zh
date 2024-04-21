@@ -1,0 +1,568 @@
+- en: 16 When and where cryptography fails
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: General issues you can run into when using cryptography
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The mantras to follow to bake good cryptography
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The dangers and responsibilities of a cryptography practitioner
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Greetings, traveler; you’ve come a long way. While this is the last chapter,
+    it’s all about the journey, not the end. You’re now equipped with the gear and
+    skills required to step into the real world of cryptography. What’s left is for
+    you to apply what you’ve learned.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Before parting ways, I’d like to give you a few hints and tools that’ll be
+    useful for what follows. The quests you’ll face often follow the same pattern:
+    it starts with a challenge, launching you on a pursuit for an existing cryptographic
+    primitive or protocol. From there, you’ll look for a standard and a good implementation,
+    and then you’ll make use of it in the best way you can. That’s if everything goes
+    according to plan. . . .'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Before we part
+  prefs: []
+  type: TYPE_NORMAL
+- en: Someone who seeks to bridge the gap between theory and practice will have to
+    slay many dragons. Here’s your sword—take it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](../Images/16_001_UN01.jpg)'
+  prefs: []
+  type: TYPE_IMG
+- en: 16.1 Finding the right cryptographic primitive or protocol is a boring job
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: You’re facing unencrypted traffic, or a number of servers that need to authenticate
+    one another, or some secrets that need to be stored without becoming single points
+    of failure. What do you do?
+  prefs: []
+  type: TYPE_NORMAL
+- en: You could use TLS or Noise (mentioned in chapter 9) to encrypt your traffic.
+    You could set up a public key infrastructure (mentioned in chapter 9) to authenticate
+    servers via the signature of some certificate authority, and you could distribute
+    a secret using a threshold scheme (covered in chapter 8) to avoid the compromise
+    of one secret to lead to the compromise of the whole system. These would be fine
+    answers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the problem you’re facing is a common one to have, chances are that you can
+    simply find an existing cryptographic primitive or protocol that directly solves
+    your use case. This book gives you a good idea of what the standard primitives
+    and common protocols are, so at this point, you should have a good idea of what’s
+    at your disposal when faced with a cryptographic problem.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cryptography is quite an interesting field, going all over the place as new
+    discoveries and primitives are invented and proposed. While you might be tempted
+    to explore exotic cryptography to solve your problem, your responsibility is to
+    remain conservative. The reason is that *complexity is the enemy of security*.
+    Whenever you do something, it is much easier to do it as simply as possible. Too
+    many vulnerabilities have been introduced by trying to be extravagant. This concept
+    has been dubbed *boring cryptography* by Bernstein in 2015, and has been the inspiration
+    behind the naming of Google’s TLS library, BoringSSL.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Cryptographic proposals need to withstand many years of careful scrutiny before
+    they become plausible candidates for field use. This is especially when the proposal
+    is based on novel mathematical problems*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: —Rivest et al. (“Responses to NIST's proposal,” 1992)
+  prefs: []
+  type: TYPE_NORMAL
+- en: What if you can’t find a cryptographic primitive or protocol that solves your
+    problem? This is where you must step into the world of *theoretical* cryptography,
+    which is obviously not the subject of this book. I can merely give you recommendations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The first recommendation I will give you is the free book *A Graduate Course
+    in Applied Cryptography*, written by Dan Boneh and Victor Shoup, and available
+    at [https://cryptobook.us](https://cryptobook.us). This book provides excellent
+    support that covers everything I’ve covered in this book but in much more depth.
+    Dan Boneh also has an amazing online course, “Cryptography I,” also available
+    for free at [https://www.coursera.org/learn/ crypto](https://www.coursera.org/learn/crypto).
+    It is a much more gentle introduction to theoretical cryptography. If you’d like
+    to read something halfway between this book and the world of theoretical cryptography,
+    I can’t recommend enough the book, *Serious Cryptography: A Practical Introduction
+    to Modern Encryption* (No Starch Press, 2017) by Jean-Philippe Aumasson.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now, let’s imagine that you *do* have an existing cryptographic primitive or
+    protocol that solves your solution. A cryptographic primitive or protocol is still
+    very much of a theoretical thing. Wouldn’t it be great if it had a practical standard
+    that you could use right away?
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](../Images/16_001_UN02.jpg)'
+  prefs: []
+  type: TYPE_IMG
+- en: 16.2 How do I use a cryptographic primitive or protocol? Polite standards and
+    formal verification
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: You realize that a solution exists that meets your needs, now does it have a
+    standard? Without a standard, a primitive is often proposed without consideration
+    for its real-world use. Cryptographers often don’t think about the different pitfalls
+    of using their primitive or protocol and the details of implementing them. *Polite
+    cryptography* is what Riad S. Wahby once called standards that care about their
+    implementation and leave little room for implementers to shoot themselves in the
+    foot.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*The poor user is given enough rope with which to hang himself—something a
+    standard should not do*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: —Rivest et al. (“Responses to NIST's proposal,” 1992)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A polite standard is a specification that aims to address all edge cases and
+    potential security issues by providing safe and easy-to-use interfaces to implement,
+    as well as good guidance on how to use the primitive or protocol. In addition,
+    good standards have accompanying test vectors: lists of matching inputs and outputs
+    that you can feed to your implementation to test its correctness.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unfortunately, not all standards are “polite,” and the cryptographic pitfalls
+    they create are what make most of the vulnerabilities I talk about in this book.
+    Sometimes standards are too vague, lack test vectors, or try to do too much at
+    the same time. For example, *cryptography agility* is the term used to specify
+    the flexibility of a protocol in terms of cryptographic algorithms it supports.
+    Supporting different cryptographic algorithms can give a standard an edge because
+    sometimes one algorithm gets broken and deprecated while others don’t. In such
+    a situation, an inflexible protocol prevents clients and services from easily
+    moving on. On the other hand, too much agility can also strongly affect the complexity
+    of a standard, sometimes even leading to vulnerabilities, as the many downgrade
+    attacks on TLS can attest.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unfortunately, more often than cryptographers are willing to admit, you will
+    run into trouble when your problem either meets an edge case that the mainstream
+    primitives or protocols don’t address, or when your problem doesn’t match a standardized
+    solution. For this reason, it is extremely common to see developers creating their
+    own mini-protocols or mini-standards. This is when trouble starts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'When wrong assumptions are made about the primitive’s threat model (what it
+    protects against) or about its composability (how it can be used within a protocol),
+    breakage happens. These context-specific issues are amplified by the fact that
+    cryptographic primitives are often built in a silo, where the designer did not
+    necessarily think about all the problems that could arise once the primitive is
+    used in a number of different ways or within another primitive or protocol. I
+    gave many examples of this: X25519 breaking in edge cases protocols (chapter 11),
+    signatures assumed to be unique (chapter 7), and ambiguity in who is communicating
+    to whom (chapter 10). It’s not necessarily your fault! The developers have outsmarted
+    the cryptographers, revealing pitfalls that no one knew existed. That’s what happened.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you ever find yourself in this type of situation, the go-to tool of a cryptographer
+    is pen-and-paper proof. This is not quite helpful for us, the practitioners, as
+    we either don’t have the time to do that work (it really takes a lot of time)
+    or even the expertise. We’re not helpless, though. We can use computers to facilitate
+    the task of analyzing a mini-protocol. This is called *formal verification*, and
+    it can be a wonderful use of your time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Formal verification allows you to write your protocol in some intermediate
+    language and test some properties on it. For example, the *Tamarin protocol prover*
+    (see figure 16.1) is a formal verification tool that has been (and is) used in
+    order to find subtle attacks in many different protocols. To learn more about
+    this, see the papers “Prime, Order Please! Revisiting Small Subgroup and Invalid
+    Curve Attacks on Protocols using Diffie-Hellman” (2019) and “Seems Legit: Automated
+    Analysis of Subtle Attacks on Protocols that Use Signatures” (2019).'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](../Images/16_01.jpg)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 16.1 The Tamarin protocol prover is a free formal verification tool that
+    you can use to model a cryptographic protocol and find attacks on it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The other side of the coin is that it is often hard to use formal verification
+    tools. The first step is to understand how to translate a protocol into the language
+    and the concepts used by the tool, which is often not straightforward. After having
+    described a protocol in a formal language, you still need to figure out what you
+    want to prove and how to express it in the formal language.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is not uncommon to see a proof that actually proved the wrong things, so
+    one can even ask who verifies the formal verification? Some promising research
+    in this area is aimed at making it easier for developers to formally verify their
+    protocols. For example, the tool Verifpal ([https://verifpal.com](https://verifpal.com))
+    trades off soundness (being able to find all attacks) for ease of use.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The KRACK attack
+  prefs: []
+  type: TYPE_NORMAL
+- en: It does happen that critical differences are made when writing a formal description
+    of a protocol as compared to the actual protocol being implemented, which then
+    leads to gaps and real-world attacks. This is what happened in 2017, when the
+    KRACK attack ([https://krackattacks.com](https://krackattacks.com)) broke the
+    Wi-Fi protocol WPA2, even though it had been previously formally verified.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You can also use formal verification to verify a cryptographic primitive’s security
+    proofs using formal verification tools like Coq, CryptoVerif, and ProVerif, and
+    even to generate “formally verified” implementations in different languages (see
+    projects like HACL*, Vale, and fiat-crypto, which implement mainstream cryptographic
+    primitives with verified properties like correctness, memory safety, and so on).
+    That being said, formal verification is not a foolproof technique; gaps between
+    the paper protocol and its formal description or between the formal description
+    and the implementation will always exist and appear innocuous until found to be
+    fatal.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Studying how other protocols fail is an excellent way of avoiding the same mistakes.
+    The [cryptopals.com](http://cryptopals.com) or [cryptohack.org](http://cryptohack.org)
+    challenges are a great way to learn about what can go wrong in using and composing
+    cryptographic primitives and protocols. Bottom line—you need to thoroughly understand
+    what you’re using! If you are building a mini-protocol, then you need to be careful
+    and either formally verify that protocol or ask experts for help. OK, we have
+    a standard, or something that looks like it, now who’s in charge of implementing
+    that?
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](../Images/16_UN03.jpg)'
+  prefs: []
+  type: TYPE_IMG
+- en: 16.3 Where are the good libraries?
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: You’re one step closer to solving your problem. You know the primitive or protocol
+    you want to use, and you have a standard for it. At the same time, you’re also
+    one step further away from the specification, which means you might create bugs.
+    But first, where’s the code?
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You look around, and you see that there are many libraries or frameworks available
+    for you to use. That’s a good problem to have. But still, which library do you
+    pick? Which is most secure? This is a hard question to answer. Some libraries
+    are well-respected, and I’ve listed some in this book: Google’s Tink, libsodium,
+    cryptography.io, etc.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sometimes, though, it is hard to find a good library to use. Perhaps the programming
+    language you’re using doesn’t have that much support for cryptography, or perhaps
+    the primitive or protocol you want to use doesn’t have that many implementations.
+    In these situations, it is good to be cautious and ask the cryptography community
+    for advice, look at the authors behind the library, and perhaps even ask experts
+    for a code review. For example, the r/crypto community on Reddit is pretty helpful
+    and welcoming; emailing authors directly sometimes works; asking the audience
+    during open-mic sessions at conferences can also have its effect.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you’re in a desperate situation, you might even have to implement the cryptographic
+    primitive or protocol yourself. There are many issues that can arise at this point,
+    and it is a good idea to check for common issues that arise in cryptographic implementations.
+    Fortunately, if you are following a good standard, then mistakes are less easy
+    to make. But still, implementing cryptography is an art, and it is not something
+    you should get yourself into if you can avoid it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One interesting way to test a cryptographic implementation is to use *tooling*.
+    While no single tooling can cater to all cryptographic algorithms, Google’s Wycheproof
+    deserves a mention. Wycheproof is a suite of test vectors that you can use to
+    look for tricky bugs in common cryptographic algorithms like ECDSA, AES-GCM, and
+    so on. The framework has been used to find an impressive number of bugs in different
+    cryptographic implementations. Next, let’s pretend that you did not implement
+    cryptography yourself and found a cryptography library.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](../Images/16_UN04.jpg)'
+  prefs: []
+  type: TYPE_IMG
+- en: '16.4 Misusing cryptography: Developers are the enemy'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'You found some code you can use, you’re one step further, yet you find there
+    are more opportunities to create bugs. This is where most bugs in applied cryptography
+    happen. We’ve seen examples of misusing cryptography in this book again and again:
+    reusing nonces is bad in algorithms like ECDSA (chapter 7) and AES-GCM (chapter
+    4), collisions can arise when the misuse of hash functions happen (chapter 2),
+    parties can be impersonated due to lack of origin authentication (chapter 9),
+    and so on.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*The results show that just 17% of the bugs are in cryptographic libraries
+    (which often have devastating consequences), and the remaining 83% are misuses
+    of cryptographic libraries by individual applications*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: —David Lazar, Haogang Chen, Xi Wang, and Nickolai Zeldovich (“Why does cryptographic
+    software fail? A case study and open problems,” 2014)
+  prefs: []
+  type: TYPE_NORMAL
+- en: In general, the more a primitive or protocol is abstracted, the safer it is
+    to use. For example, AWS offers a Key Management Service (KMS) to host your keys
+    in HSMs and to perform cryptographic computations on-demand. This way, cryptography
+    is abstracted at the application level. Another example is programming languages
+    that provide cryptography within their standard libraries, which are often more
+    trusted than third-party libraries. For example, Golang’s standard library is
+    excellent.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The care given to the usability of a cryptographic library can often be summarized
+    as “treating the developer as the enemy.” This is the approach taken by many cryptographic
+    libraries. For example, Google’s Tink doesn’t let you choose the nonce/IV value
+    in AES-GCM (see chapter 4) in order to avoid accidental nonce reuse. The libsodium
+    library, in order to avoid complexity, only offers a fixed set of primitives without
+    giving you any freedom. Some signature libraries wrap messages within a signature,
+    forcing you to verify the signature before releasing the message, and the list
+    goes on. In this sense, cryptographic protocols and libraries have a responsibility
+    to make their interfaces as misuse resistant as possible.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I’ve said it before, I’ll say it again—make sure you understand the fine print
+    (all of it) for what you’re using. As you’ve seen in this book, misusing cryptographic
+    primitives or protocols can fail in catastrophic ways. Read the standards, read
+    the security considerations, and read the manual and the documentation for your
+    cryptographic library. Is this it? Well, not really. . . . You’re not the only
+    user here.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](../Images/16_UN05.jpg)'
+  prefs: []
+  type: TYPE_IMG
+- en: '16.5 You’re doing it wrong: Usable security'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Using cryptography solves problems that applications have in often transparent
+    ways but not always! Sometimes, the use of cryptography leaks to the users of
+    the applications.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Usually, education can only help so much. It is, hence, never a good idea to
+    blame the user when something bad happens. The relevant field of research is called
+    *usable security*, in which solutions are sought to make security and cryptography-related
+    features as transparent as possible to users, removing as many opportunities for
+    misuse as possible. One good example is how browsers gradually shifted from simple
+    warnings when SSL/TLS certificates were invalid to making it harder for users
+    to accept the risk.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*We observed behavior that is consistent with the theory of warning fatigue.
+    In Google Chrome, users click through the most common SSL error faster and more
+    frequently than other errors. [. . .] We also find clickthrough rates as high
+    as 70.2% for Google Chrome SSL warnings, indicating that the user experience of
+    a warning can have a tremendous impact on user behavior*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '—Devdatta Akhawe and Adrienne Porter Felt (“Alice in Warningland: A Large-Scale
+    Field Study of Browser Security Warning Effectiveness,” 2013)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another good example is how security-sensitive services have moved on from passwords
+    to supporting second-factor authentication (covered in chapter 11). Because it
+    was too hard to force users to use strong per-service passwords, another solution
+    was found to eliminate the risk of password compromise. End-to-end encryption
+    is also a good example because it is always hard for users to understand what
+    it means to have their conversations end-to-end encrypted and how much of the
+    security comes from them actively verifying fingerprints (covered in chapter 10).
+    Whenever cryptography is pushed to users, great effort must be taken to reduce
+    the risk of user mistakes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Story time
+  prefs: []
+  type: TYPE_NORMAL
+- en: Years ago I was asked to review the end-to-end encryption proposal of a widely-used
+    messaging application. The proposal included the usual state-of-the-art protocol,
+    the Signal protocol (covered in chapter 10), yet it didn’t offer a functionality
+    for users to verify the public keys of (or the session keys with) other users.
+    This meant that while your communications were end-to-end encrypted in the presence
+    of a passive adversary, a rogue employee could have easily updated a user’s public
+    key (or some users' session keys), and you would have not been able to detect
+    the man-in-the-middle attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](../Images/16_UN06.jpg)'
+  prefs: []
+  type: TYPE_IMG
+- en: 16.6 Cryptography is not an island
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Cryptography is often used as part of a more complex system that can also have
+    bugs. Actually, most of the bugs live in those parts that have nothing to do with
+    the cryptography itself. An attacker often looks for the weakest link in the chain,
+    the lowest hanging fruit, and it so happens that cryptography often does a good
+    job at raising the bar. Encompassing systems can be much larger and complex and
+    often end up creating more accessible attack vectors. Adi Shamir famously said,
+    “Cryptography is typically bypassed, not penetrated.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: While it is good to put some effort into making sure that the cryptography in
+    your system is conservative, well-implemented, and well-tested, it is also beneficial
+    to ensure that the same level of scrutiny is applied to the rest of the system.
+    Otherwise, you might have done all of that for nothing.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](../Images/16_UN07.jpg)'
+  prefs: []
+  type: TYPE_IMG
+- en: 16.7 Your responsibilities as a cryptography practitioner, don’t roll your own
+    crypto
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: That’s it, this is the end of the book, you are now free to gallop in the wilderness.
+    But I have to warn you, having read this book gives you no superpowers; it should
+    only give you a sense of fragility. A sense that cryptography can easily be misused
+    and that the simplest mistake can lead to devastating consequences. Proceed with
+    caution!
+  prefs: []
+  type: TYPE_NORMAL
+- en: You now have a big crypto toolset at your belt. You should be able to recognize
+    what type of cryptography is being used around you, perhaps even identify what
+    seems fishy. You should be able to make some design decisions, know how to use
+    cryptography in your application, and understand when you or someone is starting
+    to do something dangerous that might require more attention. Never hesitate to
+    ask for an expert’s point of view.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '“Don’t roll your own crypto” must be the most overused cryptography line in
+    software engineering. Yet, these folks are somewhat right. While you should feel
+    empowered to implement or even create your own cryptographic primitives and protocols,
+    you should not use it in a production environment. Producing cryptography takes
+    years to get right: years of learning about the ins and outs of the field, not
+    only from a design perspective but from a cryptanalysis perspective as well. Even
+    experts who have studied cryptography all their lives build broken cryptosystems.
+    Bruce Schneier once famously said, “Anyone, from the most clueless amateur to
+    the best cryptographer, can create an algorithm that he himself can’t break.”
+    At this point, it is up to you to continue studying cryptography. These final
+    pages are not the end of the journey.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'I want you to realize that you are in a privileged position. Cryptography started
+    as a field behind closed doors, restricted only to members of the government or
+    academics kept under secrecy, and it slowly became what it is today: a science
+    openly studied throughout the world. But for some people, we are still very much
+    in a time of (cold) war.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In 2015, Rogaway drew an interesting comparison between the research fields
+    of cryptography and physics. He pointed out that physics had turned into a highly
+    political field shortly after the nuclear bombing of Japan at the end of World
+    War II. Researchers began to feel a deep responsibility because physics was starting
+    to be clearly and directly correlated to the deaths of many and the deaths of
+    potentially many more. Not much later, the Chernobyl disaster would amplify this
+    feeling.
+  prefs: []
+  type: TYPE_NORMAL
+- en: On the other hand, cryptography is a field where privacy is often talked about
+    as though it were a different subject, making cryptography research apolitical.
+    Yet, decisions that you and I take can have a long-lasting impact on our societies.
+    The next time you design or implement a system using cryptography, think about
+    the threat model you’ll use. Are you treating yourself as a trusted party or are
+    you designing things in a way where even you cannot access your users’ data or
+    affect their security? How do you empower users through cryptography? What do
+    you encrypt? “We kill people based on metadata,” said former NSA chief Michael
+    Hayden ([http://mng .bz/PX19](http://mng.bz/PX19)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![](../Images/16_UN08.jpg)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'In 2012, near the coast of Santa Barbara, hundreds of cryptographers gathered
+    around Jonathan Zittrain in a dark lecture hall to attend his talk, “The End of
+    Crypto” ([https://www.youtube.com/watch?v=3ijjHZHNIbU](https://www.youtube.com/watch?v=3ijjHZHNIbU)).
+    This was at Crypto, the most respected cryptography conference in the world. Jonathan
+    played a clip from the television series *Game of Thrones* to the room. In the
+    video, Varys, a eunuch, poses a riddle to the hand of the king, Tyrion. This is
+    the riddle:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Three great men sit in a room: a king, a priest, and a rich man. Between them
+    stands a common sellsword. Each great man bids the sellsword kill the other two.
+    Who lives, who dies? Tyrion promptly answers, “Depends on the sellsword,” to which
+    the eunuch responds, “If it’s the swordsman who rules, why do we pretend kings
+    hold all the power?”*.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Jonathan then stopped the clip and pointed to the audience, yelling at them,
+    “You get that you guys are the sellswords, right?”
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Real-world cryptography tends to fail mostly in how it is applied. We already
+    know good primitives and good protocols to use in most use cases, which leaves
+    their misuse as the source of most bugs.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: A lot of typical use cases are already addressed by cryptographic primitives
+    and protocols. Most of the time, all you’ll have to do is find a respected implementation
+    that addresses your problem. Make sure to read the manual and to understand in
+    what cases you can use a primitive or a protocol.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Real-world protocols are constructed with cryptographic primitives by combining
+    them like Lego. When no well-respected protocols address your problem, you’ll
+    have to assemble the pieces yourself. This is extremely dangerous as cryptographic
+    primitives sometimes break when used in specific situations or when combined with
+    other primitives or protocols. In these cases, formal verification is an excellent
+    tool to find issues, although it can be hard to use.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Implementing cryptography is not just difficult; you also have to think about
+    hard-to-misuse interfaces (in the sense that good cryptographic code leaves little
+    room for the user to shoot themselves in the foot).
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Staying conservative and using tried-and-tested cryptography is a good way to
+    avoid issues down the line. Issues stemming from complexity (for example, supporting
+    too many cryptographic algorithms) is a big topic in the community, and steering
+    away from over-engineered systems has been dubbed “boring cryptography.” Be as
+    boring as you can.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Both cryptographic primitives and standards can be responsible for bugs in implementations
+    due to being to complicated to implement or to vague about what implementers should
+    be wary of. Polite cryptography is the idea of a cryptographic primitive or standard
+    that is hard to badly implement. Be polite.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The use of cryptography in an application sometimes leaks to the users. Usable
+    security is about making sure that users understand how to handle cryptography
+    and cannot misuse it.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Cryptography is not an island. If you follow all of the advice this book gives
+    you, chances are that most of your bugs will happen in the noncryptographic parts
+    of your system. Don’t overlook these!
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: With what you have learned in this book, make sure to be responsible, and think
+    hard about the consequences of your work.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

@@ -1,0 +1,814 @@
+- en: 10 Authorization
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Creating superusers and permissions
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Managing group membership
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Enforcing application-level authorization with Django
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Testing authorization logic
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Authentication and authorization have a tendency to be confused with each other.
+    *Authentication* relates to who a user is; *authorization* relates to what a user
+    can do. Authentication and authorization are often referred to as *authn* and
+    *authz*, respectively. Authentication is the prerequisite for authorization. In
+    this chapter, I cover authorization, also known as *access control*, as it relates
+    to application development. In the next chapter, I continue with OAuth 2, a standardized
+    authorization protocol.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note At the time of this writing, *broken authorization* is number 5 on the
+    OWASP Top Ten list of critical security risks ([https://owasp.org/www-project
+    -top-ten/](https://owasp.org/www-project-top-ten/)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: You’ll begin this chapter by diving into application-level authorization with
+    permissions. A *permission* is the most atomic form of authorization. It authorizes
+    a person, or a group of people, to do one and only one thing. Next, you’ll create
+    a superuser account for Alice. Then you’ll log into the Django administration
+    console as Alice, where you’ll manage user and group permissions. Afterward, I’ll
+    show you several ways to apply permissions and groups to control who can access
+    protected resources.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.1 Application-level authorization
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'In this section, you’ll create a new Django app called *messaging*. This app
+    exposes you to the most basic elements of Django authorization, permissions. To
+    create your new messaging app, run the following command in the project root directory.
+    This command generates a Django app into a new directory called messaging:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: The directory structure of the generated app is illustrated in figure 10.1\.
+    In this exercise, you’ll add a class to the `models` module and modify the database
+    a couple of times with a few additions to the `migrations` package.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH10_F01_Byrne](Images/CH10_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10.1 Directory structure of a new Django app, messaging
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Now you need to register your Django app with your Django project. Open the
+    `settings` module and locate the `INSTALLED_APPS` list. Add the line you see here
+    in bold font. Make sure to leave all other previously installed apps intact:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Next, open models.py and put the following model class definition in it. `AuthenticatedMessage`
+    represents a message and a hash value with two properties. In chapter 14, Alice
+    and Bob are going to use this class to communicate securely:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: As in all models, `AuthenticatedMessage` must be mapped to a database table.
+    The table is created via Django migrations. (You learned about migrations in the
+    previous chapter.) The mapping is handled at runtime by Django’s built-in ORM
+    framework.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Run the following command to generate a migrations script for your model class.
+    This command will automatically detect the new model class and create a new migrations
+    script, shown in bold font, beneath the migrations directory:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ New migrations script
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Finally, execute your migrations script by running the following command, shown
+    in bold:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: Running your migrations script doesn’t just create a new database table; it
+    also creates four new permissions behind the scenes. The next section explains
+    how and why these permissions exist.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.1.1 Permissions
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Django represents permissions with a built-in model known as Permission. The
+    Permission model is the most atomic element of Django authorization. Each user
+    can be associated with zero to many permissions. Permissions fall into two categories:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Default permissions, created automatically by Django
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Custom permissions, created by you
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Django automatically creates four default permissions for each new model. These
+    permissions are created behind the scenes when you run migrations. These permissions
+    allow a user to create, read, update, and delete a model. Execute the following
+    code in a Django shell to observe all four default permissions, shown in bold,
+    for the `AuthenticatedMessage` model:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'A project usually acquires the need for custom permissions as it grows. You
+    declare these permissions by adding an inner `Meta` class to your model. Open
+    your `models` module and add the following `Meta` class, shown in bold, to `AuthenticatedMessage`.
+    The `permissions` property of the `Meta` class defines two custom permissions.
+    These permissions designate which users can send and receive a message:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Your model class
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Your model Meta class
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Like default permissions, custom permissions are created automatically during
+    migrations. Generate a new migrations script with the following command. As indicated
+    by the output in bold font, this command generates a new script beneath the migrations
+    directory:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ New migrations script
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Next, execute your migrations script with the following command:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: You have now added one app, one model, one database table, and six permissions
+    to your project. In the next section, you’ll create an account for Alice, log
+    in as her, and grant these new permissions to Bob.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.1.2 User and group administration
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In this section, you’ll create a superuser, Alice. A *superuser* is a special
+    administrative user with the authority to do everything; these users have all
+    permissions. As Alice, you will access Django’s built-in administration console.
+    By default, this console is enabled in every generated Django project. A brief
+    tour of the administration console will introduce you to how Django implements
+    application-level authorization.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The administration console is easier to use and nicer to look at if your Django
+    project can serve static content. Django can do this by itself over HTTP, but
+    Gunicorn is not designed to do this over HTTPS. This problem is solved easily
+    by WhiteNoise, a package designed to efficiently serve static content while minimizing
+    setup complexity (figure 10.2). The administration console (and the rest of your
+    project) will use WhiteNoise to properly serve JavaScript, stylesheets, and images
+    to your browser.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH10_F02_Byrne](Images/CH10_F02_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10.2 A Django application server delivers static resources with WhiteNoise.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Run the following `pipenv` command from within your virtual environment to
+    install WhiteNoise:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: Now you need to activate WhiteNoise in Django via middleware. What is middleware?
+    *Middleware* is a lightweight subsystem within Django that sits in the *middle*
+    of each inbound request and your views, as well as in the *middle* of your views
+    and each outbound response. From this position, middleware applies pre- and post-processing
+    logic.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Middleware logic is implemented by a collection of middleware components. Each
+    component is a unique little processing hook, responsible for a specific task.
+    For example, the built-in `AuthenticationMiddleware` class is responsible for
+    mapping inbound HTTP session IDs to users. Some of the middleware components I
+    cover in later chapters are responsible for managing security-related response
+    headers. The component you are adding in this section, `WhiteNoiseMiddleware`,
+    is responsible for serving static resources.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Like every other Django subsystem, middleware is configured in the `settings`
+    module. Open your `settings` module and locate the `MIDDLEWARE` setting. This
+    setting is a list of middleware component class names. As shown in bold font in
+    the following code, add `WhiteNoiseMiddleware` to `MIDDLEWARE`. Make sure this
+    component appears right after `SecurityMiddleware` and ahead of everything else.
+    Do not remove any preexisting middleware components:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Ensure that SecurityMiddleware remains first.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Adds WhiteNoise to your project
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Every generated Django project is initialized with `SecurityMiddleware`
+    as the first `MIDDLEWARE` component. `SecurityMiddleware` implements some of the
+    previously covered safety features such as `Strict-Transport-Security` response
+    headers and HTTPS redirects. These safety features become compromised if you put
+    other middleware components in front of `SecurityMiddleware`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Restart your server and point your browser to the administration console login
+    page at https:/./localhost:8000/admin/. The login page should appear as it does
+    in figure 10.3\. If your browser renders the same form without styling, WhiteNoise
+    has not been installed. This happens if `MIDDLEWARE` was misconfigured or the
+    server has not been restarted. The administration console will still work without
+    WhiteNoise; it just won’t look nice.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH10_F03_Byrne](Images/CH10_F03_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10.3 Django’s administration login page
+  prefs: []
+  type: TYPE_NORMAL
+- en: The administration console login page requires the authentication credentials
+    of a user with superuser or staff status; Django doesn’t permit regular end users
+    to log in to the administration console.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'From your project root directory, run the following command to create a superuser.
+    This command creates a superuser in your database; it will prompt you for the
+    password of the new superuser:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: Log in to the administration console as Alice. As a superuser, you can manage
+    groups and users from the administration landing page. Navigate to the new group
+    entry form by clicking Add, next to Groups.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Groups
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Groups* provide a way to associate a set of permissions with a set of users.
+    A group can be associated with zero to many permissions, and with zero to many
+    users. Every permission associated with a group is implicitly granted to every
+    user of the group.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The new group entry form, shown in figure 10.4, requires a group name and optional
+    permissions. Take a minute to observe the available permissions. Notice that they
+    fall into batches of four. Each batch represents the default permissions for a
+    database table, controlling who can create, read, update, and delete rows.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH10_F04_Byrne](Images/CH10_F04_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10.4 A new group entry form accepts a group name and multiple group permissions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Scroll through the available permissions selector and find the permissions
+    you created for the messaging app. Unlike the other batches, this one has six
+    elements: four default permissions and two custom permissions.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Enter `observers` into the Name field. The `observers` group is intended to
+    have read-only access to every table. Select every available permission containing
+    the text “Can view.” Submit the form by clicking Save.
+  prefs: []
+  type: TYPE_NORMAL
+- en: After submitting the form, you’ll be taken to a page listing all groups. Navigate
+    to a similar page listing all users by clicking Users in the left sidebar. Currently,
+    this page lists only Alice and Bob. Navigate to Bob’s user detail page by clicking
+    his name. Scroll down the user detail page until you find two adjacent sections
+    for groups and permissions. In this section, as shown in figure 10.5, assign Bob
+    to the `observers` group and give him all six permissions from the messaging app.
+    Scroll to the bottom and click Save.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH10_F05_Byrne](Images/CH10_F05_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 10.5 Assigning groups and permissions as an administrator
+  prefs: []
+  type: TYPE_NORMAL
+- en: Group membership and permissions do not have to be managed manually; alternatively,
+    you can do this programmatically. Listing 10.1 demonstrates how to grant and revoke
+    permissions through two properties on the `User` model. Group membership is granted
+    and revoked through the `groups` property. The `user_permissions` property allows
+    permissions to be added or removed from a user.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 10.1 Programmatically managing groups and permissions
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Retrieves model entities
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Adds Bob to a group
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Adds a permission to Bob
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Removes Bob from a group
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❺ Removes a permission from Bob
+  prefs: []
+  type: TYPE_NORMAL
+- en: By now, you know how groups and permissions work. You know what they are, how
+    to create them, and how to apply them to users. But what do they look like in
+    action? In the next section, you’ll start solving problems with groups and permissions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.2 Enforcing authorization
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The whole point of authorization is to prevent users from doing things they
+    aren’t supposed to do. This applies to actions within a system, such as reading
+    sensitive information, and actions outside a system, such as directing flight
+    traffic. There are two ways to enforce authorization in Django: the low-level
+    hard way and the high-level easy way. In this section, I’ll show you the hard
+    way first. Afterward, I’ll show you how to test whether your system is enforcing
+    authorization correctly.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.2.1 The low-level hard way
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'The `User` model features several low-level methods designed for programmatic
+    permission-checking. The `has_perm` method, shown in the following code, allows
+    you to access default and custom permissions alike. In this example, Bob is not
+    allowed to create other users but is allowed to receive messages:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Bob cannot add a user.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Bob can receive messages.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `has_perm` method will always return `True` for a superuser:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Alice can do anything.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `has_perms` method provides a convenient way to check more than one permission
+    at a time:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Bob cannot add users and receive messages.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Bob can send and receive messages.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'There is nothing wrong with the low-level API, but you should try to avoid
+    it for two reasons:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Low-level permission checking requires more lines of code than the approach
+    I cover later in this section.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'More importantly, checking permissions this way is error prone. For example,
+    if you query this API about a nonexistent permission, it will simply return `False`:'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Here’s another pitfall. Permissions are fetched from the database in bulk and
+    cached. This presents a dangerous trade-off. On one hand, `has_perm` and `has_perms`
+    do not trigger database trips on every invocation. On the other hand, you have
+    to be careful when checking a permission immediately after you apply it to a user.
+    The following code snippet demonstrates why. In this example, a permission is
+    taken away from Bob. The local permissions state is unfortunately not updated:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Bob begins with permission.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Bob loses permission.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Local copy is invalid.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Continuing with the same example, what happens when the `refresh_from_db` method
+    is called on the `User` object? The local permissions state still isn’t updated.
+    To obtain a copy of the latest state, a new `User` model must be reloaded from
+    the database:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Local copy is still invalid.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Reloaded model object is valid.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here’s a third pitfall. Listing 10.2 defines a view. This view performs an authorization
+    check before rendering sensitive information. It has two bugs. Can you spot either
+    of them?
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 10.2 How not to enforce authorization
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Checks permission
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Renders sensitive information
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Where’s the first bug? Like many programming languages, Python has an `assert`
+    statement. This statement evaluates a condition, raising an `AssertionError` if
+    the condition is `False`. In this example, the condition is a permission check.
+    Assert statements are useful in development and test environments, but they become
+    a false sense of security when Python is invoked with the `-O` option. (This option
+    stands for *optimization*.) As an optimization, the Python interpreter removes
+    all `assert` statements. Type the following two commands in your console to see
+    for yourself:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Raises an AssertionError
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Raises nothing
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Assert statements are a nice way to debug a program, but they should
+    never be used to perform permission checks. In addition to permission checks,
+    the `assert` statement should never be used for application logic in general.
+    This includes all security checks. The `-O` flag is rarely used in development
+    or testing environments; it is often used in production.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Where’s the second bug? Let’s assume the assertion is actually being performed
+    in your production environment. As with any error, the server converts `AssertionError`
+    into a status code of 500\. As defined by the HTTP specification, this code designates
+    an internal server error ([https://tools.ietf.org/html/rfc7231](https://tools.ietf.org/html/rfc7231)).
+    Your server now blocks unauthorized requests but isn’t producing a meaningful
+    HTTP status code. A well-intentioned client now receives this code and falsely
+    concludes the root problem to be server side.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The correct status code for an unauthorized request is 403\. A server sends
+    a status code of 403 to designate a resource as forbidden. This status code reappears
+    twice in this chapter, starting with the next section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.2.2 The high-level easy way
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Now I’m going to show you the easy way. This approach is cleaner, and you don’t
+    have to worry about any of the aforementioned pitfalls. Django ships with several
+    built-in mixins and decorators designed for authorization. Working with the following
+    high-level tools is much cleaner than working with a bunch of `if` statements:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`PermissionRequiredMixin`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`@permission_required`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`PermissionRequiredMixin` enforces authorization for individual views. This
+    class automatically checks the permissions of the user associated with each inbound
+    request. You specify which permissions to check with the `permission_required`
+    property. This property can be a string representing one permission or an iterable
+    of strings representing many permissions.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The view in listing 10.3 inherits from `PermissionRequiredMixin`, shown in bold
+    font. The `permission_required` property, also shown in bold, ensures that the
+    user must have permission to view authenticated messages before the request is
+    processed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 10.3 Authorization with PermissionRequiredMixin
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Ensures permissions are checked
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Declares which permissions to check
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`PermissionRequiredMixin` responds to anonymous requests by redirecting the
+    browser to the login page. As expected, it responds to unauthorized requests with
+    a status code of 403.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `@permission_required` decorator is the functional equivalent of `PermissionRequiredMixin`.
+    Listing 10.4 demonstrates how the `@permission_ required` decorator, shown in
+    bold, enforces authorization for a function-based view. Like the previous example,
+    this code ensures that the user must have permission to view authenticated messages
+    before processing the request.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 10.4 Authorization with @permission_required
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Checks permission before processing request
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Function-based view
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Sometimes you need to guard a resource with logic more complicated than a simple
+    permission check. The following pair of built-in utilities are designed to enforce
+    authorization with arbitrary Python; they otherwise behave similarly to `PermissionRequiredMixin`
+    and the `@permission_required` decorator:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`UserPassesTestMixin`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`@user_passes_test`'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The `UserPassesTestMixin`, shown in listing 10.5 in bold, guards a view with
+    arbitrary logic in Python. This utility calls the `test_func` method for each
+    request. The return value of this method determines whether the request is permitted.
+    In this example, the user must have a new account or be Alice.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 10.5 Authorization with UserPassesTestMixin
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Arbitrary authorization logic
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `@user_passes_test` decorator, shown in listing 10.6 in bold, is the functional
+    equivalent of `UserPassesTestMixin`. Unlike `UserPassesTestMixin`, the `@user
+    _passes_test` decorator responds to unauthorized requests with a redirect to the
+    login page. In this example, the user must have an email address from alice.com
+    or have a first name of `bob`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 10.6 Authorization with @user_passes_test
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Arbitrary authorization logic
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Function-based view
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.2.3 Conditional rendering
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'It is usually undesirable to show a user things they aren’t allowed to do.
+    For example, if Bob does not have permission to delete other users, you want to
+    avoid misleading him with a Delete Users link or button. The solution is to conditionally
+    render the control: you hide it from the user or show it to them in a disabled
+    state.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Authorization-based conditional rendering is built into the default Django
+    templating engine. You access the permissions of the current user through the
+    `perms` variable. The following template code illustrates how to conditionally
+    render a link if the current user is allowed to send messages. The `perms` variable
+    is in bold:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Alternatively, you can use this technique to render a control as disabled.
+    The following control is visible to anyone; it is enabled only for those permitted
+    to create new users:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE26]'
+  prefs: []
+  type: TYPE_PRE
+- en: WARNING Never let conditional rendering become a false sense of security. It
+    will never be a substitute for server-side authorization checks. This applies
+    to server-side and client-side conditional rendering.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Don’t be misled by this functionality. Conditional rendering is a good way to
+    improve the user experience, but it isn’t an effective way to enforce authorization.
+    It doesn’t matter if the control is hidden or disabled; neither situation can
+    stop a user from sending a malicious request to the server. Authorization must
+    be enforced server side; nothing else matters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.2.4 Testing authorization
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In chapter 8, you learned authentication is no obstacle for testing; this holds
+    true for authorization as well. Listing 10.7 demonstrates how to verify that your
+    system is properly guarding a protected resource.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The setup method of `TestAuthorization` creates and authenticates a new user,
+    Charlie. The test method starts by asserting that Charlie is forbidden to view
+    messages, shown in bold. (You learned earlier that a server communicates this
+    with a status code of 403.) The test method then verifies that Charlie can view
+    messages after granting him permission; web servers communicate this with a status
+    code of 200, also shown in bold.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 10.7 Testing authorization
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE27]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Creates an account for Charlie
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Asserts no access
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Grants permission
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Asserts access
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the previous section, you learned how to grant authorization; in this section,
+    you learned how to enforce it. I think it’s safe to say this subject isn’t as
+    complex as some of the other material in this book. For example, the TLS handshake
+    and key derivation functions are much more complicated. Despite how straightforward
+    authorization is, a surprisingly high percentage of organizations get it wrong.
+    In the next section, I’ll show you a rule of thumb for avoiding this.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.3 Antipatterns and best practices
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In July of 2020, a small group of attackers gained access to one of Twitter’s
+    internal administrative systems. From this system, the attackers reset the passwords
+    for 130 prominent Twitter accounts. The accounts of Elon Musk, Joe Biden, Bill
+    Gates, and many other public figures were affected. Some of these hijacked accounts
+    were then used to target millions of Twitter users with a bitcoin scam, netting
+    around $120,000.
+  prefs: []
+  type: TYPE_NORMAL
+- en: According to two former Twitter employees, more than 1000 employees and contractors
+    had access to the compromised internal administrative system ([http://mng.bz/9NDr](http://mng.bz/9NDr)).
+    Although Twitter declined to comment on this number, I’ll go far enough to say
+    it wouldn’t make them worse than most organizations. Most organizations have at
+    least one shoddy internal tool allowing way too many permissions to be granted
+    to way too many users.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This antipattern, in which everyone can do everything, stems from an organization’s
+    failure to apply the principle of least privilege. As noted in chapter 1, the
+    PLP states that a user or system should be given only the minimal permissions
+    needed to perform their responsibilities. Less is more; err on the safe side.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Conversely, some organizations have too many permissions and too many groups.
+    These systems are more secure, but the administrative and technical maintenance
+    costs are prohibitive. How does an organization strike a balance? Generally speaking,
+    you want to favor the following two rules of thumb:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Grant* authorization with group membership.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Enforce* authorization with individual standalone permissions.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: This approach minimizes technical costs because your code doesn’t need to change
+    every time a group gains or loses a user or a responsibility. The administrative
+    costs stay low, but only if each group is defined in a meaningful way. As a rule
+    of thumb, create groups that model actual real-world organizational roles. If
+    your users fall into a category like “sales representative” or “backend operations
+    manager,” your system should probably just model them with a group. Don’t be creative
+    when you name the group; just call it whatever they refer to themselves as.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Authorization is a vital component of any secure system. You know how to grant
+    it, enforce it, and test it. In this chapter, you learned about this topic as
+    it applies to application development. In the next chapter, I continue with this
+    topic as I cover OAuth 2, an authorization protocol. This protocol allows a user
+    to authorize third-party access to protected resources.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Authentication relates to who you are; authorization relates to what you can
+    do.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Users, groups, and permissions are the building blocks of authorization.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: WhiteNoise is a simple and efficient way to serve static resources.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Django’s administration console enables superusers to manage users.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Prefer high-level authorization APIs over low-level APIs.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: In general, enforce authorization via standalone permissions; grant authorization
+    via group membership.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

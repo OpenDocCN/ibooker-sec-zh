@@ -1,0 +1,286 @@
+- en: 8 Jefferson Wheel Cypher
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Thomas Jefferson’s wheel cypher
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Solving a wheel cypher using a known word
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Solving a wheel cypher when no words are known
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Thomas Jefferson invented the *Jefferson Wheel Cypher* sometime between 1790
+    and 1793, while he was serving as secretary of state to George Washington. The
+    device consists of an iron rod or spindle 1/8 to 1/4 inch in diameter and 6 to
+    8 inches long with 36 wooden disks about 2 inches in diameter and 1/6 inch thick.
+    Each disk has a hole drilled through its center the same size as the rod so that
+    all of the disks can be placed snugly onto the rod, forming a wooden cylinder.
+    The flat faces of the disks touch one another, with the outside rounded edges
+    visible. One end of the rod has a head, like a nail head. The other end has screw
+    threads so that a nut can be screwed onto the rod, holding the disks firmly in
+    place.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The disks are numbered from 1 to 36 on their flat sides. The round outer edge
+    is divided into 26 equal sections. The 26 letters of the alphabet are written
+    or incised into these 26 sections in some scrambled order, which is different
+    for each disk. The order of the disks on the spindle is the key for the cipher,
+    which is nowadays called a *multiplex cipher*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is a reproduction of a 26-disk Jefferson Cypher Wheel displayed at the
+    National Cryptologic Museum in Fort Meade, Maryland. (Photo courtesy of Daderot
+    under the Creative Commons CC0 1.0 license.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![8-unnumb-1](../Images/8-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: A message is enciphered with this device by first placing the disks on the spindle
+    in the order specified by the key. The nut is screwed on loosely so that the individual
+    disks can be turned. The first letter of the message is found on the first disk,
+    and the second disk is turned so that the second letter of the message is next
+    to the first letter. Then the third disk is turned so the third letter of the
+    message is next to the second letter, and so forth until the first 36 letters
+    of the message are lined up in an even row. The nut is then tightened to keep
+    them in place.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Turning the cylinder, there are 25 other rows of letters, all of which are meaningless
+    jumbles. Sandra may choose any one of these as the ciphertext. Riva repeats this
+    process, setting up the ciphertext on one row of the cylinder. It will be obvious
+    which of the 25 other rows is the intended message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Jefferson apparently never put this cipher into use. The concept lay dormant
+    until it was reinvented by Étienne Bazeries in the early 1890s. It was adopted
+    by the French in 1901\. Bazeries’s version had two improvements. It had a stand
+    or cradle so the device could be placed on a desk for two-handed operation, and
+    it had a guide that helped the user line up the letters evenly and select the
+    row for reading out the ciphertext. A version of this cipher using 25 aluminum
+    disks was invented by Col. Parker Hitt in 1914 and adopted by the US Army in 1922
+    as the M-94, and by the US Navy in 1926 as the CSP-488\. Hitt’s version was only
+    4.25” long, small enough to fit in a pocket, and had notches and prongs on the
+    flat faces of the disks that kept them from slipping after they had been aligned.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is a photo of a CSP-488 from the National Cryptologic Museum.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![8-unnumb-2](../Images/8-unnumb-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: A flat version of the cipher was invented by Hitt in 1916 and adopted by the
+    Army in 1935 as the M-138\. This version was a flat aluminum board with 25 channels
+    that held paper strips that could slide back and forth to simulate the turning
+    of the disks. Each strip had two copies of the scrambled alphabet. This device
+    was more secure since the paper strips could easily be replaced, and even hand-written
+    in the field if necessary. This was soon replaced by the M138A, or CSP-845 in
+    the Navy, which had slots for 30 paper strips. 100 strips were supplied with the
+    device, designated by 2-digit numbers, so any message used 30 out of 100 possible
+    strips. This allows for 100!/70! = 7.79×10^(57) possible keys.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The M-138A had a hinge in the center so that it could be folded for easier carrying.
+    Each half had a separate guide that was used for aligning the strips and reading
+    out 15 letters of the cipher. These improvements considerably strengthened the
+    cipher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: These strip ciphers were dropped by the Army around 1942 or 1943, but they remained
+    in use by the Navy as a standby in case a loss of electrical power makes it impossible
+    to use any of their electronic or electromechanical cipher devices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is not feasible to solve a multiplex cipher if Emily does not have a copy
+    of the device and does not know the alphabets. If Emily possesses the device,
+    the cipher is relatively easy to solve if she knows some probable words. When
+    Emily possesses a copy of the device and knows some probable words, the Jefferson
+    Cypher Wheel is rated Four to Five. When no probable words are known, the rating
+    is Six to Seven. The more ciphertext Emily has, the lower the rating. Conversely,
+    if the device has lots of extra disks, the rating goes up. For example, if the
+    device holds 30 disks that the user selects from a supply of 100 disks, the rating
+    can go to Eight. For very short messages, less than two times the number of disks,
+    solution may be impossible unless Emily intercepts multiple messages using the
+    same key. This may happen if the sender changes the order of the disks only once
+    per day.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 8.1 Known-word solution
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'You can solve a message enciphered with the Jefferson Cypher Wheel when you
+    have enough text, and you know at least part of the message. Often, just a single
+    known word is sufficient. Suppose you know that Sandra is using the M-94 device,
+    which has 25 disks, and you have intercepted a message:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![8-unnumb-3](../Images/8-unnumb-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Suppose you also know the plaintext message begins URGENT. This has been transformed
+    into the ciphertext **CLPOXF**. Since URGENT is on one row and **CLPOXF** is on
+    another row, the distance between corresponding pairs of letters must be the same.
+    Let’s call the row with URGENT row 1, and suppose the row with **CLPOXF** is row
+    8\. The first letter of the plaintext, U, and the first letter of the ciphertext,
+    C, are taken from row 1 and row 8 of the first disk. So, on the first disk the
+    distance from U to C must be 7\. On the second disk the distance from R to L must
+    be 7\. On the third disk the distance from G to P must be 7, as well as E to O,
+    N to X and T to F.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The easiest way to search is to try each possible distance from 1 through 25
+    in turn. Start with distance 1\. Find all of the disks where the distance from
+    U to C is 1\. In other words, where the next letter after U is C. If there are
+    no such disks, then you know the distance is not 1\. Then find all of the disks
+    where the distance from R to L is 1\. Again, if there are none the distance cannot
+    be 1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s suppose that you have found 12 sets of disks where the letter pairs are
+    all at a distance of 1\. You now need to test these 12 sets to see if any of them
+    are correct. Let the first set of disks be, say, 18-4-21-9-13-11\. Start testing
+    with the second block of the ciphertext, letters 26 through 50\. This block starts
+    **ESIWVI**. Set disk 18 to letter **E**, disk 4 to letter **S**, disk 21 to letter
+    **I**, and so on. Now look at the other 25 rows. If they are all gibberish, like
+    **HNSAEI** or **TFPGUW**, then you know 18-4-21-9-13-11 is not the correct sequence
+    of disks. On the other hand, if you see some plausible text like NCONDI, which
+    could be part of the word UNCONDITIONAL, then 18-4-21-9-13-11 might be the correct
+    sequence of disks. Test again using the third block of the ciphertext starting
+    with **GAFOEM**. If the third and fourth blocks all lead to reasonable text segments,
+    then 18-4-21-9-13-11 is probably correct ... but keep searching because you might
+    find better disk sequences.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you don’t see any likely snippets of text, then try the other 11 disk sequences.
+    If none of these work, try distance 2, then distance 3, ... through distance 25\.
+    There will probably be a few hundred combinations of disk order and distance to
+    test. This is tedious, but still feasible by hand. If nothing works, go back and
+    look for disk sequences where 2 out of the 3 tests gave plausible text.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Once you have settled on the most probable sequence for the first 6 disks, and
+    the corresponding distances, then you try to extend this to the 7th disk. For
+    each choice of disk you already know the distance from the plaintext to the ciphertext,
+    so the extension process goes fairly quickly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*8.2 Ciphertext-only solution'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: It is also possible to solve multiplex ciphers when there are no known words.
+    This is called a ciphertext-only solution. I was the first person to find such
+    a solution (“Computer Methods for Decrypting Multiplex Ciphers.” *Cryptologia*
+    2 (Apr. 1978), pp. 152-160). In the original 1978 paper I used bigram frequencies
+    and worked up to trigrams. Computers today are much faster, and have much more
+    storage, so we can skip the bigram step. The method assumes that you have a table
+    giving the probabilities for each possible trigram in English. You can compile
+    such a table yourself, or just download a trigram table from the internet. Here
+    is the gist of the method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let us assume as before that Emily is using the M-94 device with 25 cipher alphabets,
+    and that we have intercepted a message of at least 3 blocks, or 75 letters. All
+    that we know about the message is that it is in English. For example, suppose
+    we have intercepted
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![8-unnumb-4](../Images/8-unnumb-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Start by trying all possible choices for the first 3 disks. There are 25×24×23
+    = 13,800 such choices. For each choice, set the disks to the first 3 letters in
+    each block of the ciphertext, namely **CLP**, **ESI** and **GAF**. For each of
+    these trigrams, look at the other 25 rows. These rows contain the possible plaintext
+    trigrams corresponding to the ciphertext trigrams. Since there are 25 choices
+    for each of the 3 rows, the total number of possibilities is 13800×25³ = 215,625,000\.
+    This can be easily handled by a desktop computer, or even a notebook computer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For each combination of 3 disks and 3 rows, the probability of that combination
+    is the product of the probabilities for the 3 plaintext trigrams. Equivalently,
+    the logarithm of the probability is the sum of the logarithms of the 3 trigram
+    probabilities. The idea is to keep only the most likely combinations and discard
+    the rest. For example, you could keep only the top 1%, or you could keep a fixed
+    number of good combinations, perhaps the 1,000,000 best. Let’s assume that you
+    chose to keep the top 2,000,000.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One way to do that is to generate all 215,625,000 combinations, then sort them
+    on the probability, and throw out the bottom 99%. That would take a lot of storage.
+    There are better ways to do this. Start by allocating a table that is 10% to 25%
+    bigger than the number of combinations you want, let’s say 2,500,000 combinations.
+    Begin generating the combinations and putting them in the table. When the table
+    gets full it needs to be trimmed by about 20%.
+  prefs: []
+  type: TYPE_NORMAL
+- en: That could be done by sorting the table and deleting the bottom 20%. That is,
+    you sort by descending probability and then just set the number of table entries
+    to 2,000,000\. Sorting 2,500,000 items is a lot faster than sorting 215,625,000
+    items, but there are far faster ways. Select 10 items from the table at random.
+    (If you don’t know how to choose randomly, then choose the items 1/11, 2/11, ...
+    , 10/11 of the way through.) Sort these 10 items from least-probable to most-probable.
+    Call these sorted items a,b,c,d,e,f,g,h,i,j. Let P be the probability of item
+    b. Delete every item in the table whose probability is less than P.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Continue generating combinations, but do not add any item to the table whose
+    probability is P or less. Each time the table fills up, repeat the process of
+    sampling, sorting the samples, and resetting the cutoff probability P.
+  prefs: []
+  type: TYPE_NORMAL
+- en: At the end of all this, you will have about 2,000,000 combinations of 3 disks
+    and 3 rows. The next step is to extend this to 4 disks. Try all 22 possible choices
+    for the 4th disk. This will give you about 44,000,000 combinations. Now look at
+    the trigrams formed by disks 2, 3 and 4\. For each combination multiply the probability
+    for the trigram on disks 1,2,3 by the probability of the trigram on disks 2,3,4
+    to get an approximate probability for the tetragram on all 4 disks. Multiply the
+    probabilities for the plaintext tetragrams corresponding to the 3 ciphertext tetragrams
+    **CLPO**, **ESIW** and **GAFO**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This will give you probabilities for the 44,000,000 combinations of 4 disks
+    and 3 rows. Again, you can keep the best 1% to give you 440,000 sets of tetragrams.
+    Use the same method as you used for the trigrams.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Continue this way to get the pentagrams, hexagrams, heptagrams, and so forth.
+    Each time you add a disk you can keep fewer combinations than the time before.
+    When you get down below 100, you can just pick out the correct combination by
+    sight and complete the solution by hand.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'One problem that may cause this procedure to fail is this: even in normal text,
+    a trigram may appear that has a probability of 0 in your trigram table. If Emily
+    is using nulls, this may occur fairly often. This could cause the legitimate plaintext
+    to get rejected.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: One solution is to jigger the trigram probabilities so that a 0 probability
+    never occurs. Let’s write P(x) for the probability of a string x. If the probability
+    of a trigram, say XYZ, is zero you can use the greater of P(X)P(YZ) and P(XY)P(Z).
+    I suggest dividing this by 3, say, because XYZ never occurred in your trigram
+    count. If the probability of XYZ is still 0, then use the individual letters.
+    For example, set P(XYZ) to P(X)P(Y)P(Z)/10.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A different solution is not to multiply the probabilities, but to use some other
+    function to combine them. For example, you could add the sum of the squares of
+    the probabilities. This will strongly reward common trigrams, while largely ignoring
+    rare trigrams.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If all of this fails, then simply try the procedure again from a different starting
+    point in the ciphertext. For example, start at the fifth disk.******
+  prefs: []
+  type: TYPE_NORMAL

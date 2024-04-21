@@ -1,0 +1,978 @@
+- en: 13 Never trust input
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Validating Python dependencies with Pipenv
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Parsing YAML safely with PyYAML
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Parsing XML safely with `defusedxml`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Preventing DoS attacks, `Host` header attacks, open redirects, and SQL injection
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'In this chapter, Mallory wreaks havoc on Alice, Bob, and Charlie with a half
+    dozen attacks. These attacks, and their countermeasures, are not as complicated
+    as the attacks I cover later. Each attack in this chapter follows a pattern: Mallory
+    abuses a system or user with malicious input. These attacks arrive as many different
+    forms of input: package dependencies, YAML, XML, HTTP, and SQL. The goals of these
+    attacks include data corruption, privilege escalation, and unauthorized data access.
+    *Input validation* is the antidote for every one of these attacks.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Many of the attacks I cover in this chapter are injection attacks. (You learned
+    about injection attacks in the previous chapter.) In a typical injection attack,
+    malicious input is injected into, and immediately executed by, a running system.
+    For this reason, programmers have a tendency to overlook the atypical scenario
+    I start with in this chapter. In this scenario, the injection happens upstream,
+    at build time; the execution happens downstream, at runtime.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.1 Package management with Pipenv
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In this section, I’ll show you how to prevent injection attacks with Pipenv.
+    Hashing and data integrity, two subjects you learned about previously, will make
+    yet another appearance. Like any Python package manager, Pipenv retrieves and
+    installs third-party packages from a package repository such as the PyPI. Programmers
+    unfortunately fail to recognize that package repositories are a significant portion
+    of their attack surface.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose Alice wants to regularly deploy new versions of alice.com to production.
+    She writes a script to pull the latest version of her code, as well as the latest
+    versions of her package dependencies. Alice doesn’t bloat the size of her code
+    repository by checking her dependencies into version control. Instead, she pulls
+    these artifacts from a package repository with a package manager.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mallory has compromised the package repository Alice depends on. From this position,
+    Mallory modifies one of Alice’s dependencies with malicious code. Finally, the
+    malicious code is pulled by Alice’s package manager and pushed to alice.com, where
+    it is executed. Figure 13.1 illustrates Mallory’s attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH13_F01_Byrne](Images/CH13_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 13.1 Mallory injects malicious code into alice.com through a package
+    dependency.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unlike other package managers, Pipenv automatically prevents Mallory from executing
+    this attack by verifying the integrity of each package as it is pulled from the
+    package repository. As expected, Pipenv verifies package integrity by comparing
+    hash values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'When Pipenv retrieves a package for the first time, it records a hash value
+    of each package artifact in your lock file, Pipfile.lock. Open your lock file
+    and take a minute to observe the hash values of some of your dependencies. For
+    example, the following segment of my lock file indicates that Pipenv pulled version
+    2.24 of the `requests` package. SHA-256 hash values for two artifacts are shown
+    in bold font:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Hash values of package artifacts
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Package version
+  prefs: []
+  type: TYPE_NORMAL
+- en: When Pipenv retrieves a familiar package, it hashes each inbound package artifact
+    and compares the hash values against the hash values in your lock file. If the
+    hash values match, Pipenv can assume that the package is unmodified and therefore
+    safe to install. If the hash values do not match, as shown in figure 13.2, Pipenv
+    rejects the package.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH13_F02_Byrne](Images/CH13_F02_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 13.2 A package manager resists an injection attack by comparing the hash
+    value of a maliciously modified Python package with a hash value from a lock file.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following command output demonstrates how Pipenv behaves when a package
+    fails verification. The local hash values and a warning are shown in bold:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Local hash values of package artifacts
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ A data integrity warning
+  prefs: []
+  type: TYPE_NORMAL
+- en: In addition to guarding you against malicious package modification, this check
+    detects accidental package corruption. This ensures deterministic builds for local
+    development, testing, and production deployment—an excellent example of real-world
+    data integrity verification with hashing. In the next two sections, I continue
+    with injection attacks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.2 YAML remote code execution
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In chapter 7, you watched Mallory carry out a remote code-execution attack.
+    First, she embedded malicious code into a *pickled*, or serialized, Python object.
+    Next, she disguised this code as cookie-based HTTP session state and sent it to
+    a server. The server then killed itself while inadvertently executing the malicious
+    code with `PickleSerializer`, a wrapper for Python’s `pickle` module. In this
+    section, I show how a similar attack is carried out with YAML instead of `pickle`—same
+    attack, different data format.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note At the time of this writing, *insecure deserialization* is number 8 on
+    the OWASP Top Ten ([https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Like JSON, CSV, and XML, YAML is a common way to represent data in a human-readable
+    format. Every major programming language has tools to parse, serialize, and deserialize
+    data in these formats. Python programmers often use *PyYAML* to parse YAML. From
+    within your virtual environment, run the following command to install PyYAML:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Open an interactive Python shell and run the following code. This example feeds
+    a small inline YAML document to PyYAML. As shown in bold font, PyYAML loads the
+    document with `BaseLoader` and converts it to a Python dict:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ From YAML . . .
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ . . . to Python
+  prefs: []
+  type: TYPE_NORMAL
+- en: In chapter 1, you learned about the principle of least privilege. The PLP states
+    that a user or system should be given only the minimal permissions needed to perform
+    their responsibilities. I showed you how to apply this principle to user authorization;
+    here I’ll show you how to apply it to parsing YAML.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING When you load YAML into memory, it is very important to limit the amount
+    of power you give to PyYAML.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'You apply PLP to PyYAML via the `Loader` keyword argument. For example, the
+    previous example loaded YAML with the least powerful loader, `BaseLoader`. PyYAML
+    supports three other `Loaders`. All four are listed here from least to most powerful.
+    Each `Loader` supports more features, and carries more risk, than the previous
+    one:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`BaseLoader`—Supports primitive Python objects like strings and lists'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`SafeLoader`—Supports primitive Python objects and standard YAML tags'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`FullLoader`—Full YAML language support (the default)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`UnsafeLoader`—Full YAML language support and arbitrary function calls'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Failing to apply the PLP can be fatal if your system accepts YAML as input.
+    The following code demonstrates how dangerous this can be when loading YAML from
+    an untrusted source with `UnsafeLoader`. This example creates inline YAML with
+    an embedded function call to `sys.exit`. As shown in bold font, the YAML is then
+    fed to PyYAML. The process then kills itself as PyYAML invokes `sys.exit` with
+    an exit code of 42\. Finally, the `echo` command combined with the `$?` variable
+    confirms that the Python process does indeed exit with a value of 42:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Creates process
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Inline YAML
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Kills process
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Confirms death
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is highly unlikely you are ever going to need to invoke a function this way
+    for commercial purposes. You don’t need this functionality, so why take on the
+    risk? `BaseLoader` and `SafeLoader` are the recommended ways to load YAML from
+    an untrusted source. Alternatively, calling `yaml.safe_load` is the equivalent
+    of calling `yaml.load` with `SafeLoader`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Different versions of PyYAML default to different `Loaders`, so you
+    should always explicitly specify the `Loader` you need. Calling `yaml.load` without
+    the `Loader` keyword argument has been deprecated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Always specify the `Loader` when calling the `load` method. Failing to do this
+    can render your system vulnerable if it is running with an older version of PyYAML.
+    Until version 5.1, the default `Loader` was (the equivalent of) `UnsafeLoader`;
+    the current default `Loader` is `FullLoader`. I recommend avoiding both.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Keep it simple
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As of this writing, even the PyYAML website ([https://github.com/yaml/pyyaml/wiki/PyYAML-yaml.load(input)-Deprecation](https://github.com/yaml/pyyaml/wiki/PyYAML-yaml.load(input)-Deprecation))
+    doesn’t recommend using `FullLoader`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `FullLoader` loader class . . . should be avoided for now. New exploits
+    in 5.3.1 were found in July 2020\. These exploits will be addressed in the next
+    release, but if further exploits are found, then `FullLoader` may go away.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next section, I continue with injection attacks using a different data
+    format, XML. XML isn’t just ugly; I think you are going to be surprised by how
+    dangerous it can be.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.3 XML entity expansion
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In this section, I discuss a couple of attacks designed to starve a system of
+    memory. These attacks exploit a little-known XML feature known as *entity expansion*.
+    What is an XML entity? An *entity* *declaration* allows you to define and name
+    arbitrary data within an XML document. An *entity reference* is a placeholder,
+    allowing you to embed an entity within an XML document. It is the job of an XML
+    parser to expand an entity reference into an entity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Type the following code into an interactive Python shell as a concrete exercise.
+    This code begins with a small inline XML document, shown in bold font. Within
+    this document is a single entity declaration, representing the text `Alice`. The
+    root element references this entity twice. Each reference is expanded as the document
+    is parsed, embedding the entity two times:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Defines an inline XML document
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Defines an XML entity
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Root element contains three entity references.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Entity expansion demonstrated
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this example, a pair of three-character entity references act as placeholders
+    for a five-character XML entity. This does not reduce the overall size of the
+    document in a meaningful way, but imagine if the entity were 5000 characters long.
+    Thus, memory conservation is one application of XML entity expansion; in the next
+    two sections, you’ll learn how this feature is abused to achieve the opposite
+    effect.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.3.1 Quadratic blowup attack
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'An attacker carries out a *quadratic blowup attack* by weaponizing XML entity
+    expansion. Consider the following code. This document contains an entity that
+    is only 42 characters long; the entity is referred to only 10 times. A quadratic
+    blowup attack makes use of a document like this with an entity and a reference
+    count that are orders of magnitude larger. The math is not difficult; for instance,
+    if the entity is 1 MB, and the entity is referenced 1024 times, the document will
+    weigh in at around 1 GB:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ A single entity declaration
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ 10 entity references
+  prefs: []
+  type: TYPE_NORMAL
+- en: Systems with insufficient input validation are easy targets for quadratic blowup
+    attacks. The attacker injects a small amount of data; the system then exceeds
+    its memory capacity, attempting to expand the data. For this reason, the malicious
+    input is called a *memory bomb**.* In the next section, I’ll show you a much bigger
+    memory bomb, and you’ll learn how to defuse it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.3.2 Billion laughs attack
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: This attack is hilarious. *A billion laughs attack*, also known as an *exponential
+    blowup expansion attack*, is similar to a quadratic blowup attack, but far more
+    effective. This attack exploits the fact that an XML entity may contain references
+    to other entities. It is hard to imagine a commercial use case for this feature
+    in the real world.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The following code illustrates how a billion laughs attack is carried out.
+    The root element of this document contains only one entity reference, shown in
+    bold. This reference is a placeholder for a nested hierarchy of entities:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Four nested levels of entities
+  prefs: []
+  type: TYPE_NORMAL
+- en: Processing this document will force the XML parser to expand this reference
+    into only 1000 repetitions of the text `lol`. A billion laughs attack makes use
+    of an XML document like this with many more levels of nested entities. Each level
+    increases the memory consumption by an additional order of magnitude. This technique
+    will exceed the memory capacity of any computer by using an XML document no bigger
+    than a page in this book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Like most programming languages, Python has many APIs to parse XML. The `minidom`,
+    `pulldom`, `sax`, and `etree` packages are all vulnerable to quadratic blowups
+    and billion laughs. In defense of Python, these APIs are simply following the
+    XML specification.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Adding memory to a system obviously isn’t a solution to this problem; adding
+    input validation is. Python programmers resist memory bombs with a library known
+    as `defusedxml`. From within your virtual environment, run the following command
+    to install `defusedxml`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `defusedxml` library is designed to be a drop-in replacement for Python’s
+    native XML APIs. For example, let’s compare two blocks of code. The following
+    lines of code will bring down a system as it tries to parse malicious XML:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Opens a memory bomb
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Conversely, the following lines of code raise an `EntitiesForbidden` exception
+    while trying to parse the same file. The `import` statement is the only difference:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Raises an EntitiesForbidden exception
+  prefs: []
+  type: TYPE_NORMAL
+- en: Beneath the hood, `defusedxml` wraps the `parse` function for each of Python’s
+    native XML APIs. The `parse` functions defined by `defusedxml` do not support
+    entity expansion by default. You are free to override this behavior with the `forbid_
+    entities` keyword argument if you need this functionality when parsing XML from
+    a trusted source. Table 13.1 lists each of Python’s native XML APIs and their
+    respective `defusedxml` substitutes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 13.1 Python XML APIs and defusedxml alternatives
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Native Python API | defusedxml API |'
+  prefs: []
+  type: TYPE_TB
+- en: '| from xml.dom.minidom import parse | from defusedxml.minidom import parse
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| from xml.dom.pulldom import parse | from defusedxml.pulldom import parse
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| from xml.sax import parse | from defusedxml.sax import parse |'
+  prefs: []
+  type: TYPE_TB
+- en: '| from xml.etree.ElementTree import parse | from defusedxml.ElementTree import
+    parse |'
+  prefs: []
+  type: TYPE_TB
+- en: The memory bombs I present in this chapter are both injection attacks and *denial-of-service*
+    (*DoS*) *attacks*. In the next section, you’ll learn how to identify and resist
+    a handful of other DoS attacks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.4 Denial of service
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: You are probably already familiar with *DoS* attacks. These attacks are designed
+    to overwhelm a system with excessive resource consumption. Resources targeted
+    by DoS attacks include memory, storage space, network bandwidth, and CPU. The
+    goal of a DoS attack is to deny users access to a service by compromising the
+    availability of the system. DoS attacks are carried out in countless ways. The
+    most common forms of DoS attacks are carried out by targeting a system with large
+    amounts of malicious network traffic.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A DoS attack plan is usually more sophisticated than just sending lots of network
+    traffic to a system. The most effective attacks manipulate a particular property
+    of the traffic in order to stress the target more. Many of these attacks make
+    use of malformed network traffic in order to take advantage of a low-level networking
+    protocol implementation. A web server such as NGINX, or a load-balancing solution
+    such as AWS Elastic Load Balancing, are the appropriate places to resist these
+    kinds of attacks. On the other hand, an application server such as Django, or
+    a web server gateway interface such as Gunicorn, are the wrong tools for the job.
+    In other words, these problems cannot be solved in Python.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this section, I focus on higher-level HTTP-based DoS attacks. Conversely,
+    your load balancer and your web server are the wrong place to resist these kinds
+    of attacks; your application server and your web server gateway interface are
+    the right place. Table 13.2 illustrates a few Django settings you can use to configure
+    limits for these properties.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 13.2 Django settings for DoS attack resistance
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Setting | Description |'
+  prefs: []
+  type: TYPE_TB
+- en: '| DATA_UPLOAD_MAX_NUMBER_FIELDS | Configures the maximum number of request
+    parameters allowed. Django raises a SuspiciousOperation exception if this check
+    fails. This setting defaults to 1000, but legitimate HTTP requests rarely have
+    this many fields. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| DATA_UPLOAD_MAX_MEMORY_SIZE | Limits the maximum request body size in bytes.
+    This check ignores file-upload data. Django raises a Suspicious-Operation exception
+    if a request body exceeds this limit. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| FILE_UPLOAD_MAX_MEMORY_SIZE | Represents the maximum size of an uploaded
+    file in bytes before it is written from memory to disk. This setting aims to limit
+    memory consumption; it does not limit the size of the uploaded file. |'
+  prefs: []
+  type: TYPE_TB
+- en: WARNING When was the last time you even saw a form with 1000 fields? Reducing
+    `DATA_UPLOAD_MAX_NUMBER_FIELDS` from 1000 to 50 is probably worth your time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`DATA_UPLOAD_MAX_MEMORY_SIZE` and `FILE_UPLOAD_MAX_MEMORY_SIZE` reasonably
+    default to 2,621,440 bytes (2.5 MB). Assigning these settings to `None` disables
+    the check.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 13.3 illustrates a few Gunicorn arguments to resist several other HTTP-based
+    DoS attacks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 13.3 Gunicorn arguments for DoS attack resistance
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Argument | Description |'
+  prefs: []
+  type: TYPE_TB
+- en: '| limit-request-line | Represents the size limit, in bytes, of a request line.
+    A request line includes the HTTP method, protocol version, and URL. The URL is
+    the obvious limiting factor. This setting defaults to 4094; the maximum value
+    is 8190\. Setting this to 0 disables the check. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| limit-request-fields | Limits the number of HTTP headers a request is allowed
+    to have. The “fields” limited by this setting are not form fields. The default
+    value is reasonably set to 100\. The maximum value of limit-request-fields is
+    32768. |'
+  prefs: []
+  type: TYPE_TB
+- en: '| limit-request-field_size | Represents the maximum allowed size of an HTTP
+    header. The underscore is not a typo. The default value is 8190\. Setting this
+    to 0 permits headers of unlimited size. This check is commonly performed by web
+    servers as well. |'
+  prefs: []
+  type: TYPE_TB
+- en: The main point of this section is that any property of an HTTP request can be
+    weaponized; this includes the size, URL length, field count, field size, file
+    upload size, header count, and header size. In the next section, you’ll learn
+    about an attack driven by a single request header.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.5 Host header attacks
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Before we dive into `Host` header attacks, I’m going to explain why browsers
+    and web servers use the `Host` header. A web server relays HTTP traffic between
+    a website and its users. Web servers often do this for multiple websites. In this
+    scenario, the web server forwards each request to whichever website the browser
+    sets the `Host` header to. This prevents traffic for alice.com from being sent
+    to bob.com, and vice versa. Figure 13.3 illustrates a web server routing HTTP
+    requests between two users and two websites.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH13_F03_Byrne](Images/CH13_F03_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 13.3 A web server uses Host headers to route web traffic between Alice
+    and Bob.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Web servers are often configured to forward a request with a missing or invalid
+    `Host` header to a default website. If this website blindly trusts the `Host`
+    header value, it becomes vulnerable to a `Host` header attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose Mallory sends a password-reset request to alice.com. She forges the
+    `Host` header value by setting it to `mallory.com` instead of `alice.com`. She
+    also sets the email address field to `bob@bob.com` instead of `mallory@mallory.com`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alice’s web server receives Mallory’s malicious request. Unfortunately, Alice’s
+    web server is configured to forward the request, containing an invalid `Host`
+    header, to her application server. The application server receives the password-reset
+    request and sends Bob a password-reset email. Like the password-reset email you
+    learned how to send in chapter 9, the email sent to Bob contains a password-reset
+    link.
+  prefs: []
+  type: TYPE_NORMAL
+- en: How does Alice’s application server generate Bob’s password-reset link? Unfortunately,
+    it uses the inbound `Host` header. This means the URL Bob receives is for mallory.com,
+    not alice.com; this link also contains the password-reset token as a query parameter.
+    Bob opens his email, clicks the link, and inadvertently sends the password-reset
+    token to mallory.com. Mallory then uses the password-reset token to reset the
+    password for, and take control of, Bob’s account. Figure 13.4 illustrates this
+    attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH13_F04_Byrne](Images/CH13_F04_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 13.4 Mallory takes over Bob’s account with a Host header attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Your application server should never get its identity from the client. It is
+    therefore unsafe to access the `Host` header directly, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Bypasses input validation
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Always use the `get_host` method on the request if you need to access the hostname.
+    This method verifies and retrieves the `Host` header:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Validates Host header
+  prefs: []
+  type: TYPE_NORMAL
+- en: How does the `get_host` method verify the `Host` header? By validating it against
+    the `ALLOWED_HOSTS` setting. This setting is a list of hosts and domains from
+    which the application is allowed to serve resources. The default value is an empty
+    list. Django facilitates local development by allowing `Host` headers with `localhost`,
+    `127.0.0.1`, and `[::1]` if `DEBUG` is set to `True`. Table 13.4 illustrates how
+    to configure `ALLOWED_ HOSTS` for production.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 13.4 ALLOWED_HOSTS configuration by example
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Example | Description | Match | Mismatch |'
+  prefs: []
+  type: TYPE_TB
+- en: '| alice.com | Fully qualified name | alice.com | sub.alice.com |'
+  prefs: []
+  type: TYPE_TB
+- en: '| sub.alice.com | Fully qualified name | sub.alice.com | alice.com |'
+  prefs: []
+  type: TYPE_TB
+- en: '| .alice.com | Subdomain wildcard | alice.com, sub.alice.com |  |'
+  prefs: []
+  type: TYPE_TB
+- en: '| * | Wildcard | alice.com, sub.alice.com, bob.com |  |'
+  prefs: []
+  type: TYPE_TB
+- en: WARNING Do not add `*` to `ALLOWED_HOSTS`. Many programmers do this for the
+    sake of convenience, unaware that they are effectively disabling `Host` header
+    validation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A convenient way to configure `ALLOWED_HOSTS` is to dynamically extract the
+    hostname from the public-key certificate of your application as it starts. This
+    is useful for a system that is deployed with different hostnames to different
+    environments. Listing 13.1 demonstrates how to do this with the `cryptography`
+    package. This code opens the public-key certificate file, parses it, and stores
+    it in memory as an object. The hostname attribute is then copied from the object
+    to the `ALLOWED_HOSTS` setting.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 13.1 Extracting the host from a public-key certificate
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Extracts the common name from the certificate at startup
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Adds the common name to ALLOWED_HOSTS
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note `ALLOWED_HOSTS` is unrelated to TLS. Like any other application server,
+    Django for the most part is unaware of TLS. Django uses the `ALLOWED_HOSTS` setting
+    only to prevent `Host` header attacks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Once again, an attacker will weaponize any property of an HTTP request if they
+    can. In the next section, I cover yet another technique attackers use to embed
+    malicious input in the request URL.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.6 Open redirect attacks
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: As an introduction to the topic of open redirect attacks, let’s suppose Mallory
+    wants to steal Bob’s money. First, she impersonates bank.alice.com with bank.mallory.com.
+    Mallory’s site looks and feels just like Alice’s online banking site. Next, Mallory
+    prepares an email designed to look as though it originates from bank.alice.com.
+    The body of this email contains a link to the login page for bank.mallory.com.
+    Mallory sends this email to Bob. Bob clicks the link, navigates to Mallory’s site,
+    and enters his login credentials. Mallory’s site then uses Bob’s credentials to
+    access his account at bank.alice.com. Bob’s money is then transferred to Mallory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'By clicking the link, Bob is said to be *phished* because he took the bait.
+    Mallory has successfully executed a *phishing* scam. This scam comes in many flavors:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Phishing* attacks arrive via email.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Smishing* attacks arrive via Short Message Service (SMS).'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Vishing* attacks arrive via voicemail.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Mallory’s scam targets Bob directly, and there is little Alice can do to prevent
+    it. If she’s not careful, though, Alice can actually make things easier for Mallory.
+    Let’s suppose Alice adds a feature to bank.alice.com. This feature dynamically
+    redirects the user to another part of the site. How does bank.alice.com know where
+    to redirect the user to? The address of the redirect is determined by the value
+    of a request parameter. (In chapter 8, you implemented an authentication workflow
+    supporting the same feature via the same mechanism.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unfortunately, bank.alice.com doesn’t validate each address before redirecting
+    the user to it. This is known as an *open redirect*, and it leaves bank.alice.com
+    wide open to an open redirect attack. The open redirect makes it easy for Mallory
+    to launch an even more effective phishing scam. Mallory takes advantage of this
+    opportunity by sending Charlie an email with a link to the open redirect. This
+    URL, shown in figure 13.5, points to the domain of bank.alice.com.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH13_F05_Byrne](Images/CH13_F05_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 13.5 URL anatomy of an open redirect attack
+  prefs: []
+  type: TYPE_NORMAL
+- en: Charlie is much more likely to take the bait in this case because he receives
+    a URL with the host of his bank. Unfortunately for Charlie, his bank redirects
+    him to Mallory’s site, where he enters his credentials and personal information.
+    Figure 13.6 depicts this attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH13_F06_Byrne](Images/CH13_F06_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 13.6 Mallory phishes Bob with an open redirect attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 13.2 illustrates a simple open redirect vulnerability. `OpenRedirectView`
+    performs a task and then reads the value of a query parameter. The user is then
+    blindly redirected to whatever the next parameter value is.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 13.2 An open redirect without input validation
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Reads next request parameter
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Sends redirect response
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conversely, `ValidatedRedirectView` in listing 13.3 resists open redirect attacks
+    with input validation. This view delegates the work to `url_has_allowed_host _and_scheme`,
+    one of Django’s built-in utility functions. This function, shown in bold font,
+    accepts a URL and host. It returns `True` if and only if the domain of the URL
+    matches the host.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 13.3 Resisting open redirect attacks with input validation
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Reads next request parameter
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Safely determines host
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Validates host and protocol of redirect
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Prevents attack
+  prefs: []
+  type: TYPE_NORMAL
+- en: Notice that `ValidatedRedirectView` determines the hostname with the `get_host`
+    method instead of accessing the `Host` header directly. In the previous section,
+    you learned to avoid `Host` header attacks this way.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In rare situations, your system may actually need to dynamically redirect users
+    to more than one host. The `url_has_allowed_host_and_scheme` function accommodates
+    this use case by accepting a single hostname or a collection of many hostnames.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `url_has_allowed_host_and_scheme` function rejects any URL using HTTP if
+    the `require_https` keyword argument is set to `True`. Unfortunately, this keyword
+    argument defaults to `False`, creating an opportunity for a different kind of
+    open redirect attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s suppose Mallory and Eve collaborate on an attack. Mallory begins this
+    attack by targeting Charlie with yet another phishing scam. Charlie receives an
+    email containing another link with the following URL. Notice that the source and
+    destination hosts are the same; the protocols, shown in bold font, are different:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: Charlie clicks the link, taking him to Alice’s site over HTTPS. Unfortunately
+    Alice’s open redirect then sends him to another part of the site over HTTP. Eve,
+    a network eavesdropper, picks up where Mallory leaves off by carrying out a man-in-the-middle
+    attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING The default value for `require_https` is `False`. You should set it
+    to `True`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next section, I finish this chapter with what is arguably the most well-known
+    injection attack. It needs no introduction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.7 SQL injection
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: While reading this book, you have implemented workflows supporting features
+    such as user registration, authentication, and password management. Like most
+    systems, your project implements these workflows by relaying data back and forth
+    between a user and a relational database. When workflows like this fail to validate
+    user input, they become a vector for *SQL injection*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: An attacker carries out SQL injection by submitting malicious SQL code as input
+    to a vulnerable system. In an attempt to process the input, the system inadvertently
+    executes it instead. This attack is used to modify existing SQL statements or
+    inject arbitrary SQL statements into a system. This allows attackers to destroy,
+    modify, or gain unauthorized access to data.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Some security books have an entire chapter devoted to SQL injection. Few readers
+    of this book would finish an entire chapter on this subject because many of you,
+    like the rest of the Python community, have already embraced ORM frameworks. ORM
+    frameworks don’t just read and write data for you; they are a layer of defense
+    against SQL injection. Every major Python ORM framework, such as Django ORM or
+    SQLAlchemy, effectively resists SQL injection with automatic query parameterization.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING An ORM framework is preferable to writing raw SQL. Raw SQL is error
+    prone, more labor intensive, and ugly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Occasionally, object-relational mapping isn’t the right tool for the job. For
+    example, your application may need to execute a complicated SQL query for the
+    sake of performance. In these rare scenarios when you must write raw SQL, Django
+    ORM supports two options: raw SQL queries and database connection queries.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.7.1 Raw SQL queries
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Every Django model class refers to a query interface by a property named `objects`.
+    Among other things, this interface accommodates raw SQL queries with a method
+    named `raw`. This method accepts raw SQL and returns a set of model instances.
+    The following code illustrates a query that returns a potentially large number
+    of rows. To save resources, only two columns of the table are selected:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Selects two columns for all rows
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Suppose the following query is intended to control which users are allowed
+    to access sensitive information. As intended, the `raw` method returns a single
+    user model when `first_name` equals `Alice`. Unfortunately, Mallory can escalate
+    her privileges by manipulating `first_name` to be `"Alice'' OR first_name = ''Mallory"`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: WARNING Raw SQL and string interpolation are a terrible combination.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Notice that putting quotes around the placeholder, `%s`, provides a false sense
+    of security. Quoting the placeholder provides no safety because Mallory can simply
+    prepare malicious input containing additional quotes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Quoting placeholders doesn’t sanitize raw SQL.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'By calling the `raw` method, you must take responsibility for parameterizing
+    the query. This inoculates your query by escaping all special characters such
+    as quotes. The following code demonstrates how to do this by passing a list of
+    parameter values, shown in bold, to the `raw` method. Django iterates over these
+    values and safely inserts them into your raw SQL statement, escaping all special
+    characters. SQL statements prepared this way are immune to SQL injection. Notice
+    that the placeholder is not surrounded by quotes:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: Alternatively, the `raw` method accepts a dictionary instead of a list. In this
+    scenario, the `raw` method safely replaces `%(dict_key)` with whatever `dict_key`
+    is mapped to in your dictionary.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 13.7.2 Database connection queries
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Django allows you to execute arbitrary raw SQL queries directly through a database
+    connection. This is useful if your query doesn’t belong with a single model class,
+    or if you want to execute an `UPDATE`, `INSERT`, or `DELETE` statement.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Connection queries carry just as much risk as raw method queries do. For example,
+    suppose the following query is intended to delete a single authenticated message.
+    This code behaves as intended when `msg_id` equals `42`. Unfortunately Mallory
+    will nuke every message in the table if she can manipulate `msg_id` to be `42
+    OR 1 = 1`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ SQL statement with one placeholder
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Executes SQL statement
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As with `raw` method queries, the only way to execute connection queries safely
+    is with query parameterization. Connection queries are parameterized the same
+    way `raw` method queries are. The following example demonstrates how to delete
+    an authenticated message safely with the `params` keyword argument, shown in bold:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Unquoted placeholder
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Escapes special characters, executes SQL statement
+  prefs: []
+  type: TYPE_NORMAL
+- en: The attacks and countermeasures I cover in this chapter are not as complicated
+    as the ones I cover in the remaining chapters. For example, cross-site request
+    forgery and clickjacking have dedicated chapters. The next chapter is devoted
+    entirely to a category of attacks known as *cross-site scripting*. These attacks
+    are more complicated and common than all of the attacks I present in this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Hashing and data integrity effectively resist package injection attacks.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Parsing YAML can be just as dangerous as parsing `pickle`.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: XML isn’t just ugly; parsing it from an untrusted source can bring down a system.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: You can resist low-level DoS attacks with your web server and load balancer.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: You can resist high-level DoS attacks with your WSGI or application server.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Open redirect attacks enable phishing scams and man-in-the-middle attacks.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Object-relational mapping effectively resists SQL injection.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

@@ -1,0 +1,89 @@
+- en: Appendix A. Fun pages
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: There are four separate ciphers in this diagram, S1 to S4\. Each cipher is a
+    simple monoalphabetic substitution. Your job is to identify the type, such as
+    Morse code, and then solve it. Each cipher is written in standard English, using
+    uppercase letters without spaces or punctuation. Each cipher is between 75 and
+    90 letters long. All begin in the upper-left cell. The first 3 ciphers read left
+    to right across the rows. The last cipher reads clockwise around the border.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![19-unnumb-1](../Images/19-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The methods are all described in this book. The only difference is the visual
+    presentation. You need to determine which features are relevant in each cipher,
+    such as height, width, position or color. You can submit your answers for credit
+    by following the instructions hidden elsewhere in this book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here are some additional fun ciphers using some of the most popular hobbyist
+    ciphers. These are in standard English, with a few proper names. By convention,
+    the letters are grouped by fives, regardless of the period. If you want lots more
+    ciphers like these, consider joining the American Cryptogram Association at [cryptogram.org](http://cryptogram.org).
+    You can submit your answers for credit by following the instructions hidden, in
+    plain view, elsewhere in this book. You can find more cryptograms to solve at
+    [www.contestcen.com/crypt.htm](http://www.contestcen.com/crypt.htm).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'F1: Belaso cipher (section 5.8.1)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![19-unnumb-2](../Images/19-unnumb-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'F2: Vigenère cipher (section 5.8.2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![19-unnumb-3](../Images/19-unnumb-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'F3: Columnar transposition (section 7.2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![19-unnumb-4](../Images/19-unnumb-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'F4: Playfair cipher (section 9.2)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![19-unnumb-5](../Images/19-unnumb-5.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'F5: Bifid cipher (section 9.6)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The block size is 7, and the subject is horticulture.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![19-unnumb-6](../Images/19-unnumb-6.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'F6: One-time pad (chapter 14)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For each letter in the message, a random number is generated. If this number
+    is even, X is added modulo 26 to the letter, otherwise Y is added modulo 26.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![19-unnumb-7](../Images/19-unnumb-7.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The one-time pad, of course, is not a hobbyist cipher. I included this as a
+    fun cipher to make the point that some one-time pad ciphers can be broken in practice.
+    Can you see how to find the values of X and Y without trying all 676 combinations?
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'F7: General polyalphabetic (section 5.9.3)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For an extra level of fun there are characters from several languages, and more
+    than 26 characters are used. Each alphabet, however, contains only 26 different
+    characters, and the message is in standard English.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![19-unnumb-8](../Images/19-unnumb-8.png)'
+  prefs: []
+  type: TYPE_IMG

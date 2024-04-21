@@ -1,0 +1,1482 @@
+- en: 5 Substitution ciphers
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simple substitution and polyalphabetic substitution ciphers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Solving polyalphabetic ciphers using the Kasiski test and the index of coincidence
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Autokey and running key ciphers, and methods for solving them
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Simulating rotor-based cipher machines
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'We are now ready to explore the basic tools described in the preceding chapter
+    in greater depth. Before I begin describing all the various ciphers, let me explicitly
+    state the goals that these ciphers are trying to achieve. The Dutch linguist and
+    polymath Auguste Kerckhoffs first expressed these principles in a pair of articles
+    in *Journal des Sciences Militaires* in 1883:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The cipher should be unbreakable in practice, even if not in theory.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: This should be true even if the enemy learns the system.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The key should be easy to remember (without notes) and easy to change.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: It should be possible to transmit the enciphered messages by telegraph.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The apparatus and documents should be easily carried and operated by one person.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The cipher should be easy to use; there should be no complex rules or computations.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Rule 4 might be updated to read “transmit the enciphered messages digitally.”
+    Otherwise these precepts remain as valid today as in 1883.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One corollary of the second principle is that the strength of the cipher should
+    reside solely in the key. Kerckhoffs also believed that *only cryptographers are
+    qualified to judge the security of a cipher*. Too often the decision of which
+    cipher to use is made by government officials who lack cryptographic expertise,
+    sometimes with disastrous consequences.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.1 Simple substitution
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Simple* *substitution*, also called *monoalphabetic substitution*, is the
+    familiar type of cipher you see in the puzzle sections of newspapers and magazines.
+    In simple substitution, each letter of the alphabet in the message is replaced
+    by another letter of the alphabet consistently and uniformly. So, if the letter
+    M has been replaced by T in one place, then every M in the message will be replaced
+    by T, and every T in the ciphertext will represent an M.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Since most people are familiar with the techniques for solving simple substitution
+    ciphers, I will merely mention them: letter frequency, initial letter frequency,
+    final letter frequency, double letter frequency, letter pair frequency, short
+    words, common prefixes and suffixes, distribution of vowels and consonants, pattern
+    words, and exploiting the punctuation.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: For the easy cryptograms in newspapers, often all that is needed is to look
+    at the short words. If you find AB and CBA the words are probably TO and NOT,
+    while AB and BAC are most often OF and FOR. The pattern ABCA is likely THAT, ABCDC
+    suggests THERE, and ABCDB could be WHICH. If you search the internet you may be
+    able to find lists of pattern words for sale, or websites that will find words
+    matching a pattern you supply.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For the more difficult cryptograms, with texts like **FOXY PIXY MANX AXED TOXIC
+    LUXURY ONYX SPHINX**, a more organized approach is needed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I demonstrate the procedure using the following sample cryptogram. The language
+    is known to be English. The text has 73 letters and 11 words for an average word
+    length of 6.64 letters, versus 5.0 letters for normal English. The absence of
+    short words of fewer than 5 letters and the absence of pattern words suggests
+    that this cryptogram has been deliberately constructed to be difficult.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-1](../Images/5-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'The first phase is to identify vowels and consonants. Begin by counting the
+    number of occurrences of each letter of the alphabet to get the *frequency count*.
+    In the sample cryptogram the letter count for A is 0, for B is 3, for C is 3,
+    and so forth. The full frequency count follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-2](../Images/5-unnumb-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Notice that there are only two high-frequency letters here, **L** and **S**,
+    with frequencies of 8 and 7\. In normal English text there are 40% vowels. This
+    percentage is robust, and usually holds even when the letter frequencies have
+    been deliberately manipulated. With 73 letters in the cryptogram there should
+    be 29 vowels. That pretty much requires that both **L** and **S** represent vowels,
+    unless the frequency has been severely skewed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Next you make a contact chart by listing the letters of the alphabet vertically
+    down the center of the page. Each different letter that appears in the cryptogram
+    gets its own row. On each row, each letter that appears before the central letter
+    is listed to its left, and each letter that appears after the central letter is
+    listed to its right. For example, the first row of the chart, **EO** **B** **DWZ**,
+    means that in the cryptogram the letter **B** is preceded by **E** and **O** once
+    each, and followed by **D**, **W** and **Z** once each. Here is the full contact
+    chart for this cryptogram (shown in 3 columns to save space).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-3](../Images/5-unnumb-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The contact chart is used to identify vowels and consonants. In general, vowels
+    contact a wide variety of letters on both the left and the right, while consonants
+    tend to have a limited number of distinct contacts. From the contact chart we
+    can identify 4 probable vowels, **L**, **Q**, **S** and **V**, and 4 probable
+    consonants, **E**, **O**, **R** and **U**. Let’s mark these letters **°** for
+    vowels and **˟** for consonants and see if the distribution seems plausible.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-4](../Images/5-unnumb-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: There are 3 long stretches with no vowels, in word 3 **EYXDO**, in word 7 **KIGXG**
+    and in word 8 **YIWZ**. This suggests that **I** and/or **X** might be a vowel.
+    Both have lots of different contacts, but it is extremely unlikely that **X**
+    represents a vowel because then word 11 would start with 3 vowels and end with
+    a vowel. This is rare in English. The only example I could find is OUIJA. (**SQXMV**
+    cannot be AIOLI because of the repeated I.) So, **I** is probably a vowel, and
+    **X** is a consonant.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s take a second pass at distinguishing vowels from consonants. In the ciphertext
+    there are 5 pairs of tentative vowels, **VL**, **VS**, **VQ**, **QL** and **SQ**.
+    Pairs of vowels are not common in English, so it is likely that either **V** or
+    **Q** is really a consonant. It is probably not **Q** because then word 10 would
+    end with 5 consonants. The only such 6-letter word I know is ANGSTS.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s make **I** a vowel, make **V** and **X** consonants, and see where we
+    stand.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-5](../Images/5-unnumb-5.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This looks right. From word 3 we can now identify **D** as a vowel, and from
+    word 11 it is probable that **M** is a vowel. All 6 of the vowels have now been
+    found, so every other letter must be a consonant. Here is the complete breakdown
+    of consonants and vowels.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-6](../Images/5-unnumb-6.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The second phase is identifying individual letters. The following Letter Contact
+    Table shows the contact characteristics for the letters of the English alphabet.
+    A different language would have different characteristics. For example, the letters
+    M, V and Z are most often both preceded and followed by vowels, while the letter
+    N is usually preceded by a vowel, but followed by a consonant. I compiled this
+    table using the English language corpus of the Gutenberg Project.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-7](../Images/5-unnumb-7.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: There is one good candidate for plaintext H in the cryptogram, namely ciphertext
+    **U**. However, **U** appears twice in the bigram **US** at the end of words,
+    so that is unlikely.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are two strong candidates for N in the cryptogram, namely ciphertext **E**
+    and **O**. Both **E** and **O** represent consonants that are always preceded
+    by vowels and followed by consonants. However, **O** is the stronger choice because
+    it has higher frequency, and because it precedes two known consonants in the word
+    **ZLORUS**. In English 3-consonant combinations often begin with N, such as **NST**
+    and **NTH**. It is more likely that **O** represents N. This yields
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-8](../Images/5-unnumb-8.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: It is now feasible to try to find possible words matching some of these patterns.
+    I found 67 words matching **ZLORUS** **˟°N˟˟°**. Of these, 32 ended in E, and
+    27 ended in Y. I found 37 words matching **SQXMV** **°°˟°˟** and not containing
+    N. Of these, 15 began with Y, but only 1 began with E. It is therefore most likely
+    that ciphertext **S** represents plaintext Y. This gives us
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-9](../Images/5-unnumb-9.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The ciphertext words **IVQOR** and **ZLORUS** both contain the bigram **OR**.
+    Let’s try to identify that. Knowing that **IVQOR** **°˟°N˟** does not contain
+    a Y leaves only 24 likely words. Of these, 12 end in G and 8 end in S, hence ciphertext
+    **OR** is probably either NG or NS. The number of likely plaintext words for **ZLORUS**
+    **˟°N˟˟Y** is now down to 26\. Among these, the fourth letter is G 8 times, T
+    6 times, but S only 1 time. The most likely choice for ciphertext **OR** is thus
+    plaintext NG. We now have
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-10](../Images/5-unnumb-10.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: There are 8 possibilities for the first word, **RULEYS**. These contain only
+    6 possibilities for the bigram **UL**. For each of these choices, let’s look at
+    the possibilities for the word **ZLORUS**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-11](../Images/5-unnumb-11.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The choice **ZLORUS** = JUNGLY can be ruled out immediately because **KSYIWZ**
+    would then have the form **˟Y˟°˟J**. There is no such word in English. This means
+    that **RULEYS** represents GRUMPY and **ZLORUS** represents HUNGRY. Filling in
+    these new letters gives
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-12](../Images/5-unnumb-12.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The rest of the letters can be filled in by sight. It is now obvious that the
+    second word is PUDGY and the third word is BUMPKIN, which makes the eighth word
+    BYPATH, and so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The completed cryptogram reads GRUMPY PUDGY BUMPKIN CLUMSILY STUMBLED ALONG
+    BACKCOUNTRY BYPATH, HUNGRY UNSHOD YOKEL.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Simple substitution is rated One. When the letter frequencies and contact frequencies
+    have been intentionally distorted, as in this example, the rating can go up to
+    Two or possibly Three. This makes a good puzzle, but is useless for general communications.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.2 Mixing the alphabet
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Simple substitution requires a mixed alphabet. There are several traditional
+    paper-and-pencil methods for this. One way to obtain a mixed alphabet is to use
+    a keyword. In the simplest case, you just write the keyword starting at some position,
+    and then fill in the rest of the alphabet behind it, wrapping around as needed.
+    The remaining letters can be filled in forward or backward. Here are three examples:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-13](../Images/5-unnumb-13.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'This method was first used by the Argenti family, who were cipher secretaries
+    to several popes and bishops circa 1600\. These alphabets are not well mixed.
+    A somewhat better method is to use two keywords, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-14](../Images/5-unnumb-14.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Columnar mixing
+  prefs: []
+  type: TYPE_NORMAL
+- en: Write the alphabet into a block. Write the keyword on the top row, and the rest
+    of the alphabet in as many rows as needed. Longer keywords give better mixing.
+    Then read the letters out of the block, going down the columns. In this example
+    the keyword SAMPLE has been written on the top row. The first column reading downward
+    is **SBIRY**, the second column is **ACJTZ**, and so forth. If you like, you can
+    alternate reading up and down the columns or use other routes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-15](../Images/5-unnumb-15.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: SkipMix
+  prefs: []
+  type: TYPE_NORMAL
+- en: When I was in high school, I invented another method suitable for paper and
+    pencil cryptography, which I call *SkipMix*. It uses a string of small numbers
+    called *skips* as a key for mixing the alphabet, for example 3, 1, 4\. Begin with
+    the standard alphabet. Skip 3 letters and take the next letter, which is D.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-16](../Images/5-unnumb-16.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Delete that letter, then skip 1 letter and take the next letter, which is F.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-17](../Images/5-unnumb-17.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Delete that letter, then skip 4 letters and take the next letter, which is K.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-18](../Images/5-unnumb-18.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Then repeat the 3,1,4 cycle. Skip 3 letters and take the next letter, which
+    is O.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-19](../Images/5-unnumb-19.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Continue to repeat the cycle of key numbers until all 26 letters have been chosen.
+    The resulting mixed alphabet is
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-20](../Images/5-unnumb-20.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: SkipMix can be used with a keyword. Suppose the keyword is SAMPLE. Replace each
+    letter by its position in the alphabet, in this case 19,1,13,16,12,5\. Optionally,
+    replace any 2-digit number by its individual digits, in this case 1,9,1,1,3,1,6,1,2,5\.
+    Use this string of skips as the mixing key. Note that 0 is a valid value to use.
+  prefs: []
+  type: TYPE_NORMAL
+- en: SkipMix is well-suited for computer use. In this case the alphabet is the 256
+    different 8-bit character codes. The skips can be any integers from 0 to 255\.
+    The numeric key still can be derived from a keyword. The advantage of using a
+    keyword rather than just a string of integers is that it is easier for a person
+    to remember and to type accurately. Suppose, again, that the keyword is SAMPLE.
+    The numerical equivalents of these letters in ASCII code are 83, 65, 77, 80, 76
+    and 69\. These values fall in a narrow range from 65 to 90, which gives less-thorough
+    mixing. To spread the letter codes over a wider range, they can be multiplied
+    by some constant value modulo 256\. The multiplier can be any odd number between
+    7 and 39, inclusive. For example, the ASCII codes for the keyword SAMPLE multiplied
+    by 17 modulo 256 are 131, 81, 29, 80, 12 and 149\. This covers a range of 149-12
+    = 137, much wider than the original range of 83-65 = 18.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are still only 26 possible values for the skips. One way to obtain a larger
+    set of values is to multiply adjacent numbers modulo 256\. The sequence of skips
+    would then be 83×65, 65×77, 77×80, 80×76, 76×69 and 69×83, all taken modulo 256\.
+    So 83×65 = 5395≡19 (mod 256). The numeric key becomes 19, 141, 16, 192, 124, 95,
+    covering a range of 192-16 = 176.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another way to produce a larger set of values for the skips is to multiply the
+    first letter of the keyword by 7, the second letter by 9, the third letter by
+    11, and so forth, with all multiplications done modulo 256.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since the conversion of the keyword into the numeric key would be done by the
+    computer, not the human operator, an arbitrarily complex calculation could be
+    used. I recommend a quadratic function rather than a linear function to make it
+    harder for opponents to deduce the keyword if they obtain the plaintext of some
+    messages. For example, if N[i] are the terms of the numeric key, and K[i] are
+    the numeric values of the characters in the keyword, then a suitable function
+    might be
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-20-equation-5](../Images/5-unnumb-20-equation-5.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: where the subscripts wrap around when they exceed the length of the keyword.
+    For example, if the keyword had 10 characters, then K[11] would wrap around to
+    K[1], K[12] would wrap around to K[2], and so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*****The function K[i]K[i+1]+K[i+2]K[i+3] would not be as strong. If the length
+    of the keyword was L, then there would be only L distinct quadratic terms. Emily
+    could treat these as L variables and solve the set of L linear equations to find
+    the values of the L products K[1]K[2], K[2]K[3], K[3]K[4], ... K[L]K[1]. It is
+    then easy to find the values of the individual K[i].******'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Throughout this book I show alphabets mixed with simple keywords so that you
+    can see at a glance how they are formed, for example, the alphabet
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**SAMPLEBCDFGHIJKNOQRTUVWXYZ**'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This is very weak. *Do not do this in practice.* I have done it here to aid
+    the reader. Since you do not wish to aid your opponent, always use well-mixed
+    alphabets using columnar mixing, SkipMix or some other strong mixing function.
+    See section 12.3.8 for other methods.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.3 Nomenclators
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: From the 15th through the 18th century, the King of substitution ciphers was
+    the *Nomenclator*, used by kings, popes, diplomats and spies alike. Each nomenclator
+    had a list of hundreds, sometimes thousands, of items, single letters, numbers,
+    bigrams, syllables, words and names, providing up to 25 substitutes for each.
+    Nomenclators are more like codes than like ciphers, so they fall outside the scope
+    of this book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.4 Polyalphabetic substitution
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The techniques for solving simple substitutions involve letter frequencies and
+    letter contacts. If you want to design a cipher to defeat this type of attack,
+    a good place to start is by disrupting the letter frequencies and letter contacts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose that instead of using the same alphabet for enciphering every letter
+    you use two different alphabets. Use the first alphabet to encipher the letters
+    in odd-numbered positions, and use the second alphabet to encipher the letters
+    in even-numbered positions. That is, the first alphabet will encipher the first,
+    third, fifth, ... letters in the message, while the second alphabet is used to
+    encipher the second, fourth, sixth, ... letters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The frequencies of the ciphertext letters now come half from the first alphabet,
+    half from the second alphabet. They are the average of the two sets of frequencies.
+    A ciphertext letter will have high frequency only when it represents high-frequency
+    letters in both alphabets. For example, ciphertext **K** could represent E in
+    the first alphabet and A in the second alphabet so its frequency would be halfway
+    between the frequency of E and the frequency of A in normal text.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conversely, a ciphertext letter will have low frequency only when it represents
+    low-frequency letters in both alphabets, say K in the first alphabet and V in
+    the second alphabet. So the ciphertext will have fewer high-frequency letters
+    and fewer low-frequency letters than normal text. If you made a bar graph, or
+    *histogram*, of the letter frequencies, the peaks would be lower and the valleys
+    would be shallower. So using two alphabets tends to flatten the frequency counts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The same happens with contact frequencies. Any common bigram such as TH will
+    start at an odd position in the message about half the time, and at an even position
+    about half the time. Half the time the T is enciphered with the first alphabet
+    and the H is enciphered with the second alphabet, and half the time it is vice
+    versa. So the contact frequencies also get flattened.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The more alphabets that are used, the flatter the frequencies become. In practice,
+    from roughly the US Civil War until World War I using about 20 alphabets was typical.
+    There is a statistical test that measures the flatness of the letter frequencies
+    and uses that to estimate the number of alphabets, but it is not very accurate,
+    particularly with more than 10 alphabets. Better methods are described in sections
+    5.6 and 5.7.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s look at the historical development of polyalphabetic ciphers. Early forms
+    of polyalphabetic ciphers were developed by Leon Battista Alberti in 1467 and
+    by Johannes Trithemius in 1499 (but not published until 1606). Polyalphabetic
+    ciphers begin to take their modern form with the publication of *La cifra del
+    Sig. Giovan Battista Belaso* in 1553.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.5 The Belaso cipher
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The *Belaso Cipher*, invented by Giovan Battista Belaso in 1553, used 26 different
+    alphabets, each of which was simply the standard alphabet shifted a number of
+    places. The 26 cipher alphabets can be displayed as a tableau, where each horizontal
+    row contains one shifted alphabet, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-22](../Images/5-unnumb-22.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'The first letter on each row identifies the alphabet, so the top row is the
+    A alphabet, the second row is the B alphabet, and so forth. Belaso was the first
+    to use a key to select which alphabet to use for which letter in the message.
+    (By contrast, the Argenti family used a keyword to mix the alphabet.) Belaso would
+    write the message horizontally. Above the plaintext letters he would write the
+    key, repeated as many times as needed. To encipher a letter, he would find that
+    letter on the top row of the tableau, use the key letter to select the row in
+    the tableau, and replace the plaintext letter by the ciphertext letter directly
+    below it in the selected row. Here is how the plaintext letter S would be enciphered
+    by the key letter C:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-23](../Images/5-unnumb-23.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: We find the letter S on the top row of the tableau. Its key is C, so it is enciphered
+    using the third row of the tableau. On the third row, directly below S, we find
+    the letter U. So S gets replaced by **U**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To encipher the word SAMPLE with the key CAB using the previous tableau, S is
+    replaced by **U**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-24](../Images/5-unnumb-24.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The next letter in the message is A with the key A, so A is enciphered with
+    the top row. It is enciphered as **A**. The M of SAMPLE has the key B. It gets
+    enciphered using the second row and becomes **N**, and so forth. The resulting
+    ciphertext is **UANRLF**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Instead of using a tableau, the encipherment can be done using a *St. Cyr slide*,
+    named for the French Saint-Cyr military academy. The slide is shown here in the
+    M position.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-25](../Images/5-unnumb-25.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: You can make your own slide from wood, cardboard or plastic. The top double-width
+    row is fixed in place, while the single-width bottom row slides. Rubber bands
+    can hold it taut and in the correct position. Either or both of the alphabets
+    can be mixed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Belaso cipher is *symmetric* because enciphering a letter X with a key K
+    is exactly the same as enciphering the letter K with the key X. Ciphers based
+    on adding the key to the plaintext or exclusive-ORing the key and the plaintext
+    tend to be symmetric in this sense.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For reasons beyond my ken, the Belaso cipher is now known as the *Vigenère*
+    *Cipher*, and the cipher invented by Blaise de Vigenère, which is described in
+    section 5.8.2, is now called an *Autokey* cipher. To give credit where due, I
+    will continue to call the cipher invented by Belaso using the standard alphabet
+    the Belaso cipher. With a mixed alphabet I will call it the Vigenère cipher. I
+    will call the autokey cipher invented by Vigenère the *Vigenère Autokey*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Attributing the Belaso cipher to Vigenère is an example of Stigler’s law of
+    eponymy, for Stephen M. Stigler, that no important scientific discovery is named
+    for its discoverer. Some cryptographic examples are the Playfair cipher, invented
+    by Charles Wheatstone, and Morse code, invented by Alfred Vail. Stigler’s law
+    itself was proposed by Robert K. Merton, who named it the *Matthew Effect* for
+    St. Matthew.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.6 The Kasiski method
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: For over 300 years the Belaso cipher was considered unbreakable. The French
+    called it *Le Chiffre Indéchiffrable*, the *Undecipherable Cipher*. The turning
+    point came in 1863 when Major Friedrich W. Kasiski, a Prussian infantry officer,
+    published a book detailing how the period of a polyalphabetic cipher could be
+    determined. This is now called the *Kasiski Method* or the *Kasiski Test*. There
+    is some evidence that Charles Babbage may have used the method in 1846, but did
+    not publish it. Ole Immanuel Franksen of the Technical University of Denmark,
+    who has written extensively about Babbage and his Difference Engine, wrote a book,
+    *Mr. Babbage’s Secret*, which makes this claim.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The idea is to look for repeated letter sequences in the ciphertext. Some of
+    these sequences may occur by accident, especially bigrams, but most of the repeated
+    sequences will result from the same letters in the plaintext being enciphered
+    by the same part of the key. The longer the repeated sequence, the lower the probability
+    that it happened by chance. If the same part of the key is used to encipher two
+    repeated letter sequences, then the distance between them must be a multiple of
+    the key length. Distance is measured from the first character of one occurrence
+    to the first character of the other occurrence. Consider this cipher fragment
+    using the keyword EXAMPLE.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-26](../Images/5-unnumb-26.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The ciphertext trigram **PTR** occurs 3 times, at positions 5, 12 and 33\. All
+    three occurrences result from plaintext AIN enciphered with key characters PLE.
+    That is, they result from the same plaintext trigram enciphered with the same
+    part of the key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The plaintext trigram AIN, which starts at position 21, produces a different
+    ciphertext trigram, **EMK**, because it is enciphered by a different part of the
+    key, namely EEX. Likewise, the plaintext trigram THE, which occurs at positions
+    1 and 29, and the plaintext trigram INS, which occurs at positions 8 and 13, do
+    not produce repeated ciphertext trigrams because they are enciphered with different
+    parts of the key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this fragment, the distances between the repeated trigrams are 12-5 = 7,
+    33-5 = 28 and 33-12 = 21\. These distances, 7, 21 and 28, are all multiples of
+    7, which is the length of the keyword EXAMPLE. Kasiski showed how these repetitions
+    can be exploited to reveal the period of the encipherment.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s look at another example, a cryptogram.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-27](../Images/5-unnumb-27.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This is a Belaso encipherment of a text in normal English. Searching for repeated
+    letter sequences, we find **EK** at positions 10, 64 and 90, **RYR** at positions
+    17 and 53, and so forth. The full list of repeated letter sequences is
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-28](../Images/5-unnumb-28.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: We immediately notice two repeated tetragrams, **YHCI** and **YXYR**. Repeated
+    tetragrams almost never occur accidentally. The distance between the two occurrences
+    of **YHCI** is 79-43 = 36, and the distance between the two occurrences of **YXYR**
+    is 69-57 = 12\. The distances 12 and 36 suggest a key length of 4, 6 or 12\. We
+    can narrow that down by looking at some of the other repeated sequences.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**RYR** has a distance of 36, and **ZHZ** has a distance of 6\. The other repeated
+    trigrams **HCI** and **XYR** are just parts of the two repeated tetragrams **YHCI**
+    and **YXYR**, so they yield no additional information. The most likely period
+    for this cryptogram is 6.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Okay, that was a bit too easy. Let’s look at what happens in harder cases. One
+    method recommended in other books is to take all of the distances between repeated
+    sequences, and find all of their factors. The most frequent factor, they claim,
+    will be the period. For example, if the distance is 36, then the factors are 1,
+    2, 3, 4\. 6, 9, 12, 18 and 36\. This could mislead you in several ways.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*First*, you might falsely conclude that the period is twice its actual value.
+    This is because about half of the distances will be even just by chance. Half
+    of the valid distances, those caused by repeated sequences of plaintext, will
+    be even multiples of the period. For some messages these even multiples of the
+    period will outnumber those distances that are odd multiples of the period. Likewise,
+    half of the accidental repeated ciphertext sequences will have even distances.
+    There can be lots of even distances simply by chance. Similarly, 1/3 of the distances
+    will be multiples of 3 by chance.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: When you count the number of divisors of the distances, you should reduce the
+    number of times the factor 2 occurs by 1/2, reduce the number of times the factor
+    3 occurs by 1/3, and so forth. That will give you a more accurate comparison.
+    For example, if a distance of 3 occurs 6 times, reduce that by 1/3 to 4 times,
+    because 2 of the 6 occurrences are likely to be pure chance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Second*, when a repeated sequence occurs multiple times, the distances between
+    pairs of these repeats may be misleading. If there are N repeats, then the number
+    of pairs is N(N-1)/2\. In the example ciphertext there are 4 occurrences of **YR**,
+    so there are 6 pairs, that is 4×3/2 pairs. Hence there are 6 distances between
+    pairs, 54-18 = 36, 59-18 = 41, 71-18 = 53, 59-54 = 5, 71-54 = 17 and 71-59 = 12\.
+    Which of these, if any, is a multiple of the period? Suppose that ciphertext **XYZ**
+    appears 5 times, and that 3 of those repeats are due to the same plaintext. There
+    will be 10 distances, of which only 3 result from the repeated plaintext, while
+    the other 7 are spurious.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: You don’t want to throw out the valid repeats just because you cannot distinguish
+    them from the accidental repeats. Here is what you can do. Suppose that you have
+    a candidate for the period. For example, suppose you suspect that the period is
+    6\. Reduce the locations where the repeated sequence occurs modulo 6\. (Remember
+    modular arithmetic? If not, look at section 3.5 again.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s try the *modulo method*. Look at the 4 occurrences of **YR** again, and
+    reduce their positions modulo 5, modulo 6 and modulo 7 to see what happens.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-29](../Images/5-unnumb-29.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: All 4 residues modulo 7 are different. If the period is 7, then all of the repeats
+    of **YR** are accidental. There are only 2 equal residues modulo 5\. If the period
+    is 5, then only 2 out of 4 occurrences come from repeated plaintext. But if the
+    period is 6 we hit paydirt. We now see that the 4 occurrences of **YR** come from
+    2 different repeated bigrams in the plaintext, one bigram at positions 18 and
+    54 in the plaintext, with a distance of 36, and the other bigram at positions
+    59 and 71 in the plaintext, with a distance of 12.
+  prefs: []
+  type: TYPE_NORMAL
+- en: How did that happen? Look back at the list of repeated sequences. You can see
+    that the bigram **YR** occurs in the repeated trigram **RYR** and in the repeated
+    tetragram **YXYR**. Each of these contributed one repetition.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s look at a second method for determining the period of a polyalphabetic
+    cipher. If the evidence from the repeated sequences is inconclusive, it is good
+    to have a backup plan.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.7 Index of Coincidence
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The *Index of Coincidence* was invented by American cryptanalyst William F.
+    Friedman in 1922\. The idea is very simple, but its importance is profound. Imagine
+    two messages enciphered using a polyalphabetic cipher, but with different keys,
+    and possibly with different periods. If you compare the two ciphertexts letter
+    by letter, the chance that two corresponding letters are the same is 1 in 26,
+    or about .0385\. If both messages are 52 characters long you would expect 52/26
+    = 2 corresponding pairs of letters to be equal. Here I have enciphered the 52-letter
+    plaintext ON THE FIRST DAY OF SPRING A YOUNG MANS FANCY TURNED TO BASEBALL with
+    a Belaso cipher using the keys MARS and VENUS, respectively. The two equal letters
+    are highlighted. (It is accidental that both pairs of equal letters are F.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-30](../Images/5-unnumb-30.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Now imagine two messages enciphered by the same key. Each pair of corresponding
+    letters is enciphered by the same key character, so if the plaintext letters are
+    the same, then the ciphertext letters will be the same. The frequency of A is
+    about .08, so the chance that both plaintext letters are A is .08², or about .0064\.
+    The chance that they are both B is about .015² = .000225, and so forth through
+    the alphabet. The total for all 26 letters comes to .0645 to .0675, about 1/15,
+    depending on which letter frequency table you use. The chance of two corresponding
+    ciphertext letters being equal when the same key is used is roughly 1/15, which
+    is 73% higher than the 1/26 chance when the keys are different.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This fact can be exploited to determine the key length for a polyalphabetic
+    cipher. Let’s number the characters in the ciphertext C[1], C[2], C[3], ... and
+    let the length of the key be L. We can compare the characters in the ciphertext
+    with those same characters shifted by some number of positions, say S positions.
+    That is, we compare C[1] with C[1+S], C[2] with C[2+S], C[3] with C[3+S] and so
+    forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the shift S is a multiple of L, then C[i] is enciphered with the same alphabet
+    as C[i+S] for every position i, so the chance that two corresponding ciphertext
+    characters are equal is 1/15\. If the shift is not a multiple of L, then corresponding
+    characters will not be enciphered with the same alphabet, and the chance that
+    they are equal is only 1/26\. The number of equal characters should be largest
+    when S = L, S = 2L, and so forth. Trying several different shifts should make
+    this pattern clear. The shifts producing the most matches will usually be multiples
+    of the period.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Trying many different shifts sounds like a job for a computer, but it actually
+    can be done by hand without too much effort. Write the cryptogram onto two long
+    strips of paper. Then just slide one strip against the other and count the number
+    of equal characters for each shift. You need to space the letters evenly so they
+    align correctly. This is easily managed by using graph paper, or by holding a
+    ruler next to each strip while you write the letters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-31](../Images/5-unnumb-31.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The Index of Coincidence has another use that has proved of immense value for
+    cryptanalysts. It can detect when two messages have been enciphered using the
+    same key. Imagine that Emily is using a machine cipher that produces a polyalphabetic
+    cipher with a very long period, say 100,000\. For comparison, the Enigma machine
+    used by the German army in WW II had a period of 26×25×26 = 16,900\. Suppose you
+    have thousands of intercepted messages. Each message is enciphered using some
+    segment of this long key. Sliding each message against the others, and employing
+    both Index of Coincidence and repeated ciphertext sequences, you can detect sections
+    of different messages that have been enciphered by the same part of the key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When you have found enough of these overlapping segments of the key you can
+    begin splicing the segments together to get longer segments. Once enough messages
+    are found that are enciphered with the same key segment you can begin to solve
+    the messages by the usual means, letter frequency, contact frequency, identifying
+    common words, and so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.8 Index of Coincidence, again
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: There is another method for estimating the period of a polyalphabetic cipher,
+    also called the Index of Coincidence, and also due to William F. Friedman. This
+    method calculates the probability that two letters are equal when there are 2
+    alphabets, 3 alphabets, and so on. This is calculated ahead of time and kept in
+    a table. The idea is to calculate this same statistic for a given message, and
+    compare that number to the table. The closest match is supposed to be the period
+    of the cipher. In practice this often comes close, but it is frequently off by
+    1, 2 or even 3\. When the period is more than 10, the method is useless. This
+    method is not much better than random guessing, so it is not worthwhile to explain
+    the details.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Belaso and Vigenère ciphers continued to be widely used through the 1880s.
+    As the knowledge of the Kasiski method began to spread, their use diminished,
+    and they largely disappeared after the Index of Coincidence was published. Still,
+    today, it remains one of the most popular hobbyist ciphers. Several times, when
+    I told people that I was writing a book on cryptography, they would tell me that
+    they knew an unbreakable cipher. This always turned out to be the Belaso cipher,
+    which they would call the Vigenère. Then I had to prove it was breakable, by solving
+    a cipher they would make up. These were so badly mangled, that I had to create
+    a webpage *mastersoftware.biz/vigenere.htm* to make sure that the ciphers were
+    done correctly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.9 Solving a polyalphabetic cipher
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Once you have found the period using either the Kasiski method or the Index
+    of Coincidence, the next step is to solve the individual alphabets. Let’s look
+    at the easiest case first, the Belaso cipher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.9.1 Solving a Belaso cipher
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: With the Belaso cipher all of the substitution alphabets are simply the standard
+    alphabet shifted by some amount. Determine the amount and you have solved the
+    cipher. The first step is to separate the characters that have been enciphered
+    with each letter of the key. Let’s look again at the example from section 5.5\.
+    Since we have determined that the period is 6, let’s write the ciphertext in groups
+    of 6.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-32](../Images/5-unnumb-32.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The first letter in each of these groups has been enciphered with the first
+    letter of the key, the second letter in each group by the second letter of the
+    key, and so forth. If we wrote the ciphertext vertically in 6 columns, like this
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-33](../Images/5-unnumb-33.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: then the first column of letters would be enciphered with the first letter of
+    the key, the second column of letters would be enciphered with the second key
+    letter, and so on.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Consider each letter column separately. Each column will have normal English
+    letter frequencies, but shifted according to its key letter. If we can determine
+    the shifts, then we have solved the cipher. I will describe two methods, one for
+    hand solution and one for computer solution. Let’s look at the paper-and-pencil
+    method first.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For each column, we can make a frequency count. That will give us 26 numbers.
+    For paper-and-pencil solving, it is better to display the frequencies as a histogram
+    (bar graph). The histogram for the first column of the ciphertext would be
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-34](../Images/5-unnumb-34.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: With only 18 letters this is rather sparse, but it is enough. Let’s compare
+    this to a histogram of standard English letter frequencies, shown next, and try
+    to figure out the shift.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-35](../Images/5-unnumb-35.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Some of the visual characteristics of this frequency distribution are (1) E
+    is by far the tallest peak; (2) there are three peaks evenly spaced 4 columns
+    apart, namely A,E,I, where I has the companion H; (3) there is a double peak at
+    N,O; and (4) there is a triple peak at R,S,T.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s try to match this histogram to the ciphertext histogram. We start by looking
+    for a tall peak that could represent E. There are two tall peaks, **R** and **Y**,
+    corresponding to key letters N and U. That is, if E is enciphered by N the result
+    is **R**, and if E is enciphered by U the result is **Y**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Next, let’s look for 3 peaks 4 spaces apart. There are two candidates, **G,K,O**
+    and **N,R,V**, corresponding to key letters G and N. How about a double peak?
+    Likely candidates are **N,O** and **Y,Z**, corresponding to key letters A and
+    L. What about a triple peak? There is only one choice, the triple peak at **X,Y,Z**.
+    This corresponds to the key letter G.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The most likely key for the first column is G, which produces the **A,E,I**
+    peaks and the **R,S,T** triple peak. The second most likely key is N, which gives
+    E as the most frequent letter, and the **N,O** double peak.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s turn our attention to the second column of the ciphertext. The letter
+    frequency histogram is
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-36](../Images/5-unnumb-36.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This time the ciphertext letter S catches our attention. If S represents plaintext
+    E, then the key must be O. Let’s check this out by comparing the ciphertext histogram
+    against the shifted alphabet.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-37](../Images/5-unnumb-37.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: You can see that all of the high-frequency letters in the ciphertext, namely
+    **C**, **G**, **H** and **S**, correspond to high-frequency plaintext letters,
+    namely O, S, T and E, respectively. This is an excellent fit, and the second key
+    letter is very probably O. The keyword starts GO.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The other 4 key letters are determined in the same way. The keyword is GOVERN,
+    and the plaintext is THE LEGISLATURE SHALL BE DIVIDED INTO TWO CHAMBERS THE UPPER
+    CALLED THE SENATE AND THE LOWER IS THE HOUSE OF REPRESENTATIVES.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'That is the hand method: make the frequency distribution visual by using histograms
+    and then match the distributions by eye. For computer solution we need a numerical
+    method for eyeballing the distributions to find a match. The standard method found
+    in every book that discusses polyalphabetic ciphers is to use the correlation
+    coefficient, specifically the Pearson product-moment correlation coefficient,
+    named for Karl Pearson, a founder of modern statistics.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you know statistics, this will be familiar to you. You no doubt already have
+    a statistics package with this function ready-made. Use it in good health. For
+    everyone else, I will show you a method that is both simpler and faster—and exactly
+    as accurate.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When we match up two frequency distributions by eye, we are trying to match
+    the tallest peaks in one histogram with the tallest peaks in the other histogram.
+    If we multiply their heights, we are trying to get the biggest product. If you
+    go down the alphabet and add the 26 products, then the sum will be highest when
+    the tall peaks line up with one another, and lowest when the highest peaks line
+    up with the lowest valleys.
+  prefs: []
+  type: TYPE_NORMAL
+- en: That’s the idea. Try each of the 26 possible shifts. Line up the letter frequencies
+    of the ciphertext with the shifted frequencies for standard English, and add up
+    the 26 products. The highest sum will indicate the most likely shift. This tells
+    you the most likely key letter. The second-highest sum is the second most likely
+    shift, and so forth. I call this technique the *Tall Peaks* method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Belaso cipher is rated Two.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.9.2 Solving a Vigenère cipher
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: About 30 years after Belaso, Blaise de Vigenère made two improvements over the
+    Belaso cipher. The first was to add guides along the outside of the tableau. This
+    had the effect of producing a mixed alphabet without the work of mixing the tableau.
+    Here is an example, using the keyphrase FIRST LOVE in the horizontal guides, and
+    the keyword YOUTH in the vertical guides. You will find the second improvement,
+    autokey, in section 5.10.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-38](../Images/5-unnumb-38.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: To encipher the letter B using the key letter U, find the key letter U in the
+    *key guide* to the left or right of the row, and the plaintext letter B in the
+    *letter guide* at the top or bottom of the column. The ciphertext letter is the
+    letter in the U row and B column, namely **M**. To decipher, use the key letter
+    to find the row, find the ciphertext letter on that row, and take the plaintext
+    from the letter guide at the top or bottom.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you are enciphering by hand, I suggest drawing horizontal and vertical rules
+    every 4 or 5 rows and columns. Or, use a clear plastic L-square to find the intersections
+    accurately.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is a sample message enciphered using this form of Vigenère cipher. It has
+    a period of 5.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-39](../Images/5-unnumb-39.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This cipher has a serious weakness. Since each row in the tableau is the standard
+    alphabet shifted by a number of positions, each cipher alphabet will be the same
+    as all of the other cipher alphabets shifted by some number of positions. You
+    cannot usefully compare the cipher alphabets to the standard alphabet because
+    they are in mixed order, however, you can determine the shifts by comparing the
+    cipher alphabets to one another, either by eye or by using the Tall Peaks method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The following figure shows the histograms for the 5 cipher alphabets, shifted
+    to match up their peaks and valleys. All of the ciphertext letters in the first
+    column (shaded) represent the same plaintext letter. This means S in the first
+    alphabet, C in the second alphabet and L in the fourth alphabet all represent
+    the same letter. Replace all of these by A. There are no letters in the second
+    column. In the third column, M in the third alphabet and T in the fifth alphabet
+    represent the same plaintext letter. Replace all of these by C, and so forth.
+    The ciphertext letters in the 26th column would all be replaced by Z.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-40](../Images/5-unnumb-40.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This converts the ciphertext into a simple substitution which can now be solved
+    using the methods of section 5.1\. The Vigenère cipher is rated Two.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.9.3 Solving a general polyalphabetic cipher
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'A general polyalphabetic cipher can also be done using a tableau. The rows
+    of the tableau can be mixed according to any scheme, independently of one another.
+    It is worth noting that the number of rows need not be the same as the number
+    of columns. For computer ciphers it can be valuable to make the tableau 256 characters
+    wide and 512 rows deep so that each ciphertext character appears twice in each
+    column. That will make it difficult for an opponent who has obtained a ciphertext
+    and its corresponding plaintext to determine the key. Here is a partial example
+    of a 100-row tableau:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-41](../Images/5-unnumb-41.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This tableau would be used with a numeric key where 2 decimal digits would be
+    used to select the row for enciphering. A 20-digit key would produce a polyalphabetic
+    cipher whose period is 10.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Solving a general polyalphabetic cipher is very like solving a monoalphabetic
+    cipher. You begin by taking a frequency count and making a contact table for each
+    column. In this case the contacts for column C will be in columns C-1 and C+1,
+    wrapping around from the rightmost column to the first column, as needed. There
+    will be fewer occurrences of each letter in one column, so you need to make inferences
+    from less data. This takes a lot of inspired guessing, which comes from experience.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s begin with this polyalphabetic ciphertext.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-42](../Images/5-unnumb-42.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: A quick examination of this ciphertext shows two long repeated sequences, **YSUZONSOO**
+    at positions 13 and 93, and **SNZYYZK** at positions 39 and 124\. In both cases
+    the distance between the two occurrences is a multiple of 5, confirming that the
+    period is 5\. These long repeats probably represent common words or phrases, or
+    words specific to the subject of the message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The contact charts for each of the 5 key letters follow. To make it easier to
+    explain the deductions, I will tag each ciphertext letter with a digit specifying
+    its alphabet number. So **C1** would mean the ciphertext letter **C** in alphabet
+    1 (that is, enciphered with the first letter of the key), **H3** would mean ciphertext
+    letter **H** in alphabet 3 (using the third letter of the key), and so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Recall that letters with many different contacts on both sides tend to be vowels,
+    while letters with fewer distinct contacts tend to be consonants.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-43](../Images/5-unnumb-43.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Based on these contacts we can tentatively identify as vowels **G2**, **K2**,
+    **O2**, **P2**, **H3**, **K5** and as consonants **R1**, **Z1**, **K3**, **N3**,
+    **D4**, **S4**, **O5**, **U5**. Based on its high frequency, **S4** probably represents
+    plaintext T.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You proceed exactly as you did for simple substitution. You update the contact
+    charts to show those letters that have been identified as vowels and consonants,
+    and you also write the ciphertext with the vowels and consonants marked. You use
+    this to refine and repair the vowel/consonant identifications, and to identify
+    individual letters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I will not repeat all the steps taken in section 5.1\. It is the same logic,
+    but the incremental steps are smaller and more numerous, with more back-tracking.
+    The general polyalphabetic cipher is rated Three.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.10 Autokey
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: You may recall that I said in section 5.9.2 that Vigenère made two improvements
+    to the Belaso cipher. The first improvement was placing the guides around the
+    edges of the tableau to produce a mixed alphabet. The second improvement was the
+    *autokey*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The autokey uses the plaintext of the message as a key to encipher the rest
+    of the message. An early version was invented by Italian physician/mathematician/astrologer
+    Girolamo Cardano. In Cardano’s system each letter was enciphered using itself
+    as the key. This only works if you have an alphabet with an odd number of letters.
+    Using the English alphabet of 26 letters, an A would produce an **A**, and an
+    N would also produce an **A**, so the intended recipient would have to figure
+    out which was meant. Even with an odd-sized alphabet, the Cardano autokey merely
+    produces a simple substitution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vigenère improved upon the Cardano method by using a lag. Vigenère used a 1-letter
+    key to encipher the first letter, used the first plaintext letter to encipher
+    the second letter, used the second plaintext letter to encipher the third letter,
+    and so forth. In modern practice a keyword is used to encipher the first group
+    of letters, then that group of plaintext letters is used to encipher the second
+    group, and so on. This example uses the key SAMPLE with the Belaso tableau, that
+    is, unmixed alphabets.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-44](../Images/5-unnumb-44.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'With unmixed alphabets, decryption is straightforward. The Index of Coincidence
+    described in section 5.7 can be used to determine the length of the keyword. The
+    index is often dramatically higher when the ciphertext is offset by a multiple
+    of the key length, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-45](../Images/5-unnumb-45.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Suppose you have found that the keyword has 6 letters. Try each letter of the
+    alphabet for the first letter of the key. Start with A. Since the first ciphertext
+    letter is L, the first plaintext letter must also be L. This will also be the
+    key for the 7th letter of the message. Since the 7th ciphertext letter is X, the
+    7th plaintext letter would have to be M.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Proceeding this way, each guess for the first key letter gives you the corresponding
+    1st, 7th, 13th, 19th, 25th and 31st characters of the plaintext. That is, it gives
+    you every 6th plaintext letter. There are 26 sets of letters, one for each possible
+    key letter. Some of these sets of 6 letters will have normal English letter frequencies,
+    some will be implausible. Repeat this for the second key letter. Each guess for
+    the second key letter gives you the corresponding 2nd, 8th, 14th, 20th, 26th and
+    32nd plaintext letters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now, take the 5 most probable choices for letters 1, 7, 13, ... and pair them
+    up with the 5 most probable choices for letters 2, 8, 14, ... . This will give
+    you 25 sets of bigrams. Some of these will be highly likely, some will be implausible.
+    Take the 10 most plausible of these and pair them up with the 5 most likely choices
+    for the third key letter. This will give you 50 sets of trigrams. Choose the 10
+    most reasonable of these and pair them up with the 5 best choices for the fourth
+    key letter. By this point some plaintext words will start to appear, and the correct
+    choice of key letters will become obvious.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you are doing this by computer, skip the bigrams. Simply try all 26³ combinations
+    for the first 3 key letters and go straight for the trigrams. Then repeat this
+    for the second 3 key letters, that is, key letters 2, 3 and 4\. The most likely
+    choices for the first 3 key letters and the second 3 key letters will overlap.
+    The same will happen with the third and fourth sets of key letters. This will
+    rapidly narrow in on the correct keyword.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vigenère autokey using standard alphabets is rated Three.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.11 Running key
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Running key is similar to autokey, but instead of a short keyword or keyphrase,
+    running key uses a *keytext* that may be as long as the message itself. Running
+    key has never been widely used in practice because it requires both parties to
+    get the keytext exactly letter perfect. If one party remembers or copies the key
+    as MINE EYES HAVE SEEN THE GLORY OF THE COMING OF THE LORD, but the other party
+    remembers the key as MY EYES HAVE SEEN THE GLORY OF THE COMING OF THE LORD, then
+    they will be unable to communicate. One way to deal with this problem is to use
+    a keytext from a printed book that both parties have, although they must carry
+    the book with them. This is not a problem for computer communication, because
+    a computer can store thousands of books.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Again, assuming the Belaso tableau with the standard English alphabet, running
+    key is straightforward, albeit laborious, to decrypt. One technique, which works
+    for both autokey and running key, is to guess a likely word that may appear in
+    the text. The word could occur in either the keytext or the plaintext. The cryptographer
+    will need to untangle this later. The probable word, or *crib*, could be a common
+    English word, like THE or AND, or it might be a word related to the suspected
+    subject matter. For example, if the message pertains to trade negotiations, then
+    likely words might be TARIFF, SHIPPING, REPRESENTATIVE, BARGAINING, and similar.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The idea is to try the probable word in all possible positions in the message.
+    This is called *word dragging*. Knowing the plaintext word and the corresponding
+    ciphertext gives you a snippet of the key. If the word is correctly placed, then
+    this fragment will look like normal English. The longer the probable word, the
+    more confident you can be that it is correct. Once you have found a word, you
+    try to guess the letters, then the words that precede or follow it in the text
+    to widen the breach.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is a second technique, one which is suitable for computer solution. This
+    requires a new mathematical concept called *conditional probability*. This is
+    the probability that an event A will occur if event B also occurs. The probability
+    of a single event A is denoted P(A), and the conditional probability of the event
+    A given the event B is denoted P(A|B). If AB denotes the event “A and B,” then
+    the conditional probability of A given B is P(A|B) = P(AB)/P(B). That means P(AB)
+    = P(A|B)P(B).
+  prefs: []
+  type: TYPE_NORMAL
+- en: An example may help to clarify this. If you are throwing two standard dice,
+    the probability of throwing a 12 is 1/36\. However, if you throw the first die
+    and the result is 6, then the chance of throwing 12 becomes 1/6\. Let A mean “throwing
+    12” and B mean “the first throw is 6.” Then P(A) = 1/36, and P(B) = 1/6\. P(AB)
+    means throwing a 12 with the first throw being 6\. P(AB) is also 1/36 because
+    if you throw a 12 the first throw has to be 6\. Using the notation for conditional
+    probability, P(A|B) = P(AB)/P(B) = (1/36)/(1/6) = 1/6\. So the conditional probability
+    of throwing 12 when the first throw is 6 is 1/6.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s use conditional probability to solve a running key cipher. The tools that
+    are needed are tables of single-letter, bigram and trigram probabilities. These
+    can be compiled by counting the letters, bigrams and trigrams in a large body
+    of text. You can find many such bodies at the Project Gutenberg website, [www.gutenberg.org](http://www.gutenberg.org).
+    Select the plaintext option. You can also find some tabulations on the internet.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You will need to assign a probability for every possible bigram and trigram,
+    not just those found in that body. For bigrams this is obvious. If AB is a bigram
+    that did not appear in the count, you could set P(AB) = P(A)P(B), however, I suggest
+    setting it lower simply because AB was never found. I use P(AB) = P(A)P(B)/3\.
+    Once you have a complete set of bigram probabilities, you can extend this to trigrams
+    by setting P(ABC) to the greater of P(A)P(BC) and P(AB)P(C). Again, I suggest
+    setting them lower because the trigram ABC never appeared. For example, set P(ABC)
+    to the greater of P(A)P(BC)/3 and P(AB)P(C)/3\. These artificial probabilities
+    mean that the total probabilities for all bigrams and all trigrams are greater
+    than 1\. Mathematically this is nonsense, but it has no practical effect.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now that we have the necessary tools, we can tackle a running key cipher. Choose
+    a starting position in the message, say, s, and try all possible key trigrams
+    in positions s, s+1, s+2\. See what the corresponding plaintext trigrams are.
+    Multiply the probabilities of the key trigram and the text trigram to get the
+    probability for that placement. Keep the top 10,000 of these placements, and discard
+    the rest. For each of the chosen trigrams, try all possible key letters in position
+    s+3, and see what the corresponding plaintext letter is. Suppose the key trigram
+    is JKL, the next key letter is M, and the corresponding plaintext tetragram is
+    ABCD. You can estimate the probability of the key tetragram JKLM by using the
+    conditional probability P(KLM|KL), which is the probability that an M will follow
+    the bigram KL. This is calculated from the trigram probabilities as P(KLM)/P(KL),
+    which is the probability of the trigram KLM divided by the probability of the
+    bigram KL. The probability of the tetragram is thus estimated as P(JKL)P(KLM|KL).
+    This is done for both the key tetragram and the plaintext tetragram ABCD.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Estimate the probability of this placement by multiplying the probabilities
+    of the key tetragram and the plaintext tetragram. Again, keep the top 10,000 and
+    toss out the rest. Keep going until the solution becomes obvious. This can all
+    be done by computer, without any human supervision.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Vigenère running key using standard alphabets is rated Four.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*5.12 Simulated rotor machines'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The *sine qua non* of polyalphabetic ciphers are the electro-mechanical rotor
+    machines used from the 1920s on. These machines can have periods in the billions
+    or trillions, or no period at all if the movement of the rotors depends on the
+    plaintext or ciphertext characters. At least 70 different types of machines were
+    produced from about 1915 until after World War II. There are several websites
+    that have pictures and descriptions of these machines.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Each machine has one or more rotors, usually 3 to 6, but sometimes as many as
+    10\. Each rotor performs a simple substitution. After each letter is enciphered,
+    some of the rotors turn so that a different substitution is used for the next
+    letter. Various systems of gears, lugs, cams, levers and pawls make the rotors
+    turn in unpredictable ways. That is, unpredictable for your opponent.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-46](../Images/5-unnumb-46.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: It is easier to describe the rotor machines if we replace the letters of the
+    alphabet with numbers. For mechanical rotor machines, where each rotor has 26
+    positions corresponding to the 26 letters of the alphabet, we replace A by 0,
+    B by 1, C by 2, through Z, which is replaced by 25\. In other words, we use the
+    classical numbering system minus 1\. For the computer simulation, we use 8-bit
+    bytes and replace characters by their numeric codes in some standardized system
+    such as UTF-8 code. In this system A is 65, B is 66, C is 67, through Z, which
+    is 90\. Other characters such as lowercase letters, digits and punctuation are
+    also replaced by their UTF-8 character codes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now that we are dealing with numbers, we can do arithmetic on them, such as
+    adding to them and taking residues modulo 26 or 256, as appropriate. If you wish
+    to review modular arithmetic, refer back to section 3.6.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cipher machines with as many as 16 rotors have been produced. This is the 10-rotor
+    assembly of the Russian-made Fialka machine, which was used by the Warsaw Pact
+    nations from 1956 until the 1990s. Photo courtesy of Paul Hudson and licensed
+    under CC BY 2.0.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![5-unnumb-47](../Images/5-unnumb-47.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 5.12.1 Single-rotor machine
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Let’s start with a single mechanical rotor. The rotor performs a simple substitution,
+    so it can be simulated by a substitution table S. The table S is just a scrambled
+    alphabet, like one row of a tableau. The entries in the list are numbered from
+    0 to 25, corresponding to the 26 letters of the alphabet. The Nth entry in the
+    substitution table, denoted S(N), is the substitute for the Nth letter of the
+    alphabet. So S(0) is the substitute for A, S(1) is the substitute for B, and so
+    forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As the rotors turn, they change position. The position can be represented by
+    a number P, which can range from 0 to 25\. When a rotor has turned 26 positions
+    it will be back to its starting position, namely position 0\. The substitute for
+    the Nth letter when the rotor is in position P is S(N+P). So when the rotor is
+    in position 5, S(5) is the substitute for A, S(6) is the substitute for B, and
+    so on. It is understood that N+P wraps around, so S(26) is the same as S(0), S(27)
+    is the same as S(1), and so on. In other words, N+P is really shorthand for (N+P)
+    mod 26.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In a mechanical rotor machine, the rotors turn by different amounts after enciphering
+    each letter. This irregular motion can be simulated by using a sequence of *step
+    numbers*, say (a,b,c,d,e). On the first cycle the rotor steps (advances, rotates)
+    a positions. On the second cycle it steps b positions, and so forth. On the sixth
+    cycle the sequence repeats. So, if the rotor starts at position P, after one cycle
+    it will be at position P+a. After two cycles it will be at position P+a+b. After
+    5 cycles it will be at position P+a+b+c+d+e. After 6 cycles the rotor will be
+    at position P+2a+b+c+d+e. In mechanical devices each rotor usually turns only
+    a few positions, often either 0 or 1 position per cycle depending upon whether
+    a particular lug is up or down. In a computer simulation we have no such constraints.
+    The steps can be any amount from 0 to 25 positions when simulating a mechanical
+    rotor, or from 0 to 255 when using 8-bit bytes to represent the characters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since we chose a key with 5 steps, this single-rotor machine will repeat after
+    5×26 = 130 cycles. When a+b+c+d+e is even, the machine will repeat after 65 cycles,
+    and if a+b+c+d+e is a multiple of 13, the machine will repeat after only 10 cycles.
+    Obviously one rotor does not give much security. The one-rotor machine cipher
+    is rated Three.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.12.2 Three-rotor machine
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Let’s look at simulating a more practical kind of rotor machine. This machine
+    has 3 rotors and uses the 8-bit UTF-8 code. Three rotors need 3 substitution tables,
+    S[1], S[2] and S[3]. When the rotors are in positions P[1], P[2] and P[3,] the
+    Nth letter of the alphabet gets enciphered as S[3](S[2](S[1](N+P[1])+P[2])+P[3]).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Each of the 3 substitution tables has its own list of steps: say S[1] has steps
+    (a[1],a[2],a[3],...,a[i]), S[2] has steps (b[1],b[2],b[3],...,b[j]) and S[3] has
+    steps (c[1],c[2],c[3],...,c[k]). If the sum of the steps for each rotor is an
+    odd number, and i, j and k are coprime, then the period of this machine is 256ijk.
+    For example, if i = 10, j = 11 and k = 13, then ijk is 1430, and the period is
+    1430×256 = 366,080\. The effect is like having a polyalphabetic cipher whose tableau
+    has 366,080 rows, with each row used only once per cycle.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose the 3 substitution tables and the sequences of steps are known, for
+    example, suppose they have been standardized over a large network. One might imagine
+    that Emily needs to try only the 256³ = 1.67×10⁷ initial rotor settings to crack
+    each message. This might take a few seconds on a current-day personal computer.
+    This is misleading.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Consider two different states of the machine. Both states have the rotors in
+    the same positions, but they are in different parts of the stepping sequence.
+    Starting to encipher from those two states will give different sequences of the
+    cipher alphabets, so the same message will be enciphered differently. Cracking
+    this cipher by an exhaustive search would require trying all possible rotor settings
+    and all possible places in the step sequence for a total of 256³×1430, or 2.40×10^(10)
+    cases. This is still feasible using a personal computer, but would take several
+    hours, not a few seconds.
+  prefs: []
+  type: TYPE_NORMAL
+- en: With known rotors and known step sequences, this 3-rotor cipher is rated Four.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the rotors and step sequences are secret, then Emily must fall back on the
+    techniques for a general polyalphabetic cipher, namely gathering large numbers
+    of intercepts and matching them up to find sections that are enciphered with the
+    same settings. To separate true matches from accidental matches, the Index of
+    Coincidence test (section 5.7) needs to be done on long overlaps. I suggest at
+    least 200 characters. Matching should be attempted only for messages longer than
+    200 characters. For a message of length L characters, with L ≥ 200, the number
+    of matchable positions is L-199\. When the combined total, M, of matchable positions
+    for all intercepted messages exceeds √2.40×10^(10) = 1.55×10⁵, matching sections
+    of text could begin to be detected.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This does not seem like much, but the work to detect these overlaps is on the
+    order of M². Moreover, a single overlap is nowhere near sufficient. You need enough
+    overlaps that you can start to distinguish high-frequency letters and separate
+    vowels from consonants. This will require a mainframe computer and some talented
+    cryptanalysts. The 3-rotor machine with unknown rotors and unknown step sequences
+    is rated Six.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 5.12.3 Eight-rotor machine
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Three rotors is a good start. To really ratchet up the strength of the simulated
+    rotor machine, let’s increase the number of rotors from 3 to 8\. Let the number
+    of steps for the rotors be 11, 13, 17, 19, 23, 25, 27 and 31, in some order, and
+    make the sum of the steps odd for each rotor. The period of this machine is about
+    5.69×10^(12).
+  prefs: []
+  type: TYPE_NORMAL
+- en: If this is a hardware device, the internal wiring of the rotors and the sequences
+    of steps might be built in. Even if this is the case, it still would not be feasible
+    to match up messages the way we did with the 3-rotor version. This is because
+    there are now 256⁸ = 1.84×10^(19) possible initial positions for the 8 rotors.
+    Since the period is 5.69×10^(12), the total number of states for the machine becomes
+    (1.84×10^(19))×(5.69×10^(12)) = 1.05×10^(32). When the rotors and stepping sequences
+    cannot be changed, this 8-rotor machine is rated Nine.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s take this further. Instead of 8 rotors, suppose we have a supply of 16
+    possible rotors. For each message we select 8 out of the 16 rotors in some order.
+    There are 5.19×10⁸ such permutations. For each such permutation there are 1.84×10^(19)
+    possible initial rotor positions and 5.69×10^(12) positions for the step sequences
+    for a total of 5.43×10^(40) states.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Even if Emily somehow knows the substitution tables and the stepping sequences
+    for all 16 rotors, it is not feasible to crack a message enciphered with this
+    machine, even using the largest and fastest supercomputer in the world. (At this
+    writing the fastest supercomputer in the world is the Summit computer, capable
+    of up to 200 petaflops.) This 8-rotor cipher is rated Ten.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If the contents of the substitution tables and the stepping sequences are kept
+    secret, or are changed frequently, this rotor cipher with 8 interchangeable rotors
+    should remain far beyond the reach of the largest supercomputers for 10, 20, or
+    perhaps even 30 years to come.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since this is a software simulation of a rotor machine, the rotors can be changed
+    at will. Instead of a fixed set of 16 rotors, the rotors could be changed for
+    every message by using a key to mix each of the 8 rotor alphabets. This would
+    greatly increase the security at the cost of requiring a separate setup phase
+    for each message. An intermediate level of security is to use 7 standard rotors
+    from the set of 16, and 1 rotor whose alphabet is generated independently for
+    each message. This reduces the setup time by 87%.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Even though this cipher has already earned a rating of Ten, you may still wish
+    to strengthen it. You might not trust my rating, or you believe your opponent
+    has stupendous computing power available. One way is to use the output of some
+    of the rotors to modify the operation. I suggest taking the output of the fourth
+    rotor, halfway through the encipherment, and use that character to advance the
+    first rotor. Either use the character directly, or perform a simple substitution
+    on the character to get the number of positions to advance the first rotor. Except
+    for the first character in the message, the first rotor is stepped twice, once
+    from its stepping sequence, and once using the feedback from the fourth rotor.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This double-stepping does not affect the encipherment of the current character.
+    It is the next message character that is enciphered using this modified setting.
+    Double-stepping might be difficult to accomplish with a hardware rotor machine,
+    but it can be done easily with the simulated machine since the rotors are simulated
+    one at a time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: BTW, it might seem like it would be stronger to use the output of the eighth
+    rotor, but this is not true. The output of the eighth rotor is the ciphertext
+    character, which would be known to an eavesdropper. The outputs of the two middle
+    rotors, that is, the fourth and fifth rotors, are the least accessible to an eavesdropper
+    and hence the safest.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This feedback from the fourth rotor makes the simulated 8-rotor machine aperiodic.
+    No matter how many messages are sent, Emily can never find two messages with the
+    same sequence of rotor settings.******
+  prefs: []
+  type: TYPE_NORMAL

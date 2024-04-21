@@ -1,0 +1,384 @@
+- en: 18 Clickjacking
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Configuring the `X-Frame-Options` header
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Configuring the `frame-ancestors` CSP directive
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: This short chapter explores clickjacking and wraps up the book. The term *clickjacking*
+    is a blend of the words *click* and *hijacking*. Clickjacking is initiated by
+    luring the victim to a malicious web page. The victim is then baited into clicking
+    a harmless looking link or button. The click event is hijacked by the attacker
+    and propagated to a different UI control from another site. The victim may think
+    they are about to win an iPhone, but they are actually sending a request to another
+    site they previously logged in to. The state change of this unintentional request
+    is the attacker’s motive.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose Charlie has just finished charlie.mil, a top-secret website for high-ranking
+    military officials. This site serves the web page in listing 18.1, launch-missile.html.
+    As the name indicates, this page enables military officials to launch missiles.
+    Charlie has taken all of the necessary precautions to ensure that only authorized
+    personnel can access and use this form.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 18.1 Charlie’s site uses an ordinary HTML form to launch missiles
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ A simple button used to launch a missile
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mallory wants to trick Charlie into launching a missile. She lures him to win-iphone.mallory.com,
+    where his browser renders the HTML in listing 18.2\. The body of this page contains
+    a button as bait, enticing Charlie with a new iPhone. An iframe loads charlie.mil/launch-missile.html.
+    An inline stylesheet transparently renders the iframe by setting the `opacity`
+    property to `0`. The iframe is also stacked on top of the bait control via z-index
+    properties. This ensures that the transparent control, not the bait control, receives
+    the click event.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 18.2 Mallory’s site embeds a web page from Charlie’s site
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Places the bait control below the transparent control
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Hides and stacks the transparent control on top of the bait control
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ The bait control
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Loads a page containing the transparent control
+  prefs: []
+  type: TYPE_NORMAL
+- en: Charlie takes the bait. He clicks what appears to be a Win an iPhone! button.
+    The click event is hijacked by the submit button of the missile launch form. A
+    valid but unintentional POST request is sent from Charlie’s browser to charlie.mil.
+    This attack is depicted in figure 18.1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH18_F01_Byrne](Images/CH18_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 18.1 Mallory tricks Charlie into inadvertently launching a missile.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Unfortunately, Charlie’s POST request isn’t blocked by the same-origin policy;
+    CORS is irrelevant. Why? Because it simply isn’t a cross-origin request. The origin
+    of the request is derived from the origin (charlie.mil) of the page loaded by
+    the iframe, not the origin (win-iphone.mallory.com) of the page containing the
+    iframe. This story is corroborated by the `Host`, `Origin`, and `Referer` headers
+    of the request, shown here in bold font:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: Every same-origin request is by definition a same-site request. Charlie’s unintentional
+    request is therefore regrettably misinterpreted as intentional by the server’s
+    CSRF checks. After all, the `Referer` header is valid, and the `Cookie` header
+    carries the CSRF token.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `Cookie` header also carries Charlie’s session ID. The server consequently
+    processes the request with Charlie’s access privileges, launching the missile.
+    Attackers in the real world use clickjacking to accomplish many other kinds of
+    goals. This includes tricking the user into buying something, transferring money,
+    or escalating the attacker’s privileges.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Clickjacking is a specific kind of UI redress attack. UI redress attacks are
+    designed to hijack all kinds of user actions, not just clicks. This includes keystrokes,
+    swipes, and taps. Clickjacking is the most common type of UI redress attack. The
+    next two sections teach you how to prevent it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.1 The X-Frame-Options header
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Sites traditionally use the `X-Frame-Options` response header to resist clickjacking.
+    This header is served by a site such as charlie.mil for a resource such as launch-missile.html.
+    This informs the browser about whether it is allowed to embed the resource in
+    an iframe, frame, object, or embed element.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The value of this header is either `DENY` or `SAMEORIGIN`. Both of these settings
+    behave intuitively. `DENY` forbids the browser from embedding the response anywhere;
+    `SAMEORIGIN` permits the browser to embed the response in a page from the same
+    origin.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'By default, every Django project adds the `X-Frame-Options` header to each
+    response. The default value for this header was changed from `SAMEORIGIN` to `DENY`
+    with the release of Django 3\. This behavior is configured by the `X_FRAME_OPTIONS`
+    setting:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: 18.1.1 Individualized responses
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Django supports a few decorators to modify the `X-Frame-Options` header on a
+    per view basis. The `xframe_options_sameorigin` decorator, shown here in bold
+    font, sets the value of `X-Frame-Options` to `SAMEORIGIN` for an individual view.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 18.3 Allowing browsers to embed a single same-origin resource
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Ensures the X-Frame-Options header is SAMEORIGIN
+  prefs: []
+  type: TYPE_NORMAL
+- en: Django also ships with an `xframe_options_deny` decorator. This utility behaves
+    analogously to `xframe_options_sameorigin`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `xframe_options_exempt` decorator omits the `X-Frame-Options` header from
+    the response on a per view basis, as shown in the following listing. This is useful
+    only if the response is intended to be loaded in an iframe on a page from different
+    origins.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 18.4 Allowing browsers to embed a single resource anywhere
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Omits the X-Frame-Options header
+  prefs: []
+  type: TYPE_NORMAL
+- en: Each of these decorators accommodates class-based views and function-based views
+    alike.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In a previous chapter, you learned how to resist cross-site scripting and man-in-the-middle
+    attacks with the Content Security Policy. CSP makes one more final appearance
+    in the next section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.2 The Content-Security-Policy header
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The `Content-Security-Policy` response header supports a directive named `frame-ancestors`.
+    This directive is the modern way to prevent clickjacking. Like the `X-Frame-Options`
+    header, the `frame-ancestors` directive is designed to inform the browser about
+    whether a resource may be embedded in an iframe, frame, object, applet, or embed
+    element. Like other CSP directives, it supports one or more sources:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `CSP_FRAME_ANCESTORS` setting configures `django-csp` (a library covered
+    in a previous chapter) to add `frame-ancestors` to the CSP header. This setting
+    accepts a tuple or list of strings, representing one or more sources. The following
+    configuration is the equivalent to setting `X-Frame-Options` to `DENY`. The ''`none''`
+    source forbids the response from being embedded anywhere, even in a resource from
+    the same origin as the response. The single quotes are required:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The following configuration allows the response to be embedded in a resource
+    from the same origin. This source is the equivalent to setting `X-Frame-Options`
+    to `SAMEORIGIN`:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'A host source shares the resource with a specific origin. A response with the
+    following header is allowed to be embedded only in a page from bob.com over port
+    8001 using HTTPS:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: The `frame-ancestors` directive is a navigation directive. Unlike fetch directives
+    such as `img-src` and `font-src`, navigation directives are independent of `default-src`.
+    This means if a CSP header lacks a `frame-ancestors` directive, the browser does
+    not fall back to the `default-src` directive.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.2.1 X-Frame-Options versus CSP
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The CSP `frame-ancestors` directive is safer and more flexible than `X-Frame-Options`.
+    The `frame-ancestors` directive provides a more fine-grained level of control.
+    Multiple sources allow you to manage content by protocol, domain, or port. A single
+    content security policy can accommodate multiple hosts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The CSP specification ([www.w3.org/TR/CSP2/](https://www.w3.org/TR/CSP2/))
+    compares the two options explicitly:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The major difference is that many user agents implement `SAMEORIGIN` such that
+    it only matches against the top-level document’s location. This directive checks
+    each ancestor. If any ancestor doesn’t match, the load is cancelled.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`X-Frame-Options` has only one advantage: it is supported by older browsers.
+    These headers are compatible, though. Using them together can only make a site
+    safer:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `frame-ancestors` directive obsoletes the `X-Frame-Options` header. If a
+    resource has both policies, the `frame-ancestors` policy should be enforced and
+    the `X-Frame-Options` policy should be ignored.
+  prefs: []
+  type: TYPE_NORMAL
+- en: By now, you’ve learned everything you need to know about clickjacking. You’ve
+    learned a lot about many other forms of attack as well. Rest assured, there will
+    always be a new attack to learn about; attackers don’t rest. The next section
+    provides you with three ways to stay current in the ever-changing world of cybersecurity.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.3 Keeping up with Mallory
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Staying current can be daunting at first. Why? In addition to a steady stream
+    of new attacks and vulnerabilities, there is also a steady stream of new information
+    resources in the cybersecurity space. Seriously, nobody has enough time to digest
+    every blog, podcast, and social media post. Furthermore, some of the resources
+    out there amount to nothing more than clickbait and alarmism. In this section,
+    I reduce this space to three categories:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Influencers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: News feeds
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Advisories
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: For each category, I present three options hereafter. I’m challenging you to
+    subscribe to at least one option from each category.
+  prefs: []
+  type: TYPE_NORMAL
+- en: First, subscribe to at least one cybersecurity influencer. These individuals
+    deliver news and advice, wearing hats such as researcher, author, blogger, hacker,
+    and podcast host. You can’t go wrong with any of the influencers listed here.
+    My preference is Bruce Schneier.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Bruce Schneier, @schneierblog
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Brian Krebs, @briankrebs
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Graham Cluley, @gcluley
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Second, subscribe to a good cybersecurity news source. Any of the following
+    resources will keep you up-to-date with current events such as big breaches, new
+    tools, and cybersecurity law. These resources are conveniently available via RSS.
+    I recommend joining the /r/netsec community on Reddit.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[www.reddit.com/r/netsec/](https://www.reddit.com/r/netsec/)—Information security
+    news and discussion'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[https://nakedsecurity.sophos.com/](https://nakedsecurity.sophos.com/)—News,
+    opinion, advice, and research'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[https://threatpost.com/](https://threatpost.com/)—News, original stories,
+    videos, and feature reports'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Third, subscribe to risk-advisory notifications. These resources are focused
+    primarily on recent exploits and newly discovered vulnerabilities. At a bare minimum,
+    you should visit [https://haveibeenpwned.com](https://haveibeenpwned.com) and
+    subscribe to breach notifications. The site will send you an email next time one
+    of your accounts is compromised:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[https://haveibeenpwned.com/NotifyMe](https://haveibeenpwned.com/NotifyMe)—Alerts
+    for compromised personal accounts'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[https://us-cert.cisa.gov/ncas/alerts](https://us-cert.cisa.gov/ncas/alerts)—Current
+    security issues and exploits'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '[https://nvd.nist.gov/vuln/data-feeds](https://nvd.nist.gov/vuln/data-feeds)—Common
+    Vulnerabilities and Exposures (CVE)'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Congratulations on finishing this book. I enjoyed writing it and I hope you
+    enjoyed reading it. Luckily for you, Python and security are both going to be
+    around for a very long time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The same-origin policy does not apply to clickjacking because the request isn’t
+    cross-origin.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Cross-site request forgery checks cannot prevent clickjacking because the request
+    isn’t cross-site.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The `X-Frame-Options` and `Content-Security-Policy` response headers effectively
+    resist clickjacking.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`X-Frame-Options` has been obsoleted by `Content-Security-Policy`.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Subscribe to influencers, news feeds, and advisories to keep your skills current.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

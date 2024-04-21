@@ -1,0 +1,1124 @@
+- en: 10 Variable-length fractionation
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Ciphers based on Morse code
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Mixed letters and bigrams
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Variable-length binary codewords
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Ciphers based on text compression
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: This chapter covers a broad range of fractionation ciphers where the plaintext
+    groups and/or the ciphertext groups have variable lengths. These include monom-binom
+    (section 10.2), Huffman substitution (section 10.4) and Post tag systems (section
+    10.5).
+  prefs: []
+  type: TYPE_NORMAL
+- en: In section 4.4 I illustrated the concept of fractionation by describing two
+    versions of M. E. Ohaver’s Fractionated Morse cipher. Fractionated Morse is an
+    example of variable-length fractionation because it uses 1-, 3- and 4-symbol Morse
+    groups. Let me begin the broader discussion of variable-length fractionation with
+    a different form of Morse fractionation that resembles the trifid cipher described
+    in section 9.9\. Let’s call it Morse3.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.1 Morse3
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Morse3* is a cipher that operates in 4 steps. (1) Replace the letters of the
+    messages by Morse code groups. You can use either the standard Morse code, or
+    a mixed Morse alphabet like the one in section 4.4\. (2) Separate the Morse groups
+    using a **/** symbol. Use a double **//** to separate words and to mark the end
+    of the message. (3) Divide the symbols into groups of 3\. Append an extra **·**
+    or **··** if needed to complete the last group of 3 symbols. The recipient will
+    ignore these extra dots following the last **//**. (4) Substitute a letter for
+    each group of 3 symbols using a second mixed alphabet.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: To illustrate I will use the mixed Morse alphabet from section 4.4 (shown here
+    on the left) to form the Morse groups. This uses only groups of 1, 3 and 4 symbols,
+    but groups of 2 symbols may also be used, perhaps as nulls or homophones. The
+    substitution from Morse symbols back to letters uses a mixed alphabet similar
+    to the trifid cipher, except using the Morse symbols **· - /** instead of the
+    digits 0 1 2\. Notice that **///** can never occur, so it is not necessary to
+    provide a letter substitute for it. Thus only 26 substitutes are needed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-1](../Images/10-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Let’s encipher the sample message SEND AMMO.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-2](../Images/10-unnumb-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: If a well-mixed keyed alphabet is used for both substitution steps this cipher
+    is rated Five. One disadvantage of Morse3 is that the ciphertext is longer than
+    the plaintext. In this example an 8-letter plaintext became an 11-letter ciphertext.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.2 Monom-Binom
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Monom-Binom*, or *Monome-Binome*, is a class of ciphers in which each letter
+    is replaced by either a single digit or a pair of digits. The most famous of these
+    ciphers is the *VIC* cipher used by Russian spies from about 1920 to 1960\. The
+    name comes from the code name VICTOR given by the FBI to KGB spy Reino Häyhänen.
+    The VIC cipher was never broken until Häyhänen defected to the US in 1957 and
+    divulged its details.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The VIC cipher has two parts, the monom-binom substitution, and the modulo-10
+    addition of a random sequence of digits. Let’s begin with the monom-binom substitution.
+    Each letter of the alphabet is replaced by 1 or 2 decimal digits. In order for
+    Riva, the intended receiver, to read the message, two digits are selected as the
+    first digits for all of the 2-digit pairs. Let’s suppose Sandra, the sender, chose
+    2 and 5\. All of the 2-digit substitutes will begin with 2 or 5, and all of the
+    other digits will be 1-digit substitutes. Whenever the next digit in the message
+    is a 2 or a 5 the reader knows it is the start of a 2-digit substitute, otherwise
+    it is a single-digit substitute. The substitutions can be represented in a 3-row
+    diagram called by the peculiar name *straddling checkerboard*. The name is ill-suited
+    because the diagram is not square, is not 8×8, and does not have an alternating
+    pattern of black and white squares. Oh, and it isn’t used for playing checkers.
+    Other than that, it’s a perfect name. Here is an example:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-3](../Images/10-unnumb-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The eight 1-digit substitutes are on the top row, and the twenty 2-digit substitutes
+    starting with 2 and 5 are on the second and third rows. The digits 2 and 5 cannot
+    be used as 1-digit substitutes, so these spaces are blacked out on the top row.
+    For example, the substitute for S is 4, the substitute for U is 24 and the substitute
+    for Y is 54.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Since there are 28 boxes and only 26 letters in the English alphabet, there
+    are 2 extra characters that I have denoted by * and #. It is common practice to
+    use the * as an all-purpose punctuation mark, for example . ? , “ or whatever
+    else may make the message easier to read. The # is used for switching from letters
+    to digits and back. The message 600 TANKS ARRIVE 1800 TODAY would be sent as #600#TANKSARRIVE#1800#TODAY
+    and would be enciphered as **57600 57730 21438 86251 57180 05779 58354**.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: An obvious weakness of this type of substitution is that more than 1/3 of the
+    substitutes (actually 10 out of 28, or 35.7%) begin with 2 and the same percentage
+    start with 5, so the 2 selected digits are far more frequent than any of the other
+    8 digits. They will stand out like elephants in a waltz competition. To help mitigate
+    this problem, the 8 most frequent letters are placed on the top row. These are
+    ETAONIRS. To help remember them, you can use the mnemonic SERATION, which is SERRATION
+    with the duplicated R removed. Or, you can use my favorite, RAT NOISE. Using 1-digit
+    substitutes for the most-frequent letters also helps reduce the length of the
+    ciphertext.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Used by itself, the straddling checkerboard is rated Three.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'However, the VIC cipher adds a second step. (In its most complex form it also
+    transposes the digits.) The result of the monom-binom substitution is treated
+    as an intermediate ciphertext. For each digit in the intermediate text a key digit
+    is added modulo 10, that is, added without the carry. There are two flavors to
+    this. You can simply add a repeated numeric key such as 2793\. That would work
+    like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-4](../Images/10-unnumb-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This form of the VIC cipher is rated Five.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*****One stronger form of the VIC cipher is to use a non-repeating numeric
+    key produced by a random number generator. For this purpose, the Russians used
+    what is called a *lagged Fibonacci generator*. You may already be familiar with
+    the Fibonacci sequence, which is a sequence of integers where each term is the
+    sum of the two preceding terms. The sequence starts with x[0] = 0 and x[1] = 1\.
+    Additional terms of the sequence are generated by this mathematical formula:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-4-equation-10-1](../Images/10-unnumb-4-equation-10-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: That is, term n is the sum of term n-1 and term n-2\. For the VIC cipher only
+    the low-order digit is relevant. This can be written as
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-4-equation-10-2](../Images/10-unnumb-4-equation-10-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: A lagged Fibonacci generator can generalize this in three different ways. First,
+    it can add terms other than the last two, such as
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-4-equation-10-3](../Images/10-unnumb-4-equation-10-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Notice that the Chained Digit generator described in section 4.5.1 has this
+    form, with j = 1 and k = 7.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Second, the numbers can be generated with a different modulus. The most common
+    modulus is some power p^e of a prime p:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-4-equation-10-4](../Images/10-unnumb-4-equation-10-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Third, the two terms can be combined using a binary operator other than addition.
+    Common choices are subtraction, multiplication, and exclusive-OR. This can be
+    written
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-4-equation-10-5](../Images/10-unnumb-4-equation-10-5.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: where ● can represent + - × ⊕ or some other binary operator. (Division can also
+    be used. It is the same as multiplying by the multiplicative inverse of the second
+    operand. See section 3.6.) In practice, addition is used most often because additive
+    generators produce the longest periods.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using this form of pseudorandom digit generator, monom-binom is rated Seven.******
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.3 Periodic lengths
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: One easy way to achieve variable-length encryption is to use multiple substitution
+    tables, one table for each desired block length. If these were blocks of letters,
+    the substitution tables would quickly become enormous. Instead, we’ll use bits.
+    Let the message be represented as a bit string. The message is enciphered by dividing
+    it into short blocks of bits and substituting a block of the same length using
+    the substitution table for that length. The lengths of the blocks can be periodic
+    using a repeating numeric key, or they can be produced by a random number generator.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let me demonstrate using a small example. There are 3 substitution tables for
+    blocks of 2, 3 and 4 bits. In a practical cipher I would use blocks of 3, 4, 5
+    and 6 bits, but you could go up to 16 bits, or possibly longer, if you had the
+    storage.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For this simple demonstration I have used a standard alphabet, filling it out
+    to 32 characters by taking symbols from the top row of the keyboard going straight
+    left to right.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-5](../Images/10-unnumb-5.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The 3 substitution tables are
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-6](../Images/10-unnumb-6.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Here is a sample encipherment using the repeating key 3,2,2,4,2:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-7](../Images/10-unnumb-7.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This version, which I will call *BitBlock SA* for Standard Alphabet, has modest
+    strength. There is one key for mixing each of the substitution tables, and one
+    additional key for the sequence of block sizes. When there are just a few substitution
+    tables, the block sizes are all small, and the sequence of block sizes is small,
+    BitBlock SA is rated Three. Otherwise it is rated Four.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One way to strengthen this cipher is to use well-mixed keyed alphabets for converting
+    the letters to bits and the resulting bits back to letters. Let’s call the mixed-alphabet
+    version *BitBlock MA*. It is rated Seven.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.4 Huffman Substitution
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Section 4.2 describes how you can use Huffman codes for text compression. *Huffman
+    Substitution* is a way that you can use Huffman codes for encryption. Huffman
+    substitution uses two sets of codes. The codes from the second set are substituted
+    for the codes in the first set. These might be the same set of codes, but in different
+    orders.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The message is represented as a string of bits, for example by using one of
+    the standard computer representations such as UTF-8 or Unicode. This bit string
+    is separated into a string of codes from the first set of Huffman codes, then
+    these codes are replaced by codes from the second set. Huffman substitution does
+    not compress the message, although the length of the message, measured in bits,
+    can change if the codes in the first set have different lengths from their substitutes
+    in the second set.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Recall that a set of Huffman codes must have the prefix property. That is, no
+    Huffman code in a set can begin with another Huffman code from that same set.
+    For instance, you could not have both **1101** and **1101****1** because, if the
+    string you are decoding started with **11011**, you would not know whether the
+    first code had 4 bits or 5 bits. With the prefix property there is no need to
+    have a separator between the codes the way that Morse code groups need to be separated.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s look at how to construct a set of Huffman codes with the prefix property.
+    Begin by listing the single bits in either order, namely 0,1 or 1,0\. For example,
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-8](../Images/10-unnumb-8.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'For each item on this list, either accept it as a complete code, or extend
+    it to make two longer codes by appending a 0 to one copy and a 1 to the other
+    copy, again in either order. For example, we could accept the code 1 as complete,
+    and extend the code 0 to make two codes, 00 and 01, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-9](../Images/10-unnumb-9.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This process can be repeated as often as desired. For example, we could accept
+    the code 01 as complete, but extend the code 00 one more step to make codes 000
+    and 001.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-10](../Images/10-unnumb-10.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This process can be continued until you have the desired number of codes, or
+    the desired range of code lengths. However, 4 codes are enough for this example.
+    We will accept both 000 and 001 as complete codes, making a complete set of 4
+    codes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*****We can estimate how long the average code will be when we encipher a bit
+    string using these codes. There is a 1/2 chance that the string will begin with
+    1, thus a 1/2 chance that the code will be 1 bit long. There is a 1/8 chance that
+    the string will begin with 000 and a 1/8 chance that it will begin with 001\.
+    In either case the code would be 3 bits long. There is a 1/4 chance that the string
+    will begin with 01 and the code will be 2 bits long. This is a complete set of
+    codes so there are no other possibilities. Combining them gives the expected code
+    length 1/2+3/8+3/8+2/4 = 14/8 = 1.75 bits.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: After the first code has been substituted, the probabilities are the same for
+    the next code, so the expected length of all codes is 1.75 bits. This is less
+    than the average length of the codes, which is 2.25 bits.******
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is an example of Huffman substitution. There are two sets of Huffman codes.
+    The codes in the left column are replaced by the codes in the right column. Both
+    sets of codes have the prefix property. The plaintext is LIBERTY encoded with
+    the standard 5-bit representation A = 00000, B = 000001, C = 00010, . . ., Z =
+    11001.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-11](../Images/10-unnumb-11.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '![10-unnumb-12](../Images/10-unnumb-12.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The first line of 5-bit groups is the word LIBERTY encoded in the standard way,
+    A = 00000, B = 00001, and so on. The second line of binary is the same string
+    of bits, but divided into Huffman codes from Set1\. The underlined digit 1 is
+    padding that was needed to fill out the last Huffman code. The third line of binary
+    replaces each code from Set1 with the corresponding code from Set2, that is, the
+    third line is the result of the substitution step. The fourth line of binary is
+    the same bit string as the third line, but divided into groups of 5 bits. Notice
+    that line 4 is 4 bits longer than line 1\. The final line is the ciphertext using
+    the same standard 5-bit representation for the alphabet. The last letter of the
+    ciphertext could be either I or J, since the last binary group has only 4 bits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*****If you are doing this by computer it is not necessary to compare the front
+    end of the bit string to each of the Huffman codes in turn. Suppose that the longest
+    code has 6 bits. You can make up a table of all 64 possible 6-bit combinations.
+    Each entry in the table will tell the length of the code, in bits, and give its
+    substitute. Each time you perform a substitution you use the first 6 bits of the
+    string to look directly in the table.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose, for example, that the first Huffman code is 00000 and its substitute
+    is 0110\. The possible values for the first 6 bits of a string starting with that
+    code are 000000 and 000001\. So entries 000000 and 000001 in the table would both
+    give the code length as 5, and the substitute for that code as 0110\. To perform
+    the substitution, you would delete the first 5 bits of the string, and append
+    0110 to the result string.******
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.5 Post tag systems
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Mathematician Emil Leon Post of the Courant Institute of New York University
+    invented *Post Tag Systems* in 1920\. The basic idea is very simple. You start
+    with a string of bits. Then you take some bits from the front of the string, replace
+    them with a different set of bits, and put them on the end of the string. You
+    keep doing this. One of three things will happen: either the string shrinks until
+    you can’t do this anymore, or you get into an endless repeating cycle, or the
+    string grows forever.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Historical aside
+  prefs: []
+  type: TYPE_NORMAL
+- en: Post did not create his Post tags for use in cryptography. Post proved that
+    the question of whether the string grows, shrinks or repeats cannot be answered
+    within standard mathematics, then he used this fact to construct a proof of Kurt
+    Gödel’s famous Incompleteness Theorems. I consider this to be a simpler and more
+    elegant proof than Alan Turing’s proof using symbols written onto an infinite
+    tape, although the similarity between Post’s bit string and Turing’s tape is striking.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This *Post Substitution* is similar to Huffman substitution, except that you
+    move the substitute to the end of the bit string. The advantage of this system
+    is that you can keep right on going after you have substituted for the entire
+    string. That is, you can go through the string more than once. This obliterates
+    the divisions between the Huffman codes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The pieces that you take from the front of the strings are called the *tags*.
+    The set of tags must be chosen so that there is at most one tag that can be taken
+    at each step. That is, the replacement process is *deterministic*. This requires
+    that the set of tags has the prefix property. This will allow you to use the set
+    of tags to encipher a message represented as a bit string. The prefix property
+    is discussed in section 4.2.1 in connection with Huffman codes. In brief, no tag
+    may begin with any other tag. For instance, you could not have both 1101 and 11011
+    because if the string started with 11011 you would not know whether to take the
+    first 4 bits or the first 5 bits. With the prefix property there is no need to
+    have a separator between the tags the way that Morse code groups need to be separated.
+    The Huffman codes and Post tags have the same form, but they are used differently.
+    For starters, Huffman codes are used to shorten the bit string, while Post tags
+    are not.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A method for constructing a set of Huffman codes is described in section 10.4.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When you encipher using Post tags, you replace each tag with another tag and
+    move the new tag to the end of the string. Since Riva will have to decipher the
+    message working from the right, the replacement tags will need to have the *suffix
+    property*, that is, the inverse of the prefix property. None of the suffix tags
+    can end with another suffix tag. For example, if 1011 is one of the suffix tags
+    then neither 01011 nor 11011 could be a suffix tag.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You can construct the set of suffix tags the same way that you construct the
+    set of prefix tags, except that you extend each tag on the left rather than on
+    the right. If this is confusing, you can just construct a second set of prefix
+    tags and then reverse the order of the bits in that set to get the suffix tags.
+    There must be at least as many suffix tags as prefix tags. There can be more.
+    The extra tags can be used as homophones. For example, the prefix tag 0111 might
+    be replaced by a choice of suffix tag 110 or 10101.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the expected length of the suffixes is less than the expected length of
+    the prefixes the string is likely to shrink. That is, it is probable that there
+    are some initial strings that will grow shorter. Conversely if the suffixes are
+    longer than the prefixes it is probable that some initial strings will grow. This
+    is usually true when homophones are used. The greater the difference in expected
+    length, the more the initial strings will shrink or grow. However, “probable”
+    is no guarantee. It is possible to construct prefix/suffix sets that have the
+    opposite behavior.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To use Post tags for encipherment, you first represent the message as a string
+    of bits, then you perform the tag substitutions a few times. If you are enciphering
+    by hand, you turn those bits back into characters. If you are enciphering by computer,
+    this last step may be unnecessary; you simply transmit the resulting bit string.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.5.1 Same-length tags
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: One problem with the cipher described in the preceding section is that Riva
+    does not know how to divide the message she receives into blocks. You might need
+    to have a separate length field for each block, or else treat the entire message
+    as a single block. This can be unwieldy when the message is long. One solution
+    to this problem is to replace each prefix tag by a suffix tag of the same length.
+    That way, the blocks stay the same length throughout the process and there is
+    no problem in demarcating the ends of the blocks. Block sizes of 32 bits or 64
+    bits are typical.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I suggest doing a fixed number of substitutions for each block. You can determine
+    the appropriate number from the shortest length and the expected length of the
+    tags. Say the blocks are 32 bits, the shortest tag is 3 bits and the expected
+    tag length is 4.3 bits. Using the shortest length, if you perform at least 32/3
+    = 10.67 substitutions, then you are guaranteed that every bit in the block is
+    substituted at least once. Round that up to 11\. Using the expected length, on
+    average 32/4.3 = 7.44 substitutions are needed so that every bit gets substituted.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A good margin of safety is to have each bit substituted twice on average. Double
+    7.44 and round up to get 15 substitution steps. This is greater than 11, so it
+    is certain that every bit is substituted at least once. On average every bit is
+    substituted twice. About half the time some of the bits are substituted 3 times.
+    Most importantly, Emily will not know how many times any given bit has been substituted.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You may have noticed that I have been saying “every *bit* gets substituted”
+    rather than “every *tag* gets substituted.” This may be confusing. The first time
+    through the block, each tag gets replaced with a new tag that has the same length.
+    So, on the first round, it is the tags that get replaced. But when the second
+    round of substitution begins, it might not start on an even tag boundary. That
+    is, the next tag may span two or more of the tags from the first round.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is a miniature example to illustrate the point using a 12-bit block. The
+    first bit of the block is shaded, and the prefix tags are underlined.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-13](../Images/10-unnumb-13.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: After four substitutions the first bit is now in the second position, right
+    in the center of the next prefix tag, which is 011.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For hand use I suggest encoding the letters of the alphabet as 5-bit or 6-bit
+    groups, using 20 to 30 pairs of tags of 3 to 6 bits, 32-bit blocks, and 16 substitution
+    steps, that is, about 2 times through the block. Convert the resulting bit strings
+    back to characters using 4-bit groups to represent the letters A through P in
+    some mixed order. Such a cipher would be rated Six.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For computer use I suggest using a standard 8-bit representation such as UTF-8
+    for the letters, digits and special characters in the message. Use 40 to 80 pairs
+    of tags of 4 to 8 bits, 64-bit blocks, and 32 substitution steps. Using 32 steps
+    is enough for 3 passes through the block. Perform a well-mixed keyed substitution
+    on the characters before doing the Post tag substitutions, and a second independent
+    keyed substitution on the resulting bytes after finishing the Post tag substitutions.
+    This cipher, called *Post64*, would be rated Ten. It would have 4 separate keys
+    used to mix the initial substitution, the final substitution, the Post tags, and
+    their substitutes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another way to use Post tag substitution is to use short overlapping blocks.
+    Start with the first 4 bytes of the message and perform 2 Post substitutions.
+    Assuming the tags are 4 to 8 bits each, this is sufficient to assure that all
+    of the bits in the first byte have been substituted. Then move 1 byte right. The
+    next 4-byte block of the message is bytes 2, 3, 4 and 5\. Again, perform 2 Post
+    substitutions on this block. Continue this way until the last 4-byte block of
+    the message. The final 3 blocks will wrap around to the front of the message.
+    This method, called *PostOv*, is rated Six.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.5.2 Different-length tags
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: When the substitute for each tag is not the same length you get into a variety
+    of complexities, the length of each block can change, and the blocks may not end
+    up aligned on byte boundaries. For example, a 32-bit block could become a 35-bit
+    block. This means that Riva will need a means to separate the blocks. The simplest
+    method is to transmit the length of each block.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It might seem feasible simply to perform Post tag substitutions on a block until
+    its length becomes a multiple of 8 bits again. Unfortunately, this potentially
+    could take thousands or even millions of substitution steps—or it might never
+    happen.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The simplest solution is to encipher the entire message as a single block. The
+    length of the message tells Riva the number of bytes in the block. Sandra just
+    needs to add a 3-bit field to tell Riva how many bits are in the last byte, ranging
+    from 1 to 8 bits. This could be placed at the start of the message, or it could
+    be the last 3 bits of the last byte. The length field might require an extra byte.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is an example of different-length Post tag encipherment. Each prefix tag
+    and its resulting suffix tag have matching underlines.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-14](../Images/10-unnumb-14.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: '*****It might look like you will need to shift the entire message each time
+    a tag gets removed from the front. These shifts can be eliminated by keeping pointers
+    to the first and last bit of the message. Each pointer will simply be an integer
+    giving the location of each end. The low-order 3 bits of the pointer will give
+    the bit position within the byte, and the high-order bits will give the byte position.
+    Allocate a space 4 times the length of the message. Place the message at the start
+    of this space, and zero-out the rest.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: To delete a tag from the front of the string, just increment the front pointer
+    by the length of the prefix tag. To append a tag to the end, just shift the tag
+    to the required bit position and OR it with the last 2 bytes of the string, then
+    increment the end pointer. Continue this process until you reach the end of the
+    space. This means that the number of Post substitution steps depends on the message
+    itself.
+  prefs: []
+  type: TYPE_NORMAL
+- en: That leaves just one shift to perform at the end to get the bit string onto
+    an even byte boundary. However, this long shift can also be eliminated by telling
+    your correspondent both the starting and ending bit positions in the first and
+    last bytes of the message. This requires only 6 bits, which can be packed into
+    a single byte and placed at the start of the message. I recommend enciphering
+    this byte with a simple substitution so as not to give Emily the starting and
+    ending positions. Also, be sure to fill the unused parts of the first and last
+    bytes of the message with random bits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'One question remains: since Riva does not know the original length of the message,
+    and hence does not know the original size of the enciphering space, how can she
+    know when to stop deciphering? Riva does not know how many substitution steps
+    were done, and she cannot simply allocate a space 4 times the length of the received
+    message, because that may not be the same as the length of the sent message.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Here’s how. Riva knows three things: the plaintext message started on a byte
+    boundary, the message ended on a byte boundary, and the enciphering space was
+    4 times the length of the original message. Riva can begin by placing the received
+    message at the end of a space 5 times as long as the ciphertext message. That
+    should be more than ample. Riva works backward until the three conditions are
+    met, in particular until the distance from the start of the partially deciphered
+    message to the end of the deciphering space is exactly 4 times the length of the
+    message. This can happen only once.******'
+  prefs: []
+  type: TYPE_NORMAL
+- en: I suggest that you use 50 to 80 pairs of tags, with each tag 4 to 8 bits long.
+    The expected length of the original tags should be close in value to the expected
+    length of the replacement tags. About 1/3 of the replacement tags should be shorter,
+    1/3 should be the same size, and 1/3 of the replacement tags should be longer
+    than the original tags. Don’t insist on making every tag a different length from
+    its substitute. Message characters should be represented as 8-bit bytes in a well-mixed
+    alphabet. If the expected length of the tags is T bits, and the length of the
+    message is L bits, then at least 3L/T substitution steps should be made. That
+    is, you go through the whole message 3 or more times. The final bit string, including
+    the length indicator, should be converted back into characters using a second,
+    independent keyed simple substitution. If all of these suggestions are followed,
+    then this cipher, called *PostDL*, is rated Ten.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When you reach section 12.6, you will see that the PostDL cipher does not meet
+    all of the criteria that guarantee an unbreakable cipher. The reason it gets a
+    Ten rating is that Emily does not know where in the ciphertext any given plaintext
+    bit will end up. The position will differ from block to block. So Emily cannot
+    set up a correspondence between the plaintext bits and the ciphertext bits, and
+    thus cannot set up equations relating the ciphertext bits to the plaintext and
+    key bits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.5.3 Multiple alphabets
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: There are several things you can do to strengthen a Post tag cipher, or a Huffman
+    substitution cipher. We have already looked at having multiple rounds of substitution.
+    Another trick is to use multiple alphabets. Each alphabet will consist of a set
+    of tags with the prefix property and the corresponding set of replacement tags,
+    which must have the suffix property. You can simply use the multiple alphabets
+    in rotation, or you can use a keyword to select among them. If you are doing this
+    by hand, you will not want more than 2, or at most 3, such alphabets, so I suggest
+    using a numeric key, like 01101011.
+  prefs: []
+  type: TYPE_NORMAL
+- en: These ciphers, which may be called *PolyPost* and *PolyHuff*, are rated Four
+    to Eight depending on the number of rounds, the number of alphabets and the key
+    length.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.5.4 Short and long moves
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: So far we have assumed that when a Post tag has B bits, these B bits are moved
+    to the end of the block. However, it is possible to move fewer than B bits, or
+    more than B bits. For example, you could move B-1 bits, leaving 1 bit to be substituted
+    again as part of the next tag. This makes the tags overlap. The advantage is that
+    it conceals the boundaries between the tags. The disadvantage is that it requires
+    more substitution steps per round, making the cipher slower.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Conversely, when a Post tag has B bits you could move B+1 bits to the end of
+    the block. This leaves one bit unchanged, and that bit is always the last bit
+    in the block. This is not a serious problem if the cipher has multiple rounds
+    so the unchanged bit will probably be substituted in some other round. There is
+    still a chance that some bits will pass through this cipher intact. This is not
+    a serious weakness if Emily cannot determine which are the unchanged bits. Bits
+    are anonymous. There is nothing about any bit that says, “This bit came from byte
+    5, bit position 2 in the plaintext.”
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finally, the number of bits that are moved can be made independent of the length
+    of the tag. You could have a table that tells the number of bits to move. This
+    can be less than, more than or the same as the length of the tag. You can have
+    several of each.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the number of bits moved is different from the length of the tag, the suffix
+    property no longer applies to the set of substitute tags. Instead, the set of
+    bit strings that are actually moved must have the suffix property. For example,
+    if the tag 0110 is replaced by 1101, but 5 bits are moved, then the set of suffix
+    strings must include both **1101**0 and **1101**1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.6 Fractionation in other bases
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: So far, this chapter has discussed monom-binom in base 5, and Huffman and Post
+    substitution in base 2\. Variable-length substitution can be done in other bases
+    as well. For hand enciphering, it is easier to do Huffman substitution and Post
+    substitution in base 3 or base 4 than in binary. However, variable-length substitution
+    can be done in any base, even oddball bases like 11 or 13\. This can give you
+    extra substitutes, which can be used for homophones or for encoding bigrams.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When you work in base 13, you can use any 13 of the 16 hexadecimal digits for
+    substitution, and leave the other 3 digits as nulls. If done well, so that all
+    16 digits have roughly equal frequency and distribution, Emily will not be able
+    to tell the valid digits from the nulls.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.7 Text compression
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Section 4.2.1 discusses the use of Huffman codes for compressing text. Several
+    strong encryption schemes can be based on text compression. In this section I
+    present several more-advanced text compression schemes and some encryption schemes
+    based on Huffman codes. The remainder of Chapter 10 is optional. If at any point
+    the math becomes too daunting, just skip directly to the next chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-15](../Images/10-unnumb-15.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 10.7.1 Lempel-Ziv
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The *Lempel-Ziv* text compression scheme was developed by Israeli computer scientists
+    Abraham Lempel and Jacob Ziv in 1977, called *LZ77*, with an improved version
+    in 1978, called *LZ78*. It is based on the same underlying concept as Huffman
+    encoding, namely letters and letter combinations are represented by binary codes,
+    that is, by groups of bits. However, Lempel-Ziv takes the opposite approach to
+    this. Huffman uses shorter codes in order to save space. Lempel-Ziv uses codes
+    of roughly the same length, but has some of the codes represent longer letter
+    combinations to save space.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Huffman and Lempel-Ziv are opposite in another sense, too. Huffman bases the
+    length of the codes on a fixed preset table of letter frequencies. Lempel-Ziv
+    determines the most-frequent letter combinations on the fly, while it is encoding
+    the text. This is known as *adaptive coding*. Huffman encoding is good only for
+    text in a single language. A different language would have different letter frequencies.
+    Even changing from uppercase to mixed case text would require a different set
+    of Huffman codes. By contrast, Lempel-Ziv can be used for any type of computer
+    file, text in any language or mixed languages, computer code, images, telemetry,
+    music videos, and so forth.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are several versions of Lempel-Ziv. The version I present here, called
+    *Lempel-Ziv-Welch*, or *LZW*, was developed by Terry Welch of Sperry Research
+    in 1984\. LZW has both fixed-width and variable-width versions. I am presenting
+    the variable-width version, which is easy to adapt for cryptographic use.
+  prefs: []
+  type: TYPE_NORMAL
+- en: All versions of Lempel-Ziv use a list of letters and letter combinations called
+    a *dictionary*. The dictionary is built on the fly as the algorithm progresses
+    through the file. In the LZ77 and LZ78 versions the dictionary starts empty. The
+    code for any given letter combination is its location in the dictionary.
+  prefs: []
+  type: TYPE_NORMAL
+- en: LZW begins by assigning a code to each of the single characters in the file.
+    LZW codes all have the same number of bits. For example, if the file were a message
+    in English, all in uppercase without punctuation or word divisions, then you would
+    need 26 codes, so you could use 5-bit codes. It is more common to start with 256
+    codes, one for each of the 256 possible values of an 8-bit byte.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As the algorithm progresses through the file it looks for letter combinations
+    that are not already in the dictionary. When it finds one, it adds that combination
+    to the dictionary. For example, suppose that the algorithm has found THE in the
+    file, and that THE is already in the dictionary. Suppose the next letter in the
+    file is M, and that THEM is not in the dictionary. It outputs the code for THE
+    followed by the code for M, and adds THEM to the dictionary. The code for THEM
+    is the next available location in the dictionary, say 248.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since THE was already in the dictionary, the algorithm will not look at combinations
+    starting with HE or E. It will start at M looking for another combination that
+    is not in the dictionary. If that combination is MOR, then MOR is put in dictionary
+    entry 249 and has the code 249\. The next time the algorithm finds THEM in the
+    file it will be coded as 248, and the next occurrence of MOR will be coded as
+    249.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When the algorithm has filled up all 256 dictionary entries for 8-bit codes,
+    the next assigned code will need to have 9 bits. At that point the algorithm will
+    switch from 8-bit codes to 9-bit codes. THEM will still have the code 248, but
+    it will be the 9-bit code 011111000 instead of the 8-bit code 11111000\. When
+    the algorithm fills up all 512 dictionary slots for the 9-bit codes, the code
+    for THEM becomes the 10-bit code 0011111000, which is still 248\. Note the order
+    of these operations. The code for the current letter combination is output first
+    at the old size, then the new combination is added to the dictionary and the code
+    size is increased. Both Sandra and Riva must use the same order, or else the message
+    will not be decompressed correctly. Enlarging the codes typically stops at 12
+    bits. Increasing the code size from 12 bits to 13 bits usually does not improve
+    the compression, and may even worsen it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s look at an example. Let’s encode the word TETE-A-TETE using this algorithm.
+    Suppose the dictionary starts off with the single letters A, E and T using 2-bit
+    codes. Let’s follow the dictionary as it gets built. At each stage the bit strings
+    to the left show the encoded word, while the letters to the right show the remaining
+    portion of the word.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-16](../Images/10-unnumb-16.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: When Riva decompresses the message, the dictionary must be built up exactly
+    the same way. Note that the bit string **10** **01** **011** **000** **011** **011**
+    by itself is not enough for Riva to decompress the message. She also needs to
+    know that the codes **00**, **01** and **10** represent the characters A, E and
+    T.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Okay. That’s Lempel-Ziv compression. This is a book about cryptography. How
+    can Lempel-Ziv compression be used for encryption?
+  prefs: []
+  type: TYPE_NORMAL
+- en: In building the dictionary, Lempel-Ziv assigns codes sequentially. The 43rd
+    letter or letter combination will get the code 42 (not 43, since the codes start
+    at 0). To use this scheme for encryption, add a second column to the dictionary.
+    The first column contains the letter combinations, and the second column contains
+    the corresponding codes. Instead of using the position in the dictionary as the
+    code for each letter combination, use the number in the second column of the dictionary.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose that the dictionary starts with the 256 single-byte characters. The
+    first column will contain the characters. In the second column put the numbers
+    from 0 to 255 in some scrambled order. They can be mixed by any of the methods
+    described in section 5.2\. Sandra and Riva must use the same order, which could
+    be determined by a keyword or by the seed for a random number generator. When
+    the first 9-bit code is needed, the next 256 dictionary entries will get the codes
+    from 256 to 511 in scrambled order. Likewise, when you move from 9-bit codes to
+    10-bit codes the next 512 codes will be assigned at one time. Assigning codes
+    in bulk is more efficient than assigning them one at a time.
+  prefs: []
+  type: TYPE_NORMAL
+- en: An alternative to assigning the codes in bulk is to assign only the first 256
+    codes using a keyword or random number sequence. After that each new code is calculated
+    by adding 256 to the code 256 entries earlier. That is, X(N) = X(N-256)+256.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This cipher, which I will call *Lempel-Ziv Substitution*, is rated Three. The
+    rating is so low because the first few characters of the message are essentially
+    enciphered with simple substitution. Each code will represent a single character
+    until the first repeated bigram occurs. This might not happen until 30, 40 or
+    more characters have been encoded. Even after that point most of the 9-bit codes
+    will represent single letters. These codes are easily distinguished because they
+    are the only 9-bit codes starting with 0\. Emily will have plenty of opportunities
+    to use both letter frequencies and contact frequencies to crack the message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To make Lempel-Ziv substitution strong you can add a second substitution step.
+    This substitution should not be on byte boundaries. I suggest using 7-bit groups.
+    These groups will not coincide with the code groups until the codes reach 14 bits.
+    This may never happen because codes are usually limited to 12 bits. Lempel-Ziv
+    substitution followed by 7-bit substitution is rated Six. Both substitutions can
+    be accomplished in a single left-to-right pass.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.7.2 Arithmetic coding
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Arithmetic Coding* (pronounced “a-rith-MET-ic”) is a text compression method
+    that I invented in the 1970s (“Arithmetic Stream Coding Using Fixed Precision
+    Registers,” *IEEE Trans. on Info. Theory* vol. 25 (Nov. 1979), pp. 672-675). It
+    is based on a clever idea from Peter Elias of MIT.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Elias’s idea was to encode every character string as a fraction. Imagine all
+    the possible fractions from .0 through .999... The ellipsis ... means that this
+    fraction ends with an infinite sequence of 9’s. Now divide this range up according
+    to the first character of the string. For simplicity, let’s suppose there are
+    25 characters in the alphabet, like a Polybius square alphabet. Each letter will
+    get 1/25 of the full range. Those strings starting with A get the first 1/25,
+    or 4%, of the range, namely .0 to .04\. Strings starting with B get the next 1/25
+    of the range, namely .04 to .08\. Strings starting with Z get the last 1/25 of
+    the range, .96 to .999... . (I am giving this example using decimal notation to
+    make it easier to read. In a computer, binary fractions would be used.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: For the second character you divide this range again. Strings starting with
+    AA would be in the range .0 to .0016\. Strings starting with AB would be in the
+    range .0016 to .0032\. Strings starting with BA would be in the range .0400 to
+    .0416\. And so forth. Strings starting with ZZ would get the range from .9984
+    to .9999... .
+  prefs: []
+  type: TYPE_NORMAL
+- en: To visualize this, let’s use a miniature 5-letter alphabet with A being .0 to
+    .2, B from .2 to .4, C from .4 to .6, D from .6 to .8, and E from .8 to .999...
+    . Using this alphabet, let’s encode the word BED.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-17](../Images/10-unnumb-17.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: BED could be encoded as any fraction f with .384 ≤ f < .392\. As more characters
+    are added, this interval will continue to shrink.
+  prefs: []
+  type: TYPE_NORMAL
+- en: That’s the concept. However, this encoding of strings as fractions does not
+    give any compression. One more idea is needed to get compression. Instead of giving
+    each letter of the alphabet the same fraction of the range, make the fraction
+    proportional to the frequency of that letter. A would get 8.12%, B would get 1.49%,
+    through Z, which would get .07%. The range for A would be .0 to .0812\. The range
+    for B would be .0812 to .0961\. The range for Z would be .9993 to .9999... .
+  prefs: []
+  type: TYPE_NORMAL
+- en: In theory this would give optimal compression based on the frequencies of the
+    individual letters. Unfortunately, there is a practical problem. The method produces
+    fractions that potentially require thousands or even millions of digits. How can
+    such fractions be represented in the computer? How can you perform arithmetic
+    on them?
+  prefs: []
+  type: TYPE_NORMAL
+- en: So, the method was great in theory, but seemingly infeasible in practice. It
+    appeared to require fractions of unbounded precision. The time needed to add and
+    multiply long fractions, whether decimal or binary, increases with their length,
+    so even if there were a good way to represent these fractions the method would
+    be impractically slow.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The solution I found was to use a moving window where all of the arithmetic
+    would be done. That lets you use ordinary 32-bit integers. No floating-point arithmetic
+    was required. To keep the integers within the 32-bit size, the letter frequencies
+    were approximated by 15-bit integers, that is, by a fraction of the form N/2^(15)
+    or N/32768\. For example, the frequency for the letter A is 8.12%. This can be
+    expressed as 2660/32768, or 665/8192\. This approximation was found to cause no
+    detectable reduction in the degree of compression.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is a decimal example to show how a letter is encoded and how the moving
+    window works. Suppose the first few characters have been encoded, and the range
+    is now .784627 to .784632\. The first 4 digits for the start and end of the range
+    are the same, namely .7846\. These 4 digits would be output, and the window would
+    be moved 4 digits to the right to show the range .2700 to .3200.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-18](../Images/10-unnumb-18.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The width of this range is .0500\. Suppose the next character in the message
+    has a frequency of .0300 and its range is .4050 to .4350\. This character gets
+    encoded by selecting that fraction of the current range .2700 to .3200\. Its width
+    is .0500×.0300, which is .0015\. It will run from .2700+.0500×.4050 to .2700+.0500×.4350,
+    which is .29025 to .29175\. Notice that the width of this range is .0015, as expected.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-19](../Images/10-unnumb-19.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Since the start and end of this range both begin with the digits .29, these
+    digits can be output. The digits that have been output are now 784629\. The window
+    can now be moved 2 more digits to the right to make the current range .0250 to
+    .1750.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Arithmetic coding is ideally suited for encryption because there are no longer
+    discrete codes for each letter or letter combination. There are no boundaries
+    where the bit stream can be broken into separate codes. Instead, the code for
+    each letter influences how all subsequent letters are represented.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Now that we understand how the arithmetic coding method works, the next step
+    is to see how to use it for encryption. We do not want to change the percentage
+    of the range allotted to each character, because that would lose the compression.
+    Instead, we can change the order of the characters, so that the range for each
+    character falls in an unpredictable part of the full range. That is, unpredictable
+    for Emily. For example, using just the letters A,B,C,D,E the ranges might be:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![10-unnumb-20](../Images/10-unnumb-20.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: These intervals can be used to encode the letters of the message. Let’s call
+    this method *Arithmetic Encipherment*. Since Emily does not know either the starting
+    point or the ending point of any of the ranges, there is no opening for an attack.
+    It is true that Emily knows that the first range starts at .0 and that the last
+    range ends at .999... , but Emily does not know which characters these ranges
+    represent.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is one difficulty with arithmetic coding that has not been discussed yet.
+    Using the normal alphabet, Riva does not know where the message ends. The same
+    code that stands for ROTUND could also stand for ROTUNDA, ROTUNDAA, ROTUNDAAA,
+    ad infinitum, assuming that the range for A begins at 0\. With conventional arithmetic
+    coding this problem can be solved by using various ways of encoding the length
+    of the message and appending this length code to the ciphertext, or by adding
+    a special end-of-message character to the alphabet. This was not discussed earlier
+    because it is not needed for arithmetic encipherment.
+  prefs: []
+  type: TYPE_NORMAL
+- en: With arithmetic encipherment all you need to do is assign a rare character,
+    or any character that is seldom found at the end of a message, to the first range,
+    that is, to the range starting at .0000\. Then when Riva sees ROTUNDVVV... or
+    ROTUND###... it is obvious where the message ends.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As described here, arithmetic encipherment is rated Five using a 26-letter alphabet,
+    or Six using a 256-character alphabet. All the usual tricks can be used here,
+    nulls, homophones and bigrams. Using nulls would reduce or destroy the compression,
+    so I do not recommend that. Using homophones has the effect of splitting the range
+    for a letter into two or more separate ranges. This makes the ranges for the letters
+    more even, which is equivalent to flattening the letter frequencies. This can
+    improve the security without affecting the degree of compression. Using bigrams,
+    or even trigrams, can sometimes increase the level of compression while improving
+    the security. Using homophones and bigrams, arithmetic encipherment is rated Eight.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since arithmetic encipherment is so strong by itself, it takes very little extra
+    to push it up to a Ten rating. I suggest using a general polyalphabetic cipher
+    of period 4, that is, a substitution with four independent well-mixed alphabets
+    used in rotation. An arithmetic encipherment followed by a general polyalphabetic
+    encipherment with a period of 4 or higher is rated Ten. It leaves an opponent
+    with nothing to go on, no letter frequencies, no contact frequencies, and no way
+    to utilize a probable word.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 10.7.3 Adaptive arithmetic coding
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Lempel-Ziv gives decent compression for any type of file because it is adaptive.
+    Huffman coding and arithmetic coding give better compression, but only for files
+    whose character frequencies match the underlying frequency table. There are several
+    ways to make Huffman coding and arithmetic coding adaptive, and all of them make
+    the corresponding encryption methods stronger. All such methods involve counting
+    the characters in the file as you encode them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The more closely the character counts match the character frequencies in the
+    file, the better the compression you get. You might think that you could just
+    count all of the characters in the file and then use the actual counts. The problem
+    is that Riva cannot count the characters in the file. Riva must use the same frequencies
+    as Sandra or she cannot decipher the file. The solution to this dilemma is for
+    Sandra to count the characters as she enciphers, and for Riva to count the characters
+    as she deciphers, so they will both have the same counts at all stages.
+  prefs: []
+  type: TYPE_NORMAL
+- en: All the character counts start at 1\. If you know the frequencies of the characters
+    beforehand, even if they are only rough estimates, you can increase the counts
+    for the more frequent characters. For example, if you are using a 256-character
+    set and you expect that messages will contain about 1% uppercase E and about 10%
+    lowercase e, then you could increase the character count for E by 2 and the character
+    count for e by 25, that is, about 10% of 256\. The initial range for each character
+    is proportional to its initial count. For example, if the 256 character counts
+    total 500, and the initial count for the lowercase e is 25 then e would get a
+    range of 25/500, or .05.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are two basic methods for adjusting the codes, character mode and batch
+    mode. Character mode is practical only for arithmetic coding. In character mode,
+    each time a character is found in the file its range and the two adjacent ranges
+    are adjusted. (One adjacent range when the character has either the first or last
+    range. For the 26-letter standard alphabet that means A or Z.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is an example. Suppose that the letter T has been encountered, and that
+    the adjacent ranges belong to the letters S and U. (This would probably not be
+    the case for arithmetic encipherment. The mixed alphabet probably would not contain
+    S,T,U consecutively in that order.) Suppose the character counts for S, T and
+    U are 15, 20 and 5, so they total 40\. Suppose the ranges for S, T and U are .062,
+    .074 and .024, so they total .160\. This combined range is reapportioned in the
+    ratio 15:20:5\. S gets .160×15/40, or .060\. T gets .160×20/40, or .080\. U gets
+    .160×5/40, or .020\. Over time the ranges for the characters will converge to
+    the correct widths.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Character mode works reasonably well with a 26-letter alphabet. It works very
+    poorly with a 256-character alphabet. Most of the 256 characters will not be adjacent
+    to any of the high-frequency characters, so their frequencies will remain static.
+    This is particularly true for the standard ASCII representation where all of the
+    letters are clumped together.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Batch mode works for both arithmetic coding and Huffman coding. In batch mode
+    the entire set of ranges is adjusted at specific points during the encoding. For
+    example, the ranges could be adjusted after encoding 64 characters, after 128
+    characters, after 256 characters, and so forth. At each of these points the entire
+    range would be reapportioned according to the current character counts. This converges
+    more rapidly than character mode, but between reapportionments you are working
+    with old, unadjusted frequencies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In batch mode it is possible to count the frequencies for bigrams, and even
+    trigrams. Bigrams or trigrams that occur more than once could be given their own
+    Huffman codes or arithmetic code ranges. With this refinement, arithmetic coding
+    will almost always give better compression than Lempel-Ziv.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is one problem with counting bigram and trigram frequencies, namely storage.
+    With a 256-character alphabet there are 65,536 different bigrams and 16,777,216
+    different trigrams. If storage is plentiful this might not be a problem. If storage
+    is limited, one solution is to count only bigrams and trigrams containing the
+    most frequent letters. For example, if bigrams and trigrams were restricted to
+    the 20 most common characters, then there would be only 400 bigrams and 8,000
+    trigrams to count. To determine the most frequent characters, counting of bigram
+    and trigram frequencies could be postponed until some fixed number of single characters
+    have been encoded, say 256 or 1024 characters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One way to accomplish these restricted counts is to count only single characters
+    in the first batch to establish the most frequent characters. Count bigrams in
+    the second batch using those high-frequency characters. Count trigrams in the
+    third batch using only a high-frequency bigram plus a high-frequency letter. Once
+    the high-frequency bigrams and trigrams have been chosen, they are given their
+    own Huffman codes or arithmetic ranges. In other words, they are treated just
+    like single characters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For arithmetic coding, character mode and batch mode are not mutually exclusive.
+    You can balance the ranges for each individual character as soon as it is encountered,
+    and balance the extended set of characters plus bigrams and trigrams, at the end
+    of each batch.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When doing Huffman encipherment or arithmetic encipherment, at the end of each
+    batch the alphabet should be reshuffled before the codes are replaced or the ranges
+    are rebalanced. This is particularly needed if bigrams or trigrams have been added
+    or deleted. This means that Emily will have a limited amount of material to attack
+    before the codes change. For encipherment it may be preferable to use batches
+    of irregular length, say after 217 characters, then after 503 characters, and
+    so forth, so Emily will not know when the codes change.
+  prefs: []
+  type: TYPE_NORMAL
+- en: One further refinement to adaptive coding is to divide all of the counts by
+    2 after the ranges have been rebalanced. This lets the codes adapt to situations
+    where the character frequencies change. Older frequencies will have less influence
+    on the ranges, and newer frequencies will have more influence. For example, suppose
+    the text is a book of stories by different authors. Each author could have a different
+    vocabulary or different subject matter, or even write in a different language.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Of course Sandra and Riva must agree on all of this beforehand so that Riva
+    will be able to decipher and decompress the message correctly.
+  prefs: []
+  type: TYPE_NORMAL

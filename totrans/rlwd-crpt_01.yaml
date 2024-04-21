@@ -1,0 +1,22 @@
+- en: 'Part 1\. Primitives: The ingredients of cryptography'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: Welcome to the real-world of cryptography! The book you’re holding in your hands
+    (if you chose to acquire a printed version) is split into two equal parts of eight
+    chapters. By going through all of it, you will learn (almost) all there is to
+    know about cryptography in the real world—the one you’re standing in.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note that the first part of the book was written to be read in order, although
+    each chapter should tell you what the prerequisites are, so do not view this as
+    a mandatory constraint. The first eight chapters take you through the basics—the
+    building blocks of cryptography. Each chapter introduces a new ingredient and
+    teaches you what it does, how it works, and how it can be used with other elements.
+    This first part is all about giving you good abstractions and insights before
+    we start making use of it all in the second part of the book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Good luck!
+  prefs: []
+  type: TYPE_NORMAL

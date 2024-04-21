@@ -1,0 +1,950 @@
+- en: 18 Quantum computers
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Properties of quantum computers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Using quantum computers for communications
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Using quantum computers for key exchange
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Using quantum computers for solving optimization problems
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Using quantum computers for decrypting block ciphers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Ultracomputers, a step beyond quantum computers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: As I write this book, quantum computers are in their infancy. There are no more
+    than 20 quantum computers in the entire world, none of which contain more than
+    about 50 qubits, or quantum bits. I write this chapter knowing that much or all
+    of it may be outdated, or proven wrong, even before the book gets released. Much
+    of the mathematics used in quantum mechanics and quantum computing is well beyond
+    the scope of this book, so parts of this chapter will simply mention quantum methods
+    and algorithms without any explanation of how they work.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The basis for quantum computing is the *quantum bit*, or *qubit*. A qubit has
+    two *basis states* that are denoted **|**0〉 and **|**1〉, corresponding to the
+    0 and 1 states of an ordinary bit in a conventional computer. The notation **|**1〉
+    is called *bra-ket* notation. When the angled brace is on the left, like 〈0| it
+    is called *bra*, so 〈0| is read “bra-0.” When the angled brace is on the right
+    it is called *ket*, so **|**1〉 is read “ket-1.” The notation was invented by Nobel
+    Prize winner English physicist Paul Adrien Maurice Dirac.
+  prefs: []
+  type: TYPE_NORMAL
+- en: An ordinary bit in a conventional computer has a definite value that may be
+    0 or 1\. The value can be only 0 or 1, not some value between, not multiple values
+    at once, and not sometimes 0 and sometimes 1\. The physical device, such as a
+    magnetic spot on a surface, may be switched from one value to the other by applying
+    a current or a magnetic field. There can be a brief transition, but the device
+    cannot stay in any type of intermediate or mixed state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.1 Superposition
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: By contrast, a qubit does not have a value until a measurement or observation
+    is taken. At that point its value will be either 0 or 1\. The basis state **|**0〉
+    means that there is a 1.0 probability that its value will be 0, and the basis
+    state **|**1〉 means that there is a 1.0 probability that its value will be 1\.
+    In general, the qubit will be in a *s**uperposition* of both basis states α**|**0〉+β**|**1〉,
+    where α and β are complex numbers such that |α|²+|β|² = 1\. The probability that
+    this qubit yields a 0 when it is measured is |α|², and the probability that the
+    qubit yields a 1 is |β|². The notation |α| means the *magnitude* of α. The magnitude
+    of a complex number a+bi is √(*a*² + *b*²). Since the result of the measurement
+    is probabilistic, the measurement of two qubits in identical states can give different
+    results. Any number of states may be superposed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When a quantum state x consists of several qubits, say x[1], x[2], x[3], the
+    state 〈x| is represented as a row vector (*x*̅[1], *x*̅[2], *x*̅[3]) where the
+    bar over each component means the *complex conjugate*. If the complex number *α*
+    is a+bi, then its complex conjugate *α̅* is a-bi. The complex conjugate has the
+    property that the product *α**α̅* = a²+b² = |*α*|². Conversely, the state |y〉
+    is represented by a column vector
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![18-equation-18-4](../Images/18-equation-18-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Since the row vector in this example is a 1×3 matrix, and the column vector
+    is a 3×1 matrix, they can be multiplied. The matrix product, denoted 〈x|y〉, is
+    a 1×1 matrix whose single element is the inner product *x̅*•y. That is, 〈x|y〉
+    is a scalar. (If this is unfamiliar, you can review section 11.3.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since any two states can be superposed, and those states, in turn, can be superposed,
+    any qubit may be in a superposition of arbitrarily many states.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Superposed states are fragile. Small perturbations, such as temperature fluctuations
+    or mechanical vibrations, can cause the qubit to drop out of the superposed state
+    and back into one of the basis states. This is called *decohering*. This fragility
+    is a major obstacle in achieving large reliable quantum computers. In particular,
+    when a measurement is taken, the qubit will *decohere* and drop into whichever
+    basis state was observed. Similarly, a qubit cannot be copied because that would
+    require an observation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If it is hard to understand the concept of a coefficient that is a complex number,
+    maybe this will help. Visualize the point (a,b) in Cartesian coordinates. The
+    line segment from the origin (0,0) to the point (a,b) is a vector. It has both
+    magnitude and direction. When two states are superposed, these vectors are added
+    according to the rules of coordinate geometry, which is exactly how complex numbers
+    are added. This is the reason why the probabilities are represented as complex
+    numbers. After the vector addition, the coefficients must be rescaled to make
+    |α|²+|β|² = 1 again. The rescaling can be eliminated if α and β are described
+    in terms of angles, using the trigonometry formulas for sums and differences of
+    angles.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Qubits can be manipulated using some elementary logic functions to form quantum
+    circuits. One example is the conditional NOT function, CNOT, which operates on
+    2-bit qubits, **|**xy〉. CNOT is defined as **|**xy〉 if x = 0, and **|**xy'〉 if
+    x = 1\. In other words, the first bit is left unchanged, and the second bit is
+    the exclusive-OR of the two bits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.2 Entanglement
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Besides superposition, particles can display a second quantum-mechanical property
+    called *entanglement*. A group of particles is called *entangled* if there is
+    a correlation between some property of one particle and the same property of the
+    others. For example, electrons have a property called *spin*. The spin about a
+    specific axis, such as the x-axis, may be correlated among the group of particles.
+    Or, the polarization among a group of photons may be entangled. This entanglement
+    may exist even when the particles are far apart. This allows entanglement to be
+    used for communications.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The process begins by creating an entangled pair of particles. One method is
+    to pass a laser beam through a special type of crystal. This causes some high-energy
+    photons to split into two low-energy photons. Some of those photon pairs will
+    be entangled, although the yield is very low, like one in a billion. The next
+    step is to carry these entangled photons to wherever Sandra and Riva will be transmitting
+    and receiving. For long distances the usual way is by transmitting them over a
+    fiber-optic cable, although they can be carried physically using cavities in a
+    crystal lattice.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When Sandra is ready to send her message, she interacts her photon with some
+    specially prepared ancillary photons called *ancillas*. This interaction causes
+    her photon to take the desired state that she wishes to transmit. This causes
+    Riva’s entangled photon, which may be miles away, to take on a complementary state.
+    It used to be imagined that this happened instantaneously, but the change is propagated
+    at the speed of light. Information cannot be transmitted instantaneously, despite
+    what generations of science fiction writers have fantasized.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finally, Riva measures her entangled photon and determines the 1-bit message—or
+    not, since this is a probabilistic process. This is sometimes called *quantum
+    teleportation* by scientists who grew up reading way too much science fiction.
+    This is supposedly secure against eavesdropping because if Emily measures the
+    photon it will decohere, and this presumably is detectable by Sandra and Riva.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are two flaws here. (1) Emily may not care if her eavesdropping is detected.
+    As long as she knows the information, it may not matter if Sandra and Riva know
+    that she knows. (2) Emily’s goal might not be to gather information; her goal
+    might be to disrupt communications. Emily might not learn the secret battle plans,
+    but neither will Riva. In fact, if Sandra and Riva detect that Emily is eavesdropping,
+    they might use the quantum link less often, which would also be to Emily’s advantage.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.3 Error correction
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Since quantum events are probabilistic, quantum computers have a much higher
+    error rate than conventional computers. There must be some means of detecting
+    and correcting errors. In classical computers, there are error-detecting and error-correcting
+    codes. These codes use extra bits to detect discrepancies, for example by adding
+    a parity bit to each byte to detect errors. The parity bit is usually the exclusive-OR
+    of the 8 data bits. That means the 9-bit byte with the error bit will always have
+    even parity. If the parity is odd, that shows an error has occurred, but it does
+    not tell what the error was.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The simplest form of an error-correcting code for conventional computers is
+    the 2-out-of-3 code. There are 3 copies of each bit. If a single-bit error occurs,
+    two of the copies will still have the correct value. If the chance of a single-bit
+    error is, say, 1 in 10⁷, then using that common value reduces the chance of an
+    error to 3 in 10^(14), a vast improvement. Using 3 bits to represent each data
+    bit is expensive, but there are several types of codes, such as Hamming codes
+    and convolutional codes that use fewer extra bits, some of which can detect and
+    correct multibit errors. Error-free communication is absolutely essential in current
+    cryptography where changing even a single bit could render a message unreadable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This type of error detection and error correction is impossible in a quantum
+    computer. These codes rely on the ability to copy the value of a bit and check
+    the parity of a code. These cannot be done with qubits, because measuring the
+    value of a qubit causes it to decohere. Efforts to provide quantum error correction
+    generally rely on using extra qubits. The error-detection and -correction qubits
+    may be interspersed with the data qubits in a planar lattice arrangement known
+    as a *surface code*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: So far, quantum error correction is just theoretical. Nobody has yet built a
+    practical device. The need for extra error-correcting bits boosts the number of
+    qubits required for a practical quantum computer. Since quantum error rates are
+    high, practical quantum computers are probably still far in the future. Bear this
+    in mind as you read the descriptions of the various quantum algorithms in the
+    following sections.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.4 Measurement
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Measuring the polarization of a photon is a tricky business. Think for a moment
+    about how you would measure the polarization of a beam of light. You pass the
+    beam through a polarity filter and observe the brightness. Then you slowly rotate
+    the filter until the filtered light reaches maximum brightness. At that point
+    the filter is aligned with the polarization of the beam, and you can measure the
+    angle.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Riva, however, has no such luxury. She is dealing with a single photon. It passes
+    through her filter or crystal, and either she detects a flash or she doesn’t.
+    If her filter is not aligned the same way as Sandra’s emitter, then her odds of
+    getting the same state as Sandra depends on the relative angle. For instance,
+    if her detector is at a 90º angle to Sandra’s emitter, then she has exactly a
+    50% chance of getting the same value for the qubit.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The solution to this problem is for Sandra to send a burst of photons. Riva
+    can sample these photons, sending them through a variety of filters. She can measure
+    the brightness of each sample by using a light sensor and voltmeter, and calculate
+    an accurate polarization angle. She then measures at that angle and gets the same
+    basis state as Sandra with a very high probability. The ability to use quantum
+    computers for cryptography may ultimately depend on the ability to distinguish
+    tiny gradations in polarization.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.5 Quantum 3-stage protocol
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: This sets the stage for the *Three-Stage Quantum Protocol* invented in 2006
+    by Subhash Kak of the University of Oklahoma Stillwater. Kak’s 3-stage protocol
+    uses the same 3-message framework as the other three-pass algorithms discussed
+    in sections 16.1, 16.2 and 16.4\. In the quantum version, the encipherment operation
+    is rotating the polarization by a random angle around a chosen spatial axis. Sandra
+    and Riva must agree on the axis, otherwise the rotations will not commute. (1)
+    Sandra sends the photon rotated by her random angle φ, (2) Riva rotates the photon
+    by her secret angle ψ and sends back the photon rotated by φ+ψ, and (3) Sandra
+    applies the inverse rotation -φ and sends back the photon rotated by Riva’s angle
+    ψ, which Riva removes to read the qubit. If Emily attempts to measure any of the
+    rotated qubits, she has no way of knowing if her detector has the correct angle,
+    and therefore no way to know the probability of getting the correct value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: With this method Sandra and Riva must change their angles frequently, preferably
+    for every bit. Otherwise, Emily can just pick a random angle and attempt to read
+    every message. If Emily’s angle is close to the correct angle, then she will get
+    the correct value for 80% or even 90% of the bits. This could be enough to enable
+    her to read the message. With luck she will be able to read about 25% of the messages.
+    Note that it is just as useful for Emily’s angle to be close to 180º off, because
+    that would give her the inverses of 80% to 90% of the bits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.6 Quantum key exchange
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: There are several algorithms for quantum key exchange, analogous to Diffie-Hellman
+    key exchange. The best-known of these algorithms is *BB84*, named for its inventors
+    Charles H. Bennett of IBM Research and Gilles Brassard of the Université de Montréal.
+    The algorithm uses 4 qubits to allow for the detection and correction of noise
+    in the communications channel. Any perturbations caused by Emily are simply treated
+    as additional noise in the channel, so they need no further detection or correction.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A corollary of this work is that several loosely entangled particles may be
+    combined to produce a smaller number of tightly entangled particles.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.7 Grover’s algorithm
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Grover’s* *cryptographic algorithm* is an algorithm for breaking secret key
+    block ciphers such as DES and AES using quantum computers. It was developed in
+    1996 by Lov Kumar Grover of Bell Labs based on his quantum file-searching algorithm.
+    It treats each evaluation of the encryption function as one read access of an
+    unsorted database. The algorithm reduces the expected number of evaluations from
+    K to √K, where K is the number of possible keys. In effect this reduces the key
+    size from n bits to n/2 bits.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Grover’s algorithm finds, with high probability, the key k for which E(k,p)
+    = c, where E is the encryption function, p is the plaintext and c is the ciphertext.
+    The algorithm requires one block of known plaintext for each such key. A quantum
+    physicist, who may know little about cryptography, might conclude that defending
+    against Grover’s algorithm requires doubling the size of all cryptographic keys.
+    That would be inefficient because it would require extra rounds of the block cipher.
+    For example, AES with a 128-bit key uses 10 rounds, while AES with a 256-bit key
+    uses 14 rounds.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A cheaper alternative is to inflate the key size by preceding and following
+    the main encryption with a simple, fast cipher step such as simple substitution.
+    The keys for mixing the two simple substitution alphabets can be up to 1684 bits
+    each (section 5.2) since each alphabet can have 256! possible arrangements, which
+    is close to 2^(1684). A simple transposition can also help expand the key size,
+    but in a more limited way since 16! is only around 2^(44). If you choose to use
+    transposition, you can transpose the blocks 2 at a time, since 32! is about 2^(118),
+    a significant increase in total key size.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Readers of this book will realize that Grover’s algorithm also can be defeated
+    by such elementary means as using nulls, using a different key for each block,
+    chaining the blocks or compressing the message. This means that preceding the
+    block encryption by a compression cipher like mixed Huffman (section 4.2.1) achieves
+    both goals, larger key and compression, in a single step. The downside of mixed
+    Huffman is that it changes the block size. It may be wiser to use Huffman substitution
+    (section 10.4) or Post substitution (section 10.5) before and after the block
+    cipher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.8 Equations
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Before we can discuss the next topic, quantum simulated annealing, we need to
+    discuss equations. Many ciphers can be expressed as systems of equations. The
+    Belaso cipher can be expressed as C = P+K, where C is the ciphertext, P is the
+    plaintext and K is the key, all expressed as integers modulo 26\. The Hill cipher
+    is a set of linear equations. Ciphers like the Playfair and Two-Square would be
+    expressed as equations in base 5.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.8.1 Transpositions
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Transpositions are easily expressed as sets of equalities. For example, the
+    columnar transposition
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![18-unnumb-1](../Images/18-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: can be expressed as c[1] = m[1], c[2] = m[4], c[3] = m[7], c[4] = m[2], c[5]
+    = m[5], c[6] = m[3], c[7] = m[6], where the m[i] are the plaintext message characters
+    and the c[j] are the ciphertext characters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Logical functions* can be converted to numerical equations like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**not** x → 1-x'
+  prefs: []
+  type: TYPE_NORMAL
+- en: x **or** y → x+y-xy
+  prefs: []
+  type: TYPE_NORMAL
+- en: x **and** y → xy
+  prefs: []
+  type: TYPE_NORMAL
+- en: x **xor** y → x+y-2xy
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.8.2 Substitutions
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Substitutions can be converted to equation form by a 3-step process. First,
+    express each ciphertext bit as a Boolean expression using the bits of the key
+    and the plaintext. For example, consider this substitution that takes a 1-bit
+    key K and a 2-bit plaintext AB to produce a 2-bit ciphertext XY.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| **K** | **AB** | **XY** | **Boolean inputs** |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 0 | 00 | 01 | ***K̅A̅B̅*** |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 0 | 01 | 11 | ***K̅A̅B*** |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 0 | 10 | 00 | ***K̅AB̅*** |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 0 | 11 | 01 | ***K̅AB*** |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 1 | 00 | 10 | ***KA̅B̅*** |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 1 | 01 | 00 | ***KA̅B*** |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 1 | 10 | 10 | ***KAB̅*** |'
+  prefs: []
+  type: TYPE_TB
+- en: '| 1 | 11 | 11 | ***KAB*** |'
+  prefs: []
+  type: TYPE_TB
+- en: Here ***K̅A̅B̅*** means that K = 0, A = 0 and B = 0, ***K̅A̅B*** means that
+    K = 0, A = 0 and B = 1, and so forth. The ciphertext bit X can now be written
+    as X = ***K̅A̅B***+***KA̅B̅***+***KAB̅***+***KAB;***. There is a similar expression
+    for Y.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.8.3 Karnaugh maps
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Karnaugh maps* are used to reduce or simplify these expressions. This is the
+    second step. The concept was invented by Maurice Karnaugh of Bell Labs in 1953\.
+    The idea is to picture the set of all possible n-bit inputs as an n-dimensional
+    space, 2×2×2×...×2\. Fill each cell where the output bit is 1\. This is the space
+    for the output bit X. There would be a similar map for Y.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![18-unnumb-2](../Images/18-unnumb-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Notice how the columns in this map are labeled. As you move from one cell to
+    the next going left to right only one bit changes at each step, including the
+    wraparound step from column 4 to column 1\. This arrangement is called a *Gray
+    code*. Gray codes were invented by Frank Gray of Bell Labs in 1947\. It is easy
+    to construct a Gray code by appending one bit at a time. For example, to extend
+    this 2-bit Gray code to a 3-bit Gray code, first you list the 4 A,B pairs in the
+    order ***A̅B̅***, ***AB̅***, ***AB***, ***A̅B*** with a ***C̅*** appended to each
+    pair, then you list them in the reverse order with a ***C*** appended to each
+    pair. The ***C***-bit changes only twice, after the fourth code group and after
+    the eighth code group wrapping around to the start.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Karnaugh maps let you optimize the logic by eye up to about 6 bits, 3 horizontal
+    and 3 vertical, which uses an 8-cell by 8-cell map. Above 6 bits it is best to
+    do it by a program. At each step you add the largest rectangular block that fits
+    within the filled region, and that covers at least one new cell that has not already
+    been covered. Every dimension of the block must be a power of 2, so its volume
+    will also be a power of 2\. If there are several blocks of maximal size, choose
+    the one that covers the most cells not yet covered. Continue until all filled
+    cells are covered.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the K,A,B example, there are two 1×2 blocks in the filled region, namely
+    ***KA*** and ***KB̅***. Each one covers 2 cells. Since together they cover 3 cells,
+    both are needed. That leaves only the cell ***KAB̅*** to be covered. So, the reduced
+    expression for X is ***KA***+***KB̅***+***KAB̅***.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The third step in expressing the substitution as a set of equations is to replace
+    the **and**, **or** and **not** functions in these expressions by arithmetic expressions,
+    following the earlier rules.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.8.4 Intermediate variables
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: If you attempt to express each ciphertext bit in a complex block cipher like
+    AES as a single expression, the size of that expression will grow exponentially
+    with each round. This problem is sometimes cited as a reason why you cannot use
+    equations to break block ciphers. Horse feathers. This problem can be eliminated
+    by using intermediate variables. Let the outputs of each round be a separate set
+    of variables.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The inputs to the first round, the key, the plaintext and the chain vector(s),
+    are *independent* variables. Any one of these bits may change independently of
+    the others. The outputs of each round, or each stage within a round, are *dependent*
+    variables. This includes the chain vectors for the next block. Their values are
+    completely determined by the values of the independent variables. It is impossible
+    to change one of these bits without changing some of the other variables.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.8.5 Known plaintext
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Suppose Emily has a quantity of known plaintext. For simplicity, let’s suppose
+    this is an n-bit message block. Her goal is to use the known plaintext and the
+    intercepted ciphertext to determine the key. Suppose Emily has found an expression
+    for each ciphertext bit in terms of the plaintext, the key and possibly the chain
+    vector. Let the expression for bit i be E[i], and let c[i] be bit i of the ciphertext.
+    For any given key K, Emily can measure the difference between the ciphertext that
+    would result from enciphering the known plaintext using the key K, and the intercepted
+    ciphertext by calculating
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![18-unnumb-2-equation-18-6](../Images/18-unnumb-2-equation-18-6.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: When the correct key has been found, D(K) will be 0\. Here, D(K) is called the
+    *objective function*, or simply the *score*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.9 Minimization
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Introducing the objective function converts the problem of finding the correct
+    key into a minimization problem. The purpose is to minimize the value of the function
+    D(K). Quantum computers work because the quantum state of the system always tends
+    to the lowest energy state. If the quantum computer can be configured so that
+    qubits, or groups of qubits, represent the values of the variables, and the energy
+    of the system corresponds to the value of the objective function, then the lowest
+    energy state will correspond to the minimum value of the objective function. If
+    this configuration can be accomplished, then quantum computers will be able to
+    solve a wide range of real-world problems, including code-breaking.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To begin, replace the bits in the key with real numbers. Ultimately these numbers
+    must be either 0 or 1, but it is advantageous to allow the variables to get outside
+    the 0-1 range during the search. Start from some initial value such as setting
+    all the bits to .5, or to random values in the 0-1 range, then tweak their values
+    to reduce the value of D(K), trying to get it down to 0.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are many optimization techniques now used with conventional computers,
+    but let’s look at just three. Using these algorithms to find cryptographic keys
+    will require a large amount of known plaintext. At a minimum the known plaintext
+    should be at least 3 times the size of the key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.9.1 Hill climbing
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Hill* *Climbing*, also called *Steepest Descent* or the *Gradient Method*,
+    is the oldest of the optimization methods. The idea is to start at some point
+    P[1] and look at several equidistant points in random directions. Among these
+    points, choose the point P[2] with the greatest improvement, in this case with
+    the lowest value of D(K). Then refine the direction by looking at random points
+    near P[2]. The distance from P[2] to any of these points will be considerably
+    smaller than from P[1] to P[2]. Call this point P[3]. The line from P[1] to P[3]
+    defines the search direction. Finally, find the point P[4] on this line for which
+    D(K) is minimum. The search repeats using P[4] as the starting point. As the search
+    progresses, the sizes of the steps from P[i] to P[i+1] are increased each time
+    an improvement is found, and decreased if there is no improvement.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This form of search works well when the search space is shaped like a single
+    mountain in n-dimensional space, or a large central mountain surrounded by much
+    smaller foothills. It can fail badly in more complex topography with many local
+    optima. In this picture, the darker the color, the better the score.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![18-unnumb-3](../Images/18-unnumb-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 18.9.2 Mille sommets
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Mille* *Sommets*, or *Thousand Peaks*, is an idea I used for achieving winning
+    scores in a variety of puzzle contests that I entered in the 1970s. I later started
+    to write up this search method for some computer journals, but I got bogged down
+    in trying to characterize the types of objective functions for which this search
+    method was better than other search methods. The method was rediscovered in the
+    1990s under the name *particle swarm* optimization.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Picture the search space as a mountain range with many peaks, valleys and ridges.
+    Now imagine a fleet of planes flying over the terrain and dropping hundreds of
+    mountaineers by parachute. In other words, there are many simultaneous starting
+    points. These climbers will look at nearby points to see if those spots are higher
+    or lower. There are two variants. (1) You can take only the best one of these
+    points and move the climber there. In this case, if none of the points is better,
+    you reduce the step size and try again. If this fails, say, 3 times in a row,
+    then you bring in a new climber who starts at a random location. (2) You keep
+    several of the points that show improvement. You can think of this as the climbing
+    team splitting up into several parties to try different paths. It is best not
+    to take all of the improved solutions, because that quickly concentrates all of
+    the climbers into just a few areas.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![18-unnumb-4](../Images/18-unnumb-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: My original idea was to keep all of the solutions in a heap structure so that
+    the top entry is always the worst solution. You take that worst entry and try
+    to improve it. This proved to be inefficient because you spend a great deal of
+    effort improving poor solutions that you eventually discard. Conversely, always
+    choosing the best solution concentrates all the climbers on a single peak. The
+    best strategy is to choose the next climber at random. In the same vein, when
+    a solution yields several improved solutions, it is not always beneficial to choose
+    the best among these. Sometimes it is better to choose randomly among the several
+    improved solutions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.9.3 Simulated annealing
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Simulated* *Annealing* is a popular optimization technique, mainly because
+    it is so easy to implement. You start from a random point in the search space,
+    and look at a nearby point. If that solution is better, then you move to that
+    point with probability B. If that solution is worse, then you move to that point
+    with probability W.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The defining feature of simulated annealing is that you change the probabilities
+    while you search. Initially you set the chance of rejecting a good solution or
+    accepting a bad solution fairly high. Say you reject 40% of better solutions and
+    accept 30% of worse solutions, that is B = .6 and W = .3\. Then after a time,
+    say after 1000 steps, you reduce the probability of rejecting a good solution.
+    Perhaps in this second stage you reject 20% of better solutions and accept 15%
+    of worse solutions. After another interval, say another 2000 steps, you might
+    start rejecting only 10% of better solutions and accepting 7% of worse solutions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This process is called simulated annealing because it resembles the heat annealing
+    process in metallurgy, where the metal is first heated until glowing, and then
+    very slowly cooled. This changes the crystalline structure of the metal to reduce
+    its hardness and increase its ductility and malleability, so it can be worked
+    more easily. In simulated annealing, the high initial probabilities of rejecting
+    better solutions and accepting worse solutions are analogous to the initial high-temperature
+    state of the metal, and the gradual reduction of these probabilities is analogous
+    to the slow cooling of the metal. Descriptions of simulated annealing commonly
+    refer to the several stages in which the probabilities are stepped as *reducing
+    the temperature*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let me pass on a few tips from my own experience with simulated annealing:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: It doesn’t pay to go too slowly. It is a waste of time to reject 40% of improved
+    solutions, then 39%, then 38%, and so forth. At each stage the acceptance/ rejection
+    rate should be somewhere between 1/2 and 2/3 of the preceding rate. For example,
+    40% in the first stage, then 20%, 10%, 5% and 3%. Or, start at 40%, then 25%,
+    15%, 10%, 6%, 4%, and finally 2.5%.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Five stages are usually enough.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It is a waste of time to start with a 50% acceptance rate. Start between 60%
+    and 75%.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: It does not pay to go to 0%. You will get greater improvement if the last stage
+    accepts 2% to 3% of worse solutions.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Quit when nothing is happening. You may have planned 1000 trials in each stage,
+    but if you have made 100 tries with no changes, stop.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Make the percentages depend on the size of the improvement. For example, in
+    the first stage you might accept 60% of the changes that improve the score by
+    1%, 75% of the changes that improve the score by 2%, and 90% of the changes that
+    improve the score by 3% or more.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Experiment. Every optimization problem is different. Try varying the number
+    of stages, the number of trials per stage, the rates of changing the probabilities,
+    the step size and the relationship between the degree of improvement and the percentage
+    of acceptance.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The hill climbing, mille sommets and simulated annealing techniques may be freely
+    combined to produce a variety of hybrid methods.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.10 Quantum simulated annealing
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: There are several proposed methods for using quantum computers to do simulated
+    annealing. These methods use quantum phenomena such as superposition to perform
+    many searches in parallel. However, every trial requires evaluating the objective
+    function at the chosen point. Quantum computers are not made for evaluating expressions.
+    There are, as yet, no methods for evaluating these functions in parallel by quantum
+    means. The quantum computer can use a conventional computer to evaluate the expressions,
+    but this loses the parallelism. So far, quantum searches have not shown any speed
+    improvement over conventional computer searches.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.11 Quantum factoring
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The strength of the RSA public key cryptosystem rests on the difficulty of factoring
+    large integers. Given two large integers A and B it is easy to multiply them to
+    get the product AB, but it is very hard to reverse that process and determine
+    the factors of a large integer. Factoring a large number has the same degree of
+    difficulty as computing a discrete logarithm (section 16.3), and uses many of
+    the same techniques.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This security may potentially be breached by Shor’s algorithm for factoring
+    large numbers. This was the first quantum algorithm ever developed, invented by
+    Peter Shor of MIT in 1994\. If the algorithm can be implemented successfully for
+    large integers, either RSA must be abandoned, or the modulus must be made much
+    larger, perhaps millions of bits. So far, using Shor’s algorithm, the number 15
+    was factored into 3×5 in 2001, and the number 21 was factored into 3×7 in 2012\.
+    At this rate we may expect the number 35 to be factored into 5×7 some time around
+    2023.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Humor aside, it may be decades before Shor’s algorithm becomes a real threat
+    to the security of RSA.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.12 Ultracomputers
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Quantum computers are not made for evaluating expressions—today. But let’s suppose
+    that this is merely a technical problem. Suppose that in time there will be hybrid
+    computers that combine the calculating power of supercomputers with the parallelism
+    of quantum computers. Let’s call these *ultracomputers*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: What can Sandra do today to prepare for the time when Emily has an ultracomputer?
+    We can take a cue from the way we defeated Grover’s algorithm (section 18.6).
+    We expanded the size of the key to exceed the capability of the algorithm. This
+    can also be done with ultracomputers. We can increase the number of unknowns that
+    the computer needs to deal with beyond whatever capabilities you estimate the
+    ultracomputer may possess. Let us look at two aspects of this, substitution and
+    random number generation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: These algorithms will require extremely large encryption keys. Let’s simply
+    accept that in the future world where ultracomputers exist, such huge keys will
+    be manageable.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.12.1 Substitution
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: If a substitution is not defined by some mathematical rule, then it can be defined
+    by a substitution table. Each entry in the table is a value known to Sandra, but
+    unknown to Emily. Each table entry can be regarded as a variable in the mathematical
+    sense. Initially, each variable can take on any value. If Emily learns some of
+    these values, that narrows the choices for the other variables, but initially
+    any character could substitute for any other.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Sandra’s objective is to overwhelm the capabilities of the ultracomputer. A
+    general polyalphabetic cipher has a 26×26 tableau for hand use, but a 256×256
+    tableau for computer use. That provides 2^(16), or 65,536 unknown values. There
+    is, however, no reason why you should limit yourself to 256 rows in the tableau.
+    If Emily has an ultracomputer, it is reasonable that Sandra also would have a
+    computer with high speed and large memory. Sandra could use a tableau of 1024
+    rows with 10-bit keys, or 4096 rows with 12-bit keys, or even 65,536 rows with
+    16-bit keys. That requires 2^(24) = 16,777,216 bytes of internal storage for the
+    substitution table, well within the capacity of current personal computers. Plus,
+    having a 16-bit key for an 8-bit substitution provides a very desirable redundancy.
+    Let’s call the 2^(24)-element tableau *Tab24*. Each row of Tab24 has its own mixing
+    key. If this mixing key has 256 bits, then the entire tableau has 256×65536 =
+    16,777,216 key bits.
+  prefs: []
+  type: TYPE_NORMAL
+- en: It is also feasible for Sandra to use a full bigram table. A 256×256 bigram
+    table using an 8-bit key to select a row (actually, a layer) would require 2^(25)
+    = 33,554,432 bytes of internal storage. Again, this is feasible today. It would
+    require a much larger computer if the tableau had 65,536 layers and 16-bit keys.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Remember, however, these substitution tables must be kept secret, and they must
+    be fully random. Even if they are generated by some algorithm, it must be absolutely
+    beyond the capability of Emily’s ultracomputer to determine the initial state
+    and parameters of the generator. See section 13.13 for some relevant methods.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.12.2 Random numbers
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The methods of section 13.13 are a good start, but to produce a pseudorandom
+    number generator that will stand up to an ultracomputer we combine the concept
+    of a selection generator from section 13.11 with the techniques for refreshing
+    the generator in section 13.15.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The *ultragenerator* UG (pronounced HUGE-ee) uses three arrays, A, B and C.
+    Arrays A and B each contain 65,536 entries that are 24-bit integers. Array C contains
+    2^(24), or 16,777,216 entries that are 8-bit integers. The 3 arrays can be initialized
+    from nature photos, as described in section 13.14.2\. Sandra and Riva must have
+    identical arrays. The generator produces an 8-bit output in each cycle. Cycle
+    n consists of these steps:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Calculate x = (A[n]+A[n-103]+A[n-1071]) mod 16777216, and replace A[n] by x.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Reduce x = x mod 65536, and set y = B[x].
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The output of the UG generator on this cycle is C[y].
+  prefs:
+  - PREF_IND
+  type: TYPE_NORMAL
+- en: Replace B[x] by (B[x]+B[x-573]+B[x-2604]) mod 16777216.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Replace C[y] by (C[y]+C[y-249]+C[y-16774]) mod 256.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: The subscripts wrap around modulo 65536, or modulo 16777216, as appropriate.
+    There is nothing special about the lags 103, 1071, ... , 16774\. I did not test
+    to see whether these values produce especially long periods. With such huge seed
+    arrays, even degenerate periods will be extremely long. You may use any of the
+    combining functions of section 13.1, such as **madd**, or lagged linear addition
+    from section 13.14.1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When you refresh these random numbers, the two methods of section 13.14 are
+    not sufficient when your opponent has an ultracomputer, but they can be combined
+    to make a strong refresh function. Each time you refresh you will need a new random
+    array R of 65,536 or more 24-bit integers. Let the lengths of A, B, C and R be
+    L[A], L[B], L[C] and L[R].
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![18-unnumb-4-equation-18-7](../Images/18-unnumb-4-equation-18-7.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Here a = ⌊L[C]/L[R]⌋-1\. The notation ⌊L[C]/L[R]⌋, which is read “floor of L[C]/L[R]”,
+    means the greatest integer not exceeding L[C]/L[R]. For example, ⌊8/3⌋ is 2 and
+    ⌊9/3⌋ is 3\. The effect of using C[an] instead of C[n] is to spread the bytes
+    of R evenly throughout the C array.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![18-unnumb-4-equation-18-8](../Images/18-unnumb-4-equation-18-8.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: These 2 steps should be repeated 3 or more times. As always, the subscripts
+    wrap around.
+  prefs: []
+  type: TYPE_NORMAL
+- en: By the way, there is no requirement that the size of the C array must be a power
+    of 2\. L[C] could be, for example, 77,777,777 in which case the A, B and R arrays
+    would need to contain integers modulo 77777777, and the modulus 16777216 would
+    be replaced by 77777777 in the calculations above. The only limits on the size
+    of L[C] are the amount of storage you wish to use and the practicalities of distributing
+    such a large key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: These two techniques, substitution and random number generation, can be combined
+    to make any number of block and stream ciphers that will withstand ultracomputers.
+    The next two sections illustrate one cipher of each type.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.12.3 Ultrasubstitution cipher US-A
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: One great temptation in writing this section is to specify a gigantic block
+    size such as 65,536 or even 16,777,216 bytes. However, simply because the cryptography
+    must change in the era of ultracomputers does not mean that the types of messages
+    will change. Messages of fewer than 100 characters will still be common, and it
+    would be grossly inefficient to pad such messages to a block size of 65,536 bytes
+    or larger.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s call the sample ultrasubstitution cipher *US-A*. The US-A cipher operates
+    on blocks of 32 bytes, or 256 bits. The 32 bytes in each block are viewed alternately
+    as 32 individual bytes, and as a 16×16 array of bits. The US-A cipher has 15 rounds,
+    each consisting of 3 steps: a substitution, a row transposition, and flipping
+    the array. The 15 rounds are followed by a final substitution step.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The 16 substitution steps use the Tab24 substitution table, which needs 16 key
+    bits for each character for a total of 16×32 = 512 bits per round, or 8192 bits
+    for the 15 rounds plus final substitution. The second stage in each of the 15
+    rounds is to transpose each row. This might be just a cyclic shift of the row,
+    which would require only 4 bits per row, hence 64 bits per round or 960 bits altogether.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A stronger option for the bit transposition would be to have a table of transpositions,
+    say 256 different transpositions, such as key transpositions (section 7.6). Each
+    row of the 16×16 bit matrix would be transposed separately. Each row transposition
+    would be specified by 16 hexadecimal digits, say **5A3F1E940B2D68C7**, meaning
+    that the first bit would go to position 5, the second bit to position A, which
+    is 10, and so forth. The transposition for each row would be chosen from the table
+    by an 8-bit key, requiring 8×16 = 128 bits per round, or 1920 bits altogether
+    for the 15 rounds.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The third stage in each round is flipping the array of bits, that is, swapping
+    the bit at (i,j) with the bit at (j,i). This is described in section 11.7, and
+    a fast method for flipping the array is given in section 11.2.3\. This stage does
+    not have a key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s pull all 3 stages together. The US-A cipher requires 8192 bits for the
+    substitution keys and, say, 1920 bits for the key transpositions, or 10,112 key
+    bits altogether. This is far short of the 65,536 bits needed to resist an ultracomputer.
+    Fear not. Don’t forget that the substitution uses the Tab24 tableau, which used
+    16,777,216 key bits for mixing its 65,536 rows, not to mention however many bits
+    were used to mix the transposition table.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For just that extra layer of strength, I recommend using plaintext-to-plaintext
+    (mode **PP**) block chaining (section 11.10) with the US-A cipher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 18.12.4 Ultrastream cipher US-B
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The Tab24 substitution of section 18.11.1 and the pseudorandom number generator
+    of section 18.11.2 can be combined to make a stream cipher of enormous strength.
+    Call it the *US-B* cipher. US-B uses a preliminary step before enciphering to
+    give the plaintext a random look. Let the message be M and its length be L[M].
+    The pre-encipherment step is
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![18-unnumb-4-equation-18-9](../Images/18-unnumb-4-equation-18-9.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The extra 16 wraparound iterations serve to doubly hash the first 16 characters
+    of the message. This step adds no cryptographic strength, but it makes it difficult
+    for Emily to recognize when she has found the correct key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Each 16-bit character key K[n] is generated by taking two consecutive output
+    bytes from the random number generator, x and y, and combining them 256x+y. (Or,
+    you could make the C array 16-bit integers, at the cost of doubling the storage
+    needed.) The key K[n] is used to encipher message character M[n] in the Tab24
+    substitution table as Tab24(K[n],M[n]). That is, the substitute for M[n] is taken
+    from row K[n] of the tableau.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You may recognize this as a general polyalphabetic cipher using a large tableau
+    and a random key. Recall that the French called the polyalphabetic cipher *Le
+    Chiffre Indéchiffrable*. Using the UG ultragenerator, the US-B polyalphabetic
+    cipher finally is indecipherable, even in the era of ultracomputers. We have achieved
+    Unbreakable Cryptography.
+  prefs: []
+  type: TYPE_NORMAL

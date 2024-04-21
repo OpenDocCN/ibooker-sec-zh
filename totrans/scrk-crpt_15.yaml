@@ -1,0 +1,1522 @@
+- en: 15 Matrix methods
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Ciphers using multiplication by a matrix of integers, or a matrix of ring elements
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Ciphers using multiplication by large and small integers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Solving linear congruences
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Constructing rings and invertible matrices
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Matrices are a tool well-suited for cryptography because they can encipher arbitrarily
+    large blocks of text in one operation. Typically, each block in the message is
+    treated as a vector of bytes, meaning integers modulo 256.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-1](../Images/15-unnumb-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: When Sandra uses a matrix to encipher a message, Riva must use the inverse of
+    that matrix to decipher the message. Let’s begin the discussion of matrix methods
+    with a technique for inverting a matrix.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.1 Inverting a matrix
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: There are several ways of solving a matrix equation such as C = AP when there
+    is known plaintext. Since Emily knows P and C, but does not know A, she can solve
+    the equation for A by right-multiplying it by P' to get CP' = APP' = A. So Emily
+    needs to invert P. Riva does the opposite. She knows A, but does not know P, so
+    she needs to invert A. Left-multiplying the equation by A', she gets A'C = A'AP
+    = P.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The method illustrated here has the advantage of obtaining the inverse matrix
+    directly, without the intermediate step of back-substitution, which is required
+    for other methods. The method is to place the given matrix side by side with the
+    identity matrix in an n×2n double-wide matrix. The left size is reduced to an
+    identity matrix using only *elementary row operations*. These row operations are
+    applied across each row of the double matrix, so as the left half changes from
+    the original matrix to an identity matrix, the right half changes from an identity
+    matrix to the inverse of the original.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The elementary row operations are (1) multiplying a row by an invertible constant,
+    (2) swapping two rows, and (3) subtracting a multiple of one row from another
+    row.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The algorithm turns the elements of the original matrix into the elements of
+    the identity matrix one by one starting in the upper-left corner, then working
+    down the left column. Then it does the same for the second column, and so forth.
+    If at any time the algorithm gets stuck, meaning that all of the elements in the
+    active column are multiples of 2, or all of them are multiples of 13, then the
+    matrix is not invertible. If this happens to Sandra, she needs to try a different
+    matrix A. It is often sufficient to add 1 to some element on the bottom row. If
+    this happens to Emily, she will need n more characters of known plaintext. This
+    will give her an (n+1)×n matrix. When she applies this algorithm, the inverse
+    matrix is in the upper-right n×n portion of the double-wide matrix.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is a 3×3 example. This matrix works on the 26-letter English alphabet,
+    so the matrix elements are integers modulo 26\. There are no fractions and no
+    negative numbers involved. Since this is done modulo 26, each element that is
+    not a multiple of 2 and not a multiple of 13 has a multiplicative inverse. This
+    lets us turn the first nonzero element in each row into a 1, which makes it easy
+    to decide which multiple of a row to subtract from any other row. The original
+    matrix is
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-1-equation-15-1](../Images/15-unnumb-1-equation-15-1.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This gets expanded to double-wide format by appending a 3×3 identity matrix
+    on the right.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-1-equation-15-2](../Images/15-unnumb-1-equation-15-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: You are immediately in trouble because none of the first elements in any row
+    is invertible. I did this deliberately in order to show a very useful trick. The
+    first element in row 1 is a multiple of 13, but not a multiple of 2\. The first
+    element in row 2 is a multiple of 2, but not a multiple of 13\. If you simply
+    add row 2 to row 1, then the first element becomes 19, which is a multiple of
+    neither 2 nor 13, hence it is invertible. Problem solved.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-1-equation-15-3](../Images/15-unnumb-1-equation-15-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The multiplicative inverse of 19 is 11 modulo 26 because 19×11 = 209≡1 (mod
+    26). You multiply row 1 by 11 to turn the first element in the matrix into a 1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-1-equation-15-4](../Images/15-unnumb-1-equation-15-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Now you can finish column 1 by subtracting 6 times the top row from row 2, and
+    subtracting 10 times the top row from row 3\. This will set the first element
+    in rows 2 and 3 to zero.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-1-equation-15-5](../Images/15-unnumb-1-equation-15-5.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Time to work on the second row. The first nonzero element on row 2 is 9\. The
+    multiplicative inverse of 9 is 3 because 9×3 = 27≡1 (mod 26). You multiply row
+    2 by 3 to turn the first element in the row to a 1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-1-equation-15-6](../Images/15-unnumb-1-equation-15-6.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This lets you finish column 2 by subtracting row 2 from row 1, and subtracting
+    25 times row 2 from row 3\. Notice how the left side of the double-wide matrix
+    is gradually turning into the identity matrix.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-1-equation-15-7](../Images/15-unnumb-1-equation-15-7.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Almost done. The first nonzero on row 3 is 21\. The multiplicative inverse of
+    21 is 5, so you multiply the bottom row of the matrix by 5.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-1-equation-15-8](../Images/15-unnumb-1-equation-15-8.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Now you can finish the third column by subtracting 9 times row 3 from row 1,
+    and subtracting 19 times row 3 from row 2.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-1-equation-15-9](../Images/15-unnumb-1-equation-15-9.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Done. The left half of the double-wide matrix now holds the identity matrix,
+    and the right half is the inverse of the original matrix. You can check this by
+    multiplying the original matrix by the inverse. The result should be the identity
+    matrix—and it is.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-1-equation-15-10](../Images/15-unnumb-1-equation-15-10.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 15.2 Transposition matrix
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Let’s begin with a very simple matrix method, namely the *transposition matrix*,
+    which is equivalent to the *permutation matrix* in mathematics. This is a square
+    matrix that has exactly one 1 in each row and each column. All the other matrix
+    elements are 0\. If you wish to transpose a block of 10 letters, you can do this
+    by treating the block as a row matrix of size 1×10 and multiplying it on the right
+    by a transposition matrix of size 10×10\. The result will be a 1×10 matrix with
+    the letters transposed.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To move a letter from position 2 in the block to position 5, you would set the
+    element on row 2 in column 5 to 1\. Here is an example of a 4×4 transposition
+    matrix that changes the message block ABCD to BADC.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-1-equation-15-11](../Images/15-unnumb-1-equation-15-11.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Transposition matrices by themselves are not particularly practical, but if
+    you have a matrix M that performs a substitution on a block, and a transposition
+    matrix T, you can combine them into a single step by using the matrix MT in place
+    of M. That way, you get both the substitution and the transposition in a single
+    operation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.3 The Hill cipher
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: The earliest cipher based on matrices is the *Hill cipher*, invented in 1929
+    by Lester S. Hill of Hunter College and published in the *American Mathematical
+    Monthly*. A similar cipher had been invented in 1924 by then-teenaged Jack Levine,
+    later of North Carolina State College, and published in 1926 in *Flynn’s Weekly*,
+    a pulp detective magazine. The crypto column in *Flynn’s* was run by M. E. Ohaver,
+    who invented fractionated Morse (section 4.4). Coincidentally, *Flynn’s Weekly*
+    is where Kendell Foster Crossen, also mentioned in section 4.4, published many
+    of his stories. Levine spent his entire career trying to knock down Hill’s cipher
+    and promote his own.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Hill’s cipher operates on the 26-letter alphabet, with the letters numbered
+    from 0 to 25 in some scrambled order. That is, you perform a simple substitution
+    before the matrix operation. You take the plaintext letters in blocks of 3\. These
+    form a column vector, that is, a 3×1 matrix, P. You multiply this column vector
+    on the left by a 3×3 matrix, A, and then add a column vector, B, to get the ciphertext
+    vector, C. In matrix notation this is written as C = AP + B, using addition and
+    multiplication modulo 26\. Finally, you convert the numbers back into letters
+    using the same letter-to-number correspondence.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unfortunately, many authors restrict the term *Hill cipher* to mean a weak,
+    watered-down version of this cipher. To avoid ambiguity, let’s number the several
+    versions of the Hill cipher. Hill-0 is the weakest version. You use the standard
+    English alphabet, without mixing, and omit the B vector, so that C = AP. Hill-1
+    is somewhat stronger. You still use the unmixed alphabet, but the B vector is
+    nonzero. Hill-2 is the version that Hill originally proposed. You use a mixed
+    alphabet and nonzero B vector. Hill3 is an even stronger version where you use
+    one mixed alphabet to convert the letters to numbers, but you use a different
+    mixed alphabet to convert the numbers back to letters. This is comparable to the
+    conjugated matrix bifid cipher in section 9.6.1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Hill’s cipher, Hill-2, as originally published, was basically a secret method
+    cipher. The conversion of letters to numbers and both matrices A and B were fixed.
+    There was no key. Anyone who knew the method could read the messages as easily
+    as the intended receiver. Most recent books and websites that discuss the Hill
+    cipher ignore the mixed alphabet and concentrate solely on the matrix operations.
+    This would be legitimate if a fixed conversion from letters to numbers were used,
+    because the known mixing of the alphabet could be stripped off.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s first look at case Hill-0, where A is an unknown n×n matrix, and the vector
+    B is 0, so C = AP. This is plain old matrix multiplication, which we saw in section
+    11.3\. Riva can decipher the message by multiplying the ciphertext by the *inverse
+    matrix* A' of A. The inverse matrix has the property that A'A = AA' = I, where
+    I is the *identity matrix*. In the matrix I, every diagonal element is 1, and
+    every other element is 0\. The identity matrix is akin to the number 1 in ordinary
+    multiplication, that is, 1×N = N×1 = N for every number N. With matrices, this
+    translates to IA = AI = A for every square matrix A. Emily can also decipher the
+    message if she can determine A'.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This B = 0 version of the Hill cipher is vulnerable to a known-plaintext attack.
+    If Emily has n² characters of known plaintext, she can form them into an n×n matrix.
+    Call this matrix P, and call the corresponding ciphertext matrix C. Then C = AP,
+    where C, A and P are all n×n matrices of integers modulo 26\. There are several
+    ways to solve this matrix equation. One way is shown in section 15.1.1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'If the additive vector B is not all-zero, then Emily just needs n more characters
+    of known plaintext, and she can eliminate B from the equation. The extra known
+    plaintext characters can form a column vector P[2], and the corresponding ciphertext
+    characters can form a column vector C[2]. These vectors can be subtracted from
+    the equation like this: (C-C[2]) = A(P-P[2]). This has the same form as C = AP,
+    and is solved the same way, namely by inverting the matrix P-P[2]. You subtract
+    an n×1 column vector from an n×n matrix by subtracting the first element of the
+    vector from each of the elements on the top row of the matrix, subtracting the
+    second element of the vector from each of the elements on the second row of the
+    matrix, and so forth.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-1-equation-15-12](../Images/15-unnumb-1-equation-15-12.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Suppose that you have no known plaintext. It is still possible to solve the
+    Hill-0 variation. Let’s continue assuming a secret 3×3 multiplicative matrix,
+    C = AP. Multiplying by A', the inverse of A, gives P = A'C. In each block of the
+    message, the first plaintext character of the block depends only on the top row
+    of A. That is only 26³ = 17,576 possibilities, so it’s easy to try them all. Each
+    combination for the top row will determine the letters in positions 1, 4, 7, .
+    . . in the plaintext. For each such combination, count the letter frequencies.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You can compare those letter frequencies to standard English letter frequencies
+    using the tall peaks method described in section 5.9.1\. Take those combinations
+    that have the best match, say the top 1%, or top 175 combinations. Do the same
+    for the second and third plaintext letters of each block by using the second and
+    third rows of the inverse matrix A'. This gives you 175 plausible combinations
+    for each of the 3 rows. You can now try combinations of these combinations to
+    get possible reconstructions for the entire message. There are only 175³ = 5.36×10⁶
+    combinations to try. The combination for row 1 gives you the first letter in each
+    block, the combination for row 2 gives you the second letter in each block, and
+    the combination for row 3 gives you the third letter in each block, so you have
+    every letter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You can now use trigram frequencies to determine the most plausible plaintext.
+    Use all of the trigrams, not just the 3-letter blocks, but the trigrams spanning
+    blocks as well. This is the same process we used in section 5.10 and section 8.2,
+    so I won’t repeat all of the details here. If this fails to produce a satisfactory
+    result, go back to the start and take the top 2%, or top 350 combinations for
+    each letter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Hill cipher Hill-1 with a secret 3×3 multiplicative matrix and a secret
+    3×1 additive matrix, but with an unmixed alphabet, is rated Three. With a key-mixed
+    substitution both before and after the matrix operations it is rated Five. It
+    can be solved as a general trigram substitution cipher. The rating increases for
+    larger matrices. In order to reach a rating of Ten, the matrix must be at least
+    8×8, and the Hill-3 matrix operation must be applied twice. Here are the steps.
+    (1) Convert the message to numeric form using a keyed non-linear substitution.
+    (2) Multiply each block by the matrix and add the column vector. (3) Perform a
+    second non-linear substitution on the numbers. (4) Multiply each block by a second
+    matrix and add a second column vector. (5) Convert the result back to letters
+    using a third keyed non-linear substitution. The two multiplier matrices may be
+    fixed, but the 3 keys for mixing the alphabets and the 2 additive column vectors
+    should be changed for every message. Call this cipher *DoubleHill*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.4 Hill cipher, computer versions
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Hill’s cipher was too complex for cipher clerks to do by hand. Hill also created
+    a mechanical device for performing the encryption and decryption. This was done
+    to satisfy the patent laws of the time, which allowed patenting a machine but
+    not a mathematical algorithm. Still, the cipher saw very little use in practice.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Today, in the computer age, the Hill cipher has become practical again. Matrix
+    multiplication is child’s play for a computer. Instead of 3×3 matrices it is easy
+    to use 10×10 matrices. Instead of 9 characters of known plaintext, Emily needs
+    100 characters for a known-plaintext attack. That is pretty much impossible, other
+    than by espionage or capturing a message on the battlefield. The Hill cipher using
+    a secret 10×10 matrix using the standard alphabet is rated Six. The Hill cipher
+    using a secret 10×10 matrix, with key-mixed substitutions both before and after
+    the matrix multiplication, is rated Eight.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You can further strengthen the Hill cipher by having several matrices and choosing
+    the matrix for each block either periodically or randomly. The matrices and plaintext
+    blocks may vary in size. Since matrix multiplication is not commutative, you almost
+    always get a different result when you multiply by a matrix on the left or on
+    the right. Each plaintext block must be taken as a column vector when you multiply
+    on the left but a row vector when you multiply on the right. This suggests that
+    you can get a more secure cipher by alternating sides, either periodically or
+    randomly. Variable matrices, variable block sizes and variable sides. You can
+    take your pick or mix ’em up.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You can also combine transposition with the Hill cipher, however, not every
+    transposition will improve the security. Suppose that you are using the Hill-0
+    or Hill-1 variant, and after the matrix multiplication you transpose the letters
+    in each block. This the same as using the Hill cipher with a different matrix
+    multiplier. Let T represent the transposition. Applying T after a Hill-1 encipherment
+    gives you C = T(AP+B) = (TA)P+(TB). All that you have accomplished is to use the
+    matrix TA in place of A, and TB in place of B. Emily can solve the cipher using
+    known plaintext, and she will never know that there was a transposition. If you
+    wish to use transposition with Hill-0 or Hill-1, you must swap letters among different
+    blocks, or you must swap different letters in different blocks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Surprisingly, the situation is exactly the same when you use Hill-2 or Hill-3\.
+    This is because simple substitution and transposition commute. If S is any simple
+    substitution, T is any transposition, and M is any message, then S(T(M)) = T(S(M)),
+    and hence ST = TS. Therefore, regardless of which Hill cipher variant you use,
+    if you are going to add a transposition step, you must swap letters among different
+    blocks, or you must swap different letters in different blocks, either periodically
+    or pseudorandomly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another idea is to multiply the message by matrices on both sides. As mentioned
+    earlier, a block of text must be treated as a column vector when you multiply
+    it on the left by a matrix, but as a row vector when you multiply it on the right.
+    Suppose that you are using 3×3 matrices, with the additive matrix B = 0\. With
+    single-sided matrix multiplication, the expression for each ciphertext character
+    has 3 terms, each involving one plaintext letter and one matrix element. With
+    two-sided matrix multiplication, the expression for each ciphertext letter has
+    9 terms, each involving one plaintext letter and the product of 2 matrix elements.
+    So the coefficients of the plaintext letters are quadratic. Of the 81 possible
+    quadratic coefficients, 27 appear in these expressions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For the Hill-0 and Hill-1 cases Emily can still use known plaintext to solve
+    these equations. There is an easy way and a hard way. The hard way is to use 18
+    characters of known plaintext to solve the 18 quadratic equations for the 18 unknown
+    elements in the two 3×3 matrices. Good luck with that!
+  prefs: []
+  type: TYPE_NORMAL
+- en: The easy way is to treat each of the 27 quadratic coefficients as a separate
+    variable. This changes the equations from quadratic in 18 variables to linear
+    in 27 variables. Ignore how the 27 variables are formed from the 18 matrix elements,
+    just treat them as indivisible units. Since there are now 27 unknowns Emily will
+    need 27 known letters rather than 18\. Unlikely, but possible, especially if she
+    has intercepted multiple messages that she knows used the same key. For example,
+    suppose that Emily knows that every message sent from Sweden ends with the word
+    STOCKHOLM. Since the occurrences of STOCKHOLM likely begin in different positions
+    in the 3-letter blocks, 3 different messages can give her 27 known letter placements.
+    She can easily solve the 27 linear equations to get the 27 coefficients.
+  prefs: []
+  type: TYPE_NORMAL
+- en: From there it is easy to solve the 27 single-term quadratic equations to find
+    the 18 matrix elements—but why bother? The relationships between the plaintext
+    letters and the ciphertext letters are all in terms of the 27 quadratic coefficients.
+    There is no benefit for Emily to know how those coefficients were produced.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The case for Hill-1 is essentially the same as Hill-0\. There are 36 unknowns,
+    so Emily will need 36 characters of known plaintext. Otherwise, the solution process
+    is the same. There is no comparable process for Hill-2 and Hill-3\. These are
+    best solved as trigram substitution ciphers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You can get even greater strength from two-sided matrix multiplication by using
+    different-sized matrices on each side, and by aligning the matrices differently
+    on each side. Here are two examples of these techniques. In the first example,
+    the left-side multiplications are by 3×3 matrices, while the right-side multiplications
+    are by 4×4 matrices. Since the 3×3 matrices butt heads with the 4×4 matrices,
+    as shown, let’s call this the *Butthead configuration*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-2](../Images/15-unnumb-2.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This gives you an effective block size of 12 characters. Since each right-side
+    4×4 matrix spans two left-side 3×3 matrices, each ciphertext character depends
+    on 6 plaintext characters, rather than 4\. With this configuration, producing
+    each ciphertext character takes only 7 multiplications, so this method is very
+    fast. When the mixed alphabets are secret, but the matrices are known, the Butthead
+    cipher is rated Six. If the mixed alphabets and the matrices are both secret,
+    it is rated Eight. The rating increases to Ten if the matrices are 6×6 and 7×7
+    or larger. Of course, whatever matrix sizes Sandra uses should be mutually prime.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The *Brick Wall* is another recommended configuration for 2-sided matrix multiplication.
+    Here the matrices are all of the same size, but they are offset by half their
+    width, just like the bricks in a wall. This diagram illustrates the method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-3](../Images/15-unnumb-3.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Notice that the boundaries of the matrices never line up. This configuration
+    has no block structure, or, equivalently, you could say that the entire message
+    is a single block. Since each of the 4×4 right-side matrices spans two left-side
+    4×4 matrices, each ciphertext letter depends on 8 plaintext letters. This is sufficient
+    for high-security work.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If you actually used 2×2 matrices for the first and last blocks, that would
+    leave those blocks weak and vulnerable. It also requires you to have 1×1 and 3×3
+    matrices to handle uneven message lengths. It is better to use 4×4 matrices throughout.
+    The next two diagrams show how this can be done for a message of length 13\. The
+    first diagram shows the placement of the left-side matrices, with the last 4×4
+    matrix flush with the right end of the message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-4](../Images/15-unnumb-4.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The next diagram shows the placement of the right-side matrices, offset by 2
+    characters. The first and last 4×4 right-side matrices are flush with the ends
+    of the message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-5](../Images/15-unnumb-5.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This method of positioning the last matrix makes the last left-side matrix and
+    the last right-side matrix align. This can be avoided by wrapping around to the
+    start of the message, like this.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-6](../Images/15-unnumb-6.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: When you have a key-mixed simple substitution before the left-side matrix multiplication,
+    with another after the right-side matrix multiplication, and you use secret matrices
+    of size 6×6 or larger, the brick wall cipher is rated Ten.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Since it takes some effort to invert the matrices, it may be preferable to use
+    fixed matrices for both left- and right-side multiplication. Using fixed matrices
+    weakens the cipher, but you can compensate by adding a third simple substitution
+    between the two matrix multiplication steps. The matrices may be of any even size,
+    6×6 or larger. By comparison to the Hill cipher, let’s call this the *Everest
+    cipher*. The Everest cipher is rated Ten.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.5 Large integer multiplication
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Large integer multiplication is similar to matrix multiplication in one important
+    sense: in matrix multiplication each element of the product is the sum of products
+    of two elements, one from each matrix. In large integer multiplication each digit
+    of the product is the sum of products of two digits, one from each large integer.
+    Anyway, that’s my rationale for putting this topic in the matrix chapter.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: A 128-bit block can be viewed as 16 bytes, or as 16 base-256 digits of a 128-bit
+    integer. If you multiply two such base-256 integers, that involves 256 products
+    and 256 additions (including the carries). It’s a lot faster if the language you
+    use allows you to multiply two 32-bit unsigned integers to get a 64-bit unsigned
+    product. Then you need only 16 multiplications and 16 additions. If the language
+    allows multiplication of 64-bit integers with 128-bit products, it’s even simpler.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are faster methods for multiplying very large numbers, such as Karatsuba
+    and Toom-Cook, but the benefits of these methods for multiplying 128-bit numbers,
+    or even 256-bit numbers, are too small to make these worthwhile for present purposes,
+    so I will not get into the mechanics of large integer multiplication. Some computer
+    languages handle the mechanics automatically, so the user need never become involved.
+  prefs: []
+  type: TYPE_NORMAL
+- en: That said, consider a cipher, *Mult128*, where the message is taken in 128-bit
+    blocks, and each block is multiplied by a secret 128-bit integer M modulo 2^(128).
+    In other words, only the low-order half of the 256-bit product is used, and the
+    high-order half is discarded. This means that some of the intermediate products
+    in the multiplication need not be calculated because they contribute only to the
+    high-order end of the product.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Riva can read the message by multiplying the ciphertext by the multiplicative
+    inverse M' of M modulo 2^(128). This inverse exists whenever M is odd. Let’s see
+    how to find a multiplicative inverse.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.5.1 Multiplying and dividing congruences
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: I promised early in this book that I would present all the necessary math as
+    it was needed. This is one of those sections. The method for calculating multiplicative
+    inverses involves multiplying linear congruences. Before I show how that is done,
+    let’s look at an example to see why this is an issue. (I used part of this example
+    in section 3.6\. You might wish to reread that section before proceeding.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Not all congruences have the same strength. Some congruences are strong, and
+    have a unique solution. Some congruences are weak, and have many solutions. The
+    stronger the congruence, the more information it gives. Consider these congruences,
+    listed from strongest to weakest:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-7](../Images/15-unnumb-7.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The reason for this disparity is that in all but the first of these congruences,
+    ax≡b (mod n), the parameters a, b and n have a common factor. In 10x≡8 (mod 12),
+    the parameters 10, 8 and 12 have the common factor 2, and the congruence has 2
+    solutions. In 9x≡3 (mod 12), the parameters 9, 3 and 12 have the common factor
+    3, and the congruence has 3 solutions. And so forth. The larger the common factor,
+    the more solutions, and the weaker the congruence.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When a, b and n have a common divisor d, you can divide the congruence through
+    by d. For example, 9x≡3 (mod 12) has a common factor of 3\. Dividing through by
+    3 gives 3x≡1 (mod 4). You can solve that by sight. The solution is x≡3 (mod 4).
+    That checks out, since 3×3 = 9≡1 (mod 4). To translate this result back to (mod
+    12), the first solution is 3 (mod 12), and you get the other two solutions by
+    adding 12/3 = 4 and then adding 4 again, namely 7 (mod 12) and 11 (mod 12).
+  prefs: []
+  type: TYPE_NORMAL
+- en: To recap, if a, b and n have a common divisor d, then there are d distinct solutions.
+    The first solution is the solution to a/d≡b/d (mod n/d), and the other solutions
+    are spaced apart by n/d.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s look at two other situations. Suppose, again, that ax≡b (mod n) and that
+    a and n have a common divisor that does not divide b, for example 3x≡7 (mod 30).
+    Then the congruence has no solution. Suppose, instead, that a and b have a common
+    divisor d that does not divide n. Then you can divide a and b by d. For example,
+    if 10x≡25 (mod 37), then 2x≡5 (mod 37). This can be solved in your head by adding
+    37 to 5, making 2x≡42 (mod 37). Dividing by 2 gives x≡21 (mod 37).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Just as you can divide a and b by a constant, you can also multiply a and b
+    by a constant, m. That m must not have a common factor with n. In other words,
+    m must be invertible modulo n. Otherwise you will make the congruence weaker and
+    lose information. For example, suppose you are given 9x≡3 (mod 12). This is a
+    weak congruence with 3 solutions. If you multiply a and b by 2, the congruence
+    becomes 18x≡6 (mod 12), which is equivalent to 6x≡6 (mod 12), which has 6 solutions.
+    The weak congruence has become even weaker.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You can also add and subtract congruences that have the same modulus. Suppose
+    ax≡b (mod n) and cx≡d (mod n). These can be added to get (a+c)x≡b+d (mod n), or
+    subtracted to get (a-c)x≡b-d (mod n). This can be used to strengthen a set of
+    weak congruences. For example, suppose you have 9x≡3 (mod 12) and 8x≡4 (mod 12).
+    The first congruence has 3 solutions and the second has 4 solutions. If you add
+    them, you get 17x≡7 (mod 12), which reduces to 5x≡7 (mod 12), which has the unique
+    solution x≡11 (mod 12). Even smarter, if you subtract the two congruences, that
+    gives (9-8)x≡(3-4) (mod 12), which gets you directly to x≡11 (mod 12).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*15.6 Solving a linear congruence'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Now that you know how to safely manipulate congruences without losing strength,
+    we can tackle the problem of how to solve a linear congruence ax≡b (mod m), where
+    a, b and m are given constants, and x is the unknown value we are trying to find.
+    In the special case when b = 1, x is the multiplicative inverse of a modulo m.
+    Most textbooks mention only one technique called the *Extended Euclidean Algorithm*.
+    (The Euclidean algorithm is commonly attributed to Theaetetus of Athens, who lived
+    about a century before Euclid.) That is a perfectly good method. It may be the
+    right method to use when the modulus is small, or when the modulus has several
+    different small prime factors. It is definitely the right method when the factorization
+    is unknown and there is a likelihood of small factors.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In cryptography, however, there are only two common cases where we need to calculate
+    the multiplicative inverse, when the modulus is a prime, and when the modulus
+    is a power of 2\. This section will describe a simpler, more direct method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.6.1 Reducing a congruence
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The basic method for solving a congruence ax≡b (mod m) is to repeatedly reduce
+    the coefficient of x. The simplest method is *ResM*. It multiplies the congruence
+    by an integer n that is just large enough to make the coefficient of x at least
+    as large as the modulus. That is a(n-1) < m ≤ an. You can determine the value
+    of n just by dividing m/a and rounding up, so 2.0000 stays as 2, but 2.0001 would
+    become 3\. When the coefficient is reduced modulo m, the result is a smaller coefficient.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s begin with a simple example of ResM just to get the basic idea, and to
+    make it easier to follow the discussion later, when things start getting complicated.
+    Take the congruence 38x≡55 (mod 101). We know 101/38 = 2.658, so we multiply the
+    congruence by 3 and then reduce it modulo 101, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-8](../Images/15-unnumb-8.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'Notice that the coefficient of x was reduced from 38 to 13\. This can be reduced
+    again. We have 101/13 = 7.769, so we multiply the congruence by 8, like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-9](../Images/15-unnumb-9.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'We’re almost there. 101/3 = 33.667, so multiply that last congruence by 34,
+    and the coefficient of x is reduced to 1:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-10](../Images/15-unnumb-10.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: We can check this result by plugging x = 36 back into the original congruence,
+    38x≡55 (mod 101). Replacing x by 36 gives 38×36≡55 (mod 101), which is 1368≡55
+    (mod 101), which is true. The correct answer is x≡36 (mod 101).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.6.2 Half-and-Half Rule
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Let’s look at a small improvement. We can call it the *Half-and-Half Rule*.
+    About half the time, the fractional part of m/a is less than 1/2, and half the
+    time it is more than 1/2\. Let q = m/a. Then half the time qa is closer to m,
+    and half the time (q+1)a is closer to m.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A numeric example may help to make this clearer. Let m be 101, and let a be
+    40\. Then q = 101/40 = 2.525\. The fraction .525 is more than 1/2\. If you take
+    40×2 the result is 80, which is 21 less than 101\. If you take 40×3 the result
+    is 120, which is 19 more than 101\. So 40×3 is closer to 101 than 40×2\. Thus
+    n = 3 is the best multiplier.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose, instead, a is 41\. Then m/a = 101/41 = 2.463\. This time the fraction
+    .463 is less than 1/2\. If you take 41×2 the result is 82, which is 19 less than
+    101\. If you take 41×3 the result is 123, which is 22 more than 101\. So 41×2
+    is closer to 101 than 41×3\. Thus n = 2 is the best multiplier.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To recap, when the fractional part of q = m/a is less than 1/2, na is closer
+    to m if we round q down, but when the fractional part of m/a is more than 1/2,
+    na is closer to m if we round q up. Using the floor and ceil notation (section
+    13.3), if frac(q) < 1/2, choose n = ⌊q⌋, but if frac(q) > 1/2, choose n = ⌈q⌉.
+    That sounds easy enough, but there is a complication. When n = ⌈q⌉, na is larger
+    than m, so you reduce the congruence by subtracting multiples of m, as we did
+    at the beginning of this section. When n = ⌊q⌋, na is smaller than m, so you reduce
+    the congruence by subtracting it from multiples of m.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Start with
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-33](../Images/15-unnumb-33.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Since 101/41 = 2.463, multiply the congruence by 2, giving
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-34](../Images/15-unnumb-34.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Subtract this from multiples of 101, namely
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-35](../Images/15-unnumb-35.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Since 101-82 = 19 and 202-180 = 22, you get
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-36](../Images/15-unnumb-36.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: To illustrate how much of an improvement this makes, let’s solve a congruence
+    with and without the Half-and-Half Rule, side by side.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-11](../Images/15-unnumb-11.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Without the Half-and-Half Rule the reduction takes 8 steps. With the Half-and-Half
+    Rule the reduction takes 4 steps. The ratio varies for different coefficients
+    and moduli, but 8:4 is reasonably typical. ResM using the Half-and-Half Rule can
+    be called *ResMH*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.6.3 Laddering
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: When the integers are very large, this is still a bit slow, because we are multiplying
+    and dividing large numbers. The *laddering technique* can be used to avoid this.
+    It uses two congruences for each step. Instead of multiplying the coefficient
+    of x by ever-increasing numbers to make the value close to the modulus, the laddering
+    technique is to multiply the coefficient in each congruence by a small number
+    to make it close in value to the preceding coefficient. This requires an extra
+    congruence to get the process started. For this purpose we use the congruence
+    mx≡m (mod m), which is equivalent to 0x≡0 (mod m).
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Let’s look at an example using larger numbers:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-12](../Images/15-unnumb-12.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Since 28338689/6114257 is about 4.635, multiply by 5 and subtract to get
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-13](../Images/15-unnumb-13.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Here 6114257/2232596 is about 2.739, so multiply by 3 and subtract to get
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-14](../Images/15-unnumb-14.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Continue this way to get, successively,
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-15](../Images/15-unnumb-15.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Each of these examples used a prime modulus. The situation gets more complicated
+    when the modulus is composite. I will not cover all of these complexities here.
+    The case that is of most importance for cryptography is when the modulus is a
+    power of 2, such as 2^(32) or 2^(128). In this case, the multiplier that you choose
+    at each stage must be odd. So, instead of rounding the multiplier to the nearest
+    integer, you always round toward the odd integer. For example, 3.14 would be rounded
+    to 3, and 3.99 would also be rounded to 3\. ResMH using laddering can be called
+    *ResMHL*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.6.4 Continued fractions
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Once you have two or more linear congruences, you can reduce the coefficient
+    of x far more quickly by using a technique called *continued fractions*. A continued
+    fraction is a way of closely approximating a decimal number by a fraction. Consider
+    the decimal number R = .13579\. R is somewhere between 1/7 and 1/8\. More precisely,
+    R is about 1/7.3643\. This can also be written as 1/7+.3643\. Notice that the
+    plus sign + is in the denominator of the fraction. This indicates that the addition
+    is done in the denominator, as opposed to adding the two fractions 1/7+.3643.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The fraction .3643 can be approximated as 1/2.745, or 1/2+.745, so R is now
+    1/7+1/2+.745\. Here .745 is very close to 3/4, so the approximation can be 1/7+1/2+3/4\.
+    To get that back to an ordinary fraction, just work backward:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-15-equation-15-17](../Images/15-unnumb-15-equation-15-17.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The fraction 11/81 is .13580, which differs from .13579 by only .00001\. As
+    you can see, this method gives excellent approximations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s try that example from section 15.4.3 again,
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6114257x ≡ 90926 (mod 28338689).
+  prefs: []
+  type: TYPE_NORMAL
+- en: For the second congruence, we use the 0 = 0 trick,
+  prefs: []
+  type: TYPE_NORMAL
+- en: 28338689x ≡ 28338689 (mod 28338689).
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here 6114257/28338689 is
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-15-equation-15-18](../Images/15-unnumb-15-equation-15-18.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: A good rule of thumb to get a close approximation is to stop just before a large
+    denominator, in this case 24\. Truncating the continued fraction before 24 gives
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-15-equation-15-19](../Images/15-unnumb-15-equation-15-19.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: which works out to 241/1117.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Multiplying the 6114257 congruence by 1117 and the 28338689 congruence by 241
+    and subtracting gives
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-16](../Images/15-unnumb-16.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This reduces the coefficient of x from 6114257 to 1020, a factor of 5994\. So
+    the continued fraction method uses far fewer steps than other methods. However,
+    it is tricky to use because the coefficient from one step may be much larger than
+    the next coefficient, for example 6829625069 vs 1020\. You can balance the coefficients
+    by alternating between continued fraction steps and half-and-half steps.******
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.7 Large integer ciphers
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: There are many ciphers that can be constructed using large integer multiplication.
+    Section 15.3 describes the Mult128 cipher, where the message is taken in 128-bit
+    blocks. Each block is treated as a 128-bit integer and multiplied by a secret
+    128-bit integer M modulo 2^(128). To get good mixing, every byte of the multiplier
+    should be nonzero. This is still weak because the low-order n bits of each ciphertext
+    block depend only on the low-order n bits of the plaintext and the low-order n
+    bits of the key M. This makes the encipherment of the low-order byte a simple
+    substitution. Performing a simple substitution before and after the multiplication
+    does not fix this weakness. Similarly, the low-order 2 bytes undergo bigram substitution,
+    and the low-order 3 bytes undergo trigram substitution. Mult128 is rated Three.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A superfast way of fixing the low-order byte problem is to combine the high-order
+    byte with the low-order byte, for example by using the **xors** or **adds** combining
+    function. That would boost the rating to Five. A better solution would be to combine
+    the high-order 8 bytes with the low-order 8 bytes using **xors** or **adds**.
+    That boosts the rating to Seven. Here’s an example.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-17](../Images/15-unnumb-17.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: One way to strengthen the cipher would be to permute the 16 bytes, however,
+    with sufficient ciphertext Emily could detect which byte position has the least
+    variability and therefore must be the permuted low-order byte. *Permuted Mult128*
+    is rated Four.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A much stronger approach would be to multiply, permute, and multiply again.
+    The permutation needs to move the weak low-order bytes into the high-order half
+    of the block. Suitable permutations are (1) reversing the order of the bytes,
+    (2) swapping the low-order and high-order halves of the block, or (3) interleaving
+    the low-order and high-order bytes in reverse order. If the bytes are numbered
+    from high to low order using the hex digits 0 through F, then these 3 permutations
+    can be represented by
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-18](../Images/15-unnumb-18.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'If your programming language lets you manipulate the block as both 32-bit words
+    and single bytes, it may be faster to reverse the order of the 4 words, resulting
+    in this permutation:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-19](../Images/15-unnumb-19.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This cipher, designated *MPM128*, is rated Seven.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When you add substitution steps to this process, the strength shoots up. Let
+    S[1], S[2], S[3] and S[4] be 4 independent well-mixed keyed substitutions, let
+    P be the fixed permutation 5BF4AE39D28C1706, and let M[1], M[2] and M[3] be multiplication
+    by 3 secret 128-bit integers. Then the cipher S[1]M[1]PS[2]M[2]S[3]PM[3]S[4],
+    called *Tiger*, is rated Ten.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.8 Small integer multiplication
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'A miniature version of Mult128 can be done using ordinary unsigned 32-bit multiplication.
+    The 128-bit block is treated as four 32-bit integers. Each of these integers is
+    multiplied by a secret 32-bit integer modulo 2^(32). The 4 multipliers must be
+    odd to allow for deciphering later. This produces a 32-bit cipher. To get to a
+    128-bit cipher, the 4 separate 4-byte products can be treated as a 16-byte block,
+    and mixed using this fixed 16-byte key transposition (section 7.6):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-20](../Images/15-unnumb-20.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: This transposition is followed by a second multiplication step, again treating
+    the 16-byte block as four 32-bit integers. You may use the same multipliers or
+    new multipliers. This is followed by a second transposition, and another round
+    of multiplication, so that there are 3 rounds of multiplication and two rounds
+    of transposition. This cipher is called Mult32, and is rated Seven. It is much
+    faster than any of the Mult128 cipher variants.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s view the 16 bytes of a 128-bit block as a 4×4 matrix of bytes. The 4 bytes
+    in any row of this matrix can be treated as a 32-bit integer. Normally the 4 bytes
+    of the integer are taken from left to right, with the leftmost byte being the
+    high-order byte. However, they may also be taken in the opposite order, with the
+    leftmost byte being the low-order byte. Consider the hexadecimal number 01020304\.
+    If we multiply this by the hexadecimal number 01010101 modulo 2^(32) in the normal
+    way, the result is hexadecimal 0A090704\. If we multiply this in the reverse order
+    04030201 by the hexadecimal number 01010101 modulo 2^(32) the result is hexadecimal
+    0A060301.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In a similar way, we can treat the 4 bytes in any column as a 32-bit integer,
+    both in the top-to-bottom order and in the bottom-to-top order. Call the two horizontal
+    directions East and West, and the two vertical directions North and South. If
+    we multiply the rows and columns by odd 32-bit integers modulo 2^(32) in the order
+    East, North, West, South, this provides thorough mixing. This requires 16 separate
+    32-bit multipliers. The total key size is 16×31 = 496 bits, not 16×32 = 512, because
+    the multipliers must be odd. This cipher, which could be called *Compass*, is
+    rated Eight.
+  prefs: []
+  type: TYPE_NORMAL
+- en: To push the rating up to Ten, add one or more rounds of substitution, for example,
+    East, North, Substitute, West, South. Better yet, add multiple substitutions,
+    like East, Substitute, North, West, Substitute, South. Call this *CompassS*. Even
+    if you use fixed substitutions, if they are highly non-linear, CompassS is rated
+    Ten.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A different way to use small integer multiplication is to do *Cyclic Multiplication*.
+    Let the bytes in each 32-bit row of the block be numbered 1, 2, 3, 4 from left
+    to right, that is, from the high-order byte to the low-order byte. Multiply this
+    by an odd integer modulo 2^(32). Move byte 1 to the low-order end so the order
+    is now 2, 3, 4, 1\. Multiply again by an odd integer modulo 2^(32). Repeat this
+    two more times, so every byte occupies every position once. That is, the bytes
+    are taken in order 1234, then 2341, 3412, and finally 4123\. This should be done
+    for each of the 4 rows of the 4×4 matrix of bytes, for a total of 16 multiplications
+    and 12 cyclic shifts.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Then the same operations are done on the columns. Altogether there are 32 multiplications
+    and 24 cyclic shifts. This cyclic multiplication cipher is rated Eight. It can
+    have up to 32 different 32-bit multipliers for keys.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The methods of this section can be combined with the methods of section 15.4
+    in a variety of ways. Here is just one example, which I will call *Mat36*. Take
+    the message in blocks of 36 characters that are treated as nine 32-bit integers.
+    These form a 3×3 matrix of integers modulo 2^(32). This matrix will be multiplied
+    by a secret 3×3 invertible matrix of integers. If you simply multiplied on the
+    right by another 3×3 matrix, the low-order bytes of the 9 integers would be weakly
+    enciphered. Instead, cycle the entire 36-byte block left by 16 bit positions,
+    and then multiply the block on the right by a second secret 3×3 invertible matrix
+    of integers. Mat36 is rated Eight.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.9 Multiplication modulo P
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: When the multiplication is done modulo 2^n, the low-order bytes are weakly enciphered,
+    and we need to jump through hoops to fix that weakness. This problem does not
+    occur when the multiplication is done modulo a prime, P. With a large multiplier,
+    each bit of the product depends on every bit of the plaintext. There is a different
+    problem. Let’s assume you have chosen a prime P < 2^n, and a multiplier M, with
+    1 < M < P. This lets you safely multiply the values from 0 through P-1 by M modulo
+    P, so Riva can decipher these values by multiplying by M', the multiplicative
+    inverse of M.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'However, the plaintext value 0 would be left unchanged, and the plaintext values
+    from P through 2^n-1 cannot be multiplied safely because the result would be ambiguous.
+    For example, 3 and P+3 would give the same result when multiplied by M modulo
+    P, since 3M≡PM+3M(mod P), so Riva could not tell whether the message was 3 or
+    P+3\. This means that values from P through 2^n-1 would have to be left unchanged.
+    To do this, define the function modp as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-21](../Images/15-unnumb-21.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: One solution for this problem is for Sandra to exclusive-OR a secret value to
+    the plaintext. This suggests a family of *Modulo P ciphers*. Let’s settle on the
+    values n = 64, meaning a block size of 8 bytes, the prime modulus P = 2^(64)-59
+    = 18446744073709551557 and the multiplier M = 39958679596607489, which is also
+    prime.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Sandra enciphers a 64-bit plaintext block B by choosing a secret 64-bit constant
+    C[1] as the key, and computing x = modp(C[1]⊕B)+C[1]. This is the first cipher
+    in the family. Call it *PMod1*. It is rated Five. The second cipher in the family,
+    *PMod2*, is two iterations of PMod1, using a second 64-bit constant, C[2]:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-22](../Images/15-unnumb-22.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'PMod2 is rated Seven. The third cipher in the family, *PMod3*, has 3 iterations,
+    and is rated Nine:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-23](../Images/15-unnumb-23.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 'The fourth member, *PMod4*, is rated Ten. It has a total key size of 256 bits,
+    4 times the block size:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-24](../Images/15-unnumb-24.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Each of the additions is done modulo 2^n, not modulo P.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The four PModX ciphers are all extremely fast because 64-bit addition, multiplication
+    and modulo division are all directly supported by most programming languages.
+    In some computers they are a single machine instruction. This lets the PModX ciphers
+    operate on 4 or 8 bytes as a unit, instead of handing each 4-bit chunk separately,
+    as DES does. This class of ciphers is ideally suited for software encryption.
+    PMod2 is more secure than DES because of the much larger key size, and PMod4 is
+    more secure than 3DES.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There is a second approach to multiplication modulo P that eliminates the unchanged
+    values. The idea is to divide the range of integers from 0 to 2^(64)-1 into two
+    separate ranges, with a different prime modulus and a different multiplier for
+    each range. Choose two primes P and Q such that P+Q = 2^(64)+2\. There are about
+    1016 such pairs, so they are easy to find, for example P = 9228410438352162389
+    and Q = 9218333635357389229, and two large multipliers M < P and N < Q. The tricky
+    part is that you have to shift each range so that you are only multiplying the
+    numbers in the range 1 to P-1 or 1 to Q-1\. You do this by redefining the modp
+    function.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-25](../Images/15-unnumb-25.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: With this redefined modp function, the PMod1 through PMod4 ciphers work the
+    same as before, and have the same ratings. This diagram shows how the range 0
+    to 2^(64)-1 is divided.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-26](../Images/15-unnumb-26.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: 15.10 Change of base
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Changing the number base is closely related to multiplication by a large integer.
+    Changing number bases is a slow operation when the number is very large, so the
+    best strategy is to divide the message into blocks and convert each block separately.
+    Changing the base blurs the separations between message bytes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are two methods for converting numbers from one base to another. You can
+    work from the low-order end or from the high-order end. Many people learn these
+    techniques in school, but often forget them over time. To refresh everyone’s memories,
+    both methods are illustrated here. We will convert the number 1A87 from base 11
+    to base 7 using the low-end technique, and then back to base 11 using the high-end
+    method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'With the low-end technique you repeatedly divide the number by the new base.
+    Each remainder becomes the next digit of the converted number. Here are the steps
+    to convert 1A87:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 1A87/7 is 312 with remainder **4**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 312/7 is 49 with remainder **5**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 49/7 is 7 with remainder **4**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7/7 is **1** with remainder **0**.
+  prefs: []
+  type: TYPE_NORMAL
+- en: So 1A87 in base 11 becomes 10454 in base 7.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'With the high-end technique you repeatedly multiply the high-end digits by
+    the old base and add the next digit. Here are the steps to convert 10454:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '**1**×7+**0** is 7.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 7×7+**4** is 49.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 49×7+**5** is 312.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 312×7+**4** is 1A87.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If those numbers don’t look quite right to you, remember that the numbers 7,
+    49, 312 and 1A87 are all in base 11.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are lots of neat ciphers you can make, based on changing bases. For example,
+    a 16-byte block is also a 16-digit number expressed in base 256\. Convert that
+    number to another base, say 263\. Now you can transpose the base-263 digits, or
+    perform a substitution, or both. Then you could convert that to base 277, and
+    do the same thing. Finally, you convert back to base 256\. This requires a 17-byte
+    number to hold the result. You can use any number base from 256 through 362\.
+    Remember that if any result has a leading digit 0, that digit is required so that
+    Riva can decipher the ciphertext.
+  prefs: []
+  type: TYPE_NORMAL
+- en: If each successive base is a little larger than the previous, the same number
+    of digits are required at each stage. The number of digits will increase only
+    at the last step when the number is converted back to base 256\. There is no reason
+    that the bases need to be prime.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here is a concept for a block cipher based on base changes. Begin with a secret
+    well-mixed keyed simple substitution S. S operates on bytes, that is, on integers
+    from 0 to 255\. S can be extended to bases larger than 256 by leaving any digit
+    greater than 255 unchanged. This eliminates the need to have a separate substitution
+    table for every possible base. Choose 3 number bases B[1], B[2] and B[3] satisfying
+    256 < B[1] < B[2] < B[3] < 363\. You will also need 3 keyed transpositions T[1],
+    T[2] and T[3] on 16 elements. The elements are integers that can be as large as
+    B[3]-1, so they will need more than 1 byte each.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Block cipher *3Base* consists of the following steps: (1) Substitute S. (2)
+    Convert to base B[1]. (3) Substitute S. (4) Transpose T[1]. (5) Convert to base
+    B[2]. (6) Substitute S. (7) Transpose T[2]. (8) Convert to base B[3]. (9) Substitute
+    S. (10) Transpose T[3]. (11) Convert to base 256\. (12) Substitute S. The cipher
+    block consists of 16 elements up through step 11\. Step 12 expands the block to
+    17 bytes. Cipher 3Base is rated Ten.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*15.11 Rings'
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'A *ring* is an abstract version of the integers. That is, a ring is a set of
+    elements that can be added and multiplied analogously to the way integers are
+    added and multiplied. You are already familiar with several rings: the integers,
+    the rational numbers, the real numbers, the integers modulo some fixed number,
+    and perhaps the complex numbers and algebraic numbers. Some less-familiar rings
+    are polynomials whose coefficients are members of a ring, matrices whose entries
+    are elements of a ring, numbers of the form a +b√13, numbers of the form a +b∛7+c∛49,
+    and numbers of the form a +b√2+c√3+d√6, where a, b, c and d can be integers, rationals,
+    or integers modulo some fixed integer.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Before we discuss how to use rings in cryptography, let’s lay out the formal
+    rules for a ring. Ring addition is denoted by the + sign, a+b, and ring multiplication
+    is denoted by juxtaposition, ab.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For all ring elements a and b, a +b and ab are elements of the ring. (Closure)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: For all ring elements a, b and c, a +(b+c) = (a +b)+c. (Associative rule for
+    addition)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: For all ring elements a and b, a +b = b +a. (Commutative rule for addition)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: There is a ring element 0 such that 0+a = a +0 = a for all ring elements a.
+    (Additive identity)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: For every ring element a there is an element -a such that a +(-a) = (-a)+a =
+    0\. (Additive inverse)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: For all ring elements a, b and c, a(bc) = (ab)c. (Associative rule for multiplication)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: For all ring elements a, b and c, a(b +c) = ab +ac, and (a +b)c = ac +bc. (Distributive
+    rule)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: There is a ring element 1 such that 1a = a1 = a for every element a. (Multiplicative
+    identity)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The parentheses are usually dropped when adding an additive inverse, so (-a)+b
+    becomes -a +b, and a +(-b) becomes a-b.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Notice that ring multiplication need not be commutative. If the ring multiplication
+    is commutative, then the ring is called *commutative*. All the previous examples
+    are commutative rings. For the time being, let’s assume that all of the rings
+    under discussion are commutative. If a ring element a has a multiplicative inverse
+    a', so that aa' = 1, then a is called *invertible*. When working with finite rings,
+    it is advisable to try multiplying all possible pairs of elements to determine
+    which elements are invertible, and keep a table of the inverses for quick reference.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A simple way to use ring arithmetic for encryption is to combine the ripple
+    cipher of section 11.8 with the lagged linear addition of section 13.14.1\. Let’s
+    choose the ring ***R13***, whose elements take the form *a* + *b*√13, where a
+    and b are hexadecimal digits, that is, integers modulo 16\. The two hex digits
+    a and b form a byte that represents a character. For example, the letter X is
+    represented in ASCII code as hexadecimal 58, corresponding to the ***R13*** ring
+    element 5+8√13.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Two ***R13*** ring elements *a* + *b*√13 and *c* + *d*√13 are added as (*a*
+    + *c*) + (*b *+ *d*)√13, and multiplied together as (*ac* + 13*bd*) + (*ad* +
+    *bc*)√13, with all addition done modulo 16\. For example, if *x* = 2+3√13 and
+    *y* = 4+5√13, then *x*+*y* is 6+8√13 and *xy* is 11+6√13.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For the combined ripple + lagged linear addition cipher, which could be called
+    *Lag Ripple*, you replace x[n] with ax[n]+bx[n-i]+cx[n-j], where the coefficients
+    a, b and c are elements of the ring, in this case ***R13***, and the lags *i*
+    and *j* are small integers such as 2 and 5\. The plaintext could be divided into
+    blocks of, say, 16 bytes, but for short messages the cipher could be applied to
+    the entire message. Let’s suppose the latter. The encipherment would then be
+  prefs: []
+  type: TYPE_NORMAL
+- en: x[n] = ax[n] + bx[n-2] + cx[n-5] for n = 1,2,3, ...,L.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Here a is an invertible element of ***R13***, b and c are any elements of ***R13***,
+    and L is the length of the message. The arithmetic is carried out in the ring.
+    You may recognize this as a variant of the **madd** combining function from section
+    11.8\. The usual wraparound would be used for enciphering the first few bytes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: For a single pass using known fixed lags, lag ripple is rated Two, since there
+    are only 256³ combinations of coefficients possible. With a simple substitution
+    before and after the lagged ripple phase, the rating increases to Five. Using
+    3 passes, with different coefficients and different lags for each pass, the rating
+    goes to Six.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Triple Ripple* uses 3 passes with a secret keyed simple substitution before
+    each ripple pass and after the last ripple pass. Each pass has different secret
+    coefficients and lags. Optionally, you can start the ripple from a different position
+    in the message for each pass and wrap around. Triple Ripple is rated Ten.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.12 Matrices over a ring
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In sections 15.1 and 15.2 we looked at the Hill cipher, which consisted of treating
+    each block of the message as a vector of integers, and multiplying that vector
+    by a matrix of integers modulo 26 or 256\. There is nothing magical about integers
+    modulo 26 or 256\. You can represent the characters of a message using elements
+    of any ring. If there are more characters than ring elements, you can use pairs
+    or triplets of ring elements, much as pairs of integers 1 to 5 are used in the
+    Polybius square (section 9.1) to represent a 25-letter alphabet.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose that you used a matrix over ***R13***, the ring whose elements have
+    the form *a*+*b*√13. If you view a plaintext block as a vector of 32 hex digits
+    instead of 16 bytes, and you write out the expression for every digit of the matrix
+    product, you will see that every hex digit in the ciphertext is a linear combination
+    of the plaintext digits. So using a 16×16 matrix over the ***R13*** ring is equivalent
+    to using a 32×32 matrix over the hex digits, that is, the integers modulo 16\.
+    Therefore such a cipher would still be vulnerable to a known plaintext attack.
+    The attack would require at least 256 bytes of plaintext. Probably 16×17 = 272
+    bytes would be sufficient.
+  prefs: []
+  type: TYPE_NORMAL
+- en: You, the sender, can easily defeat such an attack by using a keyed simple substitution
+    before and after the matrix multiplication. Or, you could construct your own ring,
+    a ring unknown to anyone except your legitimate correspondents. As long as you
+    can keep your ring secret, nobody can mount any attack against your matrix cipher.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.13 Constructing a ring
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: A ring of N elements, called a ring of *order* N, is represented by two N×N
+    tables, its addition table and its multiplication table. Constructing a ring can
+    be done in stages. Let’s construct a ring of 8 elements as a demonstration. Begin
+    by constructing the addition table. You know from the outset that the ring must
+    have two elements, 0 the additive identity, and 1 the multiplicative identity.
+    The sums 0+a and a+0 are known for all a. This gives us the top row and left column
+    of the addition table.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-27](../Images/15-unnumb-27.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Next, start on the second row. The strategy is to take the first sum whose value
+    is not yet assigned, assign that sum a value, and then make all possible deductions
+    about other sums by using the associative rule. Suppose you wanted 1+1 = 2, 2+1
+    = 3, 3+1 = 4 and 4+1 = 0\. Using the associative rule, you can now fill in the
+    upper-left section of the table. For example, you can determine 2+2 because 2+2
+    = (1+1)+2 = 1+(1+2) = 1+3 = 4.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-28](../Images/15-unnumb-28.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Since 4+1 = 0, it follows that the additive inverse of 1 is 4 and the additive
+    inverse of 4 is 1\. Likewise, 2 is the additive inverse of 3, and 3 is the additive
+    inverse of 2\. So, what value should we assign to 5+1? It can’t be 0, because
+    4 and 5 cannot both be the additive inverse of 1\. It can’t be 1 because then
+    5 would be 0\. It can’t be 2 because 5+1 = 1+1 means 5 = 1\. Likewise, 5+1 can’t
+    be 3 or 4\. It also can’t be 5 because 5+5 = 5 means 5 = 0\. That leaves 5+1 =
+    6 or 5+1 = 7\. These are equivalent, so assume 5+1 = 6\. This forces 6+1 = 7 and
+    7+1 = 5\. That means 5+1+1+1 = 5\. That makes 1+1+1 = 0\. Since we already know
+    1+1+1 = 3, that means 3 = 0\. Impossible. This is a dead end. Setting 4+1 = 0
+    does not work.
+  prefs: []
+  type: TYPE_NORMAL
+- en: What went wrong? The cycle 1+1+1+1+1 = 0 has 5 terms. The length of any such
+    cycle in a ring of order N must evenly divide N. Since 5 does not evenly divide
+    8 it was impossible to complete the addition table. That leaves you with 3 choices,
+    to make the length of the cycle 2, 4 or 8\. If you choose cycle length 8, then
+    the ring is the integers modulo 8\. If you choose cycle length 2, then addition
+    is the same as exclusive-OR. Since the goal was to develop a new ring, that leaves
+    cycle length 4\. The addition table must be
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-29](../Images/15-unnumb-29.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: The multiplication table can now be worked out by using the distributive rule.
+    For example, 2×2 = 2×(1+1) = 2+2 = 0.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-30](../Images/15-unnumb-30.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Let’s call this ring ***R8***. It is a commutative ring, since ab = ba for all
+    ring elements a and b. Notice that 1 and 3 are the only elements in ring ***R8***
+    that have multiplicative inverses, and that each is its own inverse.
+  prefs: []
+  type: TYPE_NORMAL
+- en: There are two rings that deserve special mention, Gaussian integers and quaternions.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.13.1 Gaussian integers
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Gaussian integers* are numbers of the form a+bi, where a and b are integers,
+    and i is the imaginary number √-1\. In other words, Gaussian integers are complex
+    numbers where the real and imaginary parts are both integers. For cryptographic
+    use, a and b may be integers modulo 16\. The Gaussian number a+bi can thus be
+    used to represent the hexadecimal number ab. For example, the letter X, which
+    is 58 in hexadecimal ASCII code, would be represented by the Gaussian integer
+    5+8i.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Gaussian integers are added and multiplied like this:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-31](../Images/15-unnumb-31.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: where the addition and multiplication are done modulo 16 for cryptographic use.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.13.2 Quaternions
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Quaternions were invented by Irish mathematician William Rowan Hamilton of
+    Trinity College Dublin, the Royal Astronomer of Ireland, in 1843 to describe the
+    motions of a rotating body. They are numbers of the form a+bi+cj+dk, where a,
+    b, c and d are ordinary numbers, and i, j and k are abstract units. The defining
+    relationship for quaternions is i² = j² = k² = ijk = -1\. From this relationship,
+    you can derive these rules for multiplication:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-32](../Images/15-unnumb-32.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Quaternion multiplication is not commutative. Quaternions are often used as
+    *the* example of a non-commutative ring.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Quaternions are widely used in physics for representing such things as points
+    on a spherical surface, and the rotations of solid bodies. They can be adapted
+    for cryptographic use by letting a, b, c and d be integers modulo 16 or modulo
+    256\. That will let each quaternion represent 2 or 4 characters of a message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Another way to use quaternions is to let the coefficients a, b, c and d be integers
+    modulo 2^(32). You can use a secret well-mixed set of 5-bit, 6-bit or 8-bit character
+    codes so that each coefficient can represent 6, 5 or 4 characters, respectively.
+    The entire quaternion will therefore represent 24, 20 or 16 characters of the
+    message. You can encipher the message quaternion M by either left-multiplying
+    or right-multiplying M by a secret quaternion multiplier. Since quaternion multiplication
+    is not commutative, it is much stronger to both left-multiply and right-multiply
+    it, say AMB. As with ordinary multiplication, the low-order byte in each component
+    is weakest, so it is a good idea to cyclically shift the entire 16-byte block
+    left by 16 bit positions after the first multiplication. The same set of character
+    codes can be used to convert the product back to standard ASCII characters, but
+    it is stronger to use a different set of codes, preferably different-sized codes.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s call this method *Qmult*. Qmult is rated Ten. To decipher this message,
+    Riva must left-multiply by the inverse quaternion A', and right-multiply by the
+    inverse quaternion B'. The inverse of the quaternion a+bi+cj+dk is given by (a-bi-cj-dk)/(a²+b²+c²+d²).
+    Since we are working modulo 2^(32), a²+b²+c²+d² will have a multiplicative inverse
+    whenever it is odd, that is, whenever either one or three of the coefficients
+    are odd.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 15.14 Finding an invertible matrix
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: To use a matrix for a Hill-style cipher, that matrix must be invertible. Invertible
+    matrices are often difficult to find. If the number of invertible elements in
+    the ring is i, and the total number of elements is r, then the probability that
+    a random n×n matrix over that ring is invertible is (i/r)*n*. For the ***R8***
+    ring, i/r is 2/8 = 1/4\. (This is in sharp contrast to matrices over the rational
+    numbers or the real numbers where every element except 0 has a multiplicative
+    inverse, and therefore almost every matrix is invertible.) If the matrices are
+    small, you can usually find an invertible matrix by choosing the elements at random,
+    and then trying all possible values for the last element, or, at worst, the last
+    two elements. By using the last 1 or 2 elements you can reduce the matrix to the
+    bottom two rows and not have to do a full reduction for each trial.
+  prefs: []
+  type: TYPE_NORMAL
+- en: I have chosen not to cover determinants in this book, since I don’t know of
+    any use for them in cryptography, however, for readers who are familiar with determinants,
+    a matrix is invertible if the value of its determinant is an invertible element
+    in the ring. In particular, a matrix over the integers is invertible only if its
+    determinant is +1 or -1.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'When the desired matrix is larger, it may not be feasible to *find* an invertible
+    matrix. Instead, you need to *construct* an invertible matrix. You begin by constructing
+    a set of matrices of the desired size in one of two specific forms: triangular
+    and block diagonal. Here are 4×4 examples of the four types of triangular matrices.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-32-equation-15-32](../Images/15-unnumb-32-equation-15-32.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: An upper triangular matrix has nonzero entries only on or above the main diagonal
+    (upper left to lower right). All other entries are zero. A lower triangular matrix
+    has nonzero entries only on or below the main diagonal. All other entries are
+    zero. An upper anti-triangular matrix has nonzero entries only on or above the
+    anti-diagonal (lower left to upper right). All other entries are zero. A lower
+    anti-triangular matrix has nonzero entries only on or below the anti-diagonal.
+    All other entries are zero.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A triangular matrix is invertible if all of the entries on the diagonal are
+    invertible. An anti-triangular matrix is invertible if all of the entries on the
+    anti-diagonal are invertible. The inverses of these matrices may be found easily
+    using the techniques of section 15.1.1\. For upper triangular and lower anti-triangular
+    matrices, the reduction process of section 15.1.1 should be carried out from right
+    to left.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A general invertible matrix can be constructed from these triangular forms by
+    multiplying them. This must be done prudently. The product of two upper triangular
+    matrices will still be upper triangular, and the product of two lower triangular
+    matrices will still be lower triangular. Anti-triangular matrices do not have
+    this property. A sound course would be to construct one matrix of each of the
+    four triangular types, and then form their product. If the triangular matrices
+    are A, B, C and D, and their inverses are A', B', C' and D', then the inverse
+    of the product ABCD is D'C'B'A'.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In addition to triangular matrices, block diagonal matrices can be used to construct
+    invertible matrices. Here is a 5×5 example of a block diagonal matrix. This matrix
+    may be called type 2,3 because it consists of a 2×2 matrix and a 3×3 matrix arranged
+    along the diagonal of the 5×5 matrix.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![15-unnumb-32-equation-15-33](../Images/15-unnumb-32-equation-15-33.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: When two block diagonal matrices of the same type are multiplied, the result
+    is a block diagonal matrix of the same type.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The advantage of using a block diagonal matrix is that you can find the inverses
+    of each of the blocks separately. If you string these inverses along the diagonal,
+    the result is the inverse of the entire matrix. It may not be feasible to find
+    an invertible 16×16 matrix, but it is not too challenging to find four 4×4 invertible
+    matrices. You can expand your invertible block diagonal matrix to a full matrix
+    by multiplying by block diagonal matrices of other types, or by some invertible
+    triangular matrices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Go all out. Construct your invertible block diagonal matrix using the largest
+    blocks that you can, and use 4 triangular matrices, one of each kind. Your final
+    invertible matrix is the product of all five of these matrices.******
+  prefs: []
+  type: TYPE_NORMAL

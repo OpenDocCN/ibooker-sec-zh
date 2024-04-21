@@ -1,0 +1,45 @@
+- en: 'Part 2\. Protocols: The recipes of cryptography'
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: 'You are now entering the second part of this book, which is going to make use
+    of most of what you’ve learned in the first part. Think about it this way: if
+    the cryptographic primitives you’ve learned about were the basic ingredients of
+    cryptography, you’re now about to learn some recipes. And there’s a lot to cook!
+    While Caesar might have only been interested in encrypting his communications,
+    today cryptography is all over the place, and it’s quite hard to keep track of
+    it all.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: In chapter 9, 10, and 11, I show you where you are most likely to run into cryptography
+    and how cryptography is used to solve real-world problems; that is, how cryptography
+    encrypts communications and how it authenticates participants in protocols. For
+    the most part, that’s what cryptography is about. Participants will be numerous
+    or few, and made of bits or flesh. As you’ll quickly realize, real-world cryptography
+    is about tradeoffs and, based on the context, solutions will differ.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Chapter 12 and 13 take you into two quickly evolving fields of cryptography:
+    cryptocurrencies and hardware cryptography. The former topic has been ignored
+    by most books on cryptography. (I believe that this book, *Real-World Cryptography*,
+    is the first cryptography book to include a chapter on cryptocurrencies.) The
+    latter topic, hardware cryptography, is often overlooked too; cryptographers often
+    assume that their primitives and protocols run in a trusted environment, which
+    is less and less the case. Hardware cryptography is about pushing the boundaries
+    of where cryptography can run and providing security assurances when attackers
+    are getting closer and closer to you.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In chapters 14 and 15, I touch on the bleeding edge: what’s not here yet but
+    will be and what’s sort of here. You’ll learn about postquantum cryptography,
+    which is a field of cryptography that might be useful, depending on if we, as
+    a human species, invent scalable quantum computers. These quantum computers, based
+    on novel paradigms coming from the realm of quantum physics, could revolutionize
+    research and, perhaps, even break our crypto . . . You’ll also learn about what
+    I call “next-generation cryptography,” cryptographic primitives that have rarely
+    seen the light of day but that you will most likely see more frequently as these
+    get studied, become more efficient, and get adopted by application designers.
+    Finally, I conclude the book in chapter 16 with some final remarks on real-world
+    cryptography and some words on ethics.'
+  prefs: []
+  type: TYPE_NORMAL

@@ -1,0 +1,1233 @@
+- en: 6 Transport Layer Security
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Resisting man-in-the-middle attacks
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Understanding the Transport Layer Security handshake
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Building, configuring, and running a Django web application
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Installing a public-key certificate with Gunicorn
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Securing HTTP, email, and database traffic with Transport Layer Security
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: In the previous chapters, I introduced you to cryptography. You learned about
+    hashing, encryption, and digital signatures. In this chapter, you’ll learn how
+    to use *Transport Layer Security* (*TLS*), a ubiquitous secure networking protocol.
+    This protocol is an application of data integrity, data authentication, confidentiality,
+    and nonrepudiation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: After reading this chapter, you’ll understand how the TLS handshake and public-key
+    certificates work. You’ll also learn how to generate and configure a Django web
+    application. Finally, you’ll learn how to secure email and database traffic with
+    TLS.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.1 SSL? TLS? HTTPS?
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Before we dive into this subject, let’s establish some vocabulary terms. Some
+    programmers use the terms *SSL*, *TLS*, and *HTTPS* interchangeably, even though
+    they mean different things.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The *Secure Sockets Layer* (*SSL*) protocol is the insecure predecessor of TLS.
+    The latest version of SSL is more than 20 years old. Over time, numerous vulnerabilities
+    have been discovered in this protocol. In 2015, the IETF deprecated it ([https://tools.ietf.org/html/rfc7568](https://tools.ietf.org/html/rfc7568)).
+    TLS supersedes SSL with better security and performance.
+  prefs: []
+  type: TYPE_NORMAL
+- en: SSL is dead, but the term *SSL* is unfortunately alive and well. It survives
+    in method signatures, command-line arguments, and module names; this book contains
+    many examples. APIs preserve this term for the sake of backward compatibility.
+    Sometimes a programmer refers to *SSL* when they actually mean *TLS*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Hypertext Transfer Protocol Secure* (*HTTPS*) is simply Hypertext Transfer
+    Protocol (HTTP) over SSL or TLS. HTTP is a point-to-point protocol for transferring
+    data such as web pages, images, videos, and more over the internet; this isn’t
+    going to change anytime soon.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Why should you run HTTP over TLS? HTTP was defined in the 1980s, when the internet
+    was a smaller and safer place. By design, HTTP provides no security; the conversation
+    is not confidential, and neither participant is authenticated. In the next section,
+    you’ll learn about a category of attacks designed to exploit the limitations of
+    HTTP.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.2 Man-in-the-middle attack
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Man-in-the-middle* (*MITM*) is a classic attack. An attacker begins by taking
+    control of a position between two vulnerable parties. This position can be a network
+    segment or an intermediary system. The attacker can use their position to launch
+    either of these forms of MITM attack:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Passive MITM attack
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Active MITM attack
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Suppose Eve, an eavesdropper, launches a passive MITM attack after gaining unauthorized
+    access to Bob’s wireless network. Bob sends HTTP requests to bank.alice.com, and
+    bank.alice.com sends HTTP responses to Bob. Meanwhile Eve, unbeknownst to Bob
+    and Alice, passively intercepts each request and response. This gives Eve access
+    to Bob’s password and personal information. Figure 6.1 illustrates a passive MITM
+    attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: TLS cannot protect Bob’s wireless network. It would, however, provide confidentiality—preventing
+    Eve from reading the conversation in a meaningful way. TLS does this by encrypting
+    the conversation between Bob and Alice.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH06_F01_Byrne](Images/CH06_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6.1 Eve carries out a passive MITM attack over HTTP.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Now suppose Eve launches an active MITM attack after gaining unauthorized access
+    to an intermediary network device between Bob and bank.alice.com. Eve can listen
+    to or even modify the conversation. Using this position, Eve can deceive Bob and
+    Alice into believing she is the other participant. By tricking Bob that she is
+    Alice, and by tricking Alice that she is Bob, Eve can now relay messages back
+    and forth between them both. While doing this, Eve modifies the conversation (figure
+    6.2).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH06_F02_Byrne](Images/CH06_F02_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6.2 Eve carries out an active MITM attack over HTTP.
+  prefs: []
+  type: TYPE_NORMAL
+- en: TLS cannot protect the network device between Bob and Alice. It would, however,
+    prevent Eve from impersonating Bob or Alice. TLS does this by authenticating the
+    conversation, ensuring Bob that he is communicating directly to Alice. If Alice
+    and Bob want to communicate securely, they need to start using HTTP over TLS.
+    The next section explains how an HTTP client and server establish a TLS connection.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.3 The TLS handshake
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: TLS is a point-to-point, client/server protocol. Every TLS connection begins
+    with a handshake between the client and server. You may have already heard of
+    the *TLS handshake*. In reality, there isn’t one TLS handshake; there are many.
+    For example, versions 1.1, 1.2, and 1.3 of TLS all define a different handshake
+    protocol. Even within each TLS version, the handshake is affected by which algorithms
+    the client and server use to communicate. Furthermore, many parts of the handshake,
+    such as server authentication and client authentication, are optional.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In this section, I cover the most common type of TLS handshake: the one that
+    your browser (the client) performs with a modern web server. This handshake is
+    always initiated by the client. The client and server will use version 1.3 of
+    TLS. Version 1.3 is faster, more secure—and, fortunately, for you and I—simpler
+    than version 1.2\. The whole point of this handshake is to perform three tasks:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Cipher suite negotiation
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Key exchange
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Server authentication
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: 6.3.1 Cipher suite negotiation
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'TLS is an application of encryption and hashing. To communicate, the client
+    and server must first agree on a common set of algorithms known as a *cipher suite*.
+    Each cipher suite defines an encryption algorithm and a hashing algorithm. The
+    TLS 1.3 spec defines the following five cipher suites:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: TLS_AES_128_CCM_8_SHA256
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: TLS_AES_128_CCM_SHA256
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: TLS_AES_128_GCM_SHA256
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: TLS_AES_256_GCM_SHA384
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: TLS_CHACHA20_POLY1305_SHA256
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The name of each cipher suite is composed of three segments. The first segment
+    is a common prefix, TLS_. The second segment designates an encryption algorithm.
+    The last segment designates a hashing algorithm. For example, suppose a client
+    and server agree to use the cipher suite TLS_AES _128_GCM_SHA256\. This means
+    both participants agree to communicate with AES using a 128-bit key in GCM mode,
+    and SHA-256\. GCM is a block cipher mode known for speed. It provides data authentication
+    in addition to confidentiality. Figure 6.3 dissects the anatomy of this cipher
+    suite.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH06_F03_Byrne](Images/CH06_F03_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6.3 TLS cipher suite anatomy
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The five cipher suites are easily summarized: encryption boils down to AES
+    or ChaCha20; hashing boils down to SHA-256 or SHA-384\. You learned about all
+    four of these tools in the previous chapters. Take a moment to appreciate how
+    simple TLS 1.3 is in comparison to its predecessor. TLS 1.2 defined 37 cipher
+    suites!'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Notice that all five cipher suites use symmetric, rather than asymmetric, encryption.
+    AES and ChaCha20 were invited to the party; RSA was not. TLS ensures confidentiality
+    with symmetric encryption because it is more efficient than asymmetric encryption,
+    by three to four orders of magnitude. In the previous chapter, you learned that
+    symmetric encryption is computationally less expensive than asymmetric encryption.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The client and server must share more than just the same cipher suite to encrypt
+    their conversation. They also must share a key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.3.2 Key exchange
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The client and server must exchange a key. This key will be used in combination
+    with the encryption algorithm of the cipher suite to ensure confidentiality. The
+    key is scoped to the current conversation. This way, if the key is somehow compromised,
+    the damage is isolated to only a single conversation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: TLS key exchange is an example of the key-distribution problem. (You learned
+    about this problem in the previous chapter.) TLS 1.3 solves this problem with
+    the Diffie-Hellman method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Diffie-Hellman key exchange
+  prefs: []
+  type: TYPE_NORMAL
+- en: The *Diffie-Hellman* (*DH*) *key exchange* method allows two parties to safely
+    establish a shared key over an insecure channel. This mechanism is an efficient
+    solution to the key-distribution problem.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In this section, I use Alice, Bob, and Eve to walk you through the DH method.
+    Alice and Bob, representing the client and server, will both generate their own
+    temporary key pair. Alice and Bob will use their key pairs as stepping-stones
+    to a final shared secret key. As you read this, it is important not to conflate
+    the intermediate key pairs with the final shared key. Here is a simplified version
+    of the DH method:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alice and Bob openly agree on two parameters.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Alice and Bob each generate a private key.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Alice and Bob each derive a public key from the parameters and their private
+    key.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Alice and Bob openly exchange public keys.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Alice and Bob independently compute a shared secret key.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Alice and Bob begin this protocol by openly agreeing on two numbers, called
+    p and g. These numbers are openly transmitted. Eve, an eavesdropper, can see both
+    of these numbers. She is not a threat.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alice and Bob both generate private keys a and b, respectively. These numbers
+    are secrets. Alice hides her private key from Eve and Bob. Bob hides his private
+    key from Eve and Alice.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alice derives her public key A from p, g, and her private key. Likewise, Bob
+    derives his public key B from p, g, and his private key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Alice and Bob exchange their public keys. These keys are openly transmitted;
+    they are not secrets. Eve, an eavesdropper, can see both public keys. She is still
+    not a threat.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finally, Alice and Bob use each other’s public keys to independently compute
+    an identical number K. Alice and Bob throw away their key pairs and hold on to
+    K. Alice and Bob use K to encrypt the rest of their conversation. Figure 6.4 illustrates
+    Alice and Bob using this protocol to arrive at a shared key, the number 14.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH06_F04_Byrne](Images/CH06_F04_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6.4 Alice and Bob independently compute a shared key, the number 14,
+    with the Diffie-Hellman method.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the real world, p, the private keys, and K are much larger than this. Larger
+    numbers make it infeasible for Eve to reverse engineer the private keys or K,
+    despite having eavesdropped on the entire conversation. Even though Eve knows
+    p, g, and both public keys, her only option is brute force.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Public-key encryption
+  prefs: []
+  type: TYPE_NORMAL
+- en: Many people are surprised to see public-key encryption absent from the handshake
+    so far; it isn’t even part of the cipher suite. SSL and older versions of TLS
+    commonly used public-key encryption for key exchange. Eventually, this solution
+    didn’t scale well.
+  prefs: []
+  type: TYPE_NORMAL
+- en: During this time, the falling costs of hardware made brute-force attacks cheaper.
+    To compensate for this, people began to use larger key pairs in order to keep
+    the cost of brute-force attacks high.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Larger key pairs had an unfortunate side effect, though: web servers were spending
+    unacceptable amounts of time performing asymmetric encryption for the sake of
+    key exchange. TLS 1.3 addressed this problem by explicitly requiring the DH method.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The DH approach is a more efficient solution to the key-distribution problem
+    than public-key encryption, using modular arithmetic instead of incurring the
+    computational overhead of a cryptosystem like RSA. This approach doesn’t actually
+    distribute a key from one party to another; the key is independently created in
+    tandem by both parties. Public-key encryption isn’t dead, though; it is still
+    used for authentication.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.3.3 Server authentication
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Cipher suite negotiation and key exchange are the prerequisites to confidentiality.
+    But what good is a private conversation without verifying the identity of who
+    you are talking to? TLS is a means of *authentication* in addition to privacy.
+    Authentication is bidirectional and optional. For this version of the handshake
+    (the one between your browser and a web server), the server will be authenticated
+    by the client.
+  prefs: []
+  type: TYPE_NORMAL
+- en: A server authenticates itself, and completes the TLS handshake, by sending a
+    *public-key certificate* to the client. The certificate contains, and proves ownership
+    of, the server’s public key. The certificate must be created and issued by a *certificate
+    authority* (*CA*), an organization dedicated to digital certification.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The public-key owner applies for a certificate by sending a *certificate signing
+    request* (*CSR*) to a CA. The CSR contains information about the public key owner
+    and the public key itself. Figure 6.5 illustrates this process. The dashed arrows
+    indicate a successful CSR, as the CA issues a public-key certificate to the public-key
+    owner. The solid arrows illustrate the installation of the certificate to a server,
+    where it is served to a browser.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH06_F05_Byrne](Images/CH06_F05_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6.5 A public-key certificate is issued to an owner and installed on a
+    server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Public-key certificates
+  prefs: []
+  type: TYPE_NORMAL
+- en: A *public-key certificate* resembles your driver’s license in a lot of ways.
+    You identify yourself with a driver’s license; a server identifies itself with
+    a public-key certificate. Your license is issued to you by a government agency;
+    a certificate is issued to a key owner by a certificate authority. Your license
+    is scrutinized by a police officer before you can be trusted; a certificate is
+    scrutinized by a browser (or any other TLS client) before a server can be trusted.
+    Your license confirms driving skills; a certificate confirms public-key ownership.
+    Your license and a certificate both have an expiration date.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s dissect a public-key certificate of a website you’ve already used, Wikipedia.
+    The Python script in the next listing uses the `ssl` module to download Wikipedia’s
+    production public-key certificate. The downloaded certificate is the output of
+    the script.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 6.1 get_server_certificate.py
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Downloads the public-key certificate of Wikipedia
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Use the following command line to run this script. This will download the certificate
+    and write it to a file named wikipedia.crt:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: The structure of the public-key certificate is defined by X.509, a security
+    standard described by RFC 5280 ([https://tools.ietf.org/html/rfc5280](https://tools.ietf.org/html/rfc5280)).
+    TLS participants use X.509 for the sake of interoperability. A server can identify
+    itself to any client, and a client can verify the identity of any server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The anatomy of an X.509 certificate is composed of a common set of fields.
+    You can develop a greater appreciation for TLS authentication by thinking about
+    these fields from a browser’s perspective. The following `openssl` command demonstrates
+    how to display these fields in human-readable format:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Before a browser can trust the server, it will parse the certificate and probe
+    each field individually. Let’s examine some of the more important fields:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Subject
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Issuer
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Subject’s public key
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Certificate validity period
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Certificate authority signature
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Each certificate identifies the owner, just like a driver’s license. The certificate
+    owner is designated by the Subject field. The most important property of the Subject
+    field is the *common name*, which identifies the domain names that the certificate
+    is allowed to be served from.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The browser will reject the certificate if it cannot match the common name with
+    the URL of the request; server authentication and the TLS handshake will fail.
+    The following listing illustrates the Subject field of Wikipedia’s public-key
+    certificate in bold. The `CN` property designates the common name.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 6.2 Subject field of wikipedia.org
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ The certificate owner common name
+  prefs: []
+  type: TYPE_NORMAL
+- en: Each certificate identifies the issuer, just like a driver’s license. The CA
+    that issued Wikipedia's certificate is Let’s Encrypt. This nonprofit CA specializes
+    in automated certification, free of charge. The following listing illustrates
+    the Issuer field of Wikipedia’s public-key certificate in bold.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 6.3 Certificate issuer of wikipedia.org
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ The certificate issuer, Let’s Encrypt
+  prefs: []
+  type: TYPE_NORMAL
+- en: The public key of the certificate owner is embedded within each public-key certificate.
+    The next listing illustrates Wikipedia’s public key; this one is a 256-bit elliptic-curve
+    public key. You were introduced to elliptic-curve key pairs in the previous chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 6.4 Public key of wikipedia.org
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Elliptic-curve public key
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Specifies a 256-bit key
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ The actual public key, encoded
+  prefs: []
+  type: TYPE_NORMAL
+- en: Every certificate has a validity period, just like a driver’s license. The browser
+    will not trust the server if the current time is outside this time range. The
+    following listing indicates that Wikipedia’s certificate has a three-month validity
+    period, shown in bold.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 6.5 Certificate validity period for wikipedia.org
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: At the bottom of every certificate is a digital signature, designated by the
+    Signature Algorithm field. (You learned about digital signatures in the previous
+    chapter.) Who has signed what? In this example, the certificate authority, Let’s
+    Encrypt, has signed the certificate owner’s public key—the same public key embedded
+    in the certificate. The next listing indicates that Let’s Encrypt signed Wikipedia’s
+    public key by hashing it with SHA-256 and encrypting the hash value with an RSA
+    private key, shown in bold. (You learned how to do this in Python in the previous
+    chapter.)
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 6.6 Certificate authority signature for wikipedia.org
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Let’s Encrypt signs with SHA-256 and RSA.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ The digital signature, encoded
+  prefs: []
+  type: TYPE_NORMAL
+- en: Figure 6.6 illustrates the most important contents of this public-key certificate.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH06_F06_Byrne](Images/CH06_F06_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6.6 A wikipedia.org web server transfers a public-key certificate to
+    a browser.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The browser will verify the signature of Let’s Encrypt. If the signature fails
+    verification, the browser will reject the certificate, and the TLS handshake will
+    end in failure. If the signature passes verification, the browser will accept
+    the certificate, and the handshake will end in success. The handshake is over;
+    the rest of the conversation is symmetrically encrypted using the cipher suite
+    encryption algorithm and the shared key.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In this section, you learned how a TLS connection is established. A typical
+    successful TLS handshake establishes three things:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: An agreed-upon cipher suite
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: A key shared by only the client and server
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Server authentication
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: In the next two sections, you’ll apply this knowledge as you build, configure,
+    and run a Django web application server. You’ll secure the traffic of this server
+    by generating and installing a public-key certificate of your own.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.4 HTTP with Django
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'In this section, you’ll learn how to build, configure, and run a Django web
+    application. *Django* is a Python web application framework you’ve probably already
+    heard of. I use Django for every web example in this book. From within your virtual
+    environment, run the following command to install Django:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'After installing Django, the django-admin script will be in your shell path.
+    This script is an administrative utility that will generate the skeleton of your
+    Django project. Use the following command to start a simple yet functional Django
+    project named *alice*:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: The `startproject` subcommand will create a new directory with the same name
+    as your project. This directory is called the *project root*. Within the project
+    root is an important file named manage.py. This script is a project-specific administrative
+    utility. Later in this section, you will use it to start your Django application.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Within the project root directory, right next to manage.py, is a directory with
+    the exact same name as the project root. This ambiguously named subdirectory is
+    called the *Django root*. Many programmers find this confusing, understandably.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this section, you’ll be using an important module within the Django root
+    directory, the `settings` module. This module is a central place for maintaining
+    project configuration values. You will see this module many times in this book
+    because I cover dozens of Django settings related to security.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The Django root directory also contains a module named `wsgi`. I cover the `wsgi`
+    module later in this chapter. You’ll be using it to serve traffic to and from
+    your Django application over TLS. Figure 6.7 illustrates the directory structure
+    of your project.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH06_F07_Byrne](Images/CH06_F07_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6.7 Directory structure of a new Django project
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note Some programmers are incredibly opinionated about Django project directory
+    structure. In this book, all Django examples use the default generated project
+    structure.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Use the following commands to run your Django server. From within the project
+    root directory, run the manage.py script with the `runserver` subcommand. The
+    command line should hang:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ From the project root
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ The runserver subcommand should hang.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Point your browser at http:/./localhost:8000 to verify that the server is up
+    and running. You will see a friendly welcome page similar to the one in figure
+    6.8.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH06_F08_Byrne](Images/CH06_F08_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6.8 Django’s welcome page for new projects
+  prefs: []
+  type: TYPE_NORMAL
+- en: The welcome page reads, “You are seeing this page because DEBUG=True.” The `DEBUG`
+    setting is an important configuration parameter for every Django project. As you
+    might have guessed, the `DEBUG` setting is found within the `settings` module.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.4.1 The DEBUG setting
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Django generates settings.py with a `DEBUG` setting of `True`. When `DEBUG`
+    is set to `True`, Django displays detailed error pages. The details in these error
+    pages include information about your project directory structure, configuration
+    settings, and program state.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING `DEBUG` is great for development and terrible for production. The information
+    provided by this setting helps you debug the system in development but also reveals
+    information that an attacker can use to compromise the system. Always set `DEBUG`
+    to `False` in production.
+  prefs: []
+  type: TYPE_NORMAL
+- en: TIP You must restart the server before changes to the `settings` module take
+    effect. To restart Django, press Ctrl-C in your shell to stop the server, and
+    then restart the server with the manage.py script again.
+  prefs: []
+  type: TYPE_NORMAL
+- en: At this point, your application can serve a web page over HTTP. As you already
+    know, HTTP has no support for confidentiality or server authentication. The application,
+    in its current state, is vulnerable to a MITM attack. To solve these problems,
+    the protocol must be upgraded from HTTP to HTTPS.
+  prefs: []
+  type: TYPE_NORMAL
+- en: An application server like Django doesn't actually know or do anything about
+    HTTPS. It doesn’t host a public-key certificate and doesn’t perform a TLS handshake.
+    In the next section, you’ll learn how to handle these responsibilities with another
+    process between Django and the browser.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.5 HTTPS with Gunicorn
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In this section, you’ll learn how to host a public-key certificate with Gunicorn,
+    a pure Python implementation of the Web Server Gateway Interface (WSGI) protocol.
+    This protocol is defined by Python Enhancement Proposal (PEP) 3333 ([www.python.org/dev/peps/pep-3333/](https://www.python.org/dev/peps/pep-3333/)),
+    which is designed to decouple web application frameworks from web server implementations.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Your Gunicorn process will sit between your web server and your Django application
+    server. Figure 6.9 depicts a Python application stack, using an NGINX web server,
+    a Gunicorn WSGI application, and a Django application server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH06_F09_Byrne](Images/CH06_F09_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 6.9 A common Python application stack using NGINX, Gunicorn, and Django
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'From within your virtual environment, install Gunicorn with the following command:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: After installation, the `gunicorn` command will be in your shell path. This
+    command requires one argument, a WSGI application module. The django-admin script
+    has already generated a WSGI application module for you, located beneath the Django
+    root directory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Before running Gunicorn, make sure you stop your running Django application
+    first. Press Ctrl-C in your shell to do this. Next, run the following command
+    from the project root directory to bring your Django server back up with Gunicorn.
+    The command line should hang:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ The alice.wsgi module is located at alice/alice/wsgi.py.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Point your browser at http:/./localhost:8000 and refresh the welcome page. Your
+    application is now being served through Gunicorn but is still using HTTP. To upgrade
+    the application to HTTPS, you need to install a public-key certificate.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.5.1 Self-signed public-key certificates
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: A *self-signed public-key certificate*, as the name implies, is a public-key
+    certificate that is not issued or signed by a CA. You make it and you sign it.
+    This is a cheap and convenient stepping-stone toward a proper certificate. These
+    certificates provide confidentiality without authentication; they are convenient
+    for development and testing but unsuitable for production. It will take you about
+    60 seconds to create a self-signed public-key certificate, and a maximum of 5
+    minutes to get your browser or operating system to trust it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Generate a key pair and a self-signed public-key certificate with the following
+    `openssl` command. This example generates an elliptic-curve key pair and a self-signed
+    public-key certificate. The certificate is valid for 10 years:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Generates an X.509 certificate
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Uses a validity period of 10 years
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Generates an elliptic-curve key pair
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Writes the private key to this location
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❺ Writes the public-key certificate to this location
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The output of this command prompts you for the certificate subject details.
+    You are the subject. Specify a common name of `localhost` to use this certificate
+    for local development:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ For local development
+  prefs: []
+  type: TYPE_NORMAL
+- en: Stop the running Gunicorn instance by pressing Ctrl-C at the prompt. To install
+    your certificate, restart Gunicorn with the following command line. The `keyfile`
+    and `certfile` arguments accept the paths to your key file and certificate, respectively.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ The alice.wsgi module is located at alice/alice/wsgi.py.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Your private-key file
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Your public-key certificate
+  prefs: []
+  type: TYPE_NORMAL
+- en: Gunicorn automatically uses the installed certificate to serve Django traffic
+    over HTTPS instead of HTTP. Point your browser to https:/./localhost:8000 to request
+    the welcome page again. This will validate your certificate installation and begin
+    a TLS handshake. Remember to change the URL scheme from *http* to *https*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Don’t be surprised when your browser displays an error page. This error page
+    will be specific to your browser, but the underlying problem is the same: a browser
+    has no way to verify the signature of a self-signed certificate. You are using
+    HTTPS now, but your handshake has failed. To proceed, you need to get your operating
+    system to trust your self-signed certificate. I cannot cover every way to solve
+    this problem because the solution is specific to your operating system. Listed
+    here are the steps for trusting a self-signed certificate on macOS:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Open up Keychain Access, a password management utility developed by Apple.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Drag your self-signed certificate into the Certificates section of Keychain
+    Access.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Double-click the certificate in Keychain Access.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Expand the Trust section.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: In the When Using This Certificate drop-down list, select Always Trust.
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: If you're using a different operating system for local development, I recommend
+    an internet search for “How to trust a self-signed certificate in <my operating
+    system>.” Expect the solution to take a maximum of 5 minutes. Meanwhile, your
+    browser will continue to prevent a MITM attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Your browser will trust your self-signed certificate after your operating system
+    does. Restart the browser to ensure this happens quickly. Refresh the page at
+    https:/./localhost:8000 to retrieve the welcome page. Your application is now
+    using HTTPS, and your browser has successfully completed the handshake!
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Upgrading your protocol from HTTP to HTTPS is a giant leap forward in terms
+    of security. I finish this section with two things you can do to make your server
+    even more secure:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Forbid HTTP requests with the `Strict-Transport-Security` response header
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Redirect inbound HTTP requests to HTTPS
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 6.5.2 The Strict-Transport-Security response header
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'A server uses the HTTP `Strict-Transport-Security` (HSTS) response header to
+    tell a browser that it should be accessed only via HTTPS. For example, a server
+    would use the following response header to instruct the browser that it should
+    be accessed only over HTTPS for the next 3600 seconds (1 hour):'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: The key-value pair to the right of the colon, shown in bold font, is known as
+    a *directive*. Directives are used to parameterize HTTP headers. In this case,
+    the `max-age` directive represents the time, in seconds, that a browser should
+    access the site only over HTTPS.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Ensure that each response from your Django application has an HSTS header with
+    the `SECURE_HSTS_SECONDS` setting. The value assigned to this setting translates
+    to the `max-age` directive of the header. Any positive integer is a valid value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Be very careful with `SECURE_HSTS_SECONDS` if you are working with a
+    system already in production. This setting applies to the entire site, not just
+    the requested resource. If your change breaks anything, the impact could last
+    as long as the `max-age` directive value. Adding the HSTS header to an existing
+    system with a large `max-age` directive is therefore risky. Incrementing `SECURE_HSTS_SECONDS`
+    from a small number is a much safer way to roll out a change like this. How small?
+    Ask yourself how much downtime you can afford if something breaks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A server sends the HSTS response header with an `includeSubDomains` directive
+    to tell a browser that all subdomains should be accessed only via HTTPS, in addition
+    to the domain. For example, alice.com would use the following response header
+    to instruct a browser that alice.com, and sub.alice.com, should be accessed only
+    over HTTPS:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: The `SECURE_HSTS_INCLUDE_SUBDOMAINS` setting configures Django to send the HSTS
+    response header with an `includeSubDomains` directive. This setting defaults to
+    `False`, and is ignored if `SECURE_HSTS_SECONDS` is not a positive integer.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Every risk associated with `SECURE_HSTS_SECONDS` applies to `SECURE_HSTS_INCLUDE_SUBDOMAINS`.
+    A bad rollout can impact every subdomain for as long as the `max-age` directive
+    value. If you’re working on a system already in production, start with a small
+    value.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.5.3 HTTPS redirects
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The HSTS header is a good layer of defense but can only do so much as a response
+    header; a browser must first send a request before the HSTS header is received.
+    It is therefore useful to redirect the browser to HTTPS when the initial request
+    is over HTTP. For example, a request for http:/./alice.com should be redirected
+    to https:/./alice.com.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Ensure that your Django application redirects HTTP requests to HTTPS by setting
+    `SECURE_SSL_REDIRECT` to `True`. Assigning this setting to `True` activates two
+    other settings, `SECURE_REDIRECT_EXEMPT` and `SECURE_SSL_HOST`, both of which
+    are covered next.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING `SECURE_SSL_REDIRECT` defaults to `False`. You should set this to `True`
+    if your site uses HTTPS.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `SECURE_REDIRECT_EXEMPT` setting is a list of regular expressions used to
+    suspend HTTPS redirects for certain URLs. If a regular expression in this list
+    matches the URL of an HTTP request, Django will not redirect it to HTTPS. The
+    items in this list must be strings, not actual compiled regular expression objects.
+    The default value is an empty list.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `SECURE_SSL_HOST` setting is used to override the hostname for HTTPS redirects.
+    If this value is set to `bob.com`, Django will permanently redirect a request
+    for http:/./alice.com to https:/./bob.com instead of https:/./alice.com. The default
+    value is `None`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: By now, you’ve learned a lot about how browser and web servers communicate with
+    HTTPS; but browsers aren’t the only HTTPS clients. In the next section, you’ll
+    see how to use HTTPS when sending requests programmatically in Python.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.6 TLS and the requests package
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'The `requests` package is a popular HTTP library for Python. Many Python applications
+    use this package to send and receive data between other systems. In this section,
+    I cover a few features related to TLS. From within your virtual environment, install
+    `requests` with the following command:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'The `requests` package automatically uses TLS when the URL scheme is HTTPS.
+    The `verify` keyword argument, shown in bold in the following code, disables server
+    authentication. This argument doesn’t disable TLS; it relaxes TLS. The conversation
+    is still confidential, but the server is no longer authenticated:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: This feature is obviously inappropriate for production. It is often useful in
+    integration testing environments, when a system needs to communicate to a server
+    without a static hostname, or to a server using a self-signed certificate.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'TLS authentication is a two-way street: the client can be authenticated in
+    addition to the server. A TLS client authenticates itself with a public-key certificate
+    and private key, just like a server. The `requests` package supports client authentication
+    with the `cert` keyword argument. This kwarg, shown in bold in the following code,
+    expects a two-part tuple. This tuple represents the paths to the certificate and
+    the private-key files. The `verify` kwarg does not affect client authentication;
+    the `cert` kwarg does not affect server authentication:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'Alternatively, the functionality for the `verify` and `cert` kwargs is available
+    through properties of a `requests` `Session` object, shown here in bold:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: 'TLS accommodates more than just HTTP. Database traffic, email traffic, Telnet,
+    Lightweight Directory Access Protocol (LDAP), File Transfer Protocol (FTP), and
+    more run over TLS as well. TLS clients for these protocols have more “personality”
+    than browsers. These clients vary greatly in their capabilities, and their configuration
+    is more vendor specific. This chapter finishes with a look at two use cases for
+    TLS beyond HTTP:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Database connections
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Email
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 6.7 TLS and database connections
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Applications should ensure that database connections are secured with TLS as
+    well. TLS ensures that your application is connecting to the correct database
+    and that data being written to and read from the database cannot be intercepted
+    by a network attacker.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Django database connections are managed by the `DATABASES` setting. Each entry
+    in this dictionary represents a different database connection. The following listing
+    illustrates the default Django `DATABASES` setting. The `ENGINE` key specifies
+    SQLite, a file-based database. The `NAME` key specifies the file to store data
+    in.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 6.7 The default Django DATABASES setting
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Stores data in db.sqlite3 at the project root
+  prefs: []
+  type: TYPE_NORMAL
+- en: By default, SQLite stores data as plaintext. Few Django applications make it
+    to production with SQLite. Most production Django applications will connect to
+    a database over a network.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'A database network connection requires universal self-explanatory fields: `NAME`,
+    `HOST`, `PORT`, `USER`, and `PASSWORD`. TLS configuration, on the other hand,
+    is particular to each database. Vendor-specific settings are handled by the `OPTIONS`
+    field. This listing shows how to configure Django to use TLS with PostgreSQL.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 6.8 Using Django with PostgreSQL safely
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Vendor specific configuration settings fall under OPTIONS
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Do not assume that every TLS client performs server authentication to the extent
+    a browser does. A TLS client may not verify the hostname of the server if it isn’t
+    configured to do so. For example, PostgreSQL clients verify the signature of the
+    certificate when connecting in two modes: `verify-ca` and `verify-full`. In `verify-ca`
+    mode, the client will not validate the server hostname against the common name
+    of the certificate. This check is performed only in `verify-full` mode.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note Encrypting database traffic is no substitute for encrypting the database
+    itself; always do both. Consult the documentation of your database vendor to learn
+    more about database-level encryption.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.8 TLS and email
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Django’s answer to email is the `django.core.mail` module, a wrapper API for
+    Python’s `smtplib` module. Django applications send email with the Simple Mail
+    Transfer Protocol (SMTP). This popular email protocol commonly uses port 25\.
+    Like HTTP, SMTP is a product of the 1980s. It makes no attempt to ensure confidentiality
+    or authentication.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Attackers are highly motivated to send and receive unauthorized email. Any vulnerable
+    email server is a potential source of spam revenue. An attacker may want to gain
+    unauthorized access to confidential information. Many phishing attacks are launched
+    from compromised email servers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Organizations resist these attacks by encrypting email in transit. To prevent
+    a network eavesdropper from intercepting SMTP traffic, you must use SMTPS. This
+    is simply SMTP over TLS. SMTP and SMTPS are analogous to HTTP and HTTPS. You can
+    upgrade your connection from SMTP to SMTPS with the settings covered in the next
+    two sections.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.8.1 Implicit TLS
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: There are two ways to initiate a TLS connection to an email server. RFC 8314
+    describes the traditional method as “the client establishes a cleartext application
+    session . . . a TLS handshake follows that can upgrade the connection.” RFC 8314
+    recommends “an alternate mechanism where TLS is negotiated immediately at connection
+    start on a separate port.” The recommended mechanism is known as *implicit TLS*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `EMAIL_USE_SSL` and `EMAIL_USE_TLS` settings configure Django to send email
+    over TLS. Both settings default to `False`, only one of them can be `True`, and
+    neither is intuitive. A reasonable observer would assume `EMAIL_USE_TLS` is preferred
+    over `EMAIL_USE_SSL`. TLS, after all, replaced SSL years ago with better security
+    and performance. Unfortunately, implicit TLS is configured by `EMAIL_USE_SSL`,
+    not `EMAIL_USE_TLS`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Using `EMAIL_USE_TLS` is better than nothing, but you should use `EMAIL_USE
+    _SSL` if your email server supports implicit TLS. I have no idea why `EMAIL_USE_SSL`
+    wasn’t named `EMAIL_USE_IMPLICIT_TLS`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.8.2 Email client authentication
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Like the `requests` package, Django’s email API supports TLS client authentication.
+    The `EMAIL_SSL_KEYFILE` and `EMAIL_SSL_CERTFILE` settings represent the paths
+    of the private key and client certificate. Both options do nothing if `EMAIL_USE_TLS`
+    or `EMAIL_USE_SSL` aren’t enabled, as expected.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Do not assume that every TLS client performs server authentication. At the time
+    of this writing, Django unfortunately does not perform server authentication when
+    sending email.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note As with your database traffic, encrypting email in transit is no substitute
+    for encrypting email at rest; always do both. Most vendors encrypt email at rest
+    for you automatically. If not, consult the documentation of your email vendor
+    to learn more about email encryption at rest.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 6.8.3 SMTP authentication credentials
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Unlike `EMAIL_USE_TLS` and `EMAIL_USE_SSL`, the `EMAIL_HOST_USER` and `EMAIL
+    _HOST_PASSWORD` settings are intuitive. These settings represent SMTP authentication
+    credentials. SMTP makes no attempt to hide these credentials in transit; without
+    TLS, they are an easy target for a network eavesdropper. The following code demonstrates
+    how to override these settings when programmatically sending email.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 6.9 Programmatically sending email in Django
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ From email
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Recipient list
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Overrides EMAIL_HOST_USER
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Overrides EMAIL_HOST_PASSWORD
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this chapter, you learned a lot about TLS, the industry standard for encryption
+    in transit. You know how this protocol protects servers and clients. You know
+    how to apply TLS to website, database, and email connections. In the next few
+    chapters, you’ll use this protocol to safely transmit sensitive information such
+    as HTTP session IDs, user authentication credentials, and OAuth tokens. You’ll
+    also build several secure workflows on top of the Django application you created
+    in this chapter.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: SSL, TLS, and HTTPS are not synonyms.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Man-in-the-middle attacks come in two flavors: passive and active.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: A TLS handshake establishes a cipher suite, a shared key, and server authentication.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The Diffie-Hellman method is an efficient solution to the key-distribution problem.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: A public-key certificate is analogous to your driver’s license.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Django isn’t responsible for HTTPS; Gunicorn is.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: TLS authentication applies to both the client and the server.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: TLS protects database and email traffic in addition to HTTP.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

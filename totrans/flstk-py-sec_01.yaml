@@ -1,0 +1,690 @@
+- en: 1 Defense in depth
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Defining your attack surface
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Introducing defense in depth
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Adhering to standards, best practices, and fundamentals
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Identifying Python security tools
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: You trust organizations with your personal information more now than ever before.
+    Unfortunately, some of these organizations have already surrendered your information
+    to attackers. If you find this hard to believe, visit [https://haveibeenpwned.com](https://haveibeenpwned.com).
+    This site allows you to easily search a database containing the email addresses
+    for billions of compromised accounts. With time, this database will only grow
+    larger. As software users, we have developed an appreciation for security through
+    this common experience.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Because you’ve opened this book, I’m betting you appreciate security for an
+    additional reason. Like me, you don’t just want to use secure systems; you want
+    to create them as well. Most programmers value security, but they don’t always
+    have the background to make it happen. I wrote this book to provide you with a
+    tool set for building this background.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Security* is the ability to resist attack. This chapter decomposes security
+    from the outside in, starting with attacks. The subsequent chapters cover the
+    tools you need to implement layers of defense, from the inside out, in Python.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Every attack begins with an entry point. The sum of all entry points for a particular
+    system is known as the *attack surface*. Beneath the attack surface of a secure
+    system are layers of security, an architectural design known as *defense in depth*.
+    Defense layers adhere to standards and best practices to ensure security fundamentals.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 1.1 Attack surface
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Information security has evolved from a handful of dos and don’ts into a complex
+    discipline. What drives this complexity? Security is complex because attacks are
+    complex; it is complex out of necessity. Attacks today come in so many shapes
+    and sizes. We must develop an appreciation for attacks before we can develop secure
+    systems.
+  prefs: []
+  type: TYPE_NORMAL
+- en: As I noted in the preceding section, every attack begins with a vulnerable entry
+    point, and the sum of all potential entry points is your *attack surface*. Every
+    system has a unique attack surface.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Attacks, and attack surfaces, are in a steady state of flux. Attackers become
+    more sophisticated over time, and new vulnerabilities are discovered on a regular
+    basis. Protecting your attack surface is therefore a never-ending process, and
+    an organization’s commitment to this process should be continuous.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The entry point of an attack can be a user of the system, the system itself,
+    or the network between the two. For example, an attacker may target the user via
+    email or chat as an entry point for some forms of attack. These attacks aim to
+    trick the user into interacting with malicious content designed to take advantage
+    of a vulnerability. These attacks include the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reflective cross-site scripting (XSS)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Social engineering (e.g., phishing, smishing)
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Cross-site request forgery
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Open redirect attack
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Alternatively, an attacker may target the system itself as an entry point.
+    This form of attack is often designed to take advantage of a system with insufficient
+    input validation. Classic examples of these attacks are as follows:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Structured Query Language (SQL) injection
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Remote code execution
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Host header attack
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Denial of service
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'An attacker may target a user and the system together as entry points for attacks
+    such as persistent cross-site scripting or clickjacking. Finally, an attacker
+    may use a network or network device between the user and the system as an entry
+    point:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Man-in-the-middle attack
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Replay attack
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: This book teaches you how to identify and resist these attacks, some of which
+    have a whole chapter dedicated to them (XSS arguably has two chapters). Figure
+    1.1 depicts an attack surface of a typical software system. Four attackers simultaneously
+    apply pressure to this attack surface, illustrated by dashed lines. Try not to
+    let the details overwhelm you. This is meant to provide you with only a high-level
+    overview of what to expect. By the end of this book, you will understand how each
+    of these attacks works.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH01_F01_Byrne](Images/CH01_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 1.1 Four attackers simultaneously apply pressure to an attack surface
+    via the user, system, and network.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Beneath the attack surface of every secure system are layers of defense; we
+    don’t just secure the perimeter. As noted at the start of this chapter, this layered
+    approach to security is commonly referred to as *defense in* *depth*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 1.2 Defense in depth
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'Defense in depth, a philosophy born from within the National Security Agency,
+    maintains that a system should address threats with layers of security. Each layer
+    of security is dual-purpose: it resists an attack, and it acts as a backup when
+    other layers fail. We never put our eggs in one basket; even good programmers
+    make mistakes, and new vulnerabilities are discovered on a regular basis.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Let’s first explore defense in depth metaphorically. Imagine a castle with one
+    layer of defense, an army. This army regularly defends the castle against attackers.
+    Suppose this army has a 10% chance of failure. Despite the army’s strength, the
+    king isn’t comfortable with the current risk level. Would you or I be comfortable
+    with a system unfit to resist 10% of all attacks? Would our users be comfortable
+    with this?
+  prefs: []
+  type: TYPE_NORMAL
+- en: The king has two options to reduce risk. One option is to strengthen the army.
+    This is possible but not cost-efficient. Eliminating the last 10% of risk is going
+    to be a lot more expensive than eliminating the first 10% of risk. Instead of
+    strengthening the army, the king decides to add another layer of defense by building
+    a moat around the castle.
+  prefs: []
+  type: TYPE_NORMAL
+- en: How much risk is reduced by the moat? Both the army and the moat must fail before
+    the castle can be captured, so the king calculates risk with simple multiplication.
+    If the moat, like the army, has a 10% chance of failure, each attack has a 10%
+    × 10%, or 1%, chance of success. Imagine how much more expensive it would have
+    been to build an army with a 1% chance of failure than it was to just dig a hole
+    in the ground and fill it with water.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finally, the king builds a wall around the castle. Like the army and moat, this
+    wall has a 10% chance of failure. Each attack now has a 10% × 10% × 10%, or 0.1%,
+    chance of success.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The cost-benefit analysis of defense in depth boils down to arithmetic and probability.
+    Adding another layer is always more cost-effective than trying to perfect a single
+    layer. Defense in depth recognizes the futility of perfection; this is a strength,
+    not a weakness.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Over time, an implementation of a defense layer becomes more successful and
+    popular than others; there are only so many ways to dig a moat. A common solution
+    to a common problem emerges. The security community begins to recognize a pattern,
+    and a new technology graduates from experimental to standardized. A standards
+    body evaluates the pattern, argues about the details, defines a specification,
+    and a security standard is born.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 1.2.1 Security standards
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Many successful security standards have been established by organizations such
+    as the National Institute of Standards and Technology (NIST), the Internet Engineering
+    Task Force (IETF), and the World Wide Web Consortium (W3C). With this book, you’ll
+    learn how to defend a system with the following standards:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Advanced Encryption Standard* (*AES*)—A symmetric encryption algorithm'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Secure Hash Algorithm 2* (*SHA-2*)—A family of cryptographic hash functions'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Transport Layer Security* (*TLS*)—A secure networking protocol'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*OAuth 2.0*—An authorization protocol for sharing protected resources'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Cross-Origin Resource Sharing* (*CORS*)—A resource-sharing protocol for browsers'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Content Security Policy* (*CSP*)—A browser-based attack mitigation standard'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Why standardize? Security standards provide programmers with a common language
+    for building secure systems. A common language allows different people from different
+    organizations to build interoperable secure software with different tools. For
+    example, a web server delivers the same TLS certificate to every kind of browser;
+    a browser can understand a TLS certificate from every kind of web server.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Furthermore, standardization promotes code reuse. For example, `oauthlib` is
+    a generic implementation of the OAuth standard. This library is wrapped by both
+    Django OAuth Toolkit and `flask-oauthlib`, allowing both Django and Flask applications
+    to make use of it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'I’ll be honest with you: standardization doesn’t magically solve every problem.
+    Sometimes a vulnerability is discovered decades after everyone has embraced the
+    standard. In 2017, a group of researchers announced they had broken SHA-1 ([https://shat
+    tered.io/](https://shattered.io/)), a cryptographic hash function that had previously
+    enjoyed more than 20 years of industry adoption. Sometimes vendors don’t implement
+    a standard within the same time frame. It took years for each major browser to
+    support certain CSP features. Standardization does work most of the time, though,
+    and we can’t afford to ignore it.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Several best practices have evolved to complement security standards. Defense
+    in depth is itself a best practice. Like standards, best practices are observed
+    by secure systems; unlike standards, there is no specification for best practices.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 1.2.2 Best practices
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Best* *practices* are not the product of standards bodies; instead they are
+    defined by memes, word of mouth, and books like this one. These are things you
+    just have to do, and you’re on your own sometimes. By reading this book, you will
+    learn how to recognize and pursue these best practices:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Encryption in transit and at rest
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: “Don’t roll your own crypto”
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Principle of least privilege
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Data is either in transit, in process, or at rest. When security professionals
+    say, “Encryption in transit and at rest,” they are advising others to encrypt
+    data whenever it is moved between computers and whenever it is written to storage.
+  prefs: []
+  type: TYPE_NORMAL
+- en: When security professionals say, “Don’t roll your own crypto,” they are advising
+    you to reuse the work of an experienced expert instead of trying to implement
+    something yourself. Relying on tools didn’t become popular just to meet tight
+    deadlines and write less code. It became popular for the sake of safety. Unfortunately,
+    many programmers have learned this the hard way. You’re going to learn it by reading
+    this book.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The *principle of least privilege* (*PLP*) guarantees that a user or system
+    is given only the minimal permissions needed to perform their responsibilities.
+    Throughout this book, PLP is applied to many topics such as user authorization,
+    OAuth, and CORS.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Figure 1.2 illustrates an arrangement of security standards and best practices
+    for a typical software system.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH01_F02_Byrne](Images/CH01_F02_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 1.2 Defense in depth applied to a typical system with security standards
+    and best practices
+  prefs: []
+  type: TYPE_NORMAL
+- en: No layer of defense is a panacea. No security standard or best practice will
+    ever address every security issue by itself. The content of this book, like most
+    Python applications, consequently includes many standards and best practices.
+    Think of each chapter as a blueprint for an additional layer of defense.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Security standards and best practices may look and sound different, but beneath
+    the hood, each one is really just a different way to apply the same fundamentals.
+    These fundamentals represent the most atomic units of system security.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 1.2.3 Security fundamentals
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: '*Security* *fundamentals* appear in secure system design and in this book over
+    and over again. The relationship between arithmetic, and algebra or trigonometry
+    is analogous to the relationship between security fundamentals, and security standards
+    or best practices. By reading this book, you will learn how to secure a system
+    by combining these fundamentals:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Data integrity*—Has the data changed?'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Authentication*—Who are you?'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Data authentication*—Who created this data?'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Nonrepudiation*—Who did what?'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Authorization*—What can you do?'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Confidentiality*—Who can access this?'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Data integrity*, sometimes referred to as *message integrity*, ensures that
+    data is free of accidental corruption (bit rot). It answers the question, “Has
+    the data changed?” Data integrity guarantees that data is read the way it was
+    written. A data reader can verify the integrity of the data regardless of who
+    authored it.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Authentication* answers the question, “Who are you?” We engage in this activity
+    on a daily basis; it is the act of verifying the identity of someone or something.
+    Identity is verified when a person can successfully respond to a username and
+    password challenge. Authentication isn’t just for people, though; machines can
+    be authenticated as well. For example, a continuous integration server authenticates
+    before it pulls changes from a code repository.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Data authentication*, often called *message authentication*, ensures that
+    a data reader can verify the identity of the data writer. It answers the question,
+    “Who authored this data?” As with data integrity, data authentication applies
+    when the data reader and writer are different parties, as well as when the data
+    reader and writer are the same.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Nonrepudiation* answers the question, “Who did what?” It is the assurance
+    that an individual or an organization has no way of denying their actions. Nonrepudiation
+    can be applied to any activity, but it is crucial for online transactions and
+    legal agreements.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Authorization*, sometimes referred to as *access control*, is often confused
+    with authentication. These two terms sound similar but represent different concepts.
+    As noted previously, authentication answers the question, “Who are you?” Authorization,
+    in contrast, answers the question, “What can you do?” Reading a spreadsheet, sending
+    an email, and canceling an order are all actions that a user may or may not be
+    authorized to do.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Confidentiality* answers the question, “Who can access this?” This fundamental
+    ensures that two or more parties can exchange data privately. Information transmitted
+    confidentially cannot be read or interpreted by unauthorized parties in any meaningful
+    way.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: This book teaches you to construct solutions with these building blocks. Table
+    1.1 lists each building block and the solutions it maps to.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 1.1 Security fundamentals
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Building block | Solutions |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Data integrity | Secure networking protocolsVersion controlPackage management
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Authentication | User authenticationSystem authentication |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Data authentication | User registrationUser-login workflowsPassword-reset
+    workflowsUser-session management |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Nonrepudiation | Online transactionsDigital signaturesTrusted third parties
+    |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Authorization | User authorizationSystem-to-system authorizationFilesystem-access
+    authorization |'
+  prefs: []
+  type: TYPE_TB
+- en: '| Confidentiality | Encryption algorithmsSecure networking protocols |'
+  prefs: []
+  type: TYPE_TB
+- en: Security fundamentals complement each other. Each one is not very useful by
+    itself, but they are powerful when combined. Let’s consider some examples. Suppose
+    an email system provides data authentication but not data integrity. As an email
+    recipient, you are able to verify the identity of the email sender (data authentication),
+    but you can’t be certain as to whether the email has been modified in transit.
+    Not very useful, right? What is the point of verifying the identity of a data
+    writer if you have no way of verifying the actual data?
+  prefs: []
+  type: TYPE_NORMAL
+- en: Imagine a fancy new network protocol that guarantees confidentiality without
+    authentication. An eavesdropper has no way to access the information you send
+    with this protocol (confidentiality), but you can’t be certain of who you’re sending
+    data to. In fact, you could be sending data to the eavesdropper. When was the
+    last time you wanted to have a private conversation with someone without knowing
+    who you’re talking to? Usually, if you want to exchange sensitive information,
+    you also want to do this with someone or something you trust.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Finally, consider an online banking system that supports authorization but not
+    authentication. This bank would always make sure your money is managed by you;
+    it just wouldn’t challenge you to establish your identity first. How can a system
+    authorize a user without knowing who the user is first? Obviously, neither of
+    us would put our money in this bank.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Security fundamentals are the most basic building blocks of secure system design.
+    We get nowhere by applying the same one over and over again. Instead, we have
+    to mix and match them to build layers of defense. For each defense layer, we want
+    to delegate the heavy lifting to a tool. Some of these tools are native to Python,
+    and others are available via Python packages.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 1.3 Tools
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: All of the examples in this book were written in Python (version 3.8 to be precise).
+    Why Python? Well, you don’t want to read a book that doesn’t age well, and I didn’t
+    want to write one. Python is popular and is only getting more popular.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The *PopularitY of Programming Language* (*PYPL*) *Index* is a measure of programming
+    language popularity based on Google Trends data. As of mid-2021, Python is ranked
+    number 1 on the PYPL Index ([http://pypl.github.io/PYPL.html](http://pypl.github.io/PYPL.html)),
+    with a market share of 30%. Python’s popularity grew more than any other programming
+    language in the previous five years.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Why is Python so popular? There are lots of answers to this question. Most people
+    seem to agree on two factors. First, Python is a beginner-friendly programming
+    language. It is easy to learn, read, and write. Second, the Python ecosystem has
+    exploded. In 2017, the Python Package Index (PyPI) reached 100,000 packages. It
+    took only two and half years for that number to double.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'I didn’t want to write a book that covered only Python web security. Consequently,
+    some chapters present topics such as cryptography, key generation, and the operating
+    system. I explore these topics with a handful of security-related Python modules:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`hashlib` *module* ([https://docs.python.org/3/library/hashlib.html](https://docs.python.org/3/library/hashlib.html))—Python’s
+    answer to cryptographic hashing'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`secrets` *module* ([https://docs.python.org/3/library/secrets.html](https://docs.python.org/3/library/secrets.html))—Secure
+    random number generation'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`hmac` *module* ([https://docs.python.org/3/library/hmac.html](https://docs.python.org/3/library/hmac.html))—Hash-based
+    message authentication'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`os` *and* `subprocess` *modules* ([https://docs.python.org/3/library/os.html](https://docs.python.org/3/library/os.html)
+    and [https://docs.python.org/3/library/subprocess.html](https://docs.python.org/3/library/subprocess.html))—Your
+    gateways to the operating system'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Some tools have their own dedicated chapter. Other tools are covered throughout
+    the book. Still others make only a brief appearance. You will learn anywhere from
+    a little to a lot about the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`argon2-cffi` ([https://pypi.org/project/argon2-cffi/](https://pypi.org/project/argon2-cffi/))—A
+    function used to protect passwords'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`cryptography` ([https://pypi.org/project/cryptography/](https://pypi.org/project/cryptography/))—A
+    Python package for common cryptographic functions'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`defusedxml` ([https://pypi.org/project/defusedxml/](https://pypi.org/project/defusedxml/))—A
+    safer way to parse XML'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Gunicorn* ([https://gunicorn.org](https://gunicorn.org))—A web server gateway
+    interface written in Python'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Pipenv* ([https://pypi.org/project/pipenv/](https://pypi.org/project/pipenv/))—A
+    Python package manager with many security features'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`requests` ([https://pypi.org/project/requests/](https://pypi.org/project/requests/))—An
+    easy-to-use HTTP library'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`requests-oauthlib` ([https://pypi.org/project/requests-oauthlib/](https://pypi.org/project/requests-oauthlib/))—A
+    client-side OAuth 2.0 implementation'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'Web servers represent a large portion of a typical attack surface. This book
+    consequently has many chapters dedicated to securing web applications. For these
+    chapters, I had to ask myself a question many Python programmers are familiar
+    with: Flask or Django? Both frameworks are respectable; the big difference between
+    them is minimalism versus out-of-the-box functionality. Relative to each other,
+    Flask defaults to the bare essentials, and Django defaults to full-featured.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'As a minimalist, I like Flask. Unfortunately, it applies minimalism to many
+    security features. With Flask, most of your defense layers are delegated to third-party
+    libraries. Django, on the other hand, relies less on third-party support, featuring
+    many built-in protections that are enabled by default. In this book, I use Django
+    to demonstrate web application security. Django, of course, is no panacea; I use
+    the following third-party libraries as well:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`django-cors-headers` ([https://pypi.org/project/django-cors-headers/](https://pypi.org/project/django-cors-headers/))—A
+    server-side implementation of CORS'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`django-csp` ([https://pypi.org/project/django-csp/](https://pypi.org/project/django-csp/))—A
+    server-side implementation of CSP'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Django OAuth* *Toolkit* ([https://pypi.org/project/django-oauth-toolkit/](https://pypi.org/project/django-oauth-toolkit/))—A
+    server- side OAuth 2.0 implementation'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '`django-registration` ([https://pypi.org/project/django-registration/](https://pypi.org/project/django-registration/))—A
+    user registration library'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Figure 1.3 illustrates a stack composed of this tool set. In this stack, Gunicorn
+    relays traffic to and from the user over TLS. User input is validated by Django
+    form validation, model validation, and object-relational mapping (ORM); system
+    output is sanitized by HTML escaping. `django-cors-headers` and `django-csp` ensure
+    that each outbound response is locked down with the appropriate CORS and CSP headers,
+    respectively. The `hashlib` and `hmac` modules perform hashing; the `cryptography`
+    package performs encryption. `requests-oauthlib` interfaces with an OAuth resource
+    server. Finally, Pipenv guards against vulnerabilities in the package repository.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH01_F03_Byrne](Images/CH01_F03_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 1.3 A full stack of common Python components, resisting some form of
+    attack at every level
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'This book isn’t opinionated about frameworks and libraries; it doesn’t play
+    favorites. Try not to take it personally if your favorite open source framework
+    was passed up for an alternative. Each tool covered in this book was chosen over
+    others by asking two questions:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Is the tool mature?* The last thing either of us should do is bet our careers
+    on an open source framework that was born yesterday. I intentionally do not cover
+    bleeding-edge tools; it’s called the *bleeding edge* for a reason. By definition,
+    a tool in this stage of development cannot be considered secure. For this reason,
+    all of the tools in this book are mature; everything here is battle tested.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: '*Is the tool popular?* This question has more to do with the future than the
+    present, and nothing to do with the past. Specifically, how likely are readers
+    going to use the tool in the future? Regardless of which tool I use to demonstrate
+    a concept, remember that the most important takeaway is the concept itself.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 1.3.1 Staying practical
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: This is a field manual, not a textbook; I prioritize professionals over students.
+    This is not to say the academic side of security is unimportant. It is incredibly
+    important. But security and Python are vast subjects. The depth of this material
+    has been limited to what is most useful to the target audience.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this book, I cover a handful of functions for hashing and encryption. I do
+    not cover the heavy math behind these functions. You will learn how these functions
+    behave; you won’t learn how these functions are implemented. I’ll show you how
+    and when to use them, as well as when not to use them.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reading this book is going to make you a better programmer, but this alone cannot
+    make you a security expert. No single book can do this. Don’t trust a book that
+    makes this promise. Read this book and write a secure Python application! Make
+    an existing system more secure. Push your code to production with confidence.
+    But don’t set your LinkedIn profile title to *cryptographer*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: Every attack begins with an entry point, and the sum of these entry points for
+    a single system is known as the attack surface.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Attack complexity has driven the need for defense in depth, an architectural
+    approach characterized by layers.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Many defense layers adhere to security standards and best practices for the
+    sake of interoperability, code reuse, and safety.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Beneath the hood, security standards and best practices are different ways of
+    applying the same fundamental concepts.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: You should strive to delegate the heavy lifting to a tool such as a framework
+    or library; many programmers have learned this the hard way.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: You will become a better programmer by reading this book, but it will not make
+    you a cryptography expert.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

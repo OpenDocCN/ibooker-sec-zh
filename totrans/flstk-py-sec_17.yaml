@@ -1,0 +1,1054 @@
+- en: 14 Cross-site scripting attacks
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: This chapter covers
+  prefs: []
+  type: TYPE_NORMAL
+- en: Validating input with forms and models
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Escaping special characters with a template engine
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Restricting browser capabilities with response headers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: 'In the preceding chapter, I introduced you to a handful of little injection
+    attacks. In this chapter, I continue with a big family of them known as *cross-site
+    scripting* (*XSS*). XSS attacks come in three flavors: persistent, reflected,
+    and DOM-based. These attacks are both common and powerful.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note At the time of this writing, XSS is number 7 on the OWASP Top Ten ([https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: XSS resistance is an excellent example of *defense in depth*; one line of protection
+    is not enough. You’ll learn how to resist XSS in this chapter by validating input,
+    escaping output, and managing response headers.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.1 What is XSS?
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'XSS attacks come in many shapes and sizes, but they all have one thing in common:
+    the attacker injects malicious code into the browser of another user. Malicious
+    code can take many forms, including JavaScript, HTML, and Cascading Style Sheets
+    (CSS). Malicious code can arrive via many vectors, including the body, URL, or
+    header of an HTTP request.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'XSS has three subcategories. Each is defined by the mechanism used to inject
+    malicious code:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Persistent XSS
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Reflected XSS
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: DOM-based XSS
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: In this section, Mallory carries out all three forms of attack. Alice, Bob,
+    and Charlie each have it coming. In subsequent sections, I discuss how to resist
+    these attacks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.1.1 Persistent XSS
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Suppose Alice and Mallory are users of social.bob.com, a social media site.
+    Like every other social media site, Bob’s site allows users to share content.
+    Unfortunately, this site lacks sufficient input validation; more importantly,
+    it renders shared content without escaping it. Mallory notices this and creates
+    the following one-line script, designed to take Alice away from social.bob.com
+    to an imposter site, social.mallory.com:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE0]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Client-side equivalent of a redirect
+  prefs: []
+  type: TYPE_NORMAL
+- en: Next, Mallory navigates to her profile settings page. She changes one of her
+    profile settings to the value of her malicious code. Instead of validating Mallory’s
+    input, Bob’s site persists it to a database field.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Later Alice stumbles upon Mallory’s profile page, now containing Mallory’s code.
+    Alice’s browser executes Mallory’s code, taking Alice to social.mallory.com, where
+    she is duped into submitting her authentication credentials and other private
+    information to Mallory.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This attack is an example of *persistent XSS*. A vulnerable system enables this
+    form of XSS by persisting the attacker’s malicious payload. Later, through no
+    fault of the victim, the payload is injected into the victim’s browser. Figure
+    14.1 depicts this attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH14_F01_Byrne](Images/CH14_F01_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 14.1 Mallory’s persistent XSS attack steers Alice to a malicious imposter
+    site.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Systems designed to share user content are particularly prone to this flavor
+    of XSS. Systems like this include social media sites, forums, blogs, and collaboration
+    products. Attackers like Mallory are usually more aggressive than this. For example,
+    this time Mallory waits for Alice to stumble upon the trap. In the real world,
+    an attacker will often actively lure victims to injected content via email or
+    chat.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In this section, Mallory targeted Alice through Bob’s site. In the next section,
+    Mallory targets Bob through one of Alice’s sites.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.1.2 Reflected XSS
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Suppose Bob is a user of Alice’s new website, search.alice.com. Like google.com,
+    this site accepts Bob’s search terms via URL query parameters. In return, Bob
+    receives an HTML page containing search results. As you would expect, Bob’s search
+    terms are reflected by the results page.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Unlike other search sites, the results page for search.alice.com renders the
+    user’s search terms without escaping them. Mallory notices this and prepares the
+    following URL. The query parameter for this URL carries malicious JavaScript,
+    obscured by URL encoding. This script is intended to take Bob from search.alice.com
+    to search.mallory.com, another imposter site:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE1]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ A URL-embedded script
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mallory sends this URL to Bob in a text message. He takes the bait and taps
+    the link, inadvertently sending Mallory’s malicious code to search.alice.com.
+    The site immediately reflects Mallory’s malicious code back to Bob. Bob’s browser
+    then executes the malicious script as it renders the results page. Finally, he
+    is whisked away to search.mallory.com, where Mallory takes further advantage of
+    him.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This attack is an example of *reflected XSS*. The attacker initiates this form
+    of XSS by tricking the victim into sending a malicious payload to a vulnerable
+    site. Instead of persisting the payload, the site immediately reflects the payload
+    back to the user in executable form. Figure 14.2 depicts this attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH14_F02_Byrne](Images/CH14_F02_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 14.2 Bob reflects Mallory’s malicious JavaScript off Alice’s server,
+    unintentionally sending himself to Mallory’s imposter site.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Reflected XSS is obviously not limited to chat. Attackers also bait victims
+    through email or malicious websites. In the next section, Mallory targets Charlie
+    with a third type of XSS. Like reflected XSS, this type begins with a malicious
+    URL.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.1.3 DOM-based XSS
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'After Mallory hacks Bob, Alice is determined to fix her website. She changes
+    the results page to display the user’s search terms with client-side rendering.
+    The following code illustrates how her new results page does this. Notice that
+    the browser, not the server, extracts the search terms from the URL. There is
+    now no chance of a reflected XSS vulnerability because the search terms are simply
+    no longer reflected:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE2]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Extracts search terms from query parameter
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Writes search terms to the body of the page
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mallory visits search.alice.com again and notices another opportunity. She sends
+    Charlie an email containing a malicious link. The URL for this link is the exact
+    same one she used to carry out a reflected XSS attack against Bob.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Charlie takes the bait and navigates to search.alice.com by clicking the link.
+    Alice’s server responds with an ordinary results page; the response contains no
+    malicious content. Unfortunately, Alice’s JavaScript copies Mallory’s malicious
+    code from the URL to the body of the page. Charlie’s browser then executes Mallory’s
+    script, sending Charlie to search.mallory.com.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Mallory’s third attack is an example of *DOM-based XSS*. Like reflected XSS,
+    the attacker initiates DOM-based XSS by tricking the user into sending a malicious
+    payload to a vulnerable site. Unlike a reflected XSS attack, the payload is not
+    reflected. Instead, the injection occurs in the browser.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In all three attacks, Mallory successfully lures her victims to an imposter
+    site with a simple one-line script. In reality, these attacks may inject sophisticated
+    code to carry out a wide range of exploits, including the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Unauthorized access of sensitive or private information
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Using the victim’s authorization privileges to perform actions
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Unauthorized access of client cookies, including session IDs
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Sending the victim to a malicious site controlled by the attacker
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Misrepresenting site content such as a bank account balance or a health test
+    result
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: There really is no way to summarize the range of impact for these attacks. XSS
+    is very dangerous because the attacker gains control over the system and the victim.
+    The system is unable to distinguish between intentional requests from the victim
+    and malicious requests from the attacker. The victim is unable to distinguish
+    between content from the system and content from the attacker.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'XSS resistance is a perfect example of defense in depth. The remaining sections
+    of this chapter teach you how to resist XSS with a layered approach. I present
+    this material in the order in which they occur during the life cycle of an HTTP
+    request:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Input validation
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Output escaping, the most important layer of defense
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Response headers
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: As you finish this chapter, it is important to remember that each layer alone
+    is inadequate. You have to take a multilayered approach.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.2 Input validation
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In this section, you’ll learn how to validate form fields and model properties.
+    This is what people typically think of when referring to input validation. You
+    probably have experience with it already. Partial resistance to XSS is only one
+    of many reasons to validate input. Even if XSS didn’t exist, the material in this
+    section would still offer you protection against data corruption, system misuse,
+    and other injection attacks.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'In chapter 10, you created a Django model named `AuthenticatedMessage`. I used
+    that opportunity to demonstrate Django’s permission scheme. In this section, you’ll
+    use the same model class to declare and perform input validation logic. Your model
+    will be the center of a small workflow Alice uses to create new messages. This
+    workflow consists of the following three components in your Django messaging app:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Your existing model class, `AuthenticatedMessage`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: A new view class, `CreateAuthenticatedMessageView`
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: A new template, authenticatedmessage_form.html
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Under the templates directory, create a subdirectory named messaging. Beneath
+    this subdirectory, create a new file named authenticatedmessage_form.html. Open
+    this file and add the HTML in listing 14.1 to it. The `form.as_table` variable
+    renders as a handful of labeled form fields. For now, ignore the `csrf_token`
+    tag; I cover this in chapter 16.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 14.1 A simple template for creating new messages
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE3]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Necessary, but covered in chapter 16
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Dynamically renders message property form fields
+  prefs: []
+  type: TYPE_NORMAL
+- en: Next, open models.py and import the built-in `RegexValidator` as it appears
+    in the next listing. As shown in bold font, create an instance of `RegexValidator`
+    and apply it to the `hash_value` field. This validator ensures that the `hash_value`
+    field must be exactly 64 characters of hexadecimal text.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 14.2 Model field validation with RegexValidator
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE4]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Ensures a maximum length
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Ensures a minimum length
+  prefs: []
+  type: TYPE_NORMAL
+- en: Built-in validator classes like `RegexValidator` are designed to enforce input
+    validation on a per field basis. But sometimes you need to exercise input validation
+    across more than one field. For example, when your application receives a new
+    message, does the message actually hash to the same hash value it arrived with?
+    You accommodate a scenario like this by adding a clean method to your model class.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Add the `clean` method in listing 14.3 to `AuthenticatedMessage`. This method
+    begins by creating an HMAC function, shown in bold font. In chapter 3, you learned
+    that HMAC functions have two inputs: a message and a key. In this example, the
+    message is a property on your model, and the key is an inline passphrase. (A production
+    key obviously should not be stored in Python.)'
+  prefs: []
+  type: TYPE_NORMAL
+- en: The HMAC function is used to calculate a hash value. Finally, the `clean` method
+    compares this hash value to the `hash_value` model property. A `ValidationError`
+    is raised if the hash values do not match. This prevents someone without the passphrase
+    from successfully submitting a message.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 14.3 Validating input across more than one model field
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE5]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Performs input validation across multiple fields
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Hashes the message property
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Compares hash values in constant time
+  prefs: []
+  type: TYPE_NORMAL
+- en: Next, add the view in listing 14.4 to your Django app. `CreateAuthenticatedMessageView`
+    inherits from a built-in utility class named `CreateView`, shown in bold font.
+    `CreateView` relieves you of copying data from inbound HTTP form fields to model
+    fields. The model property tells `CreateView` which model to create. The `fields`
+    property tells `CreateView` which fields to expect from the request. The `success_url`
+    designates where to redirect the user after a successful form submission.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 14.4 Rendering a new message form page
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE6]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Inherits input validation and persistence
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Designates the model to create
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Designates the HTTP fields to expect
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Designates where to redirect the user to
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`CreateAuthenticatedMessageView`, via inheritance, acts as glue between the
+    template and model. This four-line class does the following:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Renders the page
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Handles form submission
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Copies data from inbound HTTP fields to a new model object
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Exercises model-validation logic
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: Saves the model to the database
+  prefs:
+  - PREF_OL
+  type: TYPE_NORMAL
+- en: If the form is submitted successfully, the user is redirected to the site root.
+    If the request is rejected, the form is rerendered with input validation error
+    messages.
+  prefs: []
+  type: TYPE_NORMAL
+- en: WARNING Django does not validate model fields when you call `save` or `update`
+    on a model object. When you call these methods directly, it is your responsibility
+    to trigger validation. This is done by calling the `full_clean` method on the
+    model object.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Restart your server, log in as Alice, and point your browser to the URL of
+    the new view. Take a minute to submit the form with invalid input a few times.
+    Notice that Django automatically rerenders the form with informative input validation
+    error messages. Finally, using the following code, generate a valid keyed hash
+    value for a message of your choice. Enter this message and hash value into the
+    form and submit it:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE7]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Becomes the message form field value
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Becomes the hash_value form field value
+  prefs: []
+  type: TYPE_NORMAL
+- en: The workflow in this section is fairly simple. As a programmer in the real world,
+    you may face problems more complicated than this. For example, a form submission
+    may not need to create a new row in the database, or it may need to create multiple
+    rows in multiple tables in multiple databases. The next section explains how to
+    accommodate scenarios like this with a custom Django form class.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.2.1 Django form validation
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: In this section, I’ll give you an overview of how to define and exercise input
+    validation with a form class; this is not another workflow. Adding a form class
+    to your application creates layers of input validation opportunities. This material
+    is easy for you to absorb because form validation resembles model validation in
+    many ways.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 14.5 is a typical example of how your view might leverage a custom form.
+    `EmailAuthenticatedMessageView` defines two methods. The `get` method creates
+    and renders a blank `AuthenticatedMessageForm`. The `post` method handles form
+    submission by converting the request parameters into a form object. It then triggers
+    input validation by calling the form’s (inherited) `is_valid` method, shown in
+    bold font. If the form is valid, the inbound message is emailed to Alice; if the
+    form is invalid, the form is rendered back to the user, giving them a chance to
+    try again.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 14.5 Validating input with a custom form
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE8]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Solicits user input with a blank form
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Converts user input to a form
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Triggers input validation logic
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Rerenders invalid form submissions
+  prefs: []
+  type: TYPE_NORMAL
+- en: How does a custom form define input validation logic? The next few listings
+    illustrate some ways to define a form class with field validation.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In listing 14.6, `AuthenticatedMessageForm` is composed of two `CharField`s.
+    The `message` `Charfield` enforces two length constraints via keyword arguments,
+    shown in bold font. The `hash_value Charfield` enforces a regular expression constraint
+    via the `validators` keyword argument, also shown in bold.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 14.6 Field-level input validation
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE9]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Message length must be greater than 1 and less than 100.
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Hash value must be 64 hexadecimal characters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Field-specific `clean` methods provide an alternative built-in layer of input
+    validation. For each field on your form, Django automatically looks for and invokes
+    a form method named `clean_<field_name>`. For example, listing 14.7 demonstrates
+    how to validate the `hash_value` field with a form method named `clean_hash_value`,
+    shown in bold font. Like the `clean` method on a model, field-specific `clean`
+    methods reject input by raising a `ValidationError`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 14.7 Input validation with a field-specific clean method
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE10]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Invoked automatically by Django
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Rejects form submission
+  prefs: []
+  type: TYPE_NORMAL
+- en: Earlier in this section, you learned how to perform input validation across
+    multiple model fields by adding a `clean` method to your model class. Analogously,
+    adding a `clean` method to your form class allows you to validate multiple form
+    fields. The following listing demonstrates how to access multiple form fields
+    from within the `clean` method of a form, shown in bold font.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 14.8 Validating input across more than one form field
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE11]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Invoked automatically by Django
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Performs input validation logic across more than one field
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Rejects form submission
+  prefs: []
+  type: TYPE_NORMAL
+- en: Input validation shields only a portion of your attack surface. For example,
+    the `hash_value` field is locked down, but the `message` field still accepts malicious
+    input. For this reason, you may be tempted to go beyond input validation by trying
+    to sanitize input.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '*Input sanitization* is an attempt to cleanse, or scrub, data from an untrusted
+    source. Typically, a programmer with too much time on their hands tries to implement
+    this by scanning input for malicious content. Malicious content, if found, is
+    then removed or neutralized by modifying the input in some way.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Input sanitization is always a bad idea because it is too difficult to implement.
+    At a bare minimum, the sanitizer has to identify all forms of malicious input
+    for three kinds of interpreters: JavaScript, HTML, and CSS. You might as well
+    add a fourth interpreter to the list because in all probability the input is going
+    to be stored in a SQL database.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: What happens next? Well, someone from the reporting and analytics team wants
+    to have a talk. Looks like they’re having trouble querying the database for content
+    that may have been modified by the sanitizer. The mobile team needs an explanation.
+    All that sanitized input is rendering poorly in their UI, which doesn’t even use
+    an interpreter. So many headaches.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Input sanitization also prevents you from implementing valid use cases. For
+    example, have you ever sent code or a command line to a colleague over a messaging
+    client or email? Some fields are designed to accept free-form input from the user.
+    A system resists XSS with layers of defense because fields like this simply can’t
+    be locked down. The most important layer is covered in the next section.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.3 Escaping output
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: In this section, you’ll learn about the most effective XSS countermeasure, escaping
+    output. Why is it so important to escape output? Imagine one of the databases
+    you work with at your job. Think about all the tables it has. Think about all
+    the user-defined fields in each table. Chances are, most of those fields are rendered
+    by a web page in some way. Each one contributes to your attack surface, and many
+    of them can be weaponized by special HTML characters.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Secure sites resist XSS by escaping special HTML characters. Table 14.1 lists
+    these characters and their escaped values.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Table 14.1 Special HTML characters and their escape values
+  prefs: []
+  type: TYPE_NORMAL
+- en: '| Escaped character | Name and description | HTML entity (escaped value) |'
+  prefs: []
+  type: TYPE_TB
+- en: '| < | Less than, element begin | &lt; |'
+  prefs: []
+  type: TYPE_TB
+- en: '| > | Greater than, element end | &gt; |'
+  prefs: []
+  type: TYPE_TB
+- en: '| ‘ | Single quote, attribute value definition | &#x27; |'
+  prefs: []
+  type: TYPE_TB
+- en: '| “ | Double quote, attribute value definition | &quot; |'
+  prefs: []
+  type: TYPE_TB
+- en: '| & | Ampersand, entity definition | &amp; |'
+  prefs: []
+  type: TYPE_TB
+- en: 'Like every other major web framework, Django’s template engine automatically
+    escapes output by escaping special HTML characters. For example, you do not have
+    to worry about persistent XSS attacks if you pull some data out of a database
+    and render it in a template:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE12]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ By default, this is safe.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Furthermore, you do not have to worry about introducing a reflected XSS vulnerability
+    if your template renders a request parameter:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE13]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ By default, also safe
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'From within your project root directory, open an interactive Django shell to
+    see for yourself. Type the following code to programmatically exercise some of
+    Django’s XSS resistance functionality. This code creates a template, injects it
+    with malicious code, and renders it. Notice that each special character is escaped
+    in the final result:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE14]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Creates a simple template
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Malicious input
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Renders template
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ Template neutralized
+  prefs: []
+  type: TYPE_NORMAL
+- en: This functionality allows you to worry less, but it doesn’t mean you can forget
+    about XSS entirely. In the next section, you’ll learn how and when this functionality
+    is suspended.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.3.1 Built-in rendering utilities
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'Django’s template engine features many built-in tags, filters, and utility
+    functions for rendering HTML. The built-in `autoescape` tag, shown here in bold
+    font, is designed to explicitly suspend automatic special character escaping for
+    a portion of your template. When the template engine parses this tag, it renders
+    everything inside it without escaping special characters. This means the following
+    code is vulnerable to XSS:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE15]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Starts tag, suspends protection
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Ends tag, resumes protection
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The valid use cases for the `autoescape` tag are rare and questionable. For
+    example, perhaps someone else decided to store HTML in a database, and now you
+    are stuck with the responsibility of rendering it. This applies to the built-in
+    `safe` filter as well, shown next in bold. This filter suspends automatic special
+    character escaping for a single variable within your template. The following code
+    (despite the name of this filter) is vulnerable to XSS:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE16]'
+  prefs: []
+  type: TYPE_PRE
+- en: WARNING It is easy to use the `safe` filter in an unsafe way. I personally think
+    *unsafe* would have been a better name for this feature. Use this filter with
+    caution.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `safe` filter delegates most of its work to a built-in utility function
+    named `mark_safe`. This function accepts a native Python string and wraps it with
+    a `SafeString`. When the template engine encounters a `SafeString`, it intentionally
+    renders the data as is, unescaped.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Applying `mark_safe` to data from an untrusted source is an invitation to be
+    compromised. Type the following code into an interactive Django shell to see why.
+    The following code creates a simple template and a malicious script. As shown
+    in bold font, the script is marked safe and injected into the template. Through
+    no fault of the template engine, all special characters remain unescaped in the
+    resulting HTML:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE17]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Creates a simple template
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Malicious input
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Renders template
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❹ XSS vulnerability
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The aptly-named built-in `escape` filter, shown here in bold font, triggers
+    special character escaping for a single variable within your template. This filter
+    works as expected from within a block where automatic HTML output escaping has
+    been turned off. The following code is safe:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE18]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Starts tag, suspends protection
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ No vulnerability
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❸ Ends tag, resumes protection
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Like the `safe` filter, the `escape` filter is a wrapper for one of Django’s
+    built-in utility functions. The built-in `escape` function, shown here in bold,
+    allows you to programmatically escape special characters. This function will escape
+    native Python strings and `SafeStrings` alike:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE19]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Neutralized HTML
+  prefs: []
+  type: TYPE_NORMAL
+- en: Like every other respectable template engine (for all programming languages),
+    Django’s template engine resists XSS by escaping special HTML characters. Unfortunately,
+    not all malicious content contains special characters. In the next section, you’ll
+    learn about a corner case that this framework does not protect you from.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.3.2 HTML attribute quoting
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: 'The following is an example of a simple template. As shown in bold, a `request`
+    parameter determines the value of a `class` attribute. This page behaves as intended
+    if the `request` parameter equals an ordinary CSS class name. On the other hand,
+    if the parameter contains special HTML characters, Django escapes them as usual:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE20]'
+  prefs: []
+  type: TYPE_PRE
+- en: Did you notice that the `class` attribute value is unquoted? Unfortunately,
+    this means an attacker can abuse this page without using a single special HTML
+    character. For example, suppose this page belongs to an important system at SpaceX.
+    Mallory targets Charlie, a technician for the Falcon 9 team, with a reflected
+    XSS attack. Now imagine what happens when the parameter arrives as `className`
+    `onmouseover=javascript:launchRocket()`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Good HTML hygiene, not a framework, is the only way to resist this form of XSS.
+    Simply quoting the class attribute value ensures that the `div` tag renders safely,
+    regardless of the template variable value. Do yourself a favor and make a habit
+    of always quoting every attribute of every tag. The HTML spec doesn’t require
+    single quotes or double quotes, but sometimes a simple convention like this can
+    prevent a disaster.
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the preceding two sections, you learned how to resist XSS through the body
+    of a response. In the next section, you’ll learn how to do this via the headers
+    of a response.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.4 HTTP response headers
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: '*Response* *headers* represent a very important layer of defense against XSS.
+    This layer can prevent some attacks as well as limit the damage of others. In
+    this section, you’ll learn about this topic from three angles:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Disabling JavaScript access to cookies
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Disabling MIME sniffing
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Using the `X-XSS-Protection` header
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: The main idea behind each item here is to protect the user by restricting what
+    the browser can do with the response. In other words, this is how a server applies
+    the PLP to a browser.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.4.1 Disable JavaScript access to cookies
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Gaining access to the victim’s cookies is a common XSS goal. Attackers target
+    the victim’s session ID cookie in particular. The following two lines of JavaScript
+    demonstrate how easy this is.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The first line of code constructs a URL. The domain of the URL points to a
+    server controlled by the attacker; the parameter of the URL is a copy of the victim’s
+    local cookie state. The second line of code inserts this URL into the document
+    as a source attribute for an image tag. This triggers a request to mallory.com,
+    delivering the victim’s cookie state to the attacker:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE21]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Reads victim’s cookies
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Sends victim’s cookies to attacker
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose Mallory uses this script to target Bob with a reflected XSS attack.
+    Once his session ID is compromised, Mallory can simply use it to assume Bob’s
+    identity and access privileges at bank.alice.com. She doesn’t have to write JavaScript
+    to transfer money from his bank account; she can just do it through the UI instead.
+    Figure 14.3 depicts this attack, known as *session hijacking*.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Servers resist this form of attack by setting cookies with the `HttpOnly` directive,
+    an attribute of the `Set-Cookie` response header. (You learned about this response
+    header in chapter 7.) Despite its name, `HttpOnly` has nothing to do with which
+    protocol the browser must use when transmitting the cookie. Instead, this directive
+    hides the cookie from client-side JavaScript. This mitigates XSS attacks; it cannot
+    prevent them. An example response header is shown here with an `HttpOnly` directive
+    in bold font:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE22]'
+  prefs: []
+  type: TYPE_PRE
+- en: A session ID cookie should always use `HttpOnly`. Django does this by default.
+    This behavior is configured by the `SESSION_COOKIE_HTTPONLY` setting, which fortunately
+    defaults to `True`. If you ever see this setting assigned to `False` in a code
+    repository or a pull request, the author has probably misunderstood what it means.
+    This is understandable, given the unfortunate name of this directive. After all,
+    the term `HttpOnly` could easily be misinterpreted to mean *insecure* by a person
+    with no context.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH14_F03_Byrne](Images/CH14_F03_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 14.3 Mallory hijacks Bob’s session with a reflected XSS attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Note At the time of this writing, security misconfiguration is number 6 on the
+    OWASP Top Ten ([https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)).
+  prefs: []
+  type: TYPE_NORMAL
+- en: '`HttpOnly` doesn’t just apply to your session ID cookie, of course. In general,
+    you should set each cookie with `HttpOnly` unless you have a very strong need
+    to programmatically access it with JavaScript. An attacker without access to your
+    cookies has less power.'
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 14.9 demonstrates how to set a custom cookie with the `HttpOnly` directive.
+    `CookieSettingView` adds a `Set-Cookie` header by calling a convenience method
+    on the `response` object. This method accepts a keyword argument named `httponly`.
+    Unlike the `SESSION_COOKIE_HTTPONLY` setting, this keyword argument defaults to
+    `False`.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Listing 14.9 Setting a cookie with the HttpOnly directive
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE23]'
+  prefs: []
+  type: TYPE_PRE
+- en: ❶ Adds the Set-Cookie header to the response
+  prefs: []
+  type: TYPE_NORMAL
+- en: ❷ Appends an HttpOnly directive to the header
+  prefs: []
+  type: TYPE_NORMAL
+- en: In the next section, I cover a response header designed to resist XSS. Like
+    the `HttpOnly` directive, this header restricts the browser in order to protect
+    the user.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.4.2 Disable MIME type sniffing
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: Before we dive into this subject, I’m going to explain how a browser determines
+    the content type of an HTTP response. When you point your browser to a typical
+    web page, it doesn’t just download the entire thing at once. It requests an HTML
+    resource, parses it, and sends separate requests for embedded content such as
+    images, stylesheets, and JavaScript. To render the page, your browser needs to
+    process each response with the appropriate content handler.
+  prefs: []
+  type: TYPE_NORMAL
+- en: How does the browser match each response to the correct handler? The browser
+    doesn’t care if the URL ends in .gif or .css. The browser doesn’t care if the
+    URL originated from an `<img>` or a `<style>` tag. Instead, the browser receives
+    the content type from the server via the `Content-Type` response header.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The value of the `Content-Type` header is known as a *MIME type*, or media type.
+    For example, if your browser receives a MIME type of `text/javascript`, it hands
+    off the response to the JavaScript interpreter. If the MIME type is `image/gif`,
+    the response is handed off to a graphics engine.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Some browsers allow the content of the response itself to override the `Content-Type`
+    header. This is known as *MIME type sniffing*. This is useful if the browser needs
+    to compensate for an incorrect or missing `Content-Type` header. Unfortunately,
+    MIME type sniffing is also an XSS vector.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Suppose Bob adds new functionality to his social networking site, social.bob.com.
+    This new feature is designed to let users share photos. Mallory notices social.bob.com
+    doesn’t validate uploaded files. It also sends each resource with a MIME type
+    of `image/jpeg`. She then abuses this functionality by uploading a malicious JavaScript
+    file instead of a photo. Finally, Alice unintentionally downloads this script
+    by viewing Mallory’s photo album. Alice’s browser sniffs the content, overrides
+    Bob’s incorrect `Content-Type` header, and executes Mallory’s code. Figure 14.4
+    depicts Mallory’s attack.
+  prefs: []
+  type: TYPE_NORMAL
+- en: '![CH14_F04_Byrne](Images/CH14_F04_Byrne.png)'
+  prefs: []
+  type: TYPE_IMG
+- en: Figure 14.4 Alice’s browser sniffs the content of Mallory’s script, overrides
+    the MIME type, and executes it.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'Secure sites resist this form of XSS by sending each response with an `X-Content-Type-Options`
+    header. This header, shown here, forbids the browser from performing MIME type
+    sniffing:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE24]'
+  prefs: []
+  type: TYPE_PRE
+- en: In Django, this behavior is configured by the `SECURE_CONTENT_TYPE_NOSNIFF`
+    setting. The default value for this setting changed to `True` in version 3.0\.
+    If you are running an older version of Django, you should assign this setting
+    to `True` explicitly.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 14.4.3 The X-XSS-Protection header
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+- en: The `X-XSS-Protection` response header is intended to enable client-side XSS
+    resistance. Browsers supporting this feature attempt to automatically detect reflected
+    XSS attacks by inspecting the request and response for malicious content. When
+    an attack is detected, the browser will sanitize or refuse to render the page.
+  prefs: []
+  type: TYPE_NORMAL
+- en: The `X-XSS-Protection` header has failed to gain traction in many ways. Each
+    implementation of this feature is browser specific. Google Chrome and Microsoft
+    Edge have both implemented and deprecated it. Mozilla Firefox has not implemented
+    this feature and currently has no plans to do so.
+  prefs: []
+  type: TYPE_NORMAL
+- en: 'The `SECURE_BROWSER_XSS_FILTER` setting ensures that each response has an `X-XSS-Protection`
+    header. Django adds this header with a block mode directive, as shown here. Block
+    mode instructs the browser to block the page from rendering instead of trying
+    to remove suspicious content:'
+  prefs: []
+  type: TYPE_NORMAL
+- en: '[PRE25]'
+  prefs: []
+  type: TYPE_PRE
+- en: By default, Django disables this feature. You can enable it by assigning this
+    setting to `True`. Enabling `X-XSS-Protection` might be worth writing one line
+    of code, but don’t let it become a false sense of security. This header cannot
+    be considered an effective layer of defense.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This section covered the `Set-Cookie`, `X-Content-Type-Options`, and `X-XSS-Protection`
+    response headers. It also serves as a warm-up for the next chapter, which focuses
+    entirely on a response header designed to mitigate attacks such as XSS. This header
+    is easy to use and very powerful.
+  prefs: []
+  type: TYPE_NORMAL
+- en: Summary
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+- en: 'XSS comes in three flavors: persistent, reflected, and DOM-based.'
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: XSS isn’t limited to JavaScript; HTML and CSS are commonly weaponized as well.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: One layer of defense will eventually get you compromised.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Validate user input; don’t sanitize it.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Escaping output is the most important layer of defense.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+- en: Servers use response headers to protect users by limiting browser capabilities.
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL

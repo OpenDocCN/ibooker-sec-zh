@@ -1,0 +1,16 @@
+- en: Part 1 Cryptographic foundations
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+- en: We depend on hashing, encryption, and digital signatures every day. Of these
+    three, encryption typically steals the show. It gets more attention at conferences,
+    in lecture halls, and from mainstream media. Programmers are generally more interested
+    in learning about it as well.
+  prefs: []
+  type: TYPE_NORMAL
+- en: This first part of the book repeatedly demonstrates why hashing and digital
+    signatures are as vital as encryption. Moreover, the subsequent parts of the book
+    demonstrate the importance of all three. Therefore, chapters 2 through 6 are useful
+    by themselves, but they also help you understand many of the later chapters.
+  prefs: []
+  type: TYPE_NORMAL

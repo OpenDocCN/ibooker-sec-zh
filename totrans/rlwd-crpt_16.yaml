@@ -1,22 +1,32 @@
 - en: 14 Post-quantum cryptography
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 14 后量子密码学
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章包括
 - en: Quantum computers and their impact on cryptography
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 量子计算机及其对密码学的影响
 - en: Post-quantum cryptography to defend against quantum computers
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 后量子密码学抵御量子计算机的攻击
 - en: The post-quantum algorithms of today and tomorrow
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 今天和明天的后量子算法
 - en: “Quantum computers can break cryptography,” implied Peter Shor, a professor
     of mathematics at MIT. It was 1994, and Shor had just come up with a new algorithm.
     His discovery unlocked efficient factoring of integers, destroying cryptographic
@@ -26,8 +36,11 @@
     Security Agency (NSA) took everybody by surprise after announcing their plans
     to transition to *quantum-resistant algorithms* (cryptographic algorithms not
     vulnerable to quantum computers).
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: “量子计算机可以破解密码学，”麻省理工学院数学教授彼得·肖尔暗示道。那是1994年，肖尔刚刚提出了一个新算法。他的发现解锁了整数的高效因式分解，如果量子计算机真的成为现实，将摧毁像
+    RSA 这样的密码算法。当时，量子计算机只是一个理论，一个基于量子物理的新型计算机概念。这个想法仍然有待证明。2015年中期，国家安全局（NSA）在宣布他们计划过渡到*量子抗性算法*（不易受量子计算机攻击的密码算法）后，让所有人都感到意外。
 - en: '*For those partners and vendors that have not yet made the transition to Suite
     B elliptic curve algorithms, we recommend not making a significant expenditure
     to do so at this point but instead to prepare for the upcoming quantum resistant
@@ -36,11 +49,16 @@
     computing, which has made it clear that elliptic curve cryptography is not the
     long term solution many once hoped it would be. Thus, we have been obligated to
     update our strategy*.'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: '*对于那些尚未过渡到 Suite B 椭圆曲线算法的合作伙伴和供应商，我们建议暂时不要在这一点上进行重大支出，而是准备好迎接即将到来的量子抗性算法过渡。[...]
+    不幸的是，椭圆曲线的使用增长与量子计算研究的持续进展相冲突，这清楚地表明椭圆曲线密码学并不是许多人曾经希望的长期解决方案。因此，我们不得不更新我们的策略*。'
 - en: —National Security Agency (“Cryptography Today,” 2015)
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: —国家安全局（“今日密码学”，2015年）
 - en: While the idea of *quantum computing* (building a computer based on physical
     phenomena studied in the field of quantum mechanics) was not new, it had witnessed
     a huge boost in research grants as well as experimental breakthroughs in recent
@@ -48,12 +66,16 @@
     computer. Did the NSA know something we didn’t? Were quantum computers really
     going to break cryptography? And what is quantum-resistant cryptography? In this
     chapter, I will attempt to answer all your questions!
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管*量子计算*的概念（基于量子力学领域研究的物理现象构建计算机）并不新鲜，但近年来在研究资助和实验突破方面都经历了巨大提升。然而，至今还没有人能够展示用量子计算机破解密码学。国家安全局知道我们不知道的事情吗？量子计算机真的会破解密码学吗？量子抗性密码学又是什么？在本章中，我将尝试回答你所有的问题！
 - en: 14.1 What are quantum computers and why are they scaring cryptographers?
+  id: totrans-9
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 14.1 量子计算机是什么，为什么会让密码学家感到恐慌？
 - en: Since NSA’s announcement, quantum computers have repeatedly made the news as
     many large companies like IBM, Google, Alibaba, Microsoft, Intel, and so on have
     invested significant resources into researching them. But what are these quantum
@@ -61,8 +83,10 @@
     called *quantum physics*), a field of physics that studies the behavior of small
     stuff (think atoms and smaller). As this is the basis of quantum computers, this
     is where our investigation starts.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 自国家安全局的宣布以来，量子计算机已经多次成为新闻头条，因为诸如 IBM、Google、阿里巴巴、微软、英特尔等许多大公司已经投入了大量资源进行研究。但这些量子计算机到底是什么，为什么这么令人担忧？一切都始于*量子力学*（也称为*量子物理学*），这是一门研究小东西行为的物理学领域（想想原子和更小的东西）。由于这是量子计算机的基础，这就是我们调查的起点。
 - en: '*There was a time when the newspapers said that only twelve men understood
     the theory of relativity. I do not believe there ever was such a time. There might
     have been a time when only one man did, because he was the only guy who caught
@@ -70,15 +94,21 @@
     understood the theory of relativity in some way or other, certainly more than
     twelve. On the other hand, I think I can safely say that nobody understands quantum
     mechanics*.'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: '*曾经有一段时间，报纸上说只有十二个人理解相对论的理论。我不相信真有这样的时候。可能有一个人理解了，因为他是唯一一个在写论文之前就理解了的人。但是在人们读了这篇论文之后，许多人以某种方式理解了相对论，肯定不止十二个。另一方面，我可以肯定地说，没有人理解量子力学*。'
 - en: —Richard Feynman (*The Character of Physical Law*, MIT Press, 1965)
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: —— 理查德·费曼（《物理定律的性质》，麻省理工学院出版社，1965 年）
 - en: 14.1.1 Quantum mechanics, the study of the small
+  id: totrans-13
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.1.1 量子力学，研究微观世界
 - en: 'Physicists have long thought that the whole world is deterministic, like our
     cryptographic pseudorandom number generators: if you knew how the universe worked
     and if you had a computer large enough to compute the “universe function,” all
@@ -88,8 +118,11 @@
     line. In such a world, there is no room for randomness. Every decision that you
     make is predetermined by past events, even by those that happened before you were
     born.'
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 物理学家长期以来一直认为整个世界是确定性的，就像我们的加密伪随机数生成器一样：如果你知道宇宙是如何运作的，如果你有一台足够大的计算机来计算“宇宙函数”，那么你所需要的只是*种子*（大爆炸中所包含的信息），然后你就可以从那里预测一切。是的，*一切*，甚至是宇宙开始后仅仅
+    137 亿年，你将要读到这行文字的事实。在这样一个世界中，没有随机性的余地。你所做的每个决定都是被过去事件所确定的，甚至是在你出生之前发生的事件。
 - en: While this view of the world has bemused many philosophers—“Do we really have
     free will, then?” they asked—an interesting field of physics started growing in
     the 1990s, which has puzzled many scientists since then, We call this the field
@@ -99,23 +132,30 @@
     On this (sub)atomic scale, particles seem to behave like waves sometimes, in the
     sense that different waves can superpose to merge into a bigger wave or cancel
     each other for a brief moment.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然这种对世界的看法令许多哲学家感到困惑——“那我们真的有自由意志吗？” 他们问道——但在 1990 年代开始出现了一个有趣的物理领域，从那时起就困扰着许多科学家，我们称之为*量子物理学*（也称为*量子力学*）。原来，非常小的物体（想想原子和更小的物体）的行为往往与我们迄今使用的所谓的古典物理学观察到的和理论化的行为大不相同。在这个（亚）原子尺度上，粒子有时候似乎像波一样行动，就像不同的波可以相叠加到一起形成一个更大的波，或者在短暂的时刻互相抵消。
 - en: One measurement we can perform on particles like electrons is their *spin*.
     For example, we can measure whether an electron is spinning up or down. So far,
     nothing too weird. What’s weird is that quantum mechanics says that a particle
     can be in these two states *at the same time*, spinning up *and* down. We say
     that the particle is in *quantum superposition*.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们可以对电子等粒子进行的一种测量是它们的*自旋*。例如，我们可以测量电子是自旋向上还是向下旋转。到目前为止，还没什么太奇怪的。奇怪的是，量子力学说一个粒子可以*同时*处于这两种状态中，旋转上升*和*下降。我们称这种粒子处于*量子叠加态*。
 - en: 'This special state can be induced manually using different techniques depending
     on the type of particle. A particle can remain in a state of superposition until
     we measure it; in which case, the particle *collapses* into only one of these
     possible states (spinning up or down). This quantum superposition is what quantum
     computers end up using: instead of having a bit that can either be a 1 or a 0,
     a *quantum bit* or *qubit* can be both 0 and 1 at the same time.'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种特殊状态可以通过不同的技术手段人工诱导，具体取决于粒子的类型。一个粒子可以保持在叠加态直到我们对其进行测量；在这种情况下，粒子将*坍缩*成这些可能状态中的一个（自旋向上或向下）。这种量子叠加态就是量子计算机最终使用的：与其拥有可以是
+    1 或 0 的位，一个*量子位*或*qubit*可以同时是 0 和 1。
 - en: Even weirder, quantum theory says that it is only when a measurement happens,
     and not before, that a particle in superposition decides at random which state
     it is going to take (each state having a 50% chance of being observed). If this
@@ -125,14 +165,18 @@
     were interested, as this was a way to finally obtain *truly* random numbers! This
     is what *quantum random number generators* (QRNGs) do by continuously setting
     particles like photons in a superposed state and then measuring them.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: '-   更怪异的是，量子理论认为只有当测量发生时，而不是之前，粒子才会随机决定取哪种状态（每种状态有50%的概率被观察到）。如果这看起来很奇怪，你并不孤单。许多物理学家无法想象这在他们描绘的确定性世界中是如何工作的。爱因斯坦坚信这个新理论有问题，曾经说过“上帝不玩骰子”。然而，密码学家们很感兴趣，因为这是获得*真正*随机数的方法！这就是*量子随机数生成器*（QRNGs）通过不断将光子等粒子设置在超定态然后测量它们所做的事情。'
 - en: 'Physicists have also theorized what quantum mechanics would look like with
     objects at our scale. This led to the famous experiment of *Schrödinger’s cat*
     : a cat in a box is both dead and alive until an observer takes a look inside
     (which has led to many debates on what exactly constitutes an observer).'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '-   物理学家还推测了如果我们的尺度上有物体时量子力学会是什么样子。这导致了*薛定谔的猫*的著名实验：一个盒子里的猫同时死和活，直到有人观察里面（这引发了关于什么才算观察者的许多争论）。'
 - en: '*A cat is penned up in a steel chamber, along with the following device (which
     must be secured against direct interference by the cat): in a Geiger counter,
     there is a tiny bit of radioactive substance, so small, that perhaps in the course
@@ -143,15 +187,21 @@
     meanwhile no atom has decayed. The first atomic decay would have poisoned it.
     The psi-function of the entire system would express this by having in it the living
     and dead cat (pardon the expression) mixed or smeared out in equal parts*.'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: '-   *一只猫被困在一个钢制容器里，与以下装置一同（必须防止猫直接干扰）：在一个盖革计数器中，有一小片放射性物质，可能在一个小时内，一个原子会衰变，但也有可能一个都不衰变；如果发生衰变，计数器管就会放电，通过继电器释放一个锤子，破坏一小瓶氰化氢。如果一个小时都让这整个系统自己，而与此同时没有原子衰变，那么我们会说猫还活着。第一个原子的衰变就会毒死它。整个系统的Ψ-函数将通过将活猫和死猫（原谅这个表达）混合或平均分布来表达这一点*。'
 - en: —Erwin Schrödinger (“The Present Situation in Quantum Mechanics,” 1935)
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: '-   —艾尔温·薛定谔（“量子力学中的现状”，1935年）'
 - en: All of that is highly unintuitive to us because we’ve never encountered quantum
     behavior in our day-to-day lives. Now, let’s add even more weirdness!
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: '-   这一切对我们来说都是非常不直观的，因为我们在日常生活中从未遇到过量子行为。现在，让我们再增加一些怪异吧！'
 - en: 'Sometimes particles interact with each other (for example, by colliding into
     one another) and end up in a state of strong *correlation*, where it is impossible
     to describe one particle without the others. This phenomenon is called *quantum
@@ -163,15 +213,19 @@
     and found to be spinning up, we know that the other one is then spinning down
     (but not before the first one is measured). Furthermore, any such experiment always
     turns out the same.'
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: '-   有时粒子相互作用（例如相互碰撞）并最终处于强烈*相关*状态，其中描述一个粒子而不包括其他粒子是不可能的。这种现象被称为*量子纠缠*，它是量子计算机性能提升的秘密之一。比如说，如果两个粒子被纠缠在一起，那么当其中一个被测量时，两个粒子都会坍缩，其中一个的状态被完全地与另一个的状态相关联。好了，那太令人困惑了。让我们举个例子：如果两个电子被纠缠在一起，然后测量其中一个发现它自旋向上，那么我们知道另一个此时是自旋向下的（但在第一个被测量之前是不知道的）。此外，任何这样的实验结果都是一样的。'
 - en: This is hard to believe, but even more mind-blowing, it was shown that entanglement
     works even across very long distances. Einstein, Podolsky, and Rosen famously
     argued that the description of quantum mechanics was incomplete, most probably
     missing *hidden variables*, which would explain entanglement (as in, once the
     particles are separated, they know exactly what their measurement will be).
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 这很难相信，但更令人震惊的是，已经证明纠缠甚至可以在非常长的距离上起作用。爱因斯坦、波多尔斯基和罗森曾经争论说量子力学的描述是不完整的，很可能缺少*隐藏变量*，这将解释纠缠（也就是说，一旦粒子分开，它们就知道它们的测量结果将是什么）。
 - en: Einstein, Podolsky, and Rosen also described a thought experiment (the *EPR
     paradox*, named after the first letters of their last names) in which two entangled
     particles are separated by a large distance (think light-years away) and then
@@ -180,15 +234,19 @@
     be impossible as no information can travel faster than the speed of light, according
     to the theory of relativity (thus the paradox). This strange thought experiment
     is what Einstein famously called “spooky action at a distance.”
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 爱因斯坦、波多尔斯基和罗森还描述了一个思想实验（*EPR悖论*，以他们姓氏的首字母命名），在这个实验中，两个纠缠粒子被分开了很大的距离（想象一下光年的距离），然后几乎同时被测量。根据量子力学，对其中一个粒子的测量会立即影响另一个粒子，这是不可能的，因为根据相对论的理论，没有信息可以传播得比光速更快（因此产生了悖论）。这个奇怪的思想实验就是爱因斯坦著名地称之为“远距离的诡异作用”。
 - en: John Bell later stated an inequality of probabilities known as *Bell’s theorem*;
     the theorem, if shown to be true, would prove the existence of the hidden variables
     mentioned by the authors of the EPR paradox. The inequality was later violated
     experimentally (many, many times), enough to convince us that entanglement is
     real, discarding the presence of any hidden variables.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: 约翰·贝尔后来提出了一个被称为*贝尔定理*的概率不等式；如果该定理被证明为真，将证明EPR悖论的作者提到的隐藏变量的存在。这个不等式后来在实验中被违反（很多很多次），足以让我们相信纠缠是真实的，排除了任何隐藏变量的存在。
 - en: Today, we say that a measurement of entangled particles leads to the particles
     coordinating with each other, which bypasses the relativistic prediction that
     communication cannot go faster than the speed of light. Indeed, try to think of
@@ -196,8 +254,10 @@
     see that it is not possible. For cryptographers, though, the spooky action at
     a distance meant that we could develop novel ways to perform key exchanges; this
     idea is called *quantum key distribution* (QKD).
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 今天，我们说对纠缠粒子的测量会导致粒子相互协调，这就绕过了相对论的预测，即通信不能比光速更快。事实上，试着想想你如何利用纠缠来设计一个通信渠道，你会发现这是不可能的。然而，对于密码学家来说，远距离的诡异作用意味着我们可以开发新颖的方法来进行密钥交换；这个想法被称为*量子密钥分发*（QKD）。
 - en: 'Imagine distributing two entangled particles to two peers: who would then measure
     their respective particles in order to start forming the same key (as measuring
     one particle would give you information about the measurement of the other)? QKD’s
@@ -207,34 +267,44 @@
     to trivial man-in-the-middle (MITM) attacks and are sort of useless without already
     having a way to authenticate data. This flaw has led some cryptographers like
     Bruce Schneier to state that “QKD as a product has no future.”'
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象一下将两个纠缠粒子分发给两个同行：然后他们测量各自的粒子以开始形成相同的密钥（因为测量一个粒子会给你关于另一个粒子的测量信息）？量子密钥分发的概念更加吸引人的地方在于*不可克隆定理*，该定理指出你不能被动地观察这样的交换并创建被发送在通道上的粒子的精确副本。然而，这些协议容易受到简单的中间人攻击，并且在没有已经有一种验证数据的方法的情况下几乎是无用的。这个缺陷导致一些密码学家如布鲁斯·施奈尔声称“量子密钥分发作为一种产品没有未来”。
 - en: This is all I’ll say about quantum physics as this is already too much for a
     book on cryptography. If you don’t believe any of the bizarre things that you
     just read, you are not alone. In his book, *Quantum Mechanics for Engineers,*
     Leon van Dommelen writes “Physics ended up with quantum mechanics not because
     it seemed the most logical explanation, but because countless observations made
     it unavoidable.”
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 至于量子物理，这就是我对密码学书籍的讲解。如果你不相信刚刚读到的所有奇异的事情，那你并不孤单。在他的书《工程师的量子力学》中，里昂·范·多姆伦写道：“物理学最终采用了量子力学，并不是因为它似乎是最合乎逻辑的解释，而是因为无数的观察使其不可避免。”
 - en: 14.1.2 From the birth of quantum computers to quantum supremacy
+  id: totrans-30
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.1.2 从量子计算机诞生到量子霸权
 - en: 'In 1980, the idea of *quantum computing* was born. It is Paul Benioff who is
     first to describe what a quantum computer could be: a computer built from the
     observations made in the last decades of quantum mechanics. Later that same year,
     Paul Benioff and Richard Feynman argue that this is the only way to simulate and
     analyze quantum systems, short of the limitations of classical computers.'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 1980年，*量子计算*的概念诞生了。是保罗·贝尼奥夫首次描述了量子计算机可能的样子：一台由量子力学最近几十年的观察结果构建的计算机。同年晚些时候，保罗·贝尼奥夫和理查德·费曼认为，这是模拟和分析量子系统的唯一方法，而不受经典计算机的限制。
 - en: It is only 18 years later when a quantum algorithm running on an actual quantum
     computer is demonstrated for the first time by IBM. Fast forward to 2011, D-Wave
     Systems, a quantum computer company, announces the first commercially available
     quantum computer, launching an entire industry forward in a quest to create the
     first scalable quantum computer.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 仅仅18年后，IBM首次演示了在实际量子计算机上运行的量子算法。快进到2011年，量子计算机公司D-Wave Systems宣布推出了第一台商用量子计算机，推动整个行业向前迈进，致力于创建第一台可扩展的量子计算机。
 - en: There’s still a long way to go, and a useful quantum computer is something that
     hasn’t been achieved yet. The most recent notable result at the time of this writing
     (2021) is Google, claiming in 2019 to have reached *quantum supremacy* with a
@@ -244,8 +314,10 @@
     computer around 10,000 years to finish. That is, before you get too excited, it
     outperformed a classical computer at a task that wasn’t useful. Yet, it is an
     incredible milestone, and one can only wonder where this will all lead us.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 目前仍然有很长的路要走，而且有用的量子计算机还没有实现。在撰写本文时（2021年），最近一个引人注目的成果是谷歌声称在2019年用一台53量子比特的量子计算机实现了*量子霸权*。量子霸权意味着，首次有一台量子计算机做到了经典计算机无法做到的事情。在3分20秒内，它完成了一些分析，而这些分析如果由经典计算机完成，需要大约1万年的时间。也就是说，在你激动得太早之前，它在一个无用的任务上胜过了经典计算机。然而，这是一个令人难以置信的里程碑，人们只能想象这将引领我们走向何方。
 - en: A quantum computer pretty much uses the quantum physics phenomena (like superposition
     and entanglement) the same way classical computers use electricity to perform
     computations. Instead of bits, quantum computers use *quantum bits* or *qubits*,
@@ -255,16 +327,20 @@
     is done, the qubits can be measured in order to be interpreted in a classical
     way—as 0s and 1s. At that point, one can interpret the result further with a classical
     computer in order to finish a useful computation.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 量子计算机基本上使用量子物理现象（如叠加和纠缠）进行计算，就像经典计算机使用电来进行计算一样。量子计算机不使用比特，而是使用*量子比特*或*qubit*，可以通过*量子门*转换它们以设置特定值或使它们处于叠加状态，甚至是纠缠状态。这在某种程度上类似于经典计算机电路中使用门的方式。计算完成后，可以测量量子比特以经典方式解释它们——作为0和1。此时，可以进一步使用经典计算机解释结果，以完成有用的计算。
 - en: In general, *N* entangled qubits contain information equivalent to 2^N classical
     bits. But measuring the qubits at the end of a computation only gives you *N*
     number of 0s or 1s. Thus, it is not always clear how a quantum computer can help,
     and quantum computers are only found to be useful for a limited number of applications.
     It is possible that they will appear more and more useful as people find clever
     ways to leverage their power.
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 一般来说，*N*个纠缠的量子比特包含等价于2^N个经典比特的信息。但是，在计算结束时测量量子比特只会给出*N*个0或1。因此，并不总是清楚量子计算机如何帮助，量子计算机只对有限数量的应用程序有用。随着人们找到巧妙的方法利用它们的力量，它们可能会变得越来越有用。
 - en: Today, you can already use a quantum computer from the comfort of your home.
     Services like IBM Quantum ([https://quantum-computing.ibm.com](https://quantum-computing.ibm.com))
     allow you to build quantum circuits and execute those on real quantum computers
@@ -272,17 +348,23 @@
     (early 2021), with only a few qubits available. Still, it is quite a mind-blowing
     experience to create your own circuit and wait for it to run on a real quantum
     computer, and all of that for free.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 今天，你已经可以在家中舒适地使用量子计算机了。像IBM量子计算（[https://quantum-computing.ibm.com](https://quantum-computing.ibm.com)）这样的服务允许你构建量子电路并在托管在云中的真实量子计算机上执行。当然，目前（2021年初）这类服务相当有限，只有少量的量子比特可用。但是，创建自己的电路并等待其在真实量子计算机上运行的体验令人叹为观止，而且这一切都是免费的。
 - en: 14.1.3 The impact of Grover and Shor’s algorithms on cryptography
+  id: totrans-37
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.1.3 Grover和Shor算法对密码学的影响
 - en: Unfortunately, as I said earlier, quantum computers are not useful for every
     type of computation, and thus, are not a more powerful drop-in replacement for
     our classical computers. But then, what are they good for?
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 不幸的是，正如我之前所说的，量子计算机并不适用于每一种类型的计算，因此，它们不是我们经典计算机的更强大的替代品。但是，它们究竟有什么用处呢？
 - en: In 1994, at a time where the concept of a quantum computer was just a thought
     experiment, Peter Shor proposed a quantum algorithm to solve the discrete logarithm
     and the factorization problems. Shor had the insight that a quantum computer could
@@ -294,8 +376,12 @@
     solve the factorization and the discrete logarithm problems, effectively impacting
     algorithms like RSA (covered in chapter 6) and Diffie-Hellman (covered in chapter
     5).
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 1994年，在量子计算机的概念只是一种思想实验的时候，彼得·肖尔提出了一个解决离散对数和因子化问题的量子算法。肖尔有洞察力地认为量子计算机可以用于快速计算与密码学中看到的难题相关的问题的解决方案。事实证明，存在一种高效的量子算法，可以帮助找到一个*周期*，使得*f*(*x*
+    + *period*) = *f*(*x*)对于任何给定的*x*成立。例如，找到值为*period*的周期，使得g^(x+period) = g^x mod
+    *N*。这反过来导致可以有效地解决因子化和离散对数问题的算法，从而影响了像RSA（在第6章中讨论）和Diffie-Hellman（在第5章中讨论）这样的算法。
 - en: Shor’s algorithm is devastating for *asymmetric cryptography*, as most of the
     asymmetric algorithms in use today rely on the discrete logarithm or the factorization
     problem—most of what you saw throughout this book actually. You could think that
@@ -305,27 +391,38 @@
     in 2017, by Bernstein and others, that while raising parameters works, it would
     be highly impractical. The research estimated that RSA could be made quantum resistant
     by increasing its parameters to 1 terabyte. Unrealistic, to say the least.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: Shor算法对*非对称密码学*具有毁灭性影响，因为今天大多数使用的非对称算法依赖于离散对数或因子化问题——实际上，你在本书中看到的大部分内容都是如此。你可能会认为离散对数和因子化仍然是困难的数学问题，而我们可以（也许）增加算法参数的大小以提升其抵抗量子计算机的能力。不幸的是，由Bernstein等人于2017年证明，尽管提高参数是有效的，但这是极不切实际的。研究估计，将RSA的参数增加到1
+    TB可以使其对抗量子计算机。说实话，这是不现实的。
 - en: '*Shor’s algorithm shatters the foundations for deployed public key cryptography:
     RSA and the discrete-logarithm problem in finite fields and elliptic curves. Long-term
     confidential documents such as patient health-care records and state secrets have
     to guarantee security for many years, but information encrypted today using RSA
     or elliptic curves and stored until quantum computers are available will then
     be as easy to decipher as Enigma-encrypted messages are today*.'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Shor 算法颠覆了部署的公钥加密技术的基础：RSA 和有限域和椭圆曲线上的离散对数问题。长期保密的文件，如患者医疗记录和国家机密，必须在多年内保证安全性，但今天使用
+    RSA 或椭圆曲线加密的信息，存储到量子计算机可用时，将像今天的 Enigma 加密消息一样容易解密*。'
 - en: '—PQCRYPTO: Initial recommendations of long-term secure post-quantum systems
     (2015)'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: —PQCRYPTO：长期安全后量子系统的初始建议（2015）
 - en: For *symmetric cryptography*, things are much less worrisome. Grover’s algorithm
     was proposed in 1996, by Lov Grover, as a way to optimize a search in an unordered
     list. A search in an unordered list of *N* items takes *N*/2 operations on average
     with a classical computer; it would take √*N* operations with a quantum computer.
     Quite a speed-up!
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于*对称加密*来说，情况要好得多。Grover 算法于1996年由 Lov Grover 提出，作为优化无序列表中搜索的一种方式。在经典计算机上，对
+    *N* 个项目的无序列表进行搜索平均需要 *N*/2 次操作；而在量子计算机上，只需要 √*N* 次操作。这是相当大的加速！
 - en: Grover’s algorithm is quite a versatile tool that can be applied in lots of
     ways in cryptography, for example, to extract a cipher’s symmetric key or find
     a collision in a hash function. To search for a key of 128 bits, Grover’s algorithm
@@ -336,18 +433,27 @@
     protect your symmetric cryptography against quantum computers, you can simply
     use SHA-3-512 instead of SHA-3-256, AES-256-GCM instead of AES-128-GCM, and so
     on.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: Grover 算法是一种非常多才多艺的工具，可以在许多密码学领域应用，例如提取密码的对称密钥或在哈希函数中找到碰撞。要搜索一个128位密钥，Grover
+    算法在量子计算机上运行的操作次数为2^(64)，而在经典计算机上为2^(127)。对于我们所有的对称加密算法来说，这是一个相当可怕的说法，但我们只需将安全参数从128位提升到256位，就足以抵御
+    Grover 的攻击。因此，如果你想保护对称加密技术免受量子计算机的攻击，你可以简单地使用 SHA-3-512 替代 SHA-3-256，使用 AES-256-GCM
+    替代 AES-128-GCM，等等。
 - en: 'To summarize, symmetric cryptography is mostly fine, asymmetric cryptography
     is not. This is even worse than you might think at first sight: symmetric cryptography
     is often preceded by a key exchange, which is vulnerable to quantum computers.
     So is this the end of cryptography as we know it?'
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 总结一下，对称加密大部分情况下是安全的，而非对称加密则不然。这甚至比你一开始想象的更糟：对称加密通常需要进行密钥交换，而这一过程容易受到量子计算机的攻击。那么，这是否意味着我们所熟知的加密技术将走向终结呢？
 - en: 14.1.4 Post-quantum cryptography, the defense against quantum computers
+  id: totrans-46
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.1.4 后量子密码学，对抗量子计算机的防御
 - en: Fortunately, this was not the end of the world for cryptography. The community
     quickly reacted to the quantum threat by organizing itself and by researching
     old and new algorithms that would *not* be vulnerable to Shor’s and Grover’s attacks.
@@ -355,8 +461,11 @@
     was born. Standardization efforts exist in different places on the internet, but
     the most well-regarded effort is from the NIST, which in 2016, started a post-quantum
     cryptography standardization process.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 幸运的是，这并不是加密技术的终结。社区迅速应对量子威胁，通过组织自身并研究新旧算法，以抵御 Shor 和 Grover 的攻击。*抗量子密码学*领域，也被称为*后量子密码学*，因此诞生了。互联网上存在着不同地方的标准化努力，但最受尊敬的努力来自
+    NIST，该机构于2016年启动了后量子密码学的标准化进程。
 - en: '*It appears that a transition to post-quantum cryptography will not be simple
     as there is unlikely to be a simple “drop-in” replacement for our current public
     key cryptographic algorithms. A significant effort will be required in order to
@@ -365,11 +474,15 @@
     are built, so that any information that is later compromised by quantum cryptanalysis
     is no longer sensitive when that compromise occurs. Therefore, it is desirable
     to plan for this transition early*.'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: '*似乎过渡到后量子密码学并不简单，因为我们当前的公钥密码算法不太可能有一个简单的“即插即用”替代方案。将需要进行大量的工作来开发、标准化和部署新的后量子密码系统。此外，这种过渡需要在任何大规模量子计算机建成之前进行，以便任何后期由量子密码分析而泄露的信息在泄露时不再敏感。因此，尽早为这种过渡做好规划是可取的*。'
 - en: —Post-Quantum Cryptography page of the NIST standardization process (2016)
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: —NIST 标准化过程的后量子密码学页面 (2016)
 - en: Since the NIST started this process, 82 candidates applied and 3 rounds have
     passed, narrowing down the list of candidates to 7 finalists and 8 alternate finalists
     (unlikely to be considered for standardization, but unique enough to be a good
@@ -378,60 +491,83 @@
     cryptography primitives, which include signature schemes and asymmetric encryption.
     The latter can also easily serve as a key exchange primitive, as you learned in
     chapter 6.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 自 NIST 开始这个过程以来，有 82 个候选者申请，并且经过了 3 轮，将候选者名单缩减到了 7 个决赛选手和 8 个备用决赛选手（不太可能被考虑用于标准化，但如果决赛选手中的某个范式被破解了，则是一个很好的选择）。NIST
+    的标准化工作旨在替换最常见的非对称密码学基元，其中包括签名方案和非对称加密。后者也可以轻松地作为密钥交换基元，正如你在第 6 章中所学到的。
 - en: In the rest of this chapter, I will go over the different types of post-quantum
     cryptography algorithms that are being considered for standardization and point
     out which ones you can make use of today.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章的其余部分，我将介绍正在考虑标准化的不同类型的后量子密码算法，并指出你今天可以使用哪些算法。
 - en: '14.2 Hash-based signatures: Don’t need anything but a hash function'
+  id: totrans-52
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 14.2 基于哈希的签名：除了哈希函数外不需要任何东西
 - en: While all practical signature schemes seem to use hash functions, ways exist
     to build signature schemes that make use of only hash functions, and nothing else.
     Even better, these schemes tend to rely only on the pre-image resistance of hash
     functions and not their collision resistance. This is quite an attractive proposition,
     as a huge part of applied cryptography is already based on solid and well-understood
     hash functions.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管所有实际的签名方案似乎都使用哈希函数，但存在一种方法可以构建只使用哈希函数而不使用其他东西的签名方案。更好的是，这些方案倾向于仅依赖于哈希函数的前像抗性而不是它们的碰撞抗性。这是一个相当吸引人的建议，因为应用密码学的巨大部分已经基于稳固和被充分理解的哈希函数。
 - en: Modern hash functions are also resistant to quantum computers, which make these
     hash-based signature schemes naturally quantum-resistant. Let’s take a look at
     what these hash-based signatures are and how they work.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 现代哈希函数也能抵抗量子计算机，这使得这些基于哈希的签名方案自然而然地具有量子抗性。让我们看看这些基于哈希的签名是什么，以及它们是如何工作的。
 - en: 14.2.1 One-time signatures (OTS) with Lamport signatures
+  id: totrans-55
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.2.1 一次性签名 (OTS) 使用 Lamport 签名
 - en: 'On October 18, 1979, Leslie Lamport published his concept of *one-time signatures*
     (OTS): key pairs that you can only use to sign once. Most signature schemes rely
     (in part) on one-way functions (typically hash functions) for their security proofs.
     The beauty of Lamport’s scheme is that his signature solely relies on the security
     of such one-way functions.'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 1979 年 10 月 18 日，莱斯利·兰波特（Leslie Lamport）发布了他的 *一次性签名* (OTS) 的概念：只能用于签名一次的密钥对。大多数签名方案（部分地）依赖于单向函数（通常是哈希函数）来进行安全证明。兰波特方案的美妙之处在于，他的签名完全依赖于这样的单向函数的安全性。
 - en: Imagine that you want to sign a single bit. First, you generate a key pair by
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设你想要签名一个单个比特。首先，通过生成密钥对
 - en: Generating two random numbers, *x* and *y*, which will be the private key
+  id: totrans-58
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 生成两个随机数 *x* 和 *y*，它们将作为私钥
 - en: Hashing *x* and *y* to obtain two digests *h*(*x*) and *h*(*y*), which you can
     publish as the public key
+  id: totrans-59
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 对 *x* 和 *y* 进行哈希运算得到两个摘要 *h*(*x*) 和 *h*(*y*)，你可以将其公开为公钥
 - en: To sign a bit set to 0, reveal the *x* part of your private key; to sign a bit
     set to 1, reveal the *y* part. To verify a signature, simply hash it to check
     that it matches the correct part of the public key. I illustrate this in figure
     14.1.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/14_01.jpg)'
+  id: totrans-61
   prefs: []
   type: TYPE_IMG
 - en: Figure 14.1 A Lamport signature is a one-time signature (OTS) based only on
@@ -439,15 +575,18 @@
     numbers, which will be your private key, and hash each of those individually to
     produce the two digests of your public key. To sign a bit set to 0, reveal the
     first random number; to sign a bit set to 1, reveal the second random number.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
 - en: Signing a bit is not that useful, you say. No problem; a Lamport signature works
     for larger inputs simply by creating more pairs of secrets, one per bit, to sign
     (see figure 14.2). Obviously, if your input is larger than 256 bits, you would
     first hash it and then sign it.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/14_02.jpg)'
+  id: totrans-64
   prefs: []
   type: TYPE_IMG
 - en: Figure 14.2 To generate a Lamport signature key pair that can sign an *n*-bit
@@ -455,6 +594,7 @@
     each of those individually to produce the 2*n* digests of your public key. To
     sign, go through pairs of secrets and *n* bits, revealing the first element to
     sign a bit set to 0 or the second element to sign a bit set to 1.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
 - en: A major limitation of this scheme is that you can only use it to sign once;
@@ -469,15 +609,18 @@
     output size, your private key and public key would both have to be 1000 × (256
     × 2 × 256) bits, which is around 16 megabytes. That’s quite a lot for only 1,000
     signatures.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
 - en: Most of the hash-based signature schemes proposed today build on the foundations
     created by Lamport to allow for many more signatures (sometimes a practically
     unlimited amount of signatures), stateless private keys (although some proposed
     schemes are still stateful), and more practical parameter sizes.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
 - en: 14.2.2 Smaller keys with Winternitz one-time signatures (WOTS)
+  id: totrans-68
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -486,6 +629,7 @@
     = *h^w*(*x*) instead of publishing multiple digests of multiple secrets in order
     to optimize the size of a private key (see figure 14.3). This scheme is called
     *Winternitz one-time signature* (WOTS) after the author.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
 - en: For example, choosing *w* = 16 allows you to sign 16 different values or, in
@@ -493,17 +637,24 @@
     serves as your private key and hash that 16 times to obtain your public key, *h*^(16)(*x*).
     Now imagine you want to sign the bits 1001 (9 in base 10); you publish the ninth
     iteration of the hash, *h*⁹(*x*). I illustrate this in figure 14.3.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，选择 *w* = 16 允许你签署 16 个不同的值，换句话说，4 位输入。你首先生成一个作为私钥的随机值 *x*，并将其哈希 16 次以获得你的公钥，*h*^(16)(*x*)。现在想象一下，你想要签署位
+    1001（十进制中的 9）；你发布哈希的第九次迭代，*h*⁹(*x*)。我在图 14.3 中进行了说明。
 - en: '![](../Images/14_03.jpg)'
+  id: totrans-71
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/14_03.jpg)'
 - en: Figure 14.3 The Winternitz one-time signature (WOTS) scheme optimizes Lamport
     signatures by only using one secret that is hashed iteratively in order to obtain
     many other secrets and, finally, a public key. Revealing a different secret allows
     one to sign a different number.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 14.3 Winternitz 一次签名（WOTS）方案通过仅使用一个被迭代哈希的秘密来优化 Lamport 签名，以获得许多其他秘密和最终的公钥。揭示不同的秘密允许签署不同的数字。
 - en: Take a few minutes to understand how this scheme works. Do you see a problem
     with it? One major problem is that this scheme allows for *signature forgeries*.
     Imagine that you see someone else’s signature for bit 1001, which would be *h*⁹(*x*)
@@ -513,46 +664,62 @@
     tag after the message, which you would have to sign as well. I illustrate this
     in figure 14.4\. To convince yourself that this solves the forgery issue, try
     to forge a signature from another signature.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 花几分钟时间来理解这个方案是如何工作的。你看到其中有什么问题吗？一个主要问题是这个方案允许*伪造签名*。想象一下，你看到别人对位 1001 的签名，根据我们之前的例子，这将是
+    *h*⁹(*x*)。你可以简单地对其进行哈希以检索任何其他迭代，比如 *h*^(10)(*x*) 或 *h*^(11)(*x*)，这将为你提供位 1010
+    或 1011 的有效签名。这可以通过在消息后添加一个短的认证标签来规避，你也必须对其进行签名。我在图 14.4 中进行了说明。为了说服自己这解决了伪造问题，请尝试从另一个签名中伪造一个签名。
 - en: '![](../Images/14_04.jpg)'
+  id: totrans-74
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/14_04.jpg)'
 - en: 'Figure 14.4 WOTS uses an additional signing key to authenticate a signature
     in order to prevent tampering. It works like this: when signing, the first private
     key is used to sign the message, and the second private key is used to sign the
     complement of the message. It should be clear that in any of the scenarios illustrated,
     tampering with a signature cannot lead to a new valid signature.'
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 14.4 WOTS 使用额外的签名密钥来验证签名，以防篡改。它的工作原理是：在签名时，第一个私钥用于签署消息，第二个私钥用于签署消息的补码。很明显，在所示的任何情况下，篡改签名都不会导致新的有效签名。
 - en: 14.2.3 Many-times signatures with XMSS and SPHINCS+
+  id: totrans-76
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.2.3 使用 XMSS 和 SPHINCS+ 的多次签名
 - en: So far, you’ve seen ways of signing things using only hash functions. While
     Lamport signatures work, they have large key sizes, so WOTS improved on those
     by reducing the key sizes. Yet, both these schemes still don’t scale well as they
     are both one-time signatures (reuse a key pair and you break the scheme), and
     thus, their parameters linearly increase in size depending on the number of signatures
     you think you’ll need.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，你已经看到了只使用哈希函数签名的方法。虽然 Lamport 签名是有效的，但它们具有较大的密钥大小，因此 WOTS 通过减小密钥大小改进了这一点。然而，这两种方案仍然不具有良好的可扩展性，因为它们都是一次性签名（重复使用密钥对会破坏方案），因此，它们的参数会随着你认为需要的签名数量的增加而线性增加。
 - en: Some schemes that tolerate reuse of a key pair for a few signatures (instead
     of a single one) do exist. These schemes are called *few-time signatures* (FTS)
     and will break, allowing signature forgeries if reused too many times. FTS rely
     on low probabilities of reusing the same combination of secrets from a pool of
     secrets. This is a small improvement on one-time signatures, allowing a decrease
     in the risk of key reuse. But we can do better.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 一些方案允许密钥对重复使用几次（而不是一次）。这些方案被称为*少次签名*（FTS），如果重复使用次数太多，将会破坏，从而允许伪造签名。FTS 依赖于从秘密池中重复使用相同组合秘密的低概率。这是对一次性签名的小改进，允许减少密钥重用的风险。但我们可以做得更好。
 - en: What is one technique you learned about in this book that compresses many things
     into one thing? The answer is Merkle trees. As you may recall from chapter 12,
     a *Merkle tree* is a data structure that provides short proofs for questions like
     is my data in this set? In the 1990s, the same Merkle who proposed Merkle trees
     also invented a signature scheme based on hash functions that compresses a number
     of one-time signatures into a Merkle tree.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这本书中，你学到的一个技术是将许多事物压缩成一个事物的技术是什么？答案是默克尔树。正如你可能还记得第12章所述，*默克尔树*是一种数据结构，为诸如我的数据是否在这个集合中之类的问题提供简短的证明。在1990年代，提出默克尔树的默克尔还发明了一种基于哈希函数的签名方案，将多个一次性签名压缩成一个默克尔树。
 - en: 'The idea is pretty straightforward: each leaf of your tree is the hash of a
     one-time signature, and the root hash can be used as a public key, reducing its
     size to the output size of your hash function. To sign, you pick a one-time signature
@@ -561,19 +728,25 @@
     in your Merkle tree (all the neighbors). This scheme is obviously stateful as
     one should be careful not to reuse one of the one-time signatures in the tree.
     I illustrate this in figure 14.5.'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个想法非常简单：你的树的每个叶子都是一次性签名的哈希，而根哈希可以用作公钥，将其大小减小到哈希函数的输出大小。要签名，你选择一个之前未使用过的一次性签名，然后按照第14.2.2节中的说明应用它。签名是一次性签名，以及证明它属于你的默克尔树的默克尔证明（所有邻居）。这个方案显然是有状态的，因为人们应该小心不要在树中重复使用一次性签名之一。我在图14.5中说明了这一点。
 - en: '![](../Images/14_05.jpg)'
+  id: totrans-81
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/14_05.jpg)'
 - en: Figure 14.5 The Merkle signature scheme is a stateful hash-based algorithm that
     makes use of a Merkle tree to compress many OTS public keys into a smaller public
     key (the root hash). The larger the tree, the more signatures it can produce.
     Note that signatures now have the overhead of a *membership proof*, which is a
     number of neighbor nodes that allow one to verify that a signature’s associated
     OTS is part of the tree.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 图14.5 默克尔签名方案是一种有状态的基于哈希的算法，利用默克尔树将许多OTS公钥压缩为更小的公钥（根哈希）。树越大，它可以产生的签名就越多。请注意，签名现在具有*成员证明*的开销，这是一些邻居节点，允许验证签名的相关OTS是否属于树。
 - en: The *extended Merkle signature scheme* (XMSS), standardized in RFC 8391, sought
     to productionize Merkle signatures by adding a number of optimizations to Merkle’s
     scheme. For example, to produce a key pair capable of signing *N* messages, you
@@ -585,8 +758,10 @@
     any OTS key pair from its position in the tree and the seed. To keep track of
     which leaf/OTS was used last, the private key also contains a counter that is
     incremented every time it is used to sign.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: '*扩展默克尔签名方案*（XMSS），在RFC 8391中标准化，旨在通过向默克尔方案添加一些优化来实现默克尔签名的生产。例如，为了生成能够签署*N*条消息的密钥对，你必须生成*N*个OTS私钥。虽然公钥现在只是一个根哈希，但你仍然必须存储*N*个OTS私钥。XMSS通过使用种子和树中的叶子位置确定性地生成树中的每个OTS，从而减小了你持有的私钥的大小。这样，你只需要将种子存储为私钥，而不是所有OTS私钥，并且可以快速从树中的位置和种子重新生成任何OTS密钥对。为了跟踪上次使用的叶子/OTS，私钥还包含一个计数器，每次用于签名时都会递增。'
 - en: 'Having said that, there’s only so much OTS you can hold in a Merkle tree. The
     larger the tree, the longer it’ll take to regenerate the tree in order to sign
     messages (as you need to regenerate all the leaves to produce a Merkle proof).
@@ -598,18 +773,28 @@
     of trees—and is one of the variants of XMSS called XMSS^(MT). With XMSS^(MT),
     only the trees involved in the path of an OTS need to be regenerated, based on
     the same technique. I illustrate this in figure 14.6.'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 提到这一点，Merkle 树中只能容纳有限的 OTS。树越大，重建树以签署消息就越耗时（因为您需要重建所有叶子以生成 Merkle 证明）。树越小，在签名时需要重建的
+    OTS 私钥就越少，但这显然违背了初衷：我们现在又回到了有限数量的签名。解决方案是使用一个较小的树，其中叶子中的 OTS 不用于签署消息，而是用于签署其他
+    OTS 的 Merkle 树的根哈希。这将我们的初始树转换为*超树*——树的树——是 XMSS 的一种变体称为 XMSS^(MT)。对于 XMSS^(MT)，仅需要基于相同的技术重建与
+    OTS 路径有关的树。我在图 14.6 中进行了说明。
 - en: '![](../Images/14_06.jpg)'
+  id: totrans-85
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/14_06.jpg)'
 - en: Figure 14.6 The XMSS^(MT) stateful hash-based signature scheme uses multiple
     trees to increase the amount of signatures supported by the scheme while reducing
     the work at key generation and signing time. Each tree is deterministically generated
     only when they are used in the path to the final leaf that contains the OTS used
     to sign a message.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 14.6 XMSS^(MT) 有状态基于哈希的签名方案使用多个树来增加方案支持的签名数量，同时减少密钥生成和签名时间的工作量。只有当它们在路径到包含用于签署消息的
+    OTS 的最终叶子中使用时，每个树才会被确定性地生成。
 - en: Note that the statefulness of XMSS and XMSS^(MT) might not be an issue in some
     situations, but it is not a desirable property, in general. Having to keep track
     of a counter is counterintuitive as it is not expected from users of mainstream
@@ -617,40 +802,53 @@
     signature forgery) in case of misuse. For example, rollbacks to a previous state
     of the filesystem or using the same signing key on multiple servers might induce
     the same path in the hypertree being used twice to sign a message.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，XMSS 和 XMSS^(MT) 的状态性在某些情况下可能不是问题，但总的来说不是一种理想的属性。必须跟踪一个计数器是反直觉的，因为我们不希望从主流签名方案的用户那里期待这种行为。这种实践的变化可能会导致
+    OTS 的重用（从而导致签名伪造），如果不当使用，例如，回滚到文件系统的先前状态或在多个服务器上使用相同的签名密钥可能导致超树中的相同路径两次用于签署消息。
 - en: 'To fix one the biggest downsides of XMSS (its statefulness) and expose an interface
     similar to the signature schemes we’re used to, the *SPHINCS+ signature scheme*
     was proposed as part of the NIST’s post-quantum cryptography competition. The
     stateless signature scheme augments XMSS^(MT) with three major changes:'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了解决 XMSS 最大的缺点之一（其状态性）并展现类似于我们习惯的签名方案的接口，*SPHINCS+ 签名方案*作为 NIST 的后量子密码竞赛的一部分提出。这个无状态签名方案通过三个主要变化来增强
+    XMSS^(MT)：
 - en: '*Signing the same message twice leads to the same signature.* In a similar
     fashion to EdDSA (covered in chapter 7), the path used in the hypertree is deterministically
     derived, based on the private key and the message. This ensures that signing the
     same message twice leads to the same OTS and, thus, the same signature; and because
     the private key is used, attackers are also unable to predict which path you’ll
     take to sign their messages if you somehow sign other people’s messages.'
+  id: totrans-89
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*两次签署相同的消息会导致相同的签名。*与第 7 章介绍的 EdDSA 类似，超树中使用的路径是根据私钥和消息确定性地派生的。这确保了两次签署相同的消息会导致相同的
+    OTS，从而导致相同的签名；由于使用了私钥，攻击者也无法预测您在签署其他人消息时将采取哪条路径。'
 - en: '*Using more trees.* XMSS^(MT) avoids reusing the same OTS twice by keeping
     track of which OTS was used last. As the whole point of SPHINCS+ is to avoid keeping
     track of a state, it needs to avoid collisions when it chooses a path pseudorandomly.
     To do this, SPHINCS+ simply uses a much larger amount of OTS, reducing the probability
     of reusing the same one twice. Because SPHINCS+ also uses a hypertree, this translates
     into more trees.'
+  id: totrans-90
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*使用更多的树.* XMSS^(MT)通过追踪上次使用的OTS来避免两次重复使用相同的OTS。由于SPHINCS+的整个目的是避免追踪状态，因此它需要在选择伪随机路径时避免冲突。为此，SPHINCS+简单地使用了更多的OTS，减少了两次重复使用相同OTS的概率。由于SPHINCS+还使用了超树，这意味着更多的树。'
 - en: '*Using few-time signatures* (FTS). As the security of the scheme is based on
     the probability of reusing the same path twice, SPHINCS+ also replaces the final
     OTS used to sign messages with the FTS I mentioned earlier. This way, reusing
     the same path to sign two different messages still doesn’t directly contribute
     to a break of the signature scheme.'
+  id: totrans-91
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*使用少次签名*（FTS）。由于方案的安全性是基于两次重复使用相同路径的概率，因此SPHINCS+还用我之前提到的FTS替换了用于签署消息的最终OTS。这样，重复使用相同路径来签署两个不同的消息仍然不会直接导致签名方案的破坏。'
 - en: While SPHINCS+ is being considered for standardization in the NIST post-quantum
     cryptography competition, it’s not the main contender. SPHINCS+ is not only slow,
     its signatures are large compared to the proposed alternatives (like lattice-based
@@ -661,16 +859,24 @@
     Due to the more realistic parameter sizes and the well-understood security, XMSS
     is recommended as an early standard by the NIST in SP 800-208, “Recommendation
     for Stateful Hash-Based Signature Schemes.”
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然SPHINCS+正在考虑在NIST后量子密码竞赛中进行标准化，但它并不是主要的竞争者。SPHINCS+不仅速度慢，而且与提议的替代方案（如基于格的方案，在本章后面将会介绍）相比，其签名大小也较大。基于状态的哈希签名方案（如XMSS）提供更快的速度和更好的签名大小（小于3
+    KB，而SPHINCS+的最小签名大小为8 KB）。（在公钥大小方面，这两种方案提供了与预量子签名方案（如ECDSA和Ed25519）类似的大小。）由于更现实的参数大小和良好理解的安全性，NIST在SP
+    800-208中推荐了XMSS作为早期标准，“基于状态的哈希签名方案的建议”。
 - en: 'Next, let’s take a look at two other ways to build quantum-resistant cryptographic
     primitives. A gentle warning: they are much more math-heavy!'
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，让我们来看看另外两种构建抗量子密码原语的方法。温柔的警告：它们的数学内容要多得多！
 - en: 14.3 Shorter keys and signatures with lattice-based cryptography
+  id: totrans-94
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 14.3 基于格的密码学中的更短密钥和签名
 - en: 'A large number of post-quantum cryptography schemes are based on lattices,
     a mathematical structure that you’ll learn about in this section. The NIST post-quantum
     cryptography competition itself has elected lattice-based schemes for half of
@@ -678,12 +884,16 @@
     to win and obtain a standard from the NIST. In this section, I will tell you about
     two lattice-based algorithms: Dilithium, a signature scheme, and Kyber, a public
     key encryption primitive. But before that, though, let’s see what lattices are.'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 大量的后量子密码方案基于格，这是一种您将在本节中了解的数学结构。NIST后量子密码竞赛本身已经选定了基于格的方案作为其半决赛选手的一半。这使得基于格的密码学成为最有可能赢得并从NIST获得标准的范式。在本节中，我将告诉您关于两种基于格的算法：Dilithium，一种签名方案，以及Kyber，一种公钥加密原语。但在此之前，让我们先了解一下什么是格。
 - en: 14.3.1 What’s a lattice?
+  id: totrans-96
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.3.1 什么是格？
 - en: 'First, lattice-based probably doesn’t mean what you think it means. Take RSA
     (covered in chapter 6), which we say is based on the factorization problem. This
     does not mean that we use factorization in RSA, it instead means that factorization
@@ -691,24 +901,30 @@
     It’s the same with lattice-based cryptosystems: *lattices* are structures that
     have hard problems, and these cryptosystems are safe as long as these problems
     remain hard.'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，基于格的概念可能不是你想象的那样。以RSA为例（第6章讨论过），我们说RSA是基于因子分解问题的。这并不意味着我们在RSA中使用了因子分解，而是意味着因子分解是你攻击RSA的方法，并且因为因子分解很难，所以我们说RSA是安全的。基于格的密码系统也是如此：*格*是具有困难问题的结构，只要这些问题保持困难，这些密码系统就是安全的。
 - en: 'With that being said, what is a lattice? Well, it’s like a *vector space* but
     with integers. If you don’t remember what a vector space is, it’s the set of all
     vectors that can be created using:'
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
 - en: '*A basis*—A set of vectors; for example, (0,1) and (1,0).'
+  id: totrans-99
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*An operation between vectors*—The vectors can be added together; for example,
     (0,1) + (1,0) = (1,1).'
+  id: totrans-100
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*A scalar operation*—A vector can be multiplied by what we call scalars; for
     example, 3 × (1,2) = (3,6).'
+  id: totrans-101
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -717,19 +933,23 @@
     be written as *a* × (0,1) + *b* × (1,0) for any scalars *a* and *b*. For example,
     0.5 × (0,1) + 3.87 × (1,0) = (3.87,0.5) is in our vector space, so is 99 × (0,1)
     + 0 × (1,0) = (0,99), and so on.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
 - en: A lattice is a vector space where all of the numbers involved are integers.
     Yup, in cryptography, we like integers. I illustrate this in figure 14.7.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/14_07.jpg)'
+  id: totrans-104
   prefs: []
   type: TYPE_IMG
 - en: Figure 14.7 On the left, a basis of two vectors is drawn on a graph. A lattice
     can be formed by taking all of the possible integer linear combinations of these
     two vectors (middle figure). The resulting lattice can be interpreted as a pattern
     of points repeating forever in space (right figure).
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
 - en: There are several well-known hard problems in the lattice space, and for each
@@ -738,23 +958,28 @@
     or even practical. Thus, the problems are said to be hard at least until an more
     efficient solution is found. The two most well-known hard problems are as follows.
     (I illustrate both of these problems in figure 14.8.)
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
 - en: '*The shortest vector problem* (SVP)—Answers the question, what is the shortest
     nonzero vector in your lattice?'
+  id: totrans-107
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*The closest vector problem* (CVP)—Given a coordinate that is not on the lattice,
     finds the closest point to that coordinate on the lattice.'
+  id: totrans-108
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '![](../Images/14_08.jpg)'
+  id: totrans-109
   prefs: []
   type: TYPE_IMG
 - en: 'Figure 14.8 An illustration of the two major lattice problems used in cryptography:
     the shortest vector problem (SVP) and the closest vector problem (CVP)'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
 - en: Generally, we use algorithms like LLL (the Lenstra–Lenstra–Lovász algorithm)
@@ -762,9 +987,11 @@
     (CVP can be reduced to SVP). These are algorithms that reduce the basis of a lattice,
     meaning that they attempt to find a set of vectors that are shorter than the ones
     given and that managed to produce the exact same lattice.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
 - en: 14.3.2 Learning with errors (LWE), a basis for cryptography?
+  id: totrans-112
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -773,13 +1000,16 @@
     in this chapter. Before going further, let’s see what the LWE problem is about.
     Let’s start with the following equations, which are linear combinations of the
     same integers *s*[0] and *s*[1]:'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
 - en: 5 *s*[0] + 2 *s*[1] = 27
+  id: totrans-114
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 2 *s*[0] + 0 *s*[1] = 6
+  id: totrans-115
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -787,19 +1017,23 @@
     and efficiently learn what *s*[0] and *s*[1] are, as long as we have enough of
     these equations. Now what’s interesting is that if we add some noise to these
     equations, the problem becomes much harder:'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
 - en: 5 *s*[0] + 2 *s*[1] = 28
+  id: totrans-117
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 2 *s*[0] + 0 *s*[1] = 5
+  id: totrans-118
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: While it probably isn’t too hard to figure out the answer given more noisy equations,
     it becomes a hard problem once you increase the size of the numbers involved and
     the number of *s*[i] .
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
 - en: This is essentially what the LWE problem is, albeit often stated with vectors
@@ -807,12 +1041,14 @@
     large number. Given an arbitrary number of random vectors **a**[i] of the same
     size and the computations **a**[i]*s* + *e*[i] , where *e*[i] is a random small
     error, can you find the value **s**?
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
 - en: 'Note For two vectors **v** and **w**, the product **vw** can be calculated
     using a *dot product*, which is the sum of the product of each pair of coordinates.
     Let’s look at an example: if **v** = (*v*[0], *v*[1]) and **w** = (*w*[0], *w*[1]),
     then **vw** = *v*[0] × *w*[0] + *v*[1] × *w*[1].'
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
 - en: For example, if I use the secret **s** = (3,6) and I give you the random vectors
@@ -821,15 +1057,18 @@
     use of lattices; rather, they are proven secure if the SVP remains hard (for some
     definition of hard). The reduction can only be seen if we write the previous equations
     in a matrix form, as shown in figure 14.9.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/14_09.jpg)'
+  id: totrans-123
   prefs: []
   type: TYPE_IMG
 - en: 'Figure 14.9 The learning with errors problem (LWE) is said to be a lattice-based
     construction due to the existence of a reduction to a lattice problem: the CVP.
     In other words, if we can find a solution to the CVP, then we can find a solution
     to the LWE problem.'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
 - en: 'This matrix form is important as most LWE-based schemes are expressed and easier
@@ -838,6 +1077,7 @@
     quite helpful to read equations that involve matrices and vectors: both are written
     in bold, and matrices are always uppercase letters. For example, **A** is a matrix,
     **a** is a vector, and *b* is just a number.'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
 - en: Note There exist several variants of the LWE problem (for example, the ring-LWE
@@ -845,18 +1085,24 @@
     in different types of groups. These variants are often preferred due to the compactness
     and the optimizations they unlock. The difference between the variants of LWE
     does not affect the explanations that follow.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
 - en: 'Now that you know what the LWE problem is, let’s learn about some post-quantum
     cryptography based on it: the *Cryptographic Suite for Algebraic Lattices* (CRYSTALS).
     Conveniently, CRYSTALS encompasses two cryptographic primitives: a key exchange
     called *Kyber* and a signature scheme called *Dilithium*.'
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在你知道 LWE 问题是什么了，让我们学习一些基于它的后量子密码学：代数格密码套件（CRYSTALS）。 方便的是，CRYSTALS 包含两个密码学原语：一个称为
+    *Kyber* 的密钥交换和一个称为 *Dilithium* 的签名方案。
 - en: 14.3.3 Kyber, a lattice-based key exchange
+  id: totrans-128
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.3.3 Kyber，基于格的密钥交换
 - en: 'Two NIST finalist schemes are closely related: CRYSTALS-Kyber and CRYSTALS-Dilithium,
     which are candidates from the same team of researchers and are both based on the
     LWE problem. *Kyber* is a public key encryption primitive that can be used as
@@ -864,36 +1110,53 @@
     a signature scheme, which I will explain in the next section. Also note that as
     these algorithms are still in flux, I will only write about the ideas and the
     intuitions behind both of the schemes.'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 两个 NIST 最终方案密切相关： CRYSTALS-Kyber 和 CRYSTALS-Dilithium，这两个方案都是来自同一研究团队的候选方案，都基于
+    LWE 问题。 *Kyber* 是一个可以用作密钥交换原语的公钥加密原语，在本节中我将解释。 *Dilithium* 是一个签名方案，我将在下一节中解释。
+    还要注意，由于这些算法仍在变化中，我将只写出这两个方案背后的思想和直觉。
 - en: First, let’s assume that all operations happen in a group of integers modulo
     a large number *q*. Let’s also say that errors and private keys are *sampled*
     (chosen uniformly at random) from a small range centered at 0 that we will call
     the *error range*. Specifically, the error range is the range [–*B*, *B*] where
     *B* is much smaller than *q*. This is important as some terms need to be smaller
     than some value to be considered errors.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，让我们假设所有操作都在模一个大数 *q* 的整数群中进行。 我们还假设错误和私钥是从以 0 为中心的小范围内（均匀随机选择）*采样*的。 具体来说，错误范围是范围
+    [–*B*, *B*]，其中 *B* 远远小于 *q*。 这很重要，因为某些项需要比某个值小才能被视为错误。
 - en: 'To generate the private key, simply generate a random vector **s**, where every
     coefficient is in the error range. The first part of the public key is a list
     of random vectors **a**[i] of the same size, and the second part is the associated
     list of noisy dot products **t**[i] = **a**[i] *s* + **e**[i] mod *q*. This is
     exactly the LWE problem we learned about previously. Importantly for the rest,
     we can rewrite this with matrices:'
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 要生成私钥，只需生成一个随机向量 **s**，其中每个系数都在错误范围内。 公钥的第一部分是相同大小的随机向量 **a**[i] 的列表，第二部分是相关的噪声点乘列表
+    **t**[i] = **a**[i] *s* + **e**[i] mod *q*。 这正是我们之前学到的 LWE 问题。 对于其余部分很重要的是，我们可以用矩阵来重写这个问题：
 - en: '**t** = **As** + **e**'
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: '**t** = **As** + **e**'
 - en: where the matrix **A** contains the random vectors **a**[i] as rows, and the
     error vector **e** contains the individual errors **e**[i] .
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中矩阵 **A** 包含随机向量 **a**[i] 作为行，而错误向量 **e** 包含单个错误 **e**[i]。
 - en: 'To perform a key exchange with Kyber, we encrypt a symmetric key of 1 bit (yes,
     a single bit!) with the scheme. This is akin to the RSA key encapsulation mechanism
     you saw in chapter 6\. The following four steps shows how the encryption works:'
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 要使用 Kyber 进行密钥交换，我们使用方案加密一个 1 位的对称密钥（是的，只有一个位！）。 这类似于您在第 6 章中看到的 RSA 密钥封装机制。
+    以下四个步骤显示了加密的工作原理：
 - en: Generate an ephemeral private key vector **r** (where coefficients are in the
     error range) and its associated ephemeral public key **rA** + **e**[1] with some
     random error vector **e**[1], using the other peer’s **A** matrix as a public
@@ -901,88 +1164,124 @@
     multiplying the vector **r** with the columns of **A** instead of computing **Ar**
     (a multiplication of the vector **r** with the rows of **A**). It is a detail,
     but it’s necessary for the decryption step to work.
+  id: totrans-135
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 生成一个短暂的私钥向量 **r**（系数在错误范围内），及其关联的短暂公钥 **rA** + **e**[1] 与一些随机错误向量 **e**[1]，使用对等方的
+    **A** 矩阵作为公共参数。 注意，矩阵乘法在右侧执行，这涉及将向量 **r** 与 **A** 的列相乘，而不是计算 **Ar**（向量 **r** 与
+    **A** 的行的乘积）。 这是一个细节，但对解密步骤的工作是必要的。
 - en: We shift our message to the left by multiplying it with *q*/2 in order to avoid
     small errors from impacting our message. Note that *q*/2 modulo *q* usually means
     *q* multiplied with the inverse of 2 modulo *q*, but here it simply means the
     closest integer to *q*/2.
+  id: totrans-136
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: '我们通过将其与 *q*/2 相乘将消息向左移动，以避免小错误影响我们的消息。 注意，*q*/2 模 *q* 通常意味着 *q* 乘以 2 模 *q*
+    的倒数，但这里它只是意味着 *q*/2 的最接近的整数。 '
 - en: Compute a shared secret with the dot product of our ephemeral private key and
     the public key of the peer.
+  id: totrans-137
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 用我们的临时私钥和对等方的公钥的点积计算共享密钥。
 - en: Encrypt your (shifted) message by adding it to the shared secret as well as
     a random error **e**[2]. This produces a ciphertext.
+  id: totrans-138
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 通过将其添加到共享密钥以及随机错误**e**[2]来加密您的（移位的）消息。这将产生一个密文。
 - en: 'After performing the steps, we can send both the ephemeral public key and the
     ciphertext to the other peer. After receiving both the ephemeral public key and
     the ciphertext, we can follow these steps to decrypt the message:'
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 执行完这些步骤后，我们可以将临时公钥和密文都发送给另一个对等方。收到临时公钥和密文后，我们可以按照以下步骤解密消息：
 - en: Obtain the shared secret by computing the dot product of your secret with the
     ephemeral public key received.
+  id: totrans-140
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 通过计算您的秘密与收到的临时公钥的点积来获得共享密钥。
 - en: Subtract that shared secret from the ciphertext (the result contains the shifted
     message and some error).
+  id: totrans-141
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将共享密钥从密文中减去（结果包含移位的消息和一些错误）。
 - en: Shift your message back to where it was originally by dividing it with *q*/2,
     effectively removing the error.
+  id: totrans-142
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 通过将其除以*q*/2，将消息移回原始位置，有效地消除错误。
 - en: The message is 1 if it is closer to *q*/2 than 0, and it is 0 otherwise.
+  id: totrans-143
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 如果消息接近*q*/2，则为 1，否则为 0。
 - en: Of course, 1 bit is not enough, so current schemes employ different techniques
     to overcome this limitation. I recapitulate all three algorithms in figure 14.10.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，1 位是不够的，所以当前方案采用不同的技术来克服这个限制。我在图 14.10 中总结了所有三个算法。
 - en: '![](../Images/14_10.jpg)'
+  id: totrans-145
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/14_10.jpg)'
 - en: Figure 14.10 The Kyber public key encryption scheme. Note that the shared secret
     is approximately the same during encryption and decryption as **re** and **e**[1]**s**
     are both small values because **r**, **s**, and the errors are much smaller than
     *q*/2). Thus, the last step of the decryption (dividing by *q*/2, which can be
     seen as a bitwise shift to the right) gets rid of any discrepancy between the
     two shared secrets. Note that all operations are done modulo *q*.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 14.10 Kyber 公钥加密方案。请注意，在加密和解密过程中，共享密钥几乎相同，因为**r**、**s**和错误远小于*q*/2。因此，解密的最后一步（除以*q*/2，可以看作是向右的位移）消除了两个共享密钥之间的任何差异。请注意，所有操作都是模*q*进行的。
 - en: In practice, for a key exchange, the message you encrypt to your peer’s public
     key is a random secret. The result is then derived deterministically from both
     the secret and the transcript of the key exchange, which includes the peer’s public
     key, your ephemeral key, and the ciphertext.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 在实践中，对于密钥交换，您加密到对等方的公钥的消息是一个随机密钥。然后，结果是从密钥交换的记录和对等方的公钥、您的临时密钥和密文中确定性地派生出来的。
 - en: The recommended parameters for Kyber leads to public keys and ciphertexts of
     around 1 kilobytes, which is much bigger than the pre-quantum schemes we use but
     still in the realm of the practical for most use cases. While time will tell if
     we can further reduce the communication overhead of these schemes, it seems like,
     so far, post-quantum rhymes with larger sizes.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: Kyber 的推荐参数导致公钥和密文约为 1 千字节，这比我们使用的预量子方案要大得多，但对于大多数用例来说仍然是实用的范畴。虽然时间会告诉我们是否可以进一步减少这些方案的通信开销，但迄今为止，量子后的韵律似乎与更大的尺寸相呼应。
 - en: 14.3.4 Dilithium, a lattice-based signature scheme
+  id: totrans-149
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.3.4 Dilithium，一个基于格的签名方案
 - en: The next scheme I’ll explain, *Dilithium*, is also based on LWE and is the sister
     candidate of Kyber. As with other types of signatures we’ve seen (like Schnorr’s
     signature in chapter 7), Dilithium is based on a zero-knowledge proof that is
     made non-interactive via the Fiat-Shamir trick.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 我将解释的下一个方案*Dilithium*也是基于 LWE 的，是 Kyber 的姊妹候选方案。与我们见过的其他类型的签名（如第 7 章中的 Schnorr
+    签名）一样，Dilithium 基于一个零知识证明，通过 Fiat-Shamir 技巧使其非交互式。
 - en: For key generation, Dilithium is similar to the previous scheme, except that
     we keep the error as part of the private key. We first generate the two random
     vectors that serve as the private key, **s**[1] and **s**[2], then compute the
@@ -991,51 +1290,70 @@
     the error **s**[2] as being part of the private key because we need to reuse it
     every time we sign a message (unlike in Kyber, where the error could be discarded
     after the key generation step).
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于密钥生成，Dilithium与先前的方案类似，只是我们将错误作为私钥的一部分保留。我们首先生成两个作为私钥的随机向量**s**[1]和**s**[2]，然后计算公钥为**t**
+    = **As**[1] + **s**[2]，其中**A**是以与Kyber类似的方式获得的矩阵。公钥是**t**和**A**。请注意，我们将错误**s**[2]视为私钥的一部分，因为我们需要在每次签署消息时重复使用它（不像在Kyber中，错误可以在密钥生成步骤之后丢弃）。
 - en: 'To sign, we create a sigma protocol and then convert that to a non-interactive,
     zero-knowledge proof via the Fiat-Shamir transformation, which is similar to how
     the Schnorr identification protocol gets converted to a Schnorr signature in chapter
     7\. The interactive protocol looks like this:'
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 要签署，我们创建一个sigma协议，然后通过费亚特-沙米尔转换将其转换为非交互式、零知识证明，这类似于第7章中Schnorr识别协议转换为Schnorr签名的方式。交互式协议如下：
 - en: The prover commits on two random vectors, **y**[1] and **y**[2], by sending
     **Ay**[1] + **y**[2].
+  id: totrans-153
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 证明者通过发送**Ay**[1] + **y**[2]对两个随机向量**y**[1]和**y**[2]进行承诺。
 - en: Upon reception of this commit, the verifier responds with a random challenge
     *c*.
+  id: totrans-154
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 在收到此提交后，验证者会回复一个随机挑战*c*。
 - en: The prover then computes the two vectors **z**[1] = *c* **s**[1] + **y**[1]
     and **z**[2] = *c* **s**[2] + **y**[2] and sends them to the verifier only if
     they are small values.
+  id: totrans-155
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 然后，证明者计算两个向量**z**[1] = *c* **s**[1] + **y**[1]和**z**[2] = *c* **s**[2] + **y**[2]，并仅在它们是小值时将它们发送给验证者。
 - en: The verifier checks if **Az**[1] + **z**[2] – *c* **t** and **Ay**[1] + **y**[2]
     are the same values.
+  id: totrans-156
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 验证者检查**Az**[1] + **z**[2] – *c* **t**和**Ay**[1] + **y**[2]是否为相同的值。
 - en: The Fiat-Shamir trick replaces the role of the verifier in step 2 by having
     the prover generate a challenge from a hash of the message to sign and the committed
     **Ay**[1] + **y**[2] value. I recap this transformation in figure 14.11, using
     a similar diagram from chapter 7.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 费亚特-沙米尔技巧通过让证明者从要签名的消息和已承诺的**Ay**[1] + **y**[2]值的哈希中生成挑战，取代了第2步中验证者的角色。我在图14.11中总结了这个转换，使用了第7章中类似的图表。
 - en: '![](../Images/14_11.jpg)'
+  id: totrans-158
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/14_11.jpg)'
 - en: Figure 14.11 A Dilithium signature is a proof of knowledge of a secret vector
     **s** made non-interactive via the Fiat-Shamir transformation. The diagram on
     the left shows the interactive proof protocol, while the diagram on the right
     shows a non-interactive version where the challenge is computed as a commitment
     of both **y** and the message to sign.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 图14.11 Dilithium签名是对秘密向量**s**的知识证明，通过费亚特-沙米尔转换变为非交互式。左侧的图表显示了交互式证明协议，而右侧的图表显示了一个非交互式版本，其中挑战被计算为**y**和要签名的消息的承诺。
 - en: Again, this is a gross simplification of the signature scheme. Many more optimizations
     are used in practice to reduce the key and the signature sizes. Usually, these
     optimizations look at reducing any random data by deterministically generating
@@ -1043,8 +1361,10 @@
     it via custom methods, not necessarily via known compression algorithms. There
     are also a number of additional optimizations that are possible due to the unique
     structure of LWE.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 再次强调，这只是对签名方案的粗略简化。实际上会使用更多的优化来减少密钥和签名的大小。通常，这些优化会尝试通过从较小的随机值确定性生成随机数据来减少任何随机数据，并通过自定义方法压缩非随机数据来减少非随机数据，不一定通过已知的压缩算法。由于LWE的独特结构，还有许多其他可能的优化。
 - en: At the recommended security level, Dilithium offers signatures of around 3 KB
     and public keys of less than 2 KB. This is obviously much more than the 32-byte
     public keys and 64-byte signatures of pre-quantum schemes, but it is also much
@@ -1054,6 +1374,7 @@
     keys and signatures. It is also possible that we will find better techniques to
     reduce the sizes of these parameters. In general, it’s likely that quantum resistance
     will always come with a cost in size.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
 - en: This is not all there is to post-quantum cryptography; the NIST post-quantum
@@ -1064,15 +1385,18 @@
     still a lot of unknowns, it also means that there’s a lot of exciting room for
     research. If this is interesting to you, I recommend taking a look at the NIST
     reports ([https://nist.gov/pqcrypto](https://nist.gov/pqcrypto)).
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
 - en: 14.4 Do I need to panic?
+  id: totrans-163
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: To summarize, quantum computers are a huge deal for cryptography if they are
     realized. What’s the take away here? Do you need to throw everything you’re doing
     and transition to post-quantum algorithms? Well, it’s not that simple.
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
 - en: Ask any expert and you’ll receive different kinds of answers. For some, it’s
@@ -1086,6 +1410,7 @@
     to get funding. As I am no physicist, I will simply say that we should remain
     skeptical of extraordinary claims, while preparing for the worst. The question
     is not “Will it work?”; rather, it’s “Will it scale?”
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
 - en: There exist many challenges for scalable quantum computers (which can destroy
@@ -1094,6 +1419,7 @@
     computer scientist at the University of Texas, puts it as “You’re trying to build
     a ship that remains the same ship, even as every plank in it rots and has to be
     replaced.”
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
 - en: But what about what the NSA said? One needs to remember that the government’s
@@ -1103,6 +1429,7 @@
     many cryptographers (see, for example, “A Riddle Wrapped In An Enigma” by Neal
     Koblitz and Alfred J. Menezes), who have been wondering why we would protect ourselves
     against something that doesn’t exist yet or might never exist.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
 - en: In any case, if you’re really worried and the confidentiality of your assets
@@ -1111,11 +1438,13 @@
     That being said, if you’re doing a key exchange in order to obtain an AES-256-GCM
     key, that asymmetric cryptography part is still vulnerable to quantum computers,
     and protecting the symmetric cryptography alone won’t be enough.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
 - en: For asymmetric cryptography, it is too early to really know what is safe to
     use. Best wait for the end of the NIST competition in order to obtain more cryptanalysis,
     and in turn, more confidence in these novel algorithms.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
 - en: '*At present, there are several post-quantum cryptosystems that have been proposed,
@@ -1124,9 +1453,11 @@
     further research is needed in order to gain more confidence in their security
     (particularly against adversaries with quantum computers) and to improve their
     performance*.'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
 - en: —NIST Post-Quantum Cryptography Call for Proposals (2017)
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
 - en: If you’re too impatient and can’t wait for the result of the NIST competition,
@@ -1136,6 +1467,7 @@
     signature schemes. If it turns out that Dilithium is broken, an attacker would
     still have to break Ed25519, and if it turns out that quantum computers are real,
     then the attacker would still have the Dilithium signature that they can’t forge.
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
 - en: Note This is what Google did in 2018, and then again in 2019, with Cloudflare,
@@ -1145,31 +1477,37 @@
     in 2018, HRSS and SIKE in 2019), where both the output of the current key exchange
     and the post-quantum key exchange were mixed together into HKDF to produce a single
     shared secret.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
 - en: Finally, I will re-emphasize that hash-based signatures are well studied and
     well understood. Even though they present some overhead, schemes like XMSS and
     SPHINCS+ can be used now, and XMSS has ready-to-use standards (RFC 8391 and NIST
     SP 800-208).
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
 - en: Summary
+  id: totrans-175
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: Quantum computers are based on quantum physics and can provide a non-negligible
     speed up for specific computations.
+  id: totrans-176
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Not all algorithms can run on a quantum computer, and not all algorithms can
     compete with a classical computer. Two notable algorithms that worry cryptographers
     are
+  id: totrans-177
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Shor’s algorithm, which can efficiently solve the discrete logarithm problem
     and the factorization problem. It breaks most of today’s asymmetric cryptography.
+  id: totrans-178
   prefs:
   - PREF_IND
   - PREF_UL
@@ -1178,6 +1516,7 @@
     of 2^(128) values, impacts most symmetric algorithms with 128-bit security. Boosting
     a symmetric algorithm’s parameters to provide 256-bit security is enough to thwart
     quantum attacks.
+  id: totrans-179
   prefs:
   - PREF_IND
   - PREF_UL
@@ -1185,18 +1524,21 @@
 - en: The field of post-quantum cryptography aims at finding novel cryptographic algorithms
     to replace today’s asymmetric cryptographic primitives (for example, asymmetric
     encryption, key exchanges, and digital signatures).
+  id: totrans-180
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: NIST started a post-quantum cryptography standardization effort in 2016\. There
     are currently seven finalists and the effort is now entering its final round of
     selection.
+  id: totrans-181
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Hash-based signatures are signature schemes that are only based on hash functions.
     The two main standards are XMSS (a stateful signature scheme) and SPHINCS+ (a
     stateless signature scheme).
+  id: totrans-182
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1204,6 +1546,7 @@
     Two of the most promising candidates are based on the LWE problem: Kyber is an
     asymmetric encryption and key exchange primitive, and Dilithium is a signature
     scheme.'
+  id: totrans-183
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1212,22 +1555,26 @@
     isogenies, symmetric-key cryptography, and multivariate polynomials. NIST’s competition
     is scheduled to end in 2022, which still leaves a lot of room for new attacks
     or optimizations to be discovered.
+  id: totrans-184
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: It is not clear when quantum computers will be efficient enough to destroy cryptography,
     or if it is possible for them to get there.
+  id: totrans-185
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'If you have requirements to protect data for a long period of time, you should
     consider transitioning to post-quantum cryptography:'
+  id: totrans-186
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Upgrade all usage of symmetric cryptographic algorithms to use parameters that
     provide 256-bit security (for example, move from AES-128-GCM to AES-256-GCM, and
     from SHA-3-256 to SHA-3-512).
+  id: totrans-187
   prefs:
   - PREF_IND
   - PREF_UL
@@ -1236,6 +1583,7 @@
     For example, always sign messages with both Ed25519 and Dilithium, or always perform
     a key exchange with both X25519 and Kyber (deriving a shared secret from the two
     key exchange outputs obtained).
+  id: totrans-188
   prefs:
   - PREF_IND
   - PREF_UL
@@ -1243,6 +1591,7 @@
 - en: Use hash-based signatures like XMSS and SPHINCS+, which are well-studied and
     well-understood. XMSS has the advantage of having already been standardized and
     approved by the NIST.
+  id: totrans-189
   prefs:
   - PREF_IND
   - PREF_UL

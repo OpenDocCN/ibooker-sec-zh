@@ -1128,6 +1128,8 @@
   id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: '*缓存攻击*利用了一个事实：恶意程序有可能在同一台计算机上运行，使用与敏感密码程序相同的密码库。例如，许多云服务在同一台计算机上托管不同的虚拟服务器，许多服务器使用
+    OpenSSL 库进行密码操作或提供 TLS 页面。恶意程序找到方法将已加载到与受害者进程共享的缓存中的库的部分逐出，然后定期测量重新读取该库的某些部分所需的时间。如果花费了很长时间，那么受害者没有执行该程序的这部分；如果不花费很长时间，则受害者访问了该程序的这部分并重新填充了缓存，以避免再次将程序从远处的缓存中获取或者更糟的是从磁盘获取。您获得的是类似于功率跟踪的跟踪，而且确实可以以类似的方式进行利用！'
 - en: OK, that’s enough for side-channel attacks. If you’re interested in attacking
     cryptography via these side channels, there are better resources than this book.
     In this section, I want to only talk about software mitigations that cryptographic
@@ -1137,6 +1139,7 @@
   id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 好了，侧信道攻击就说到这里。如果您对通过这些侧信道攻击攻击密码学感兴趣，那么有比本书更好的资源。在本节中，我只想讨论密码实现可以和应该实施的软件缓解措施，以保护免受侧信道攻击的影响。这个研究领域整体被称为*泄漏韧性密码学*，因为密码学家在这里的目标是不泄漏任何信息。
 - en: Defending against physical attackers is an endless battle, which explains why
     many of these mitigations are proprietary and akin to obfuscation. This section
     is obviously not exhaustive but should give you an idea of the type of things
@@ -1144,11 +1147,13 @@
   id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 防御物理攻击者是一场永无止境的战斗，这解释了为什么许多这些缓解措施是专有的且类似于混淆。这一部分显然不是详尽无遗的，但应该让您了解应用密码学家正在致力于解决侧信道攻击的类型。
 - en: 13.4.1 Constant-time programming
   id: totrans-126
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 常量时间编程
 - en: The first line of defense for any cryptographic implementation is to implement
     its cryptographic sensitive parts (think any computation that involves a secret)
     in constant time. It is obvious that implementing something in constant time cancels
@@ -1157,6 +1162,7 @@
   id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 任何密码学实现的第一道防线是在常量时间内实现其密码学敏感部分（考虑任何涉及秘密的计算）。显而易见，以常量时间实现某事会取消时间攻击，但这也会摆脱许多攻击类别，如缓存攻击和简单的电源分析攻击。
 - en: How do you implement something in constant time? Never *branch*. In other words,
     no matter what the input is, always do the same thing. For example, listing 13.1
     shows how the Golang language implements a constant-time comparison of authentication
@@ -1168,10 +1174,14 @@
   id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 如何以常量时间实现某事？永远不要*分支*。换句话说，无论输入是什么，始终执行相同的操作。例如，列表 13.1 显示了 Golang 语言如何实现 HMAC
+    算法的认证标签的常量时间比较。直觉上，如果两个字节相等，那么它们的异或将是 0。如果我们比较的每一对字节都满足这个属性，那么对它们进行 OR 运算也将导致一个
+    0 值（否则是一个非零值）。请注意，如果这是您第一次看到常量时间技巧，那么阅读这段代码可能会令人困惑。
 - en: Listing 13.1 How Golang implements a constant-time comparison between two bytearrays
   id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: '[Golang 如何实现两个字节数组之间的常量时间比较](https://wiki.example.org/constant_time_comparison_in_golang)'
 - en: '[PRE0]'
   id: totrans-130
   prefs: []
@@ -1182,15 +1192,18 @@
   id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 如果两个字符串长度不同，那么在常量时间内比较它们就没有意义。
 - en: ❷ Here is where the magic happens. The loop OR accumulates the XOR of every
     byte into a value v.
   id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 这就是魔法发生的地方。循环 OR 将每个字节的异或值累加到一个值 v 中。
 - en: ❸ Returns 0 only if v is equal to 0 and returns a nonzero value otherwise
   id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 当v等于0时仅返回0，否则返回非零值
 - en: For a MAC authentication tag comparison, it is enough to stop here to check
     if the result is 0 or not by branching (using a conditional expression such as
     `if`). Another interesting example is *scalar multiplication* in elliptic curve
@@ -1203,6 +1216,7 @@
   id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于MAC身份验证标签比较，仅需要在此处停止通过分支（使用条件表达式，如`if`）来检查结果是否为0或非0。另一个有趣的例子是椭圆曲线密码中的*标量乘法*，正如你在第5章中学到的那样，它包括将一个点添加到自身*x*次数，其中*x*是我们称之为标量的值。这个过程可能有点慢，因此存在一些聪明的算法来加速这部分。其中一个流行的算法称为蒙哥马利阶梯，基本上等同于我之前提到的RSA的平方乘算法（但在不同的群中）。
 - en: '*Montgomery ladder’s algorithm* alternates between the addition of two points
     and doubling of a point (adding the point to itself). Both the RSA’s square-and-multiply
     and Montgomery ladder’s algorithms have a simple way to mitigate timing attacks:
@@ -1212,6 +1226,8 @@
   id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: '*蒙哥马利阶梯算法*在两点相加和一个点加倍之间交替进行（将点加到自身）。RSA的平方乘和蒙哥马利阶梯算法都有一种简单的方法来缓解时间攻击：它们不分支并且总是执行两个操作。
+    （这就是为什么RSA指数算法通常称为*square and multiply always*的原因。）'
 - en: Note In chapter 7, I mentioned that signature schemes can go wrong in multiple
     ways and that key recovery attacks exist against implementations that leak a few
     bytes of the nonces they use (in signature schemes like ECDSA). This is what happened
@@ -1221,6 +1237,7 @@
   id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 在第7章中，我提到签名方案可能以多种方式出错，并且针对泄漏它们使用的一些字节（在ECDSA等签名方案中）的非ces存在密钥恢复攻击。这就是Minerva和TPM-Fail攻击发生的情况，它们发生在同一时间。这两次攻击发现了许多设备由于签名操作所花费的时间变化量而易受攻击。
 - en: In practice, mitigating timing attacks is not always straightforward as it is
     not always clear if CPU instructions for multiplications or conditional moves
     are in constant time. Additionally, it is not always clear how the compiler will
@@ -1232,11 +1249,13 @@
   id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 在实践中，缓解时间攻击并不总是直截了当的，因为CPU指令是否用于乘法或条件移动并不总是在恒定的时间内。此外，当使用不同的编译标志时，高级代码如何被编译成机器代码并不总是清楚的。因此，有时会对生成的汇编进行手动审核，以便更加信任编写的恒定时间代码。存在用于分析恒定时间代码的不同工具（如ducdect、ct-verif、SideTrail等），但它们在实践中很少被使用。
 - en: 13.4.2 Don’t use the secret! Masking and blinding
   id: totrans-138
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 13.4.2 不要使用秘密！屏蔽和blinding
 - en: Another common way of thwarting or at least confusing attackers is to add layers
     of indirection to any operation involving secrets. One of these techniques is
     called *blinding*, which is often possible thanks to the arithmetic structure
@@ -1247,6 +1266,7 @@
   id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一种常见的阻止或至少混淆攻击者的方法是在涉及秘密的任何操作中添加间接层。其中一种技术称为*blinding*，这通常得益于公钥密码算法的算术结构。你在第11章看到了类似于密码认证密钥交换算法的遗忘算法中使用了blinding，我们可以在我们想要让遗忘的一方成为攻击者观察我们计算中的泄漏的地方同样使用blinding。让我们以RSA为例。
 - en: 'Remember, RSA decrypts by taking a ciphertext *c* and raising it to the private
     exponent *d*, where the private exponent *d* cancels the public exponent *e*,
     which was used to compute the ciphertext as *m*^e mod *N*. If you don’t remember
@@ -1256,22 +1276,27 @@
   id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 记住，RSA解密是通过将密文*c*提升到私有指数*d*来完成的，其中私有指数*d*取消了用于计算密文的公共指数*e*，该公共指数*e*被用于计算密文为*m*^e
+    mod *N*。如果你不记得细节，请务必查阅第6章。增加间接性的一种方法是在攻击者所知的不是密文的值上执行解密操作。这种方法称为*基础掩码*，操作如下：
 - en: Generate a random blinding factor *r*
   id: totrans-141
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 生成一个随机的掩盲因子*r*。
 - en: Compute *message* = (*ciphertext* × *r*^e)^d mod *N*
   id: totrans-142
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 计算*message* = (*ciphertext* × *r*^e)^d mod *N*。
 - en: Unblind the result by computing *real_message* = *message* × *r*^(–1) mod *N*,
     where *r*^(–1) is the inverse of *r*
   id: totrans-143
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 通过计算*real_message* = *message* × *r*^(–1) mod *N*来解除掩码，其中*r*^(–1)是*r*的逆。
 - en: 'This method blinds the value being used with the secret, but we can also blind
     the secret itself. For example, elliptic curve scalar multiplication is usually
     used with a secret scalar. But as computations take place in a cyclic group, adding
@@ -1280,29 +1305,34 @@
   id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种方法对正在使用的值进行了掩盲，但我们也可以对秘密本身进行掩盲。例如，椭圆曲线标量乘法通常与秘密标量一起使用。但是由于计算发生在一个循环群中，将阶的倍数添加到该秘密中不会改变计算结果。这种技术称为*标量掩码*，操作如下：
 - en: Generate a random value *k*[1]
   id: totrans-145
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 生成随机值*k*[1]。
 - en: Compute a scalar *k*[2] = *d* + *k*[1] × *order*, where *d* is the original
     secret scalar and *order* is its order
   id: totrans-146
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 计算标量*k*[2] = *d* + *k*[1] × *order*，其中*d*是原始的秘密标量，*order*是它的阶数。
 - en: To compute *Q* = *P*, instead compute *Q* = [*k*[2]] *P*, which results in the
     same point
   id: totrans-147
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 要计算*Q* = *P*，而不是计算*Q* = [*k*[2]] *P*，结果是相同的点。
 - en: All of these techniques have been proven to be more or less efficient and are
     often used in combinations with other software and hardware mitigations. In symmetric
     cryptography, another somewhat similar technique, called *masking*, is used.
   id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有这些技术都被证明多多少少是有效的，并且通常与其他软件和硬件缓解措施组合使用。在对称密码中，另一种有些类似的技术称为*掩码*。
 - en: The concept of masking is to transform the input (the plaintext or ciphertext
     in the case of a cipher) before passing it to the algorithm. For example, by XORing
     the input with a random value. The output is then unmasked in order to obtain
@@ -1314,11 +1344,13 @@
   id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 掩码的概念是在将输入（在密码中为明文或密文）传递给算法之前对其进行转换。例如，通过将输入与随机值进行异或操作。然后解除掩码以获得最终正确的输出。由于任何中间状态都被掩码，因此这为密码计算提供了一定程度的与输入数据的去相关性，并使得侧信道攻击变得更加困难。算法必须意识到这种掩码，以便在保持原始算法的正确行为的同时正确执行内部操作。
 - en: 13.4.3 What about fault attacks?
   id: totrans-150
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 13.4.3 关于故障攻击的问题？
 - en: I previously talked about *fault attacks*, a more intrusive type of side-channel
     attacks that modify the execution of the algorithm by inducing faults. Injecting
     faults can be done in many creative ways, physically, by increasing the heat of
@@ -1327,6 +1359,7 @@
   id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 我之前谈到了*故障攻击*，这是一种更具侵入性的侧信道攻击类型，它通过引入故障来修改算法的执行。注入故障可以通过许多创造性的方式来实现，例如通过物理方式，例如增加系统的热量，或者甚至通过向目标芯片的计算点发射激光。
 - en: Surprisingly, faults can also be induced via software. An example was found
     independently in the Plundervolt and V0LTpwn attacks, which managed to change
     the voltage of a CPU to introduce natural faults. This also happened in the infamous
@@ -1338,6 +1371,7 @@
   id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 令人惊讶的是，故障也可以通过软件引起。例如，在Plundervolt和V0LTpwn攻击中独立发现了一个例子，它们成功地改变了CPU的电压以引入自然故障。这也发生在臭名昭著的rowhammer攻击中，该攻击发现了在一些DRAM设备上重复访问内存可以翻转附近的位。这些类型的攻击可能很难实现，但非常强大。在密码学中，计算出错误结果有时可能会泄漏密钥。这就是例如使用一些特定优化实现的RSA签名的情况。
 - en: While it is impossible to fully mitigate these attacks, some techniques exist
     that can increase the complexity of a successful attack; for example, by computing
     the same operation several times and comparing the results to make sure they match
@@ -1346,6 +1380,7 @@
   id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然无法完全消除这些攻击，但存在一些技术可以增加成功攻击的复杂性；例如，多次计算相同的操作并在发布之前比较结果以确保它们匹配，或者在发布之前验证结果。对于签名，可以在返回之前通过公钥验证签名。
 - en: Fault attacks can also have dramatic consequences against random number generators.
     One easy solution is to use algorithms that do not use new randomness every time
     they run. For example, in chapter 7, you learned about EdDSA, a signature algorithm
@@ -1353,17 +1388,20 @@
   id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 故障攻击也可能对随机数生成器产生严重后果。一个简单的解决方案是使用不在每次运行时使用新随机性的算法。例如，在第7章中，您了解到了EdDSA，这是一种签名算法，签名时不需要新的随机性，与ECDSA签名算法相比。
 - en: All in all, none of these techniques are foolproof. Doing cryptography in highly
     adversarial environments is always about how much more cost you can afford to
     incur to the attackers.
   id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 总的来说，这些技术都不是绝对可靠的。在高度敌对的环境中进行密码学始终是关于你能承受多大成本以应对攻击者的问题。
 - en: Summary
   id: totrans-156
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 总结
 - en: The threat today is not just an attacker intercepting messages over the wire,
     but an attacker stealing or tampering with the device that runs your cryptography.
     Devices in the so-called Internet of Things (IoT) often run into threats and are,
@@ -1373,6 +1411,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 今天的威胁不仅是攻击者拦截信息传输，而且是攻击者窃取或篡改运行您的密码学的设备。所谓的物联网设备通常会遇到威胁，并且默认情况下不受复杂攻击者的保护。最近，云服务也被认为是用户威胁模型的一部分。
 - en: Hardware can help protect cryptography applications and their secrets in a highly
     adversarial environment. One of the ideas is to provide a device with a tamper-resistant
     chip to store and perform crypto operations. That is, if the device falls in the
@@ -1382,6 +1421,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 硬件可以帮助保护密码应用程序及其密钥在高度敌对的环境中。其中一个想法是提供一个具有防篡改芯片的设备来存储和执行加密操作。也就是说，如果设备落入攻击者手中，提取密钥或修改芯片行为将会很困难。
 - en: It is generally accepted that one has to combine different software and hardware
     techniques to harden cryptography in adversarial environments. But hardware-protected
     cryptography is not a panacea; it is merely defense in-depth, effectively slowing
@@ -1391,6 +1431,7 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 人们普遍认为，必须结合不同的软件和硬件技术来加固密码学以应对敌对环境。但硬件保护的密码学并非万能药；它只是多层防御，有效地减慢和增加了攻击的成本。有无限时间和金钱的对手总是能够破坏你的硬件。
 - en: Decreasing the impact of an attack can also help deter attackers. This must
     be done by designing a system well (for example, by making sure that the compromise
     of one device does not imply a compromise of all devices).
@@ -1398,11 +1439,13 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 减少攻击的影响也可以帮助吓阻攻击者。这必须通过良好设计系统来完成（例如，确保一个设备的妥协不意味着所有设备都妥协）。
 - en: 'While there are many hardware solutions, the most popular ones are as follows:'
   id: totrans-161
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 虽然有很多硬件解决方案，但最流行的是以下几种：
 - en: Smart cards were one of the first such secure microcontrollers that could be
     used as a microcomputer to store secrets and perform cryptographic operations.
     They are supposed to use a number of techniques to discourage physical attackers.

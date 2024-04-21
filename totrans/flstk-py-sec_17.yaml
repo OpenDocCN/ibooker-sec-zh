@@ -1248,6 +1248,7 @@
   id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: 代码的第一行构造了一个URL。URL的域指向攻击者控制的服务器；URL的参数是受害者的本地Cookie状态的副本。代码的第二行将此URL插入文档中，作为图像标签的源属性。这会触发对mallory.com的请求，将受害者的Cookie状态传递给攻击者。
 - en: '[PRE21]'
   id: totrans-193
   prefs: []
@@ -1257,10 +1258,12 @@
   id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 读取受害者的Cookie
 - en: ❷ Sends victim’s cookies to attacker
   id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 将受害者的Cookie发送给攻击者
 - en: Suppose Mallory uses this script to target Bob with a reflected XSS attack.
     Once his session ID is compromised, Mallory can simply use it to assume Bob’s
     identity and access privileges at bank.alice.com. She doesn’t have to write JavaScript
@@ -1269,6 +1272,7 @@
   id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设Mallory使用这个脚本来针对Bob进行反射型XSS攻击。一旦他的会话ID被泄露，Mallory可以简单地使用它来假扮成Bob并在bank.alice.com上获取访问权限。她不必编写JavaScript来从他的银行账户转账；她可以直接通过UI来完成。图14.3描述了这种攻击，称为*会话劫持*。
 - en: 'Servers resist this form of attack by setting cookies with the `HttpOnly` directive,
     an attribute of the `Set-Cookie` response header. (You learned about this response
     header in chapter 7.) Despite its name, `HttpOnly` has nothing to do with which
@@ -1279,6 +1283,7 @@
   id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器通过设置带有`HttpOnly`指令的Cookie来抵御这种形式的攻击，这是`Set-Cookie`响应头的一个属性。（你在第7章学到了这个响应头。）尽管它的名字是`HttpOnly`，但它与浏览器在传输Cookie时必须使用的协议无关。相反，这个指令将Cookie隐藏起来，不让客户端的JavaScript看到。这可以减轻XSS攻击，但不能阻止它们。下面显示了一个带有**HttpOnly**指令的示例响应头：
 - en: '[PRE22]'
   id: totrans-198
   prefs: []
@@ -1294,19 +1299,23 @@
   id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 会话ID Cookie应该始终使用`HttpOnly`。Django默认情况下就是这样做的。这个行为由`SESSION_COOKIE_HTTPONLY`设置配置，幸运的是，默认值为`True`。如果您在代码存储库或拉取请求中看到这个设置被赋值为`False`，那么作者可能误解了它的含义。鉴于这个指令的不幸命名，这是可以理解的。毕竟，术语`HttpOnly`很容易被没有上下文的人误解为*不安全*。
 - en: '![CH14_F03_Byrne](Images/CH14_F03_Byrne.png)'
   id: totrans-200
   prefs: []
   type: TYPE_IMG
+  zh: '![CH14_F03_Byrne](Images/CH14_F03_Byrne.png)'
 - en: Figure 14.3 Mallory hijacks Bob’s session with a reflected XSS attack.
   id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 图14.3 Mallory用反射型XSS攻击劫持了Bob的会话。
 - en: Note At the time of this writing, security misconfiguration is number 6 on the
     OWASP Top Ten ([https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)).
   id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 在撰写本文时，安全配置错误位列OWASP十大安全风险的第6位（[https://owasp.org/www-project-top-ten/](https://owasp.org/www-project-top-ten/)）。
 - en: '`HttpOnly` doesn’t just apply to your session ID cookie, of course. In general,
     you should set each cookie with `HttpOnly` unless you have a very strong need
     to programmatically access it with JavaScript. An attacker without access to your
@@ -1314,6 +1323,7 @@
   id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，`HttpOnly`不仅适用于您的会话ID Cookie。一般来说，除非您有非常强烈的需要以JavaScript编程方式访问它，否则应该为每个Cookie设置`HttpOnly`。没有访问您的Cookie的攻击者的能力会减弱。
 - en: Listing 14.9 demonstrates how to set a custom cookie with the `HttpOnly` directive.
     `CookieSettingView` adds a `Set-Cookie` header by calling a convenience method
     on the `response` object. This method accepts a keyword argument named `httponly`.
@@ -1322,10 +1332,12 @@
   id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表14.9演示了如何使用`HttpOnly`指令设置自定义Cookie。`CookieSettingView`通过调用响应对象上的一个便利方法来添加一个`Set-Cookie`头。这个方法接受一个名为`httponly`的关键字参数。与`SESSION_COOKIE_HTTPONLY`设置不同，这个关键字参数的默认值是`False`。
 - en: Listing 14.9 Setting a cookie with the HttpOnly directive
   id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表14.9 使用HttpOnly指令设置Cookie
 - en: '[PRE23]'
   id: totrans-206
   prefs: []
@@ -1335,21 +1347,25 @@
   id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 将Set-Cookie头添加到响应中
 - en: ❷ Appends an HttpOnly directive to the header
   id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 将HttpOnly指令附加到头部
 - en: In the next section, I cover a response header designed to resist XSS. Like
     the `HttpOnly` directive, this header restricts the browser in order to protect
     the user.
   id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一节中，我将介绍一种用于抵抗XSS的响应头部。像`HttpOnly`指令一样，这个头部限制了浏览器以保护用户的安全。
 - en: 14.4.2 Disable MIME type sniffing
   id: totrans-210
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.4.2 禁用MIME类型嗅探
 - en: Before we dive into this subject, I’m going to explain how a browser determines
     the content type of an HTTP response. When you point your browser to a typical
     web page, it doesn’t just download the entire thing at once. It requests an HTML
@@ -1359,6 +1375,7 @@
   id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们深入研究这个主题之前，我将解释浏览器如何确定HTTP响应的内容类型。当你将浏览器指向一个典型的网页时，它不会一次性下载整个内容。它请求一个HTML资源，解析它，并为嵌入的内容（如图片、样式表和JavaScript）发送单独的请求。为了渲染页面，你的浏览器需要用适当的内容处理程序处理每个响应。
 - en: How does the browser match each response to the correct handler? The browser
     doesn’t care if the URL ends in .gif or .css. The browser doesn’t care if the
     URL originated from an `<img>` or a `<style>` tag. Instead, the browser receives
@@ -1366,6 +1383,7 @@
   id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 浏览器如何将每个响应匹配到正确的处理程序？浏览器不关心URL是否以.gif或.css结尾。浏览器也不关心URL是来自`<img>`标签还是`<style>`标签。相反，浏览器通过`Content-Type`响应头部从服务器接收内容类型。
 - en: The value of the `Content-Type` header is known as a *MIME type*, or media type.
     For example, if your browser receives a MIME type of `text/javascript`, it hands
     off the response to the JavaScript interpreter. If the MIME type is `image/gif`,
@@ -1373,6 +1391,7 @@
   id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Content-Type`头部的值称为*MIME类型*或媒体类型。例如，如果你的浏览器接收到`text/javascript`的MIME类型，它会将响应交给JavaScript解释器。如果MIME类型是`image/gif`，则响应会交给图形引擎。'
 - en: Some browsers allow the content of the response itself to override the `Content-Type`
     header. This is known as *MIME type sniffing*. This is useful if the browser needs
     to compensate for an incorrect or missing `Content-Type` header. Unfortunately,
@@ -1380,6 +1399,7 @@
   id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: 一些浏览器允许响应内容本身覆盖`Content-Type`头部。这被称为*MIME类型嗅探*。如果浏览器需要弥补不正确或缺失的`Content-Type`头部，这很有用。不幸的是，MIME类型嗅探也是一种跨站脚本攻击向量。
 - en: Suppose Bob adds new functionality to his social networking site, social.bob.com.
     This new feature is designed to let users share photos. Mallory notices social.bob.com
     doesn’t validate uploaded files. It also sends each resource with a MIME type
@@ -1391,21 +1411,25 @@
   id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设Bob为他的社交网络站点social.bob.com添加了新功能。这个新功能旨在让用户共享照片。Mallory注意到social.bob.com不验证上传的文件。它还将每个资源都以`image/jpeg`的MIME类型发送。然后，她滥用了这个功能，上传了一个恶意的JavaScript文件，而不是照片。最后，Alice在查看Mallory的相册时无意中下载了这个脚本。Alice的浏览器嗅探内容，覆盖了Bob不正确的`Content-Type`头部，并执行了Mallory的代码。图14.4描绘了Mallory的攻击。
 - en: '![CH14_F04_Byrne](Images/CH14_F04_Byrne.png)'
   id: totrans-216
   prefs: []
   type: TYPE_IMG
+  zh: '![CH14_F04_Byrne](Images/CH14_F04_Byrne.png)'
 - en: Figure 14.4 Alice’s browser sniffs the content of Mallory’s script, overrides
     the MIME type, and executes it.
   id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: 图14.4 Alice的浏览器嗅探Mallory脚本的内容，覆盖MIME类型，并执行它。
 - en: 'Secure sites resist this form of XSS by sending each response with an `X-Content-Type-Options`
     header. This header, shown here, forbids the browser from performing MIME type
     sniffing:'
   id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 安全站点通过发送带有`X-Content-Type-Options`头部的每个响应来抵抗这种形式的XSS。此头部如下所示，禁止浏览器执行MIME类型嗅探：
 - en: '[PRE24]'
   id: totrans-219
   prefs: []
@@ -1418,11 +1442,13 @@
   id: totrans-220
   prefs: []
   type: TYPE_NORMAL
+  zh: 在Django中，这个行为由`SECURE_CONTENT_TYPE_NOSNIFF`设置配置。这个设置的默认值在3.0版本中改为`True`。如果你运行的是旧版本的Django，你应该明确地将这个设置分配为`True`。
 - en: 14.4.3 The X-XSS-Protection header
   id: totrans-221
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 14.4.3 `X-XSS-Protection`头部
 - en: The `X-XSS-Protection` response header is intended to enable client-side XSS
     resistance. Browsers supporting this feature attempt to automatically detect reflected
     XSS attacks by inspecting the request and response for malicious content. When

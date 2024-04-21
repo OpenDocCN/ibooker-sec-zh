@@ -1,22 +1,32 @@
 - en: 12 Crypto as in cryptocurrency?
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 12 加密货币是指加密货币吗？
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章包括
 - en: Consensus protocols and how they make cryptocurrencies possible
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 共识协议及其如何使加密货币可能
 - en: The different types of cryptocurrencies
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 不同类型的加密货币
 - en: How the Bitcoin and Diem cryptocurrencies work in practice
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 比特币和 Diem 加密货币如何在实践中运作
 - en: Can cryptography be the basis for a new financial system? This is what cryptocurrencies
     have been trying to answer since at least 2008, when Bitcoin was proposed by Satoshi
     Nakamoto (who to this day has yet to reveal his or their identity). Before that,
@@ -25,11 +35,15 @@
     used to refer to cryptocurrencies as well. Cryptocurrency enthusiasts, in turn,
     have become more and more interested in learning about cryptography. This makes
     sense as cryptography is at the core of cryptocurrencies.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 密码学能否成为新金融系统的基础？这是自2008年以来加密货币一直在试图回答的问题，当时比特币是由中本聪提出的（至今仍未透露他或他们的身份）。在那之前，术语*加密*始终是用于指涉密码学领域。但自从比特币的创建以来，我看到它的含义迅速改变，现在也用于指代加密货币。加密货币爱好者反过来越来越有兴趣学习密码学。这是有道理的，因为密码学是加密货币的核心。
 - en: 'What’s a *cryptocurrency*? It is two things:'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 什么是*加密货币*？它有两个方面：
 - en: '*It’s a digital currency.* Simply put, it allows people to transact currency
     electronically. Sometimes a currency backed by a government is used (like the
     US dollar), and sometimes a made-up currency is used (like the bitcoin). You likely
@@ -37,9 +51,11 @@
     or use a checking account, you are using a digital currency! Indeed, you don’t
     need to send cash by mail anymore, and most money transactions today are just
     updates of rows in databases.'
+  id: totrans-7
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*它是一种数字货币。*简单来说，它允许人们以电子方式交易货币。有时会使用由政府支持的货币（如美元），有时会使用虚拟货币（如比特币）。你很可能已经在使用数字货币——每当你在互联网上向某人汇款或使用支票账户时，你都在使用数字货币！事实上，你不再需要通过邮件寄送现金，今天大多数货币交易只是数据库中行的更新。'
 - en: '*It’s a currency that relies heavily on cryptography to avoid using a trusted
     third party and to provide transparency.* In a cryptocurrency, there is no central
     authority that one has to blindly trust, like a government or a bank. We often
@@ -47,9 +63,11 @@
     Thus, as you will see in this chapter, cryptocurrencies are designed to tolerate
     a certain number of malicious actors, and to allow people to verify that they
     function properly.'
+  id: totrans-8
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*它是一种严重依赖密码学来避免使用信任第三方和提供透明度的货币。*在加密货币中，没有必须盲目信任的中央权威，如政府或银行。我们经常将这种属性称为*去中心化*（就像“我们正在去中心化信任”）。因此，正如你将在本章中看到的那样，加密货币被设计为容忍一定数量的恶意行为者，并允许人们验证它们是否正常运作。'
 - en: Cryptocurrencies are relatively new as the first experiment to be successful
     was Bitcoin, proposed in 2008 in the middle of a global financial crisis. While
     the crisis started in the US, it quickly spread to the rest of the world, eroding
@@ -58,12 +76,16 @@
     status quo for financial transactions was inefficient, expensive to maintain,
     and opaque to most people. The rest is history, and I believe this book is the
     first book on cryptography to include a chapter on cryptocurrencies.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 加密货币相对较新，因为第一个成功的实验是比特币，它是在2008年提出的，当时正值全球金融危机中。虽然危机始于美国，但很快就传播到世界其他地区，侵蚀了人们对金融体系的信任，并为比特币等更透明的倡议提供了平台。那时，许多人开始意识到金融交易的现状是低效、昂贵且大多数人不透明的。其余的就是历史，我相信这本书是第一本包含有关加密货币章节的密码学书籍。
 - en: 12.1 A gentle introduction to Byzantine fault-tolerant (BFT) consensus algorithms
+  id: totrans-10
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 12.1 一种温和的拜占庭容错（BFT）共识算法简介
 - en: Imagine that you want to create a new digital currency. It’s actually not too
     involved to build something that works. You could set up a database on a dedicated
     server, which would be used to track users and their balances. With this, you
@@ -72,26 +94,34 @@
     row. Initially, you could also randomly attribute some of your made-up currency
     to your friends so that they can start transferring money to your system. But
     such a simple system has a number of flaws.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象一下，你想要创建一种新的数字货币。构建一个运作良好的系统实际上并不复杂。你可以在专用服务器上设置一个数据库，用于跟踪用户及其余额。通过这样做，你可以为人们提供一个界面，让他们查询余额或允许他们发送支付请求，这将在数据库中减少他们的余额并增加另一行中的余额。最初，你也可以随机将一些虚拟货币分配给你的朋友，以便他们可以开始向你的系统转账。但是这样一个简单的系统有一些缺陷。
 - en: '12.1.1 A problem of resilience: Distributed protocols to the rescue'
+  id: totrans-12
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.1.1 弹性问题：分布式协议来拯救
 - en: The system we just saw is a *single point of failure*. If you lose electricity,
     your users won’t be able to use the system. Worse, if some natural disaster unexpectedly
     destroys your server, everybody might permanently lose their balance. To tackle
     this issue, there exist well-known techniques that you can use to provide more
     resilience to your system. The field of *distributed systems* studies such techniques.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们刚刚看到的系统是一个*单点故障*。如果停电，你的用户将无法使用系统。更糟糕的是，如果某种自然灾害意外摧毁了你的服务器，每个人可能会永久丢失他们的余额。为了解决这个问题，存在着一些众所周知的技术，你可以用来为你的系统提供更强大的弹性。*分布式系统*领域研究了这些技术。
 - en: In this case, the usual solution used by most large applications is to replicate
     the content of your database in (somewhat) real time to other backup servers.
     These servers can then be distributed across various geographical locations, ready
     to be used as backup or even to take over if your main server goes down. This
     is called *high availability*. You now have a *distributed database*.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，大多数大型应用程序使用的常见解决方案是将数据库内容（在某种程度上）实时地复制到其他备份服务器上。这些服务器可以分布在各个地理位置，随时准备作为备份使用，甚至在主服务器故障时接管。这被称为*高可用性*。现在你拥有了*分布式数据库*。
 - en: For large systems that serve lots of queries, it is often the case that these
     backup databases are not just sitting on the sideline waiting to be useful, but
     instead, they are used to provide reads to the state. It is difficult to have
@@ -99,16 +129,20 @@
     (the same way two people editing the same document can be dangerous). Thus, you
     often want a single database to act as *leader* and order all writes and updates
     to the database, while others can be used to read the state.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于服务大量查询的大型系统，备份数据库通常不仅仅是闲置在一旁等待发挥作用，而是被用于提供状态读取。很难让超过一个数据库接受写入和更新，因为这样可能会引发冲突（就像两个人同时编辑同一份文件一样危险）。因此，你通常希望一个数据库充当*领导者*，并对所有写入和更新操作进行排序，而其他数据库则用于读取状态。
 - en: Replication of database content can be slow, and it is expected that some of
     your databases will lag behind the leader until they catch up. This is especially
     true if they are situated further away in the world or are experiencing network
     delays due to some reason. This lag becomes a problem when the replicated databases
     are used to read the state. (Imagine that you see a different account balance
     than your friend because you are both querying different servers.)
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据库内容的复制可能会很慢，预计你的一些数据库会落后于主数据库，直到它们追赶上去。这在使用复制数据库读取状态时尤其如此。（想象一下，你和你的朋友查询不同的服务器，因此看到了不同的账户余额。）
 - en: 'In these cases, applications are often written in order to tolerate this lag.
     This is referred to as *eventual consistency* because eventually the states of
     the databases become consistent. (Stronger consistency models exist, but they
@@ -116,8 +150,10 @@
     main database crashes, which one gets to become the main database? Another problem
     is if the backup databases were lagging behind when the main database crashed,
     will we lose some of the latest changes?'
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这些情况下，应用程序通常被编写以容忍这种滞后。这被称为*最终一致性*，因为最终数据库的状态会变得一致。（存在更强的一致性模型，但它们通常速度较慢且不切实际。）这样的系统也存在其他问题：如果主数据库崩溃，哪个数据库将成为主数据库？另一个问题是，如果备份数据库在主数据库崩溃时落后，我们会丢失一些最新的更改吗？
 - en: This is where stronger algorithms—*consensus algorithms* (also referred to as
     *log replication*, *state machine replication*, or *atomic broadcasts*)—come into
     play when you need the whole system to agree (or come to a consensus) on some
@@ -126,11 +162,15 @@
     wants if everyone is in the same room. But if everyone is communicating through
     the network where messages can be delayed, dropped, intercepted, and modified,
     then a more complicated protocol is required.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是在需要整个系统就某个决定达成一致意见时，更强大的算法—*共识算法*（也称为*日志复制*、*状态机复制*或*原子广播*）—发挥作用的地方。想象一下，一个共识算法解决了一群人试图就要点什么披萨达成一致意见的问题。如果每个人都在同一个房间里，很容易看出大多数人想要什么。但如果每个人都通过网络进行通信，消息可能会延迟、丢失、被拦截和修改，那么就需要一个更复杂的协议。
 - en: '![](../Images/12_001_UN01.jpg)'
+  id: totrans-19
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/12_001_UN01.jpg)'
 - en: 'Let’s see how consensus can be used to answer the previous two questions. The
     first question of which database gets to take over in the case of a crash is called
     *leader election*, and a consensus algorithm is often used to determine which
@@ -140,19 +180,25 @@
     the databases agree to commit it (this is where a consensus protocol can be used
     as well). Once committed, the update to the state cannot be lost easily as most
     of the database participanting have committed the change.'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看看共识如何用来回答前两个问题。在崩溃的情况下哪个数据库可以接管的第一个问题被称为*领导者选举*，通常使用共识算法来确定哪个将成为下一个领导者。第二个问题通常通过将数据库更改视为两个不同步骤来解决：*待定*和*已提交*。对数据库状态的更改始终首先是待定的，只有足够多的数据库同意提交它才能被设置为已提交（这也是共识协议可以使用的地方）。一旦提交，对状态的更新不容易丢失，因为大多数参与的数据库已经提交了更改。
 - en: Some well-known consensus algorithms include Paxos (published by Lamport in
     1989) and its subsequent simplification, Raft, (published by Ongaro and Ousterhout
     in 2013). You can use these algorithms in most distributed database systems to
     solve different problems. (For a great interactive explanation on Raft, check
     out [https://thesecretlivesofdata.com/raft](https://thesecretlivesofdata.com/raft).)
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 一些知名的共识算法包括Paxos（由Lamport于1989年发表）及其后续简化版本Raft（由Ongaro和Ousterhout于2013年发表）。您可以在大多数分布式数据库系统中使用这些算法来解决不同的问题。（要了解关于Raft的出色互动解释，请查看[https://thesecretlivesofdata.com/raft](https://thesecretlivesofdata.com/raft)。）
 - en: 12.1.2 A problem of trust? Decentralization helps
+  id: totrans-22
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.1.2 信任的问题？分权有助于解决
 - en: Distributed systems (from an operational perspective) provide a resilient alternative
     to systems that act as a single point of failure. The consensus algorithms used
     by most distributed database systems do not tolerate faults well. As soon as machines
@@ -160,8 +206,10 @@
     disconnected from some of the other machines like network partitions, problems
     arise. Moreover, there’s no way to detect this from a user perspective, which
     is even more of an issue if servers become compromised.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 分布式系统（从操作角度）为那些充当单点故障的系统提供了一个弹性的替代方案。大多数分布式数据库系统使用的共识算法不够容错。一旦机器开始崩溃，或由于硬件故障而开始表现不良，或开始与某些其他机器断开连接，比如网络分区，问题就会出现。此外，从用户角度来看，没有办法检测到这一点，如果服务器被入侵，这就更成问题了。
 - en: If I query a server and it tells me that Alice has 5 billion dollars in her
     account, I just have to trust it. If the server includes in its response all the
     money transfers that she has received and sent since the beginning of time and
@@ -172,26 +220,34 @@
     states presented as valid), a branch in history that should never have happened.
     And, thus, you can imagine that the compromise of one of the replicated databases
     can lead to pretty devastating consequences.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果我向服务器查询，它告诉我Alice的账户里有50亿美元，我只能相信它。如果服务器在响应中包含了自她账户开户以来所收到和发送的所有货币转账，并将它们全部加起来，我可以验证她账户中确实有50亿美元是正确的。但是谁能保证服务器没有对我撒谎呢？也许当Bob询问另一个服务器时，它返回的是完全不同的余额和/或Alice账户的历史记录。我们称之为*分叉*（以两种相互矛盾的状态呈现为有效），这是历史中不应该发生的一个分支。因此，你可以想象，其中一个复制的数据库的妥协可能会导致相当严重的后果。
 - en: In chapter 9, I mentioned *certificate transparency*, a gossip protocol that
     aims at detecting such forks in the web public key infrastructure (PKI). The problem
     with money is that detection alone is not enough. You want to prevent forks from
     happening in the first place! In 1982, Lamport, the author of the Paxos consensus
     algorithm, introduced the idea of *Byzantine fault-tolerant* (BFT) *consensus
     algorithms*.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第9章中，我提到了*证书透明性*，这是一种旨在检测Web公钥基础设施（PKI）中这种分叉的八卦协议。金钱的问题在于仅仅检测是不够的。你希望首先防止分叉发生！1982年，Paxos共识算法的作者Lamport提出了*拜占庭容错*（BFT）*共识算法*的概念。
 - en: '*We imagine that several divisions of the Byzantine army are camped outside
     an enemy city, each division commanded by its own general. The generals can communicate
     with one another only by messenger. After observing the enemy, they must decide
     upon a common plan of action. However, some of the generals may be traitors, trying
     to prevent the loyal generals from reaching agreement*.'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: '*我们想象拜占庭军队的几个师分驻扎在一座敌方城市外面，每个师分都由自己的将军指挥。将军们只能通过信使相互通信。观察敌人之后，他们必须决定一个共同的行动计划。然而，一些将军可能是叛徒，试图阻止忠诚的将军达成一致意见*。'
 - en: —Lamport et al. (“The Byzantine Generals Problem,” 1982)
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: ——Lamport等人（《拜占庭将军问题》，1982年）
 - en: With his Byzantine analogy, Lamport started the field of BFT consensus algorithms,
     aiming at preventing bad consensus participants from creating different conflicting
     views of a system when agreeing on a decision. These BFT consensus algorithms
@@ -200,16 +256,20 @@
     one another anymore. BFT protocols usually make heavy use of cryptography to authenticate
     messages and decisions, which in turn, can be used by others to cryptographically
     validate the decisions output by the consensus protocol.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: Lamport通过他的拜占庭类比开启了BFT共识算法领域，旨在防止不良共识参与者在达成决策时对系统产生不同的冲突观点。这些BFT共识算法高度类似于之前的共识算法，如Paxos和Raft，只是复制的数据库（协议参与者）不再盲目地相互信任了。BFT协议通常大量使用密码学来验证消息和决策的真实性，而这反过来可以被其他人用来对共识协议输出的决策进行密码学验证。
 - en: These BFT consensus protocols are, thus, solutions to both our resilience and
     trust issues. The different replicated databases can run these BFT algorithms
     to agree on new system states (for example, user balances), while policing each
     other by verifying that the state transitions (transactions between users) are
     valid and have been agreed on by most of the participants. We say that the trust
     is now *decentralized*.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些BFT共识协议因此解决了我们的韧性和信任问题。不同的复制数据库可以运行这些BFT算法，以便在新系统状态（例如用户余额）上达成一致，同时通过验证状态转换（用户之间的交易）是否有效，并获得大多数参与者的同意来相互监督。我们说信任现在是*分散的*。
 - en: The first real-world BFT consensus algorithm invented was *Practical BFT* (PBFT),
     published in 1999\. PBFT is a leader-based algorithm similar to Paxos and Raft,
     where one leader is in charge of making proposals while the rest attempt to agree
@@ -217,87 +277,115 @@
     well past a dozen participants. Today, most modern cryptocurrencies use more efficient
     variants of PBFT. For example, Diem, the cryptocurrency introduced by Facebook
     in 2019, is based on HotStuff, a PBFT-inspired protocol.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 第一个真实世界的BFT共识算法是1999年发表的*实用BFT*（PBFT）。PBFT是一种基于领导者的算法，类似于Paxos和Raft，其中一个领导者负责提出提案，而其他人试图就提案达成一致。不幸的是，PBFT相当复杂，缓慢，并且在超过十几个参与者后无法很好地扩展。如今，大多数现代加密货币使用更高效的PBFT变体。例如，Facebook于2019年推出的加密货币Diem基于HotStuff，这是一种受PBFT启发的协议。
 - en: '12.1.3 A problem of scale: Permissionless and censorship-resistant networks'
+  id: totrans-31
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.1.3 规模问题：无许可和抗审查网络
 - en: 'One limitation of these PBFT-based consensus algorithms is that they all require
     a known and fixed set of participants. More problematic, past a certain number
     of participants, they start breaking apart: communication complexity increases
     drastically, they become extremely slow, electing a leader becomes complicated,
     etc.'
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些基于PBFT的共识算法的一个局限性是它们都需要一个已知且固定的参与者集合。更为棘手的是，超过一定数量的参与者后，它们开始分崩离析：通信复杂性急剧增加，变得极其缓慢，选举领导者变得复杂等等。
 - en: How does a cryptocurrency decide who the consensus participants are? There are
     several ways, but the two most common ways are
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 加密货币如何决定共识参与者？有几种方式，但最常见的两种方式是
 - en: '*Proof of authority* (PoA)—The consensus participants are decided in advance.'
+  id: totrans-34
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*权威证明*（PoA）—共识参与者事先确定。'
 - en: '*Proof of stake* (PoS)—The consensus participants are picked dynamically, based
     on which has the most at stake (and, thus, is less incentivized to attack the
     protocol). In general, cryptocurrencies based on PoS elect participants based
     on the amount of digital currency they hold.'
+  id: totrans-35
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*权益证明*（PoS）—共识参与者是动态选择的，基于谁拥有的权益最大（因此，更不愿意攻击协议）。一般来说，基于PoS的加密货币根据持有的数字货币数量选举参与者。'
 - en: Having said that, not all consensus protocols are classical BFT consensus protocols.
     Bitcoin, for example, took a different approach when it proposed a consensus mechanism
     that had no known list of participants. This was quite a novel idea at the time,
     and Bitcoin achieved this by relaxing the constraints of classical BFT consensus
     protocols. As you will see later in this chapter, because of this approach, Bitcoin
     can fork, and this introduces its own sets of challenges.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 话虽如此，并非所有的共识协议都是经典的BFT共识协议。例如，比特币在提出一种没有已知参与者名单的共识机制时采取了不同的方法。这在当时是一个相当新颖的想法，比特币通过放宽经典BFT共识协议的约束来实现这一点。正如你将在本章后面看到的，由于这种方法，比特币可以分叉，这带来了自己的一系列挑战。
 - en: Without participants, how do you even pick a leader? You could use a PoS system
     (for example, the Ouroboros consensus protocol does this). Instead, Bitcoin’s
     consensus relied on a probabilistic mechanism called *proof of work* (PoW). In
     Bitcoin, this translates to people attempting to find solutions to puzzles in
     order to become a participant and a leader. The puzzle is a cryptographic one
     as you will see later in this chapter.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 没有参与者，你如何选择领导者？您可以使用PoS系统（例如，Ouroboros共识协议就是这样做的）。相反，比特币的共识依赖于一种称为*工作量证明*（PoW）的概率机制。在比特币中，这意味着人们试图找到解决方案来成为参与者和领导者。正如你将在本章后面看到的，这个谜题是一个密码学谜题。
 - en: Due to a lack of known participants, Bitcoin is called a *permissionless* network.
     In a permissionless network, you do not need extra permissions to participate
     in consensus; anyone can participate. This is in contrast to *permissioned* networks
     that have a fixed set of participants. I summarize some of these new concepts
     in figure 12.1.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于缺乏已知参与者，比特币被称为*无许可*网络。在无许可网络中，您无需额外权限即可参与共识；任何人都可以参与。这与*有许可*网络形成对比，后者有一个固定的参与者集合。我在图12.1中总结了一些这些新概念。
 - en: '![](../Images/12_01.jpg)'
+  id: totrans-39
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/12_01.jpg)'
 - en: Figure 12.1 A centralized network can be seen as a single point of failure,
     whereas a distributed and decentralized network are resilient to a number of servers
     shutting down or acting maliciously. A permissioned network has a known and fixed
     set of main actors, while in a permissionless network, anyone can participate.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 图12.1 一个集中式网络可以被视为单点故障，而分布式和去中心化网络对一些服务器关闭或恶意行为具有弹性。在许可网络中，有一组已知和固定的主要参与者，而在无许可网络中，任何人都可以参与。
 - en: Until recently, it was not known how to use classical BFT consensus protocols
     with a permissionless network, where anyone is allowed to join. Today, there exist
     many approaches using PoS to dynamically pick a smaller subset of the participants
     as consensus participants. One of the most notable ones is Algorand, published
     in 2017, which dynamically picks participants and leaders based on how much currency
     they hold.
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 直到最近，人们还不知道如何将经典的BFT共识协议与允许任何人加入的无许可网络一起使用。如今，存在许多使用PoS动态选择参与者子集作为共识参与者的方法。其中最值得注意的是2017年发布的Algorand，它根据持有的货币数量动态选择参与者和领导者。
 - en: Bitcoin also claims to be resistant to censorship because you cannot know in
     advance who will become the next leader and, therefore, cannot prevent the system
     from electing a new leader. It is less clear if this is possible in PoS systems
     where it might be easier to figure out the identities behind large sums of currency.
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 比特币还声称对审查具有抵抗力，因为你无法预先知道谁将成为下一个领导者，因此无法阻止系统选举新领导者。在PoS系统中是否可能实现这一点尚不太清楚，因为在这种系统中更容易确定大量货币背后的身份。
 - en: I should mention that not all BFT consensus protocols are leader-based. Some
     are *leaderless*, they do not work by having elected leaders decide on the next
     state transitions. Instead, everyone can propose changes, and the consensus protocol
     helps everyone agree on the next state. In 2019, Avalanche launched such a cryptocurrency
     that allowed anyone to propose changes and participate in consensus.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 我应该提到，并非所有的BFT共识协议都是基于领导者的。有些是*无领导者*的，它们不是通过选举领导者决定下一个状态转换的。相反，每个人都可以提出变更，共识协议帮助每个人就下一个状态达成一致。2019年，Avalanche推出了这样一种加密货币，允许任何人提出变更并参与共识。
 - en: 'Finally, if you thought that consensus was necessary at all for a decentralized
     payment system, it’s not exactly right as well. Consensus-less protocols were
     proposed in 2018 in “AT2: Asynchronous Trustworthy Transfers” by Guerraoui, Kuznetsov,
@@ -305,21 +393,30 @@
     protocols in this chapter as they are a relatively new and haven’t been battle-tested
     yet. In the rest of this chapter, I will go over two different cryptocurrencies
     in order to demonstrate different aspects of the field:'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: '最后，如果你认为共识对于去中心化支付系统是必要的，那也不完全正确。2018年，Guerraoui、Kuznetsov、Monti、Pavlovic和Seredinschi提出了“AT2:
+    异步可信转账”中的无共识协议。考虑到这一点，我在本章中不会讨论无共识协议，因为它们是相对较新的，尚未经过实战测试。在本章的其余部分，我将介绍两种不同的加密货币，以展示该领域的不同方面：'
 - en: '*Bitcoin*—The most popular cryptocurrency based on PoW, introduced in 2008.'
+  id: totrans-45
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*比特币*—基于PoW的最流行的加密货币，于2008年推出。'
 - en: '*Diem*—A cryptocurrency based on the BFT consensus protocol, announced by Facebook
     and a group of other companies in 2019\.'
+  id: totrans-46
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*Diem*—一种基于BFT共识协议的加密货币，由Facebook和一群其他公司在2019年宣布。'
 - en: 12.2 How does Bitcoin work?
+  id: totrans-47
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 12.2 比特币是如何运作的？
 - en: 'On October 31, 2008, an anonymous researcher(s) published “Bitcoin: A Peer-to-Peer
     Electronic Cash System” under the pseudonym Satoshi Nakamoto. To this day, it
     remains unknown who Satoshi Nakamoto is. Not long after, “they” released the Bitcoin
@@ -327,20 +424,28 @@
     the Bitcoin network. That was the only thing that Bitcoin needed: enough users
     to run the same software or at least the same algorithm. The first ever cryptocurrency
     was born—the bitcoin (or BTC).'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 2008年10月31日，一位匿名研究人员以化名Satoshi Nakamoto发布了“比特币：一个点对点的电子现金系统”。直至今日，仍然不知道Satoshi
+    Nakamoto是谁。不久之后，“他们”发布了比特币核心客户端，这是任何人都可以运行以加入和参与比特币网络的软件。比特币所需要的唯一一件事情就是足够多的用户运行相同的软件或至少相同的算法。第一个加密货币诞生了——比特币（或BTC）。
 - en: Bitcoin is a true success story. The cryptocurrency has been running for more
     than a decade (at the time of this writing) and has allowed users from all around
     the world to undertake transactions using the digital currency. In 2010, Laszlo
     Hanyecz, a developer, bought two pizzas for 10,000 BTCs. As I am writing these
     lines (February 2021), a BTC is worth almost $57,000\. Thus, one can already take
     away that cryptocurrencies can sometimes be extremely volatile.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 比特币是一个真正的成功故事。这种加密货币已经运行了十多年（截至撰写本文时），并且已经允许来自世界各地的用户使用数字货币进行交易。2010 年，开发者拉斯洛·汉野奇（Laszlo
+    Hanyecz）用 10,000 BTC 买了两块披萨。当我写下这些文字时（2021 年 2 月），BTC 几乎价值 57,000 美元。因此，我们已经可以得出结论，加密货币有时可能极度波动。
 - en: 12.2.1 How Bitcoin handles user balances and transactions
+  id: totrans-50
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.2.1 比特币如何处理用户余额和交易
 - en: Let’s dive deeper into the internals of Bitcoin, first looking at how Bitcoin
     handles user balances and transactions. As a user of Bitcoin, you directly deal
     with cryptography. You do not have a username and password to log into a website
@@ -348,23 +453,32 @@
     Algorithm) key pair that you generate yourself. A user’s balance is simply an
     amount of BTC associated with a public key, and as such, to receive BTCs, you
     simply share your public key with others.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们深入了解比特币的内部结构，首先看看比特币如何处理用户余额和交易。作为比特币的用户，您直接处理密码学。您不像在任何银行网站上一样有用户名和密码登录；相反，您有自己生成的椭圆曲线数字签名算法（ECDSA）密钥对。用户的余额只是与公钥关联的一定数量的
+    BTC，因此，要接收 BTC，您只需与他人共享您的公钥。
 - en: To use your BTCs, you sign a transaction with your private key. A transaction
     pretty much says what you think it says, “I send *X* BTC to public key *Y*,” overlooking
     some details that I’ll explain later.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 要使用您的 BTC，您需要使用您的私钥签署交易。交易基本上说明了您认为的内容，“我将 *X* BTC 发送到公钥 *Y*”，忽略了一些我稍后会解释的细节。
 - en: Note In chapter 7, I mentioned that Bitcoin uses the secp256k1 curve with ECDSA.
     The curve is not to be confused with NIST’s P-256 curve, which is known as secp256r1.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意：在第 7 章中，我提到比特币使用带有 ECDSA 的 secp256k1 曲线。不要将此曲线与 NIST 的 P-256 曲线混淆，后者被称为 secp256r1。
 - en: The safety of your funds is directly linked to the security your private key.
     And, as you know, key management is hard. In the past decade, key management issues
     in cryptocurrencies have led to the accidental loss (or theft) of keys worth millions
     of dollars. Be careful!
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 您的资金安全直接与您的私钥安全性相关。而且，正如您所知，密钥管理很困难。在过去的十年中，加密货币中的密钥管理问题导致了价值数百万美元的密钥的意外丢失（或盗窃）。小心！
 - en: 'There exist different types of transactions in Bitcoin, and most of the transactions
     seen on the network actually hide the recipient’s public key by hashing it. In
     these cases, the hash of a public key is referred to as the *address* of an account.
@@ -374,33 +488,46 @@
     to be revealed so that others can verify the signature). This makes addresses
     shorter in size and prevents someone from retrieving your private key in case
     ECDSA one day breaks.'
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 比特币存在不同类型的交易，实际上，在网络上看到的大多数交易都通过对其进行哈希来隐藏接收方的公钥。在这些情况下，公钥的哈希被称为帐户的*地址*。（例如，这是我的比特币地址：`bc1q8y6p4x3rp32dz80etpyffh6764ray9842egchy`。）地址有效地隐藏了帐户的实际公钥，直到帐户所有者决定花费
+    BTC（在这种情况下，需要揭示地址的预图，以便其他人可以验证签名）。这使地址的大小更短，并防止有人在某天破解 ECDSA 后检索您的私钥。
 - en: The fact that different types of transactions exist is an interesting detail
     of Bitcoin. Transactions are not just payloads containing some information; they
     are actually short scripts written in a made-up and quite limited instruction
     set. When a transaction is processed, the script needs to be executed before the
     produced output can determine if the transaction is valid, and if it is, what
     steps need to be taken to modify the state of all the accounts.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 不同类型的交易存在是比特币的一个有趣细节。交易不仅仅是包含一些信息的有效载荷；它们实际上是用虚构和相当有限的指令集编写的简短脚本。当交易被处理时，必须执行脚本，然后生成的输出才能确定交易是否有效，以及如果有效，则需要采取哪些步骤来修改所有帐户的状态。
 - en: 'Cryptocurrencies like Ethereum have pushed this scripting idea to the limit
     by allowing much more complex programs (so-called *smart contracts*) to run when
     a transaction is executed. There are a few things here that I didn’t touch on:'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 像以太坊这样的加密货币通过允许在执行交易时运行更复杂的程序（所谓的*智能合约*）将这个脚本思想推向了极限。这里有几件事情我没有触及到：
 - en: What’s in a transaction?
+  id: totrans-58
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个交易中包含什么？
 - en: What does it mean for a transaction to be executed? And who executes it?
+  id: totrans-59
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 交易执行意味着什么？谁来执行它？
 - en: I will explain the second item in the next section. For now, let’s look at what
     is in a transaction.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 我将在下一节解释第二项内容。现在，让我们看看一个交易中有什么。
 - en: A particularity of Bitcoin is that there is no real database of account balances.
     Instead, a user has pockets of BTCs that are available for them to spend and which
     are called *Unspent Transaction Outputs* (UTXOs). You can think of the concept
@@ -408,37 +535,52 @@
     their owners can spend. When a transaction spends some of the coins, the coins
     disappear from the bowl, and new ones appear for the payees of the same transaction.
     These new coins are just the outputs listed in the transaction.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 比特币的一个特点是没有真正的账户余额数据库。相反，用户拥有的是可供支出的比特币“零钱”，称为*未花费交易输出*（UTXOs）。你可以将UTXOs的概念想象成一个大碗，对所有人可见，里面装满了只有它们的所有者才能花费的硬币。当一笔交易花费了一些硬币时，这些硬币就会从碗里消失，同时为同一交易的收款方产生新的硬币。这些新硬币就是交易中列出的输出。
 - en: To know how many BTCs you have in your account, you’d have to count all of the
     UTXOs that are assigned to your address. In other words, you’d have to count all
     of the money that was sent to you and that you haven’t spent yet. Figure 12.2
     gives an example that illustrates how UTXOs are used in transactions.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 要知道你账户里有多少比特币，你需要数一下分配给你地址的所有UTXOs。换句话说，你需要数一下所有发给你但你尚未花费的钱。图12.2举例说明了UTXOs在交易中的使用方式。
 - en: '![](../Images/12_02.jpg)'
+  id: totrans-63
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/12_02.jpg)'
 - en: Figure 12.2 Transaction 1 is signed by Alice and transfers 1 BTC to Bob. Because
     it uses a UTXO of 5 BTCs, the transaction needs to also send back the change to
     Alice as well as reserve some of that change as fees. Transaction 2 is signed
     by Bob and combines two UTXOs to transfer 2 BTCs to Felix. (Note that in reality,
     fees are much lower.)
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 图12.2 交易1由Alice签名，将1 BTC转给Bob。由于它使用了5 BTC的UTXO，该交易还需要将找零发送回Alice，并保留一些找零作为费用。交易2由Bob签名，合并了两个UTXO以将2
+    BTC转给Felix。（请注意，实际中，费用要低得多。）
 - en: 'There’s now a chicken-and-egg question: where did the first UTXOs come from?
     That, I will answer in the next section.'
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在有一个先有鸡还是先有蛋的问题：第一个UTXO从哪里来？这个问题我将在下一节中回答。
 - en: 12.2.2 Mining BTCs in the digital age of gold
+  id: totrans-66
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.2.2 在数字黄金时代挖掘比特币
 - en: You now understand what’s in a Bitcoin transaction and how you can manage your
     account or figure out someone’s balance. But who actually keeps track of all these
     transactions? The answer is everyone!
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 你现在了解了比特币交易中的内容以及如何管理你的账户或查明某人的余额。但是实际上是谁跟踪所有这些交易的呢？答案是每个人！
 - en: Indeed, using Bitcoin means that every transaction must be publicly shared and
     recorded in history. Bitcoin is an *append-only ledger*—a book of transactions
     where each page is connected to the previous one. I want to emphasize here that
@@ -446,8 +588,10 @@
     that because every transaction is public, the only semblance of anonymity you
     get is that it might be hard to figure out who’s who (in other words, what public
     key is linked to what person in real life).
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 实际上，使用比特币意味着每笔交易都必须公开共享并记录在历史中。比特币是一个*只追加的分类帐*——一本交易记录的书，每页都与上一页相连。我在这里要强调的是，只追加意味着你不能回去修改书中的某一页。还要注意的是，因为每笔交易都是公开的，你唯一能得到的匿名性只是可能很难弄清谁是谁（换句话说，实际上什么公钥与什么人联系在一起）。
 - en: 'One can easily inspect any transaction that has happened since the inception
     of Bitcoin by downloading a Bitcoin client and using it to download the whole
     history. By doing this, you become part of the network and must re-execute every
@@ -457,11 +601,16 @@
     ledger. You can more easily inspect transactions by using an online service that
     does the heavy lifting for you (as long as you trust an online service). I give
     an example of these so-called *blockchain explorers* in figure 12.3.'
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 任何人都可以通过下载比特币客户端并使用它下载整个历史来轻松检查自比特币创立以来发生的任何交易。通过这样做，你成为了网络的一部分，并且必须根据比特币客户端中编码的规则重新执行每个交易。当然，比特币的历史非常庞大：在撰写本文时，它大约是300
+    GB，根据你的连接速度，可能需要几天的时间来下载整个比特币分类账。你可以通过使用一个为你做繁重工作的在线服务更轻松地检查交易（只要你信任在线服务）。我在图12.3中给出了这些所谓的*区块链浏览器*的一个例子。
 - en: '![](../Images/12_03.jpg)'
+  id: totrans-70
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/12_03.jpg)'
 - en: Figure 12.3 A random transaction I chose to analyze on [https://blockchain.com](https://blockchain.com)
     ([http://mng.bz/n295](http://mng.bz/n295)). The transaction uses one input (of
     around 1.976 BTCs) and splits it in two outputs (of around 0.009 BTC and 1.967
@@ -469,13 +618,18 @@
     is the transaction fee (not represented as an output). The other fields are the
     scripts written using Bitcoin’s scripting language in order to either spend the
     UTXOs in the inputs or to make the UTXOs in the outputs spendable.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 图12.3 我选择在[https://blockchain.com](https://blockchain.com)上分析的一笔随机交易（[http://mng.bz/n295](http://mng.bz/n295)）。该交易使用一个输入（约1.976
+    BTC）并将其分成两个输出（约0.009 BTC和1.967 BTC）。总输入金额与总输出金额之间的差额是交易费（不作为输出表示）。其他字段是使用比特币脚本语言编写的脚本，以便花费输入中的UTXO或使输出中的UTXO可花费。
 - en: 'Bitcoin is really just a list of all the transactions that have been processed
     since its inception (we call that the *genesis*) up until now. This should make
     you wonder: who is in charge of choosing and ordering transactions in this ledger?'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 比特币实际上只是自其创世以来已处理的所有交易的列表（我们称之为*起源*）直到现在。这应该让你思考：谁负责选择和排序交易在这个分类账中？
 - en: In order to agree on an ordering of transactions, Bitcoin allows anyone (even
     you) to propose a list of transactions to be included in the next page of the
     ledger. This proposal containing a list of transactions is called a *block* in
@@ -487,8 +641,10 @@
     I talked about previously. Bitcoin’s PoW is based on finding a block that hashes
     to a digest smaller than some value. In other words, the block’s digest must have
     a binary representation starting with some given numbers of zeros.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了就交易的排序达成一致，比特币允许任何人（甚至是你）提出要包含在下一个分类账页面中的交易列表。包含交易列表的这个提案在比特币的术语中被称为一个*块*。但是，让任何人提出一个块是灾难的预兆，因为比特币中有很多参与者。相反，我们希望只有一个人提出下一个交易块的提案。为了做到这一点，比特币让每个人都在一些概率谜题上工作，并且只允许第一个解决谜题的人提出他们的块。这就是我之前谈到的工作证明（PoW）机制。比特币的PoW是基于找到一个哈希值小于某个值的块。换句话说，块的哈希值必须具有以一些给定的零开始的二进制表示。
 - en: In addition to the transactions you want to include, the block must contain
     the hash of the previous block. Hence the Bitcoin ledger is really a succession
     of blocks, where each block refers to the previous one, down to the very first
@@ -496,8 +652,10 @@
     of the blockchain is that the slightest modification to a block would render the
     chain invalid as the block’s digest would also change and consequently break the
     reference the next block had to it.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了你想要包含的交易之外，块还必须包含上一个块的哈希值。因此，比特币分类账实际上是一系列块，其中每个块都指向前一个块，一直到第一个块，即创世块。这就是比特币所谓的*区块链*。区块链的美妙之处在于，对块的最轻微修改都会使链无效，因为块的哈希值也会改变，从而破坏下一个块对它的引用。
 - en: Note that as a participant who is looking to propose the next block, you don’t
     have to change much in your block to derive a new hash from it. You can fix most
     of its content first (the transactions it includes, the hash of the block it extends,
@@ -505,11 +663,15 @@
     hash. You can treat this field as a counter, incrementing the value until you
     find a digest that fits the rules of the game, or you can generate a random value.
     I illustrate this idea of a blockchain in figure 12.4.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，作为一个寻求提出下一个区块的参与者，你不需要对你的区块做太多更改来从中派生一个新的哈希。你可以首先固定它的大部分内容（包括其中的交易、它扩展的区块的哈希等），然后仅修改一个字段（称为区块的nonce），以影响区块的哈希。你可以将这个字段视为一个计数器，递增其值直到找到符合游戏规则的摘要，或者你可以生成一个随机值。我在图12.4中阐述了区块链的这个概念。
 - en: '![](../Images/12_04.jpg)'
+  id: totrans-76
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/12_04.jpg)'
 - en: Figure 12.4 On [https://andersbrownworth.com/blockchain/blockchain](https://andersbrownworth.com/blockchain/blockchain),
     one can interactively play with a toy blockchain. Each block includes its parent’s
     digest, and each block contains a random nonce that allows its digest to start
@@ -517,96 +679,130 @@
     one contains a block (number 2) that has been modified (its data was initially
     empty). As the modification changed the block’s digest, it is no longer authenticated
     by subsequent blocks.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 图12.4 在[https://andersbrownworth.com/blockchain/blockchain](https://andersbrownworth.com/blockchain/blockchain)上，人们可以与一个玩具区块链进行互动。每个区块都包含其父区块的摘要，每个区块都包含一个允许其摘要以四个0开头的随机nonce。注意，对于顶部的区块链是如此，但是底部的区块链包含一个已经被修改的区块（编号为2）（其数据最初为空）。由于修改改变了区块的摘要，所以它不再被后续区块认证。
 - en: 'All of this works because everyone is running the same protocol using the same
     rules. When you synchronize with the blockchain, you download every block from
     other peers and verify that:'
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有这一切都是因为每个人都在运行相同的协议，使用相同的规则。当你与区块链同步时，你从其他节点下载每个区块，并验证：
 - en: Hashing each block indeed gives a digest that is smaller than some expected
     value.
+  id: totrans-79
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对每个区块进行哈希确实会产生一个比某个预期值更小的摘要。
 - en: Each block refers back to the previous block in the history.
+  id: totrans-80
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 每个区块都指向历史中的前一个区块。
 - en: Not everyone has to propose blocks, but you can if you want. If you do so, you
     are called a *miner*. This means that in order to get your transactions in the
     blockchain, you need the miners’ help (as figure 12.5 illustrates).
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 并非每个人都必须提出区块，但如果你愿意，你可以这样做。如果你这样做，你就被称为*矿工*。这意味着为了让你的交易进入区块链，你需要矿工的帮助（正如图12.5所示）。
 - en: '![](../Images/12_05.jpg)'
+  id: totrans-82
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/12_05.jpg)'
 - en: Figure 12.5 The Bitcoin network is a number of nodes (miners or not) that are
     interconnected. To submit a transaction, you must send it to a miner that can
     get it into the blockchain (by including it into a block). As you do not know
     which miner will be successful at mining a block, you must propagate your transaction
     through the network to reach as many miners as possible.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 图12.5 比特币网络是许多节点（矿工或其他）相互连接的网络。要提交一个交易，你必须将其发送给一个能够将其放入区块链中的矿工（通过将其包含在一个区块中）。由于你不知道哪个矿工将成功地挖掘一个区块，你必须通过网络传播你的交易，以尽可能多地达到矿工。
 - en: 'Miners do not work for free. If a miner finds a block, they collect:'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 矿工不是无偿工作的。如果一个矿工找到了一个区块，他们会收集：
 - en: '*A reward*—A fixed number of BTCs will get created and sent to your address.
     In the beginning, miners would get 50 BTCs per block mined. But the reward value
     halves every 210,000 blocks and will eventually be reduced to 0, capping the total
     amount of BTCs that can be created to 21 million.'
+  id: totrans-85
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*奖励* —— 一定数量的比特币将被创建并发送到你的地址。一开始，每个挖掘的区块都会获得50个比特币。但是奖励值会在每挖掘210,000个区块时减半，并最终减少到0，限制可以创建的比特币总量为2100万。'
 - en: '*All the transaction fees contained in the block*—This is why increasing the
     fees in your transactions allows you to get them accepted faster as miners tend
     to include transactions with higher fees in the blocks they mine.'
+  id: totrans-86
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 包含在区块中的*所有交易费* ——这就是为什么在你的交易中增加费用可以让它们更快被接受，因为矿工倾向于在他们挖掘的区块中包含费用更高的交易。
 - en: This is how users of Bitcoin are incentivized in making the protocol move forward.
     A block always contains what is called a *coinbase*, which is the address that
     collects the reward and the fees. The miner usually sets the coinbase to their
     own address.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是比特币用户被激励推动协议向前发展的方式。一个区块总是包含所谓的*coinbase*，即收集奖励和费用的地址。矿工通常将coinbase设置为他们自己的地址。
 - en: 'We can now answer the question we had at the beginning of the section: where
     did the first UTXOs come from? The answer is that all BTCs in history were, at
     some point or another, created as part of the block reward for miners.'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们可以回答本节开头提出的问题：第一个UTXO是从哪里来的？答案是，历史上的所有比特币在某个时候都是作为矿工的区块奖励的一部分而创建的。
 - en: 12.2.3 Forking hell! Solving conflicts in mining
+  id: totrans-89
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.2.3 分叉地狱！解决挖矿中的冲突
 - en: Bitcoin distributes the task of choosing the next set of transactions to be
     processed via a PoW-based system. Your chance to mine a block is directly correlated
     to the amount of hashes you can compute, and thus, the amount of computation you
     can put produce. A lot of computation power nowadays is directed at mining blocks
     in Bitcoin or other PoW-based cryptocurrencies.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 比特币通过基于PoW的系统分配选择下一组要处理的交易的任务。你挖掘一个区块的机会与你能计算的哈希数量直接相关，因此，你可以产生的计算量。如今，很多计算能力都被用于在比特币或其他基于PoW的加密货币中挖矿。
 - en: Note PoW can be seen as Bitcoin’s way of addressing *sybil attacks*, which are
     attacks that take advantage of the fact that you can create as many accounts as
     you want in a protocol, giving you an asymmetric edge to dishonest participants.
     In Bitcoin, the only way to obtain more power is really to buy more hardware to
     compute hashes, not to create more addresses in the network.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意：PoW可以被视为比特币应对*西比尔攻击*的方式，这些攻击利用了你可以在协议中创建任意多个账户的事实，给不诚实的参与者带来了不对称的优势。在比特币中，获得更多算力的唯一途径实际上是购买更多硬件来计算哈希值，而不是在网络中创建更多地址。
 - en: 'There is still one problem though: the difficulty of finding a hash that is
     lower than some value can’t be too easy. If it is, then the network will have
     too many participants mining a valid block at the same time. And, if this happens,
     which mined block is the legitimate next block in the chain? This is essentially
     what we call a *fork*.'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，仍然存在一个问题：找到一个低于某个值的哈希的难度不能太低。如果太容易，那么网络中将有太多参与者同时挖掘一个有效的区块。如果发生这种情况，那么在链中哪个被挖掘的区块是合法的下一个区块呢？这本质上就是我们所说的*分叉*。
 - en: To solve forks, Bitcoin has two mechanisms. The first is to *maintain the hardness
     of PoW*. If blocks get mined too quickly or too slowly, the Bitcoin algorithm
     that everyone is running dynamically adapts to the network conditions and increases
     or decreases the *difficulty* of the PoW. Simplified, miners have to find a block
     digest that has more or less zeros.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了解决分叉问题，比特币有两种机制。第一种是*保持PoW的难度*。如果区块挖掘得太快或太慢，那么每个人都在运行的比特币算法会根据网络条件动态调整，并增加或减少PoW的*难度*。简单来说，矿工必须找到一个具有更多或更少零的区块摘要。
 - en: Note If the difficulty dictates that a block digest needs to start with a 0
     byte, you are expected to try 2⁸ different blocks (more specifically different
     nonces as explained previously) until you can find a valid digest. Raise this
@@ -615,8 +811,10 @@
     you have specialized hardware to compute these hashes more rapidly. Currently,
     Bitcoin’s algorithm dynamically changes the difficulty so that a block is mined
     every 10 minutes.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意：如果难度要求区块摘要以0字节开头，你需要尝试2⁸个不同的区块（更具体地说是不同的nonce，如前面所述），直到找到有效的摘要。将这个数字提高到2字节，你现在需要尝试2^(16)个不同的区块。你达到这个目标所需的时间取决于你拥有的计算能力以及是否有专门的硬件来更快地计算这些哈希值。目前，比特币的算法会动态调整难度，以确保每10分钟挖出一个区块。
 - en: Our second mechanism is to make sure everyone has the same way of going forward
     if a fork does happen. To do this, the rule is to *follow the chain with the most
     amount of work*. The 2008 Bitcoin paper stated, “the longest chain not only serves
@@ -625,53 +823,72 @@
     see as the longest chain. The protocol was later updated to follow the chain with
     the highest cumulative amount of work, but this distinction does not matter too
     much here. I illustrate this in figure 12.6.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的第二个机制是确保每个人在发生分叉时都有相同的前进方式。为了做到这一点，规则是*遵循工作量最大的链*。2008年的比特币白皮书指出，“最长的链不仅作为事件序列的证明，还证明它来自CPU算力最大的池”，规定参与者应该尊重他们认为是最长链的链。协议后来更新为遵循具有最高累积工作量的链，但在这里这个区别并不太重要。我在图12.6中进行了说明。
 - en: '![](../Images/12_06.jpg)'
+  id: totrans-96
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/12_06.jpg)'
 - en: 'Figure 12.6 A fork in the blockchain: two miners publish a valid block at height
     3 (meaning 3 blocks after genesis). Later, another miner mines a block at height
     4 that points to the second block at height 3\. As the second fork is now longer,
     it is the valid fork that miners should continue to extend. Note that arrows coming
     out of a block point to the parent block (the block they extend).'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 12.6 区块链中的分叉：两个矿工在高度 3 发布了一个有效区块（意味着创世区块之后的第 3 个区块）。后来，另一个矿工在高度 4 挖掘了一个指向高度
+    3 的第二个区块的区块。由于第二个分叉现在更长，这是矿工应该继续扩展的有效分叉。请注意，指向区块的箭头指向父区块（它们扩展的区块）。
 - en: I said previously that the consensus algorithm of Bitcoin is not a BFT protocol.
     This is because the consensus algorithm allows such forks. Thus, if you are waiting
     for your transaction to be processed, you should absolutely *not* rely on simply
     observing your transaction being included in a block! The observed block could
     actually be a fork, and a losing one (to a longer fork) at that.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 我之前说过比特币的共识算法不是 BFT 协议。这是因为共识算法允许这样的分叉。因此，如果你正在等待你的交易被处理，绝对不应该仅仅依靠观察你的交易是否被包含在一个区块中！观察到的区块实际上可能是一个分叉，而且是一个失败的分叉（相对于更长的分叉）。
 - en: You need more assurance to decide when your transaction has been processed for
     real. Most wallets and exchange platforms wait for a number of *confirmation blocks*
     to be mined on top of your block. The more blocks on top of the one that includes
     your transaction, the less chance that chain will be reorganized into another,
     due to a longer existing fork.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 你需要更多的保证来决定你的交易是否已经真正被处理。大多数钱包和交易平台都等待一定数量的*确认区块*在你的区块之上被挖掘出来。在包含你的交易的那个区块之上挖掘出来的区块越多，链被重新组织成另一条链的机会就越小，因为已存在的分叉更长。
 - en: The number of confirmation is typically set to 6 blocks, which makes the confirmation
     time for your transaction around an hour. That being said, Bitcoin still does
     not provide 100% assurance that a fork past 6 blocks would never happen. If the
     mining difficulty is well adjusted, then it should be fine, and we have reason
     to believe that this is true for Bitcoin.
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 确认数通常设置为 6 个区块，这使得你的交易确认时间大约为一小时。话虽如此，比特币仍然不能提供 100% 的保证，即在 6 个区块之后不会发生分叉。如果挖矿难度调整得很好，那么应该没问题，我们有理由相信比特币是这样的。
 - en: Bitcoin’s PoW difficulty has increased gradually over time as cryptocurrency
     becomes more popular. The difficulty is now so high that most people cannot afford
     the hardware required to have a chance at mining a block. Today, most miners get
     together in what are called *mining pools* to distribute the work needed to mine
     a block. They then share the reward.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 随着加密货币变得越来越流行，比特币的 PoW 难度逐渐增加。难度现在已经非常高，大多数人无法负担得起所需的硬件来有机会挖掘一个区块。如今，大多数矿工会聚集在所谓的*挖矿池*中，以分配挖掘一个区块所需的工作。然后，他们分享奖励。
 - en: '*With block 632874 [. . .] the expected cumulative work in the Bitcoin blockchain
     surpassed 2^(92) double-SHA256 hashes*.'
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: '*在区块 632874 [. . .] 中，比特币区块链的预期累积工作量超过了 2^(92) 次双 SHA256 哈希运算*。'
 - en: —Pieter Wuille (2020, [http://mng.bz/aZNJ](http://mng.bz/aZNJ))
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: —Pieter Wuille (2020, [http://mng.bz/aZNJ](http://mng.bz/aZNJ))
 - en: To understand why forks are disruptive, let’s imagine the following scenario.
     Alice buys a bottle of wine from you, and you’ve been waiting for her to send
     you the 5 BTCs she has in her account. Finally, you observe a new block at height
@@ -680,8 +897,12 @@
     for a while, you finally see a block at height 16 that extends the chain containing
     your block at height 10\. You send the bottle of wine to Alice and call it a day.
     But this is not the end of the story.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 要理解分叉为何具有破坏性，让我们想象以下情景。Alice 从你这里购买了一瓶葡萄酒，而你一直在等待她将她账户中的 5 BTC 发送给你。最终，你观察到高度为
+    10 的新区块（意味着创世区块之后的第 10 个区块）包含了她的交易。谨慎起见，你决定等待再添加 6 个区块在其上。等待了一段时间后，你最终看到了高度为 16
+    的区块，延伸了包含你的高度为 10 的区块的链。你将葡萄酒送给了 Alice，并称其为一天结束。但这还不是故事的结束。
 - en: Later, a block at height 30 appears out of nowhere, extending a different blockchain
     that branched out just a block before yours (at height 9). Because the new chain
     is longer, it ends up being accepted by everyone as the legitimate chain. The
@@ -692,8 +913,10 @@
     of her funds to another address, preventing you from republishing the original
     transaction that moved her funds to your address. Alice effectively *double spent*
     her money.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 后来，高度为30的区块突然出现，延伸了一个刚在你的区块之前（高度为9）分叉出来的不同区块链。由于新链更长，最终被所有人接受为合法链。你之前所在的链（从你的高度为10的区块开始）被丢弃，网络中的参与者简单地重新组织他们的链，指向新的最长链。正如你所猜测的，这个新链中没有包含爱丽丝的交易。相反，它包含一笔交易，将她所有的资金转移到另一个地址，阻止你重新发布将她的资金转移到你地址的原始交易。爱丽丝有效地*双重花费*了她的钱。
 - en: This is a *51% attack*. The name comes from the amount of computation power
     Alice needed to perform the attack; she needed just a bit more than everyone else.
     ([https://crypto51.app](https://crypto51.app) has an interesting table that lists
@@ -701,59 +924,79 @@
     This is not just a theoretical attack! 51% attacks happen in the real world. For
     example, in 2018, an attacker managed to double-spend a number of funds in a 51%
     attack on the Vertcoin currency.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是*51%攻击*。这个名称来自爱丽丝执行攻击所需的计算能力的数量；她只需要比其他人多一点点。([https://crypto51.app](https://crypto51.app)有一张有趣的表格，列出了根据PoW在不同加密货币上执行51%攻击的成本。)这不仅仅是一个理论上的攻击！51%攻击在现实世界中发生。例如，在2018年，一名攻击者成功地在Vertcoin货币上进行了51%攻击，双重花费了一些资金。
 - en: '*The attacker essentially rewrote part of the ledger’s history and then, using
     their dominant hashing power to produce the longest chain, convinced the rest
     of the miners to validate this new version of the blockchain. With that, he or
     she could commit the ultimate crypto crime: a double-spend of prior transactions,
     leaving earlier payees holding invalidated coins*.'
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: '*攻击者实质上重写了账本的部分历史，然后利用他们的主导哈希算力生成最长链，说服其他矿工验证这个新版本的区块链。有了这个，他或她可以实施终极的加密犯罪：对先前交易进行双重花费，让先前的收款人持有无效的硬币*。'
 - en: '—Michael J. Casey (“Vertcoin’s Struggle Is Real: Why the Latest Crypto 51%
     Attack Matters,” 2018)'
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: —迈克尔·J·凯西（“Vertcoin的困境是真实的：为什么最新的加密51%攻击很重要”，2018）
 - en: In 2019, the same thing happened to Ethereum Classic (a variant of Ethereum),
     causing losses of more than $1 million at the time with several reorganizations
     of more than 100 blocks of depth. In 2020, Bitcoin Gold (a variant of Bitcoin)
     also suffered from a 51% attack, removing 29 blocks from the cryptocurrency’s
     history and double-spending more than $70,000 in less than two days.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 在2019年，以太坊经典（以太坊的一个变种）发生了同样的事情，导致当时损失超过100万美元，出现了超过100个区块深度的多次重组。2020年，比特币黄金（比特币的一个变种）也遭受了51%攻击，从加密货币的历史中删除了29个区块，并在不到两天内双重花费了超过7万美元。
 - en: 12.2.4 Reducing a block’s size by using Merkle trees
+  id: totrans-110
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.2.4 通过使用默克尔树来减小区块的大小
 - en: One last interesting aspect of Bitcoin that I want to talk about is how it compresses
     some of the information available. A block in Bitcoin actually does not contain
     any transactions! Transactions are shared separately, and instead, a block contains
     a single digest that authenticates a list of transactions. That digest could simply
     be the hash of all the transactions contained in the block, but it’s a bit more
     clever than that. Instead, the digest is the root of a *Merkle tree*.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 我想谈谈比特币的另一个有趣方面，即它如何压缩部分可用信息。比特币中的一个区块实际上不包含任何交易！交易是单独共享的，而一个区块包含一个认证一系列交易的单一摘要。该摘要可以简单地是区块中包含的所有交易的哈希值，但它比那更聪明。相反，该摘要是一个*Merkle树*的根。
 - en: What’s a Merkle tree? Simply put, it’s a tree (data structure) where internal
     nodes are hashes of their children. This might be a tad confusing, and a picture
     is worth a thousand words, so check out figure 12.7.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 什么是默克尔树？简单来说，它是一个树（数据结构），其中内部节点是它们子节点的哈希值。这可能有点令人困惑，一幅图值千言，所以看看图12.7。
 - en: '![](../Images/12_07.jpg)'
+  id: totrans-113
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/12_07.jpg)'
 - en: Figure 12.7 A Merkle tree, a data structure that authenticates the elements
     in its leaves. In the tree, an internal node is the hash of its children. The
     root hash can be used to authenticate the whole structure. In the diagram, `H()`
     represents a hash function, and the comma-separated inputs can be implemented
     as a concatenation (as long as there is no ambiguity).
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: 图12.7 梅克尔树，一种验证其叶子元素的数据结构。在树中，内部节点是其子节点的哈希值。根哈希可以用来验证整个结构。在图中，`H()`表示哈希函数，逗号分隔的输入可以实现为连接（只要没有歧义）。
 - en: Merkle trees are useful structures, and you will find them in all types of real
     world protocols. They can compress a large amount of data into a small, fixed-size
     value—the root of the tree. Not only that, you do not necessarily need all the
     leaves to reconstruct the root.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 梅克尔树是有用的结构，你会在各种实际协议中找到它们。它们可以将大量数据压缩为一个小的、固定大小的值——树的根。不仅如此，你不一定需要所有的叶子来重建根。
 - en: For example, imagine that you know the root of the Merkle tree due to its inclusion
     in a Bitcoin block, and you want to know if a transaction (a leaf in the tree)
     is included in the block. If it is in the tree, what I can do is to share with
@@ -762,11 +1005,15 @@
     is to compute the internal nodes up to the root of the tree by hashing each pair
     in the path. It’s a bit complicated to explain this in writing, so I illustrate
     the proof in figure 12.8.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，想象一下，你知道梅克尔树的根是因为它包含在一个比特币区块中，你想知道一个交易（树中的一个叶子）是否包含在该区块中。如果它在树中，我可以与你分享路径上的相邻节点作为*成员证明*。（一种在树的深度上对数大小的证明。）你需要做的是通过对路径中的每一对进行哈希运算，计算出根节点的内部节点直到根节点。在文字上解释这个过程有点复杂，所以我在图12.8中用图示来说明这个证明。
 - en: '![](../Images/12_08.jpg)'
+  id: totrans-117
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/12_08.jpg)'
 - en: 'Figure 12.8 Knowing the root of a Merkle tree, one can verify that a leaf belongs
     to the tree by reconstructing the root hash from all the leaves. To do this, you
     would need all the leaves in the first place, which in our diagram is 8 digests
@@ -776,8 +1023,10 @@
     digests including your leaf. A verifier can then use these neighbor nodes to compute
     the hash of all the missing nodes in the path to the root until they reconstruct
     the root hash and see if it matches what they were expecting.'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 图12.8 知道梅克尔树的根，可以通过重构所有叶子的根哈希来验证一个叶子是否属于树。为此，你首先需要所有叶子，在我们的图中是8个摘要（假设叶子是某个对象的哈希）。如果你不需要所有其他叶子，还有一种更有效的方法来构建成员证明：你只需要路径中从叶子到根的相邻节点，这包括你的叶子在内的4个摘要。验证者可以使用这些相邻节点来计算路径上所有缺失节点的哈希，直到重建根哈希并查看它是否与他们期望的相匹配。
 - en: The reason for using Merkle trees in a block instead of listing all transactions
     directly is to lighten the information that needs to be downloaded in order to
     perform simple queries on the blockchain. For example, imagine that you want to
@@ -788,18 +1037,24 @@
     If there is such a block, they should be able to provide you with a proof that
     your transaction is in the tree authenticated by the digest you have in the block
     header.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 在一个区块中使用梅克尔树而不是直接列出所有交易的原因是为了减轻下载所需信息以执行对区块链的简单查询。例如，想象一下，你想要检查你最近的交易是否包含在一个区块中，而不必下载比特币区块链的整个历史记录。你可以做的是仅下载区块头，因为它们不包含交易而更轻，一旦你拥有了它，就可以询问一个节点告诉你哪个区块包含了你的交易。如果有这样的一个区块，他们应该能够提供一个证明，证明你的交易在你在区块头中拥有的摘要所认证的树中。
 - en: There’s a lot more to be said about Bitcoin, but there’s only so many pages
     left in this book. Instead, I will use the remaining space in this chapter to
     give you a tour of the field and to explain how the classical BFT consensus protocols
     work.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于比特币还有很多要讲，但这本书的页数有限。因此，我将利用本章剩余的空间带你了解这个领域，并解释经典的BFT共识协议是如何工作的。
 - en: 12.3 A tour of cryptocurrencies
+  id: totrans-121
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 12.3 加密货币的概览
 - en: Bitcoin is the first successful cryptocurrency and has remained the cryptocurrency
     with the largest market share and value in spite of hundreds of other cryptocurrencies
     being created. What’s interesting is that Bitcoin had, and still has, many issues
@@ -808,24 +1063,32 @@
     primitives that until now did not have many practical applications or did not
     even exist! So without further ado, the following sections list the issues that
     have been researched since the advent of Bitcoin.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 比特币是第一个成功的加密货币，尽管已经创建了数百种其他加密货币，但比特币仍然保持着最大市场份额和价值。有趣的是，比特币存在许多问题，其他加密货币已经尝试解决（有些成功）。更有趣的是，加密货币领域利用了许多直到现在都没有许多实际应用或甚至不存在的加密原语！所以，话不多说，以下部分列出了自比特币诞生以来已经研究的问题。
 - en: 12.3.1 Volatility
+  id: totrans-123
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.3.1 波动性
 - en: Most people currently use cryptocurrencies as speculation vehicles. The price
     of Bitcoin obviously helps that story as it has shown that it can easily move
     thousands of dollars up or down in a single day. Some people claim that the stability
     will come over time, but the fact remains that Bitcoin is not usable as a currency
     nowadays. Other cryptocurrencies have experimented with the concept of *stablecoin*,
     by tying the price of their token to an existing fiat currency (like the US dollar).
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 目前大多数人使用加密货币作为投机工具。比特币的价格显然有助于这个故事，因为它已经证明它可以在一天内轻松地上千美元地上下波动。有些人声称稳定性将随着时间的推移而来，但事实仍然是，比特币现在不能用作货币。其他加密货币已经尝试使用*稳定币*的概念，将其代币的价格与现有的法定货币（如美元）挂钩。
 - en: 12.3.2 Latency
+  id: totrans-125
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.3.2 延迟
 - en: You can measure the efficiency of a cryptocurrency in many ways. The *throughput*
     of a cryptocurrency is the number of transactions per second that it can process.
     Bitcoin’s throughput, for example, is quite low with only 7 transactions per second.
@@ -838,8 +1101,10 @@
     point of view of the user. In Bitcoin, latency includes the creation of the transaction,
     the time it takes to propagate it through the network, the time it takes for it
     to get included in a block, and finally, the wait time for the block to be confirmed.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 您可以通过许多方式来衡量加密货币的效率。加密货币的*吞吐量*是它可以处理的每秒交易数量。例如，比特币的吞吐量相当低，每秒只有7笔交易。另一方面，*确定性*是一旦您的交易被包含在区块链中就被视为已确定的时间。由于分叉，比特币的确定性永远无法完全实现。被认为是在交易被包含在新区块中的至少一小时后，交易被撤销的概率变得可接受。这两个数字都极大地影响了*延迟*，延迟是从用户的角度来看，交易被最终确认所需的时间。在比特币中，延迟包括交易的创建，将其传播到网络的时间，将其包含在区块中的时间，最后是等待区块确认的时间。
 - en: The solution to these speed issues can be solved by BFT protocols, which usually
     provide finality of mere seconds with an insurance that no forks are possible,
     as well as throughput in the order of thousands of transactions per second. Yet,
@@ -847,12 +1112,16 @@
     So-called *layer 2 protocols* attempt to provide additional solutions that can
     enact faster payments off-chain while saving progress periodically on the main
     blockchain (referred to as the layer 1 in comparison).
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些速度问题的解决方案可以通过BFT协议解决，这些协议通常提供仅需几秒钟即可完成的确定性，并保证不会发生分叉，并且每秒可处理数千笔交易。然而，有时这仍然不够，正在探索不同的技术。所谓的*第二层协议*尝试提供额外的解决方案，可以在链下更快地进行支付，并周期性地将进度保存在主区块链上（与第一层相比称为层1）。
 - en: 12.3.3 Blockchain size
+  id: totrans-128
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.3.3 区块链大小
 - en: Another common problem with Bitcoin and other cryptocurrencies is that the size
     of the blockchain can quickly grow to impractical sizes. This creates usability
     issues when users who want to use the cryptocurrency (for example, to query their
@@ -860,37 +1129,50 @@
     interact with the network. BFT-based cryptocurrencies that process a large number
     of transactions per second are expected to easily reach terabytes of data within
     months or even weeks. Several attempts exist for solving this.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 比特币和其他加密货币的另一个常见问题是区块链的大小可能迅速增长到不切实际的大小。当用户想要使用加密货币（例如查询其账户余额）时，会出现可用性问题，因为他们预期必须首先下载整个链才能与网络交互。处理大量交易每秒的基于BFT的加密货币预计将在几个月甚至几周内轻松达到几TB的数据。存在几种解决方案。
 - en: One of the most interesting ones is Mina, which doesn’t require you to download
     the whole history of the blockchain in order to get to the latest state. Instead,
     Mina uses zero-knowledge proofs (ZKPs), mentioned in chapter 7 and that I’ll cover
     more in depth in chapter 15, to compress all the history into a fixed-size 11
     KB proof. This is especially useful for lighter clients like mobile phones that
     usually have to trust third-party servers in order to query the blockchain.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 其中最有趣的之一是Mina，它不需要您下载整个区块链的历史记录才能到达最新状态。相反，Mina使用零知识证明（ZKPs），在第7章中提到，我将在第15章中更深入地介绍，将所有历史记录压缩成固定大小的11
+    KB证明。这对于像手机这样的轻客户端特别有用，通常必须信任第三方服务器才能查询区块链。
 - en: 12.3.4 Confidentiality
+  id: totrans-131
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.3.4 保密性
 - en: Bitcoin provides *pseudo-anonymity* in that accounts are only tied to public
     keys. As long as nobody can tie a public key to a person, the associated account
     remains anonymous. Remember that all the transactions from and to that account
     are publicly available, and social graphs can still be created in order to understand
     who tends to trade more often with whom, and who owns how much of the currency.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 比特币提供了*伪匿名性*，因为账户仅与公钥相关联。只要没有人能将公钥与个人联系起来，相关账户就保持匿名。请记住，与该账户有关的所有交易都是公开的，社交图仍然可以创建，以了解谁倾向于与谁更频繁地交易，以及谁拥有多少货币。
 - en: There are many cryptocurrencies that attempt to solve these issues using ZKPs
     or other techniques. *Zcash* is one of the most well-known confidential cryptocurrencies
     as its transactions can encrypt the sender address, receiver address, and the
     amount being transacted. All of that using ZKPs!
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 有许多加密货币尝试使用ZKPs或其他技术来解决这些问题。*Zcash*是最知名的保密加密货币之一，因为其交易可以加密发送者地址、接收者地址和交易金额。所有这些都使用ZKPs！
 - en: 12.3.5 Energy efficiency
+  id: totrans-134
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.3.5 能源效率
 - en: Bitcoin has been criticized heavily for being too consuming in terms of electricity.
     Indeed, the University of Cambridge recently evaluated that all of the energy
     spent mining BTCs brings Bitcoin to the top 30 energy users in the world (if seen
@@ -901,18 +1183,24 @@
     PoW-based cryptocurrencies like Ethereum have announced plans to move towards
     greener consensus protocols. Before going to the next chapter, let’s take a look
     at these cryptocurrencies based on BFT consensus protocols.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 比特币因为在电力消耗方面过于庞大而受到了严厉批评。事实上，剑桥大学最近评估，挖掘比特币所花费的所有能源使比特币成为世界前30大能源使用国（如果视为一个国家），在一年内消耗的能源比阿根廷还多（2021年2月；[https://cbeci.org/](https://cbeci.org/)）。另一方面，BFT协议不依赖于PoW，因此避免了这种沉重的开销。这无疑是为什么任何现代加密货币似乎都避免基于PoW的共识，甚至像以太坊这样重要的PoW-based加密货币也宣布计划转向更环保的共识协议。在进入下一章之前，让我们看看基于BFT共识协议的这些加密货币。
 - en: '12.4 DiemBFT: A Byzantine fault-tolerant (BFT) consensus protocol'
+  id: totrans-136
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 12.4 DiemBFT：拜占庭容错（BFT）共识协议
 - en: Many modern cryptocurrencies have ditched the PoW aspect of Bitcoin for greener
     and more efficient consensus protocols. Most of these consensus protocols are
     based on classical BFT consensus protocols, which are mostly variants of the original
     PBFT protocol. In this last section, I will use Diem to illustrate such BFT protocols.
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 许多现代加密货币已经放弃了比特币的PoW方面，转而采用更环保和更高效的共识协议。这些共识协议大多基于经典的BFT共识协议，这些协议大多是原始PBFT协议的变体。在本节中，我将使用Diem来说明这种BFT协议。
 - en: '*Diem* (previously called Libra) is a digital currency initially announced
     by Facebook in 2019, and governed by the Diem Association, an organization of
     companies, universities, and nonprofits looking to push for an open and global
@@ -921,33 +1209,47 @@
     unlike its older cousin Bitcoin. To run the payment network in a secure and open
     manner, a BFT consensus protocol called *DiemBFT* is used, which is a variant
     of HotStuff. In this section, let’s see how DiemBFT works.'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Diem*（之前称为 Libra）是一种数字货币，最初由 Facebook 在 2019 年宣布，由 Diem 协会管理，该协会是由公司、大学和非营利组织组成，旨在推动开放和全球支付网络。Diem
+    的一个特点是它由真实货币支持，使用法定货币储备。这使得数字货币稳定，不像它的老表兄比特币。为了以安全和开放的方式运行支付网络，使用了一种 BFT 共识协议称为
+    *DiemBFT*，这是 HotStuff 的一个变种。在本节中，让我们看看 DiemBFT 是如何工作的。'
 - en: '12.4.1 Safety and liveness: The two properties of a BFT consensus protocol'
+  id: totrans-139
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.4.1 安全性和活性：BFT 共识协议的两个属性
 - en: A BFT consensus protocol is meant to achieve two properties, even in the presence
     of a tolerated percentage of malicious participants. These properties include
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: BFT 共识协议旨在在容忍一定比例的恶意参与者的情况下实现两个属性。这些属性包括
 - en: '*Safety*—No contradicting states can be agreed on, meaning that forks are not
     supposed to happen (or happen with a negligible probability).'
+  id: totrans-141
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*安全性*—不会达成矛盾的状态，意味着不应该发生分叉（或以极小的概率发生）。'
 - en: '*Liveness*—When people submit transactions, the state will eventually end up
     processing them. In other words, nobody can stop the protocol from doing its thing.'
+  id: totrans-142
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*活性*—当人们提交交易时，状态最终会处理它们。换句话说，没有人可以阻止协议完成其任务。'
 - en: Note that a participant is generally seen as malicious (also called *byzantine*)
     if they do not behave according to the protocol. This could mean that they’re
     not doing anything, or that they’re not following the steps of the protocol in
     the correct order, or that they’re not respecting some mandatory rule meant to
     ensure that there is no fork, and so on.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，如果参与者不按照协议行事，则通常被视为恶意（也称为 *拜占庭*）。这可能意味着他们什么也不做，或者他们没有按照正确顺序执行协议的步骤，或者他们没有遵守一些旨在确保没有分叉的强制性规则，等等。
 - en: It’s usually quite straightforward for BFT consensus protocols to achieve safety,
     while liveness is known to be more difficult. Indeed, there’s a well-known impossibility
     result from Fischer, Lync, and Paterson (“Impossibility of distributed consensus
@@ -957,197 +1259,276 @@
     protocols avoid this impossibility result by considering the network somewhat
     *synchronous* (and indeed, no protocol is useful if your network goes down for
     a long period of time) or by introducing randomness in the algorithm.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: BFT 共识协议通常很容易实现安全性，而活性则被认为更加困难。事实上，1985年由Fischer、Lync和Paterson提出的著名不可能结果（“一个故障进程下的分布式共识不可能性”）与
+    BFT 协议相关，指出在 *异步* 网络（消息可以花费任意时间到达）中，没有 *确定性* 共识协议能够容忍故障。大多数 BFT 协议通过将网络视为某种程度上的
+    *同步*（事实上，如果你的网络长时间宕机，任何协议都是无用的）或者在算法中引入随机性来避免这一不可能结果。
 - en: For this reason, DiemBFT never forks, even under extreme network conditions.
     In addition, it always makes progress even when there’s network partitions where
     different parts of the network can’t reach other parts of the network, as long
     as the network ends up healing and stabilizing for a long enough period.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: 出于这个原因，即使在极端网络条件下，DiemBFT 也永远不会分叉。此外，即使存在网络分区，即网络的不同部分无法到达其他部分，只要网络最终恢复和稳定足够长的时间，它总是会取得进展。
 - en: 12.4.2 A round in the DiemBFT protocol
+  id: totrans-146
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.4.2 DiemBFT 协议中的一轮
 - en: Diem runs in a permissioned setting where participants (called *validators*)
     are known in advance. The protocol advances in strictly increasing rounds (round
     1, 2, 3, etc.), during which validators take turns to propose blocks of transactions.
     In each round
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: Diem 在一个预先知道参与者（称为 *验证者*）的许可设置中运行。协议在严格递增的轮次（第 1 轮、第 2 轮、第 3 轮等）中前进，在此期间验证者轮流提出交易块。在每一轮中
 - en: The validator that is chosen to lead (deterministically) collects a number of
     transactions, groups them into a new block extending the blockchain, then signs
     the block and sends it to all other validators.
+  id: totrans-148
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 被选择为领导者（确定性地）的验证者收集一定数量的交易，将它们组合成一个新的区块，延伸区块链，然后对区块进行签名并将其发送给所有其他验证者。
 - en: Upon receiving the proposed block, other validators can vote to certify it by
     signing it and sending the signature to the leader of the next round.
+  id: totrans-149
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 在收到建议的区块后，其他验证者可以通过签名并将签名发送给下一轮的领导者来对其进行认证。
 - en: If the leader of the next round receives enough votes for that block, they can
     bundle all of them in what is called a *quorum certificate* (QC), which certifies
     the block, and use the QC to propose a new block (in the next round) extending
     the now certified block.
+  id: totrans-150
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 如果下一轮的领导者收到足够多的选票支持该区块，他们可以将所有这些选票捆绑在一个称为*quorum certificate*（QC）的证书中，该证书证明了该区块，并使用该QC提出一个新的区块（在下一轮中）来延伸现在已经被认证的区块。
 - en: Another way to look at this is that whereas in Bitcoin a block only contains
     the hash of the block it extends, in DiemBFT, a block also contains a number of
     signatures over that hash. (The number of signatures is important, but more on
     that later.)
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一种看待这个问题的方式是，在比特币中，一个区块只包含它所延伸的区块的哈希值，而在DiemBFT中，一个区块还包含对该哈希值的一定数量的签名。（签名的数量很重要，但稍后再详细说明。）
 - en: Note that if validators do not see a proposal during a round (because the leader
     is AFK, for example), they can timeout and warn other validators that nothing
     happened. In this case, the next round is triggered and the proposer can extend
     whatever is the highest certified block that they have seen. I recap this in figure
     12.9.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，如果验证者在一轮中没有看到建议（例如，因为领导者离线了），他们可以超时并警告其他验证者没有发生任何事情。在这种情况下，将触发下一轮，提议者可以延伸他们已看到的最高认证区块。我在图12.9中总结了这一点。
 - en: '![](../Images/12_09.jpg)'
+  id: totrans-153
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/12_09.jpg)'
 - en: Figure 12.9 Each round of DiemBFT starts with the designated leader proposing
     a block that extends the last one they’ve seen. Other validators can then vote
     on this block by sending their vote to the next round’s leader. If the next round’s
     leader gathers enough votes to form a quorum certificate (QC), they can propose
     a new block containing the QC, effectively extending the previously seen block.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 图12.9 DiemBFT的每一轮都是由指定的领导者提出延伸他们所见到的最后一个区块的区块开始的。其他验证者随后可以对该区块进行投票，将他们的投票发送给下一轮的领导者。如果下一轮的领导者收集到足够的选票以形成一个quorum
+    certificate（QC），他们可以提出一个包含QC的新区块，有效地延伸之前看到的区块。
 - en: 12.4.3 How much dishonesty can the protocol tolerate?
+  id: totrans-155
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.4.3 协议能容忍多少不诚实行为？
 - en: Let’s imagine that we want to be able to tolerate *f* malicious validators at
     most (even if they all collude), then DiemBFT says that there needs to be at least
     3*f* + 1 validators to participate in the protocol (in other words, for *f* malicious
     validators there needs to be at least 2*f* + 1 honest validators). As long as
     this assumption is true, the protocol provides safety and liveness.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设我们希望在最多容忍*f*个恶意验证者的情况下（即使他们全部串通作恶），那么DiemBFT规定协议需要至少有3*f* + 1个验证者参与（换句话说，对于*f*个恶意验证者，至少需要有2*f*
+    + 1个诚实验证者）。只要这个假设成立，该协议就能提供安全性和活力。
 - en: With that in mind, QCs can only be formed with a majority of honest validators’
     votes, which is 2*f* + 1 signatures if there are 3*f* + 1 participants. These
     numbers can be a bit hard to visualize, so I show how they impact confidence in
     the votes we observe in figure 12.10\.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
+  zh: 有了这个前提，只有获得大多数诚实验证者的投票才能形成QC，即使有3*f* + 1个参与者，这也需要2*f* + 1个签名。这些数字可能有点难以想象，因此我展示了它们对我们观察到的投票信心的影响，见图12.10。
 - en: '![](../Images/12_10.jpg)'
+  id: totrans-158
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/12_10.jpg)'
 - en: Figure 12.10 In the DiemBFT protocol, at least two thirds of the validators
     must be honest for the protocol to be safe (it won’t fork) and live (it will make
     progress). In other words, the protocol can tolerate *f* dishonest validators
     if at least 2*f* + 1 validators are honest. A certified block has received at
     least 2*f* + 1 votes as it is the lowest number of votes that can represent a
     majority of honest validators.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 图12.10 在DiemBFT协议中，至少有三分之二的验证者必须是诚实的，协议才能安全（不会分叉）和活跃（会取得进展）。换句话说，只要有2*f* + 1个验证者是诚实的，该协议就能容忍*f*个不诚实的验证者。一个已认证的区块至少收到了2*f*
+    + 1个投票，因为这是能够代表大多数诚实验证者的最低投票数。
 - en: 12.4.4 The DiemBFT rules of voting
+  id: totrans-160
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.4.4 DiemBFT投票规则
 - en: 'Validators must follow two voting rules at all times, without which, they are
     considered byzantine:'
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 验证者必须始终遵循两个投票规则，否则将被视为拜占庭式的：
 - en: They can’t vote in the past (for example, if you just finished voting in round
     3, you can only vote in round 4 and above).
+  id: totrans-162
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 他们不能在过去投票（例如，如果你刚刚在第3轮投票，你只能在第4轮及以上投票）。
 - en: They can only vote for a block extending a block at their preferred round or
     higher.
+  id: totrans-163
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 他们只能为延伸到他们首选轮次或更高轮次的区块投票。
 - en: What’s a *preferred round*? By default, it is 0, but if you vote for a block
     that extends a block that extends a block (and by that I mean you voted for a
     block that has a grandparent block), then that grandparent block’s round becomes
     your preferred round unless your previous preferred round was higher. Complicated?
     I know, that’s why I made figure 12.11\.
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 什么是*首选轮次*？默认情况下是0，但如果你为一个延伸到一个延伸到一个区块的区块投票（我的意思是你为一个有祖父区块的区块投票），那么那个祖父区块的轮次就成为你的首选轮次，除非你之前的首选轮次更高。复杂吗？我知道，这就是为什么我制作了图12.11。
 - en: '![](../Images/12_11.jpg)'
+  id: totrans-165
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/12_11.jpg)'
 - en: Figure 12.11 After voting for a block, a validator sets their preferred round
     to the round of the grandparent block if it is higher than their current preferred
     round. To vote on a block, its parent block must have a round greater or equal
     to the preferred round.
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 图12.11 在为一个区块投票后，验证者将他们的首选轮次设置为祖父区块的轮次，如果它高于他们当前的首选轮次。要为一个区块投票，其父区块的轮次必须大于或等于首选轮次。
 - en: 12.4.5 When are transactions considered finalized?
+  id: totrans-167
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.4.5 交易何时被视为最终确定？
 - en: 'Note that blocks that are certified are not finalized yet, or as we also say,
     *committed*. Nobody should assume that the transactions contained in the pending
     blocks won’t be reverted. Blocks and the transactions they contain can only be
     considered finalized once the *commit rule* is triggered. The commit rule (illustrated
     in figure 12.12) says that a block and all the pending blocks it extends become
     committed if:'
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，已认证的区块尚未最终确定，或者我们也可以说是*已提交*。没有人应该假设包含在待处理区块中的交易不会被撤销。只有当*提交规则*被触发时，区块和其中包含的交易才能被视为最终确定。提交规则（在图12.12中说明）表示，如果：
 - en: The block starts a chain of 3 blocks that are proposed in *contiguous rounds*
     (for example, in round 1, 2, and 3).
+  id: totrans-169
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 区块开始了一个由3个在*连续轮次*（例如，在第1、2和3轮）中提出的区块组成的链。
 - en: The last block of the 3-block chain become certified.
+  id: totrans-170
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 这个3个区块链的最后一个区块被认证。
 - en: '![](../Images/12_12.jpg)'
+  id: totrans-171
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/12_12.jpg)'
 - en: Figure 12.12 Three contiguous rounds (3, 4, 5) happen to have a chain of certified
     blocks. Any validator observing the certification of the last block in round 5
     by the QC of round 9 can commit the first block of the chain at round 3, as well
     as all of its ancestors (here the block of round 1). Any contradicting branches
     (for example, the block of round 2) get dropped.
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 图12.12 三个连续轮次（3、4、5）恰好有一条链由认证的区块组成。观察到第5轮的最后一个区块被第9轮的QC认证的任何验证者可以提交第3轮的链的第一个区块，以及其所有祖先（这里是第1轮的区块）。任何相矛盾的分支（例如第2轮的区块）都会被丢弃。
 - en: And this is all there is to the protocol at a high level. But, of course, once
     again, the devil is in the details.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是协议的高层次内容。但是，当然，细节才是关键。
 - en: 12.4.6 The intuitions behind the safety of DiemBFT
+  id: totrans-174
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 12.4.6 DiemBFT安全性背后的直觉
 - en: While I encourage you to read the one-page safety proof on the DiemBFT paper,
     I want to use a couple pages here to give you an intuition on why it works. First,
     we notice that two different blocks cannot be certified during the same round.
     This is an important property, which I explain visually in figure 12.13.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然我鼓励你阅读DiemBFT论文中的一页安全性证明，但我想在这里用几页来让你直观地理解它为什么有效。首先，我们注意到在同一轮中不能认证两个不同的区块。这是一个重要的特性，我在图12.13中用视觉方式解释。
 - en: '![](../Images/12_13.jpg)'
+  id: totrans-176
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/12_13.jpg)'
 - en: Figure 12.13 Assuming that there can only be up to *f* malicious validators
     in a protocol of 3*f* + 1 validators, and that a quorum certificate is created
     from 2*f* + 1 signed votes, then there can only be one certified block per round.
     The diagram shows a *proof by contradiction*, a proof that this cannot be because
     then it would contradict our initial assumptions.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 图12.13 假设在一个由3*f* + 1个验证者组成的协议中只能有最多*f*个恶意验证者，并且一个法定证书是由2*f* + 1个签名投票创建的，那么每轮只能有一个经过认证的区块。图中展示了一个*反证法*，证明这是不可能的，因为那样会与我们最初的假设相矛盾。
 - en: 'Using the property that only one block can get certified at a given round,
     we can simplify how we talk about blocks: block 3 is at round 3, block 6 is at
     round 6, and so on. Now, take a look at figure 12.14 and take a moment to figure
     out why a certified block, or two certified blocks, or three certified blocks
     at noncontiguous rounds cannot lead to a commit without risking a fork.'
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 利用只有一个区块可以在给定轮次获得认证的属性，我们可以简化我们讨论区块的方式：区块3在第3轮，区块6在第6轮，依此类推。现在，看一下图12.14，并花点时间弄清楚为什么一个经过认证的区块，或两个经过认证的区块，或三个非连续轮次的经过认证的区块不能在不冒风险的情况下导致提交。
 - en: '![](../Images/12_14.jpg)'
+  id: totrans-179
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/12_14.jpg)'
 - en: Figure 12.14 In all these scenarios, committing block 5 could lead to a fork.
     Only in scenario number 4 is committing block 5 safe. Can you tell why it is dangerous
     to commit block 5 in all scenarios but 4?
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 图12.14 在所有这些场景中，提交区块5可能导致分叉。只有在第4个场景中提交区块5是安全的。你能告诉为什么在所有场景中除了第4个场景提交区块5是危险的吗？
 - en: Did you manage to find out answers for all the scenarios? The short answer is
     that all scenarios, with the exception of the last one, leave room for a block
     to extend round 1\. This late block effectively branches out and can be further
@@ -1157,11 +1538,15 @@
     previous blocks. In scenario 3, an earlier block could appear later than expected,
     perhaps due to network delays, or worse, due to a validator withholding it up
     to the right moment. I explain this further in figure 12.15\.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 你能找出所有场景的答案吗？简短的答案是，除了最后一个场景外，所有场景都留有一个区块可以延伸到第1轮。这个晚到的区块实际上会分叉并根据共识协议的规则进一步延伸。如果发生这种情况，区块5和其他延伸它的区块将被丢弃，因为另一个更早的分支被提交。对于场景1和2，这可能是由于提议者没有看到之前的区块。在场景3中，一个更早的区块可能出现得比预期晚，可能是由于网络延迟，或者更糟糕的是，由于验证者在合适的时机才公布它。我在图12.15中进一步解释这一点。
 - en: '![](../Images/12_15.jpg)'
+  id: totrans-182
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/12_15.jpg)'
 - en: Figure 12.15 Building on figure 12.14, all scenarios except the last one allow
     for a parallel chain that can eventually win and discard the branch of block 5\.
     The last scenario has a chain of three certified blocks in contiguous rounds.
@@ -1170,91 +1555,123 @@
     block 5 and obtain a QC at the same time. The worst that can happen is that a
     block extends block 5 or block 6, which will eventually lead to the same outcome—block
     5 is committed.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 图12.15 在图12.14的基础上，除了最后一个场景外，所有场景都允许一个可以最终获胜并丢弃区块5分支的并行链。最后一个场景有一个由三个连续轮次的经过认证的区块组成的链。这意味着区块7有大多数诚实选民，他们反过来更新了他们的首选轮次到第5轮。之后，没有区块可以在区块5之前分叉并同时获得QC。最糟糕的情况是一个区块延伸区块5或区块6，这最终会导致相同的结果—区块5被提交。
 - en: Summary
+  id: totrans-184
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 摘要
 - en: Cryptocurrencies are about decentralizing a payment network to avoid a single
     point of failure.
+  id: totrans-185
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 加密货币是关于去中心化支付网络，以避免单点故障。
 - en: To have everyone agree on the state of a cryptocurrency, we can use consensus
     algorithms.
+  id: totrans-186
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 为了让每个人对加密货币的状态达成一致，我们可以使用共识算法。
 - en: Byzantine fault-tolerant (BFT) consensus protocols were invented in 1982 and
     have evolved to become faster and simpler to understand.
+  id: totrans-187
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 拜占庭容错（BFT）共识协议于1982年发明，并已发展成为更快速和更简单易懂的形式。
 - en: BFT consensus protocols need a known and fixed set of participants to work (permissioned
     network). Such protocols can decide who is part of this participant set (proof
     of authority or PoA) or dynamically elect the participant set based on the amount
     of currency they hold (proof of stake or PoS).
+  id: totrans-188
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: BFT共识协议需要一个已知且固定的参与者集合（许可网络）。这样的协议可以决定谁是这个参与者集合的一部分（权威证明或PoA），或者根据他们持有的货币数量动态选举参与者集合（权益证明或PoS）。
 - en: Bitcoin’s consensus algorithm (the Nakamoto consensus) uses proof of work (PoW)
     to validate the correct chain and to allow anyone to participate (permissionless
     network).
+  id: totrans-189
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 比特币的共识算法（中本聪共识）使用工作量证明（PoW）来验证正确的链并允许任何人参与（无许可网络）。
 - en: Bitcoin’s PoW has participants (called miners) compute a lot of hashes in order
     to find some with specific prefixes. Successfully finding a valid digest allows
     a miner to decide on the next block of transaction and collect a reward as well
     as transaction fees.
+  id: totrans-190
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 比特币的PoW让参与者（称为矿工）计算大量哈希以找到具有特定前缀的哈希。成功找到有效摘要允许矿工决定下一个交易区块并收取奖励以及交易费。
 - en: Accounts in Bitcoin are simply ECDSA key pairs using the secp256k1 curve. A
     user knows how much BTCs their account holds by looking at all transaction outputs
     that have not yet been spent (UTXOs). A transaction is, thus, a signed message
     authorizing the movement of a number of older transaction outputs to new outputs,
     spendable to different public keys.
+  id: totrans-191
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 比特币中的账户只是使用 secp256k1 曲线的 ECDSA 密钥对。用户可以通过查看尚未花费的所有交易输出（UTXO）知道他们的账户持有多少比特币。因此，交易是一条已签名的消息，授权将一定数量的旧交易输出移动到新输出，可以花费给不同的公钥。
 - en: Bitcoin uses Merkle trees to compress the size of a block and allow verification
     of transaction inclusion to be small in size.
+  id: totrans-192
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 比特币使用默克尔树来压缩区块的大小，并允许交易包含验证的大小较小。
 - en: Stablecoins are cryptocurrencies that attempt to stabilize their values, most
     often by pegging their token to the value of a fiat currency like the US dollar.
+  id: totrans-193
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 稳定币是一种加密货币，试图通过将其代币与美元等法定货币的价值挂钩来稳定其价值。
 - en: Cryptocurrencies use so-called layer 2 protocols in order to decrease their
     latency by processing transactions off-chain and saving progress on-chain periodically.
+  id: totrans-194
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 加密货币使用所谓的第二层协议，以减少其延迟，通过在链下处理交易并周期性地保存进度在链上。
 - en: Zero-knowledge proofs (ZKPs) are used in many different blockchain applications
     (for example, in Zcash to provide confidentiality and in Coda to compress the
     whole blockchain to a short proof of validity).
+  id: totrans-195
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 零知识证明（ZKPs）在许多不同的区块链应用中使用（例如，在 Zcash 中提供保密性，在 Coda 中将整个区块链压缩为短的有效性证明）。
 - en: Diem is a stablecoin that uses a BFT consensus protocol called DiemBFT. It remains
     both safe (no forks) and live (progress is always made) as long as no more than
     *f* malicious participants exist out of 3*f* + 1 participants.
+  id: totrans-196
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Diem 是一种稳定币，它使用称为 DiemBFT 的 BFT 共识协议。只要 3*f* + 1 参与者中不超过 *f* 个恶意参与者存在，它就保持安全（没有分叉）和活跃（总是取得进展）。
 - en: DiemBFT works by having rounds in which a participant proposes a block of transactions
     extending a previous block. Other participants can then vote for the block, potentially
     creating a quorum certificate (QC) if enough votes are gathered (2*f* + 1 ).
+  id: totrans-197
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: DiemBFT 通过在轮次中让参与者提议延伸先前区块的交易的区块来运作。其他参与者随后可以为该区块投票，如果收集到足够的票数（2*f* + 1），可能会创建一个法定证书（QC）。
 - en: In DiemBFT, blocks and their transactions are finalized when the commit rule
     (a chain of 3 certified blocks at contiguous rounds) is triggered. When this happens,
     the first block of the chain and the blocks it extends are committed.
+  id: totrans-198
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在 DiemBFT 中，当触发提交规则（一系列连续轮次的 3 个已认证区块）时，区块及其交易将被最终确定。发生这种情况时，链的第一个区块及其延伸的区块将被提交。

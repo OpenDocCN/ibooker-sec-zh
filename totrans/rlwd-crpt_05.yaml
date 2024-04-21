@@ -1,19 +1,24 @@
 - en: 4 Authenticated encryption
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
 - en: Symmetric encryption vs. authenticated encryption
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Popular authenticated encryption algorithms
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Other types of symmetric encryption
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -27,21 +32,26 @@
     aspects of our modern lives. In this chapter, we’ll find out what encryption really
     is, what types of problems it solves, and how today’s applications make heavy
     use of this cryptographic primitive.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
 - en: Note For this chapter, you’ll need to have read chapter 3 on message authentication
     codes.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
 - en: 4.1 What’s a cipher?
+  id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: '*It’s like when you use slang to talk to your siblings about what you’ll do
     after school so your mom doesn’t know what you’re up to*.'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
 - en: —Natanael L. (2020, [https://twitter.com/Natanael_L](https://twitter.com/Natanael_L))
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s imagine that our two characters, Alice and Bob, want to exchange some
@@ -51,6 +61,7 @@
     can spy on their calls and text messages; internet service providers or any servers
     on the network that are in between Alice and Bob can access the content of the
     packets being exchanged.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
 - en: 'Without further ado, let’s introduce Alice and Bob’s savior: the *encryption
@@ -58,17 +69,20 @@
     as a black box that Alice can use to encrypt her messages to Bob. By *encrypting*
     a message, Alice transforms it into something that looks random. The encryption
     algorithm for this takes'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
 - en: '*A secret key*—It is crucial that this element is unpredictable, random, and
     well protected because the security of the encryption algorithm relies directly
     on the secrecy of the key. I will talk more about this in chapter 8 on secrets
     and randomness.'
+  id: totrans-12
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Some plaintext*—This is what you want to encrypt. It can be some text, an
     image, a video, or anything that can be translated into bits.'
+  id: totrans-13
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -78,36 +92,43 @@
     key, and no information about the content of the message (the plaintext) will
     be leaked. Once Bob receives this ciphertext, he can use a *decryption algorithm*
     to revert the ciphertext into the original plaintext. Decryption takes
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
 - en: '*A secret key*—This is the same secret key that Alice used to create the ciphertext.
     Because the same key is used for both algorithms, we sometimes call the key a
     *symmetric key*. This is also why we also sometimes specify that we are using
     *symmetric encryption* and not just *encryption*.'
+  id: totrans-15
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Some ciphertext*—This is the encrypted message Bob receives from Alice.'
+  id: totrans-16
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The process then reveals the original plaintext. Figure 4.1 illustrates this
     flow.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_01.jpg)'
+  id: totrans-18
   prefs: []
   type: TYPE_IMG
 - en: Figure 4.1 Alice (top right) encrypts the plaintext *hello* with the key `0x8866...`
     (an abbreviated hexadecimal). Then Alice sends the ciphertext to Bob. Bob (bottom
     right) decrypts the received ciphertext by using the same key and a decryption
     algorithm.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
 - en: Encryption allows Alice to transform her message into something that looks random
     and that can be safely transmitted to Bob. Decryption allows Bob to revert the
     encrypted message back to the original message. This new cryptographic primitive
     provides confidentiality (or secrecy or privacy) to their messages.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
 - en: Note How do Alice and Bob agree to use the same symmetric key? For now, we’ll
@@ -115,6 +136,7 @@
     keys, and that they met in person to exchange the key. In practice, how to bootstrap
     such protocols with shared secrets is often one of the great challenges companies
     need to solve. In this book, you will see many different solutions to this problem.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
 - en: 'Notice that I have yet to introduce what the title of this chapter, “Authenticated
@@ -123,9 +145,11 @@
     it works before I can introduce the authenticated encryption primitive. So bear
     with me as I first go over the main standard for encryption: the *Advanced Encryption
     Standard* (AES).'
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
 - en: 4.2 The Advanced Encryption Standard (AES) block cipher
+  id: totrans-23
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -139,9 +163,11 @@
     Processing Standards) 197 publication. AES, the algorithm described in the FIPS
     standard, is still the main cipher used today. In this section, I explain how
     AES works.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
 - en: 4.2.1 How much security does AES provide?
+  id: totrans-25
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -150,15 +176,18 @@
     (32 bytes). The length of the key dictates the level of security—*the bigger,
     the stronger*. Nonetheless, most applications make use of AES-128 as it provides
     enough security (128 bits of security).'
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
 - en: The term *bit security* is commonly used to indicate the security of cryptographic
     algorithms. For example, AES-128 specifies that the best attack we know of would
     take around 2128 operations. This number is gigantic, and it is the security level
     that most applications aim for.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
 - en: Bit security is an upper bound
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
 - en: The fact that a 128-bit key provides 128 bits of security is specific to AES;
@@ -167,6 +196,7 @@
     128-bit security, it will never provide more (there’s always the brute force attack).
     Trying all the possible keys would take at most 2^(128) operations, reducing the
     security to 128 bits at least.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
 - en: How big is 2^(128)? Notice that the amount between two powers of 2 is doubled.
@@ -179,35 +209,43 @@
     never be able to reach such a number in practice. We also didn’t account for the
     amount of space required for any large and complex attack to work, which is equally
     as enormous in practice.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
 - en: It is foreseeable that AES-128 will remain secure for a long time. That is unless
     advances in cryptanalysis find a yet undiscovered vulnerability that would reduce
     the number of operations needed to attack the algorithm.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
 - en: 4.2.2 The interface of AES
+  id: totrans-32
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: 'Looking at the interface of AES for encryption, we see the following:'
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
 - en: The algorithm takes a variable-length key as discussed previously.
+  id: totrans-34
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: It also takes a plaintext of exactly 128 bits.
+  id: totrans-35
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: It outputs a ciphertext of exactly 128 bits.
+  id: totrans-36
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Because AES encrypts a fixed-size plaintext, we call it a *block cipher*. Some
     other ciphers can encrypt arbitrarily length plaintexts as you will see later
     in this chapter.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
 - en: 'The decryption operation is exactly the reverse of this: it takes the same
@@ -215,6 +253,7 @@
     decryption reverts the encryption. This is possible because the encryption and
     decryption operations are *deterministic* ; they produce the same results no matter
     how many times you call them.'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
 - en: 'In technical terms, a block cipher with a key is a *permutation*: it maps all
@@ -222,36 +261,44 @@
     4.2). Changing the key changes that mapping. A permutation is also reversible.
     From a ciphertext, you have a map back to its corresponding plaintext (otherwise,
     decryption wouldn’t work).'
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_02.jpg)'
+  id: totrans-40
   prefs: []
   type: TYPE_IMG
 - en: 'Figure 4.2 A cipher with a key can be seen as a permutation: it maps all the
     possible plaintexts to all the possible ciphertexts.'
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
 - en: Of course, we do not have the room to list all the possible plaintexts and their
     associated ciphertexts. That would be 2128 mappings for a 128-bit block cipher.
     Instead, we design constructions like AES, which behave like permutations and
     are randomized by a key. We say that they are *pseudorandom permutations* (PRPs).
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
 - en: 4.2.3 The internals of AES
+  id: totrans-43
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: Let’s dig a bit deeper into the guts of AES to see what’s inside. Note that
     AES sees the *state* of the plaintext during the encryption process as a 4-by-4
     matrix of bytes (as you can see in figure 4.3).
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_03.jpg)'
+  id: totrans-45
   prefs: []
   type: TYPE_IMG
 - en: Figure 4.3 When entering the AES algorithm, a plaintext of 16 bytes gets transformed
     into a 4-by-4 matrix. This state is then encrypted and finally transformed into
     a 16-byte ciphertext.
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
 - en: This doesn’t really matter in practice, but this is how AES is defined. Under
@@ -259,14 +306,17 @@
     *block ciphers*, which are ciphers that encrypt fixed-sized blocks. AES also has
     a *round function* that it iterates several times, starting on the original input
     (the plaintext). I illustrate this in figure 4.4.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_04.jpg)'
+  id: totrans-48
   prefs: []
   type: TYPE_IMG
 - en: Figure 4.4 AES iterates a round function over a state in order to encrypt it.
     The round function takes several arguments including a secret key. (These are
     missing from the diagram for simplicity.)
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
 - en: Each call to the round function transforms the state further, eventually producing
@@ -274,6 +324,7 @@
     the main symmetric key (during what is called a *key schedule*). This allows the
     slightest change in the bits of the symmetric key to give a completely different
     encryption (a principle called *diffusion*).
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
 - en: The round function consists of multiple operations that mix and transform the
@@ -285,15 +336,18 @@
     not. It performs an exclusive OR (XOR) with the round key and the state and, thus,
     needs the knowledge of the round key to be reversed. I illustrate what goes into
     a round in figure 4.5.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_05.jpg)'
+  id: totrans-52
   prefs: []
   type: TYPE_IMG
 - en: Figure 4.5 A typical round of AES. (The first and last rounds omit some operations.)
     Four different functions transform the state. Each function is reversible as decryption
     wouldn’t work otherwise. The addition sign inside a circle (⊕) is the symbol for
     the XOR operation.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
 - en: The number of iterations of the round function in AES, which are usually practical
@@ -303,6 +357,7 @@
     into something that looks nothing like the original plaintext. The slightest change
     in the plaintext also returns a completely different ciphertext. This principle
     is called the *avalanche effect*.
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
 - en: Note Real-world cryptographic algorithms are typically compared by the security,
@@ -312,13 +367,16 @@
     For example, AES New Instructions (AES-NI) is a set of instructions available
     in Intel and AMD CPUs, which can be used to efficiently implement encryption and
     decryption for AES. These special instructions make AES extremely fast in practice.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
 - en: One question that you might still have is how do I encrypt more or less than
     128 bits with AES? I’ll answer this next.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
 - en: 4.3 The encrypted penguin and the CBC mode of operation
+  id: totrans-57
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -327,12 +385,14 @@
     is that it can only encrypt a block by itself. To encrypt something that is not
     exactly 128 bits, we must use a *padding* as well as a *mode of operation*. So
     let’s see what these two concepts are about.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
 - en: Imagine that you want to encrypt a long message. Naively, you could divide the
     message into blocks of 16 bytes (the block size of AES). Then if the last block
     of plaintext is smaller than 16 bytes, you could append some more bytes at the
     end until the plaintext becomes 16 bytes long. This is what padding is about!
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
 - en: There are several ways to specify how to choose these *padding bytes*, but the
@@ -340,6 +400,7 @@
     ciphertext, we should be able to remove the padding to retrieve the original unpadded
     message. Simply adding random bytes, for example, wouldn’t work because you wouldn’t
     be able to discern if the random bytes were part of the original message or not.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
 - en: 'The most popular padding mechanism is often referred to as *PKCS#7 padding*,
@@ -350,17 +411,23 @@
     I illustrate this visually in figure 4.6\. To remove the padding, you can easily
     check the value of the last byte of plaintext and interpret it as the length of
     padding to remove.'
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 最流行的填充机制通常被称为*PKCS#7填充*，它首次出现在RSA（一家公司）于1990年代末发布的PKCS#7标准中。PKCS#7填充规定一条规则：每个填充字节的值必须设置为所需填充的长度。如果明文已经是16字节了怎么办？那么我们添加一个完整块的填充，设置为值16。我在图4.6中用图示说明了这一点。要移除填充，你可以轻松地检查明文的最后一个字节的值，并将其解释为要移除的填充长度。
 - en: '![](../Images/04_06.jpg)'
+  id: totrans-62
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_06.jpg)'
 - en: Figure 4.6 If the plaintext is not a multiple of the block size, it is padded
     with the length needed to reach a multiple of the block size. In the figure, the
     plaintext is 8 bytes, so we use 8 more bytes (containing the value 8) to pad the
     plaintext up to the 16 bytes required for AES.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.6 如果明文不是块大小的倍数，则填充所需长度以达到块大小的倍数。在图中，明文为8字节，因此我们使用8个字节（包含值8）来填充明文，使其达到AES所需的16字节。
 - en: Now, there’s one big problem I need to talk about. So far, to encrypt a long
     message, you just divided it into blocks of 16 bytes (and perhaps you padded the
     last block). This naive way is called the *electronic codebook* (ECB) mode of
@@ -368,64 +435,90 @@
     same block of plaintext twice leads to the same ciphertext. This means that by
     encrypting each block individually, the resulting ciphertext might have repeating
     patterns.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在，有一个大问题我需要谈论。到目前为止，为了加密一条长消息，你只需将其分成16字节的块（也许你会填充最后一个块）。这种天真的方式被称为*电子密码本*（ECB）操作模式。正如你所学到的，加密是确定性的，因此对相同的明文块进行两次加密会导致相同的密文。这意味着通过单独加密每个块，生成的密文可能会有重复的模式。
 - en: This might seem fine, but allowing these repetitions lead to many problems.
     The most obvious one is that they leak information about the plaintext. The most
     famous illustration of this is the *ECB penguin*, pictured in figure 4.7.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 这可能看起来没问题，但允许这些重复会导致许多问题。最明显的问题是它们泄露了有关明文的信息。其中最著名的例子是图4.7中的*ECB企鹅*。
 - en: '![](../Images/04_07.jpg)'
+  id: totrans-66
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_07.jpg)'
 - en: Figure 4.7 The famous ECB penguin is an encryption of an image of a penguin
     using the electronic codebook (ECB) mode of operation. As ECB does not hide repeating
     patterns, one can guess just by looking at the ciphertext what was originally
     encrypted. (Image taken from Wikipedia.)
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.7 著名的ECB企鹅是使用电子密码本（ECB）操作模式加密的企鹅图像。由于ECB不隐藏重复模式，仅仅通过查看密文就可以猜出最初加密的内容。（图片来源于维基百科。）
 - en: To encrypt more than 128 bits of plaintext safely, better modes of operation
     exist that “randomize” the encryption. One of the most popular modes of operation
     for AES is *cipher block chaining* (CBC). CBC works for any deterministic block
     cipher (not just AES) by taking an additional value called an *initialization
     vector* (IV) to randomize the encryption. Because of this, the IV is the length
     of the block size (16 bytes for AES) and must be random and unpredictable.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了安全地加密超过128位的明文，存在更好的操作模式可以“随机化”加密。对于AES来说，最流行的操作模式之一是*密码块链接*（CBC）。CBC适用于任何确定性块密码（不仅仅是AES），通过使用称为*初始化向量*（IV）的附加值来随机化加密。因此，IV的长度为块大小（AES为16字节）并且必须是随机且不可预测的。
 - en: To encrypt with the CBC mode of operation, start by generating a random IV of
     16 bytes (chapter 8 tells you how to do this), then XOR the generated IV with
     the first 16 bytes of plaintext before encrypting those. This effectively randomizes
     the encryption. Indeed, if the same plaintext is encrypted twice but with different
     IVs, the mode of operation renders two different ciphertexts.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 要使用CBC操作模式加密，首先生成一个16字节的随机IV（第8章告诉你如何做到这一点），然后在加密之前将生成的IV与明文的前16字节进行异或。这有效地随机化了加密。实际上，如果相同的明文使用不同的IV加密两次，操作模式会生成两个不同的密文。
 - en: If there is more plaintext to encrypt, use the previous ciphertext (like we
     used the IV previously) to XOR it with the next block of plaintext before encrypting
     it. This randomizes the next block of encryption as well. Remember, the encryption
     of something is unpredictable and should be as good as the randomness we used
     to create our real IV. Figure 4.8 illustrates CBC encryption.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果有更多明文需要加密，使用前一个密文（就像我们之前使用 IV 一样）与下一个明文块进行异或运算，然后再加密。这样也会使下一个加密块变得随机。记住，加密的内容是不可预测的，应该和我们用来创建真正
+    IV 的随机性一样好。图 4.8 说明了 CBC 加密。
 - en: '![](../Images/04_08.jpg)'
+  id: totrans-71
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_08.jpg)'
 - en: Figure 4.8 The CBC mode of operation with AES. To encrypt, we use a random initialization
     vector (IV) in addition to padded plaintext (split in multiple blocks of 16 bytes).
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4.8 使用 AES 的 CBC 模式。为了加密，我们使用一个随机的初始化向量（IV），以及填充的明文（分成多个 16 字节的块）。
 - en: To decrypt with the CBC mode of operation, reverse the operations. As the IV
     is needed, it must be transmitted in clear text along with the ciphertext. Because
     the IV is supposed to be random, no information is leaked by observing the value.
     I illustrate CBC decryption in figure 4.9.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 要使用 CBC 模式进行解密，需要反向操作。由于需要 IV，因此必须将其明文传输，与密文一起。由于 IV 应该是随机的，因此观察其值不会泄露任何信息。我在图
+    4.9 中说明了 CBC 解密。
 - en: '![](../Images/04_09.jpg)'
+  id: totrans-74
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_09.jpg)'
 - en: Figure 4.9 The CBC mode of operation with AES. To decrypt, the associated initialization
     vector (IV) is required.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4.9 使用 AES 的 CBC 模式。为了解密，需要相关的初始化向量（IV）。
 - en: Additional parameters like IVs are prevalent in cryptography. Yet, these are
     often poorly understood and are a great source of vulnerabilities. With the CBC
     mode of operation, an IV needs to be *unique* (it cannot repeat) as well as *unpredictable*
@@ -433,46 +526,64 @@
     Because developers are often confused by IVs, some cryptographic libraries have
     removed the possibility to specify an IV when encrypting with CBC and automatically
     generate one randomly.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 附加参数如 IV 在密码学中很常见。然而，这些参数通常被理解不清楚，是漏洞的主要来源。在 CBC 模式下，IV 需要是*唯一*的（不能重复）以及*不可预测*的（真的需要是随机的）。这些要求可能由于多种原因而失败。因为开发人员经常对
+    IV 感到困惑，一些密码库已经删除了在使用 CBC 加密时指定 IV 的可能性，并自动生成一个随机的 IV。
 - en: Warning When an IV repeats or is predictable, the encryption becomes deterministic
     again, and a number of clever attacks become possible. This was the case with
     the famous BEAST attack (Browser Exploit Against SSL/TLS) on the TLS protocol.
     Note also that other algorithms might have different requirements for IVs. This
     is why it is always important to read the manual. Dangerous details lie in fine
     print.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 当 IV 重复或可预测时，加密再次变得确定性，并且可能出现许多巧妙的攻击。这就是著名的 BEAST 攻击（针对 TLS 协议的浏览器利用）在 TLS
+    协议上的情况。还要注意，其他算法可能对 IV 有不同的要求。这就是阅读手册总是很重要的原因。危险的细节隐藏在小字里。
 - en: Note that a mode of operation and a padding are still not enough to make a cipher
     usable. You’re about to see why in the next section.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，仅仅使用一种操作模式和填充还不足以使密码可用。在下一节中，您将看到原因。
 - en: 4.4 A lack of authenticity, hence AES-CBC-HMAC
+  id: totrans-79
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 4.4 缺乏真实性，因此 AES-CBC-HMAC
 - en: 'So far, we have failed to address one fundamental flaw: the ciphertext as well
     as the IV in the case of CBC can still be modified by an attacker. Indeed, there’s
     no integrity mechanism to prevent that! Changes in the ciphertext or IV might
     have unexpected changes in the decryption. For example, in AES-CBC (AES used with
     the CBC mode of operation), an attacker can flip specific bits of plaintext by
     flipping bits in its IV and ciphertext. I illustrate this attack in figure 4.10.'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，我们未能解决一个根本性的缺陷：在 CBC 模式下，密文以及 IV 仍然可以被攻击者修改。实际上，没有完整性机制来防止这种情况！密文或 IV
+    的更改可能导致解密时出现意外的变化。例如，在 AES-CBC（使用 CBC 模式的 AES），攻击者可以通过翻转 IV 和密文中的特定位来翻转明文的特定位。我在图
+    4.10 中说明了这种攻击。
 - en: '![](../Images/04_10.jpg)'
+  id: totrans-81
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_10.jpg)'
 - en: 'Figure 4.10 An attacker that intercepts an AES-CBC ciphertext can do the following:
     (1) Because the IV is public, flipping a bit (from 1 to 0, for example) of the
     IV also (2) flips a bit of the first block of plaintext. (3) Modifications of
     bits can happen on the ciphertext blocks as well. (4) Such changes impact the
     following block of decrypted plaintext. (5) Note that tampering with the ciphertext
     blocks has the direct effect of scrambling the decryption of that block.'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
 - en: Consequently, a cipher or a mode of operation must not be used as-is. They lack
     some sort of integrity protection to ensure that a ciphertext and its associated
     parameters (here the IV) cannot be modified without triggering some alarms.
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
 - en: To prevent modifications on the ciphertext, we can use the *message authentication
@@ -481,30 +592,36 @@
     We then apply the MAC after padding the plaintext and encrypting it over both
     the ciphertext and the IV; otherwise, an attacker can still modify the IV without
     being caught.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
 - en: Warning This construction is called *Encrypt-then-MAC*. The alternatives (like
     *MAC-then-Encrypt*) can sometimes lead to clever attacks (like the famous Vaudenay
     padding oracle attack) and are thus avoided in practice.
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
 - en: The created authentication tag can be transmitted along with the IV and the
     ciphertext. Usually, all are concatenated together as figure 4.11 illustrates.
     In addition, it is best practice to use different keys for AES-CBC and HMAC.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_11.jpg)'
+  id: totrans-87
   prefs: []
   type: TYPE_IMG
 - en: 'Figure 4.11 The AES-CBC-HMAC construction produces three arguments that are
     usually concatenated in the following order: the public IV, the ciphertext, and
     the authentication tag.'
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
 - en: Prior to decryption, the tag needs to be verified (in constant time as you saw
     in chapter 3). The combination of all of these algorithms is referred to as *AES-CBC-HMAC*
     and was one of the most widely used authenticated encryption modes until we started
     to adopt more modern all-in-one constructions.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
 - en: Warning AES-CBC-HMAC is not the most developer-friendly construction. It is
@@ -513,9 +630,11 @@
     a few pages introducing this algorithm as it is still widely used and still works,
     but I recommend against using it in favor of the more current constructions I
     introduce next.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
 - en: '4.5 All-in-one constructions: Authenticated encryption'
+  id: totrans-91
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -525,9 +644,11 @@
     research has emerged seeking to standardize all-in-one constructions that simplify
     the use of encryption for developers. In the rest of this section, I introduce
     this new concept as well as two widely adopted standards: AES-GCM and ChaCha20-Poly1305.'
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
 - en: 4.5.1 What’s authenticated encryption with associated data (AEAD)?
+  id: totrans-93
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -537,6 +658,7 @@
     of your plaintexts while detecting any modifications that could have occurred
     on the ciphertexts. What’s more, it provides a way to authenticate *associated
     data*.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
 - en: The associated data argument is optional and can be empty or it can also contain
@@ -545,15 +667,18 @@
     ciphertext. In addition, the ciphertext’s size is larger than the plaintext because
     it now contains an additional authentication tag (usually appended to the end
     of the ciphertext).
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
 - en: To decrypt the ciphertext, we are required to use the same implied or transmitted
     associated data. The result is either an error, indicating that the ciphertext
     was modified in transit, or the original plaintext. I illustrate this new primitive
     in figure 4.12.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_12.jpg)'
+  id: totrans-97
   prefs: []
   type: TYPE_IMG
 - en: Figure 4.12 Both Alice and Bob meet in person to agree on a shared key. Alice
@@ -562,67 +687,83 @@
     the sender of the message. After receiving the ciphertext and the authentication
     tag, Bob can decrypt it using the same key and associated data. If the associated
     data is incorrect or the ciphertext was modified in transit, the decryption fails.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s see how to use a *cryptographic library* to encrypt and decrypt with an
     authenticated encryption primitive. For this, we’ll use the JavaScript programming
     language and the Web Crypto API (an official interface supported by most browsers
     that provides low-level cryptographic functions) as the following listing shows.
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 4.1 Authenticated encryption with AES-GCM in JavaScript
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE0]'
+  id: totrans-101
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: ❶ Generates a 128-bit key for 128 bits of security
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Generates a 12-byte IV randomly
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
 - en: ❸ Uses some associated data to encrypt our plaintext. Decryption must use the
     same IV and associated data.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
 - en: ❹ Decryption throws an exception if the IV, ciphertext, or associated data are
     tampered with.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
 - en: Note that Web Crypto API is a low-level API, and as such, does not help the
     developer to avoid mistakes. For example, it lets us specify an IV, which is a
     dangerous pattern. In this listing, I used AES-GCM, which is the most widely used
     AEAD. Next, let’s talk more about this AES-GCM.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
 - en: 4.5.2 The AES-GCM AEAD
+  id: totrans-107
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: The most widely used AEAD is AES with the *Galois/Counter Mode* (also abbreviated
     AES-GCM). It was designed for high performance by taking advantage of hardware
     support for AES and by using a MAC (GMAC) that can be implemented efficiently.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
 - en: AES-GCM has been included in NIST’s Special Publication (SP 800-38D) since 2007,
     and it is the main cipher used in cryptographic protocols, including several versions
     of the TLS protocol that is used to secure connections to websites on the internet.
     Effectively, we can say that AES-GCM encrypts the web.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
 - en: AES-GCM combines the Counter (CTR) mode of operation with the GMAC message authentication
     code. First, let’s see how CTR mode works with AES. Figure 4.13 shows how AES
     is used with CTR mode.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_13.jpg)'
+  id: totrans-111
   prefs: []
   type: TYPE_IMG
 - en: Figure 4.13 The AES-CTR algorithm combining the AES cipher with the Counter
     mode of operation (CTR mode). A unique nonce is concatenated with a counter and
     encrypted to produce a keystream. The keystream is then XORed with the actual
     bytes of the plaintext.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
 - en: 'AES-CTR uses AES to encrypt a nonce concatenated with a number (starting at
@@ -632,6 +773,7 @@
     however. A nonce needs to be unique but *not* unpredictable. Once this 16-byte
     block is encrypted, the result is called a *keystream*, and it is XORed with the
     actual plaintext to produce the encryption.'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
 - en: Note Like IVs, nonces are a common term in cryptography, and they are found
@@ -639,6 +781,7 @@
     although the name often indicates that it should not repeat. But, as usual, what
     matters is what the manual says, not what the name of the argument implies. Indeed,
     the nonce of AES-GCM is sometimes referred to as an IV.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
 - en: The nonce in AES-CTR is 96 bits (12 bytes) and takes most of the 16 bytes to
@@ -646,34 +789,41 @@
     and incremented for each block encryption until it reaches its maximum value at
     2^(4×8) – 1 = 4,294,967,295\. This means that, at most, 4,294,967,295 blocks of
     128 bits can be encrypted with the same nonce (so less than 69 GBs).
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
 - en: If the same nonce is used twice, the same keystream is created. By XORing the
     two ciphertexts together, the keystream is canceled and one can recover the XOR
     of the two plaintexts. This can be devastating, especially if you have some information
     about the content of one of the two plaintexts.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_14.jpg)'
+  id: totrans-117
   prefs: []
   type: TYPE_IMG
 - en: Figure 4.14 If the keystream of AES-CTR is longer than the plaintext, it is
     truncated to the length of the plaintext prior to XORing it with the plaintext.
     This permits AES-CTR to work without padding.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
 - en: 'Figure 4.14 shows an interesting aspect of CTR mode: no padding is required.
     We say that it turns a block cipher (AES) into a stream cipher. It encrypts the
     plaintext byte by byte.'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
 - en: Stream ciphers
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
 - en: Stream ciphers are another category of ciphers. They are different than block
     ciphers because we can use them directly to encrypt a ciphertext by XORing it
     with a keystream. No need for padding or a mode of operation, allowing the ciphertext
     to be of the same length as the plaintext.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
 - en: In practice, there isn’t much difference between these two categories of ciphers
@@ -681,12 +831,14 @@
     mode of operation. But, in theory, block ciphers have the advantage as they can
     be useful when constructing other categories of primitives (similar to what you
     saw in chapter 2 with hash functions).
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
 - en: This is also a good moment to note that, by default, encryption doesn’t (or
     badly) hides the length of what you are encrypting. Because of this, the use of
     compression before encryption can lead to attacks if an attacker can influence
     parts of what is being encrypted.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
 - en: The second part of AES-GCM is *GMAC*. It is a MAC constructed from a keyed hash
@@ -695,13 +847,16 @@
     of such a function is weaker than a hash. For example, an AXU does not need to
     be collision resistant. Thanks to this, GHASH can be significantly faster. Figure
     4.15 illustrates the GHASH algorithm.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_15.jpg)'
+  id: totrans-125
   prefs: []
   type: TYPE_IMG
 - en: Figure 4.15 GHASH takes a key and absorbs the input block by block in a manner
     resembling CBC mode. It produces a digest of 16 bytes.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
 - en: To hash something with GHASH, we break the input into blocks of 16 bytes and
@@ -710,32 +865,39 @@
     breaks)—it’s a *one-time MAC*. As this is not ideal for us, we use a technique
     (due to Wegman-Carter) to transform GHASH into a *many-time MAC*. I illustrate
     this in figure 4.16.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_16.jpg)'
+  id: totrans-128
   prefs: []
   type: TYPE_IMG
 - en: Figure 4.16 GMAC uses GHASH with a key to hash the input, then encrypts it with
     a different key and AES-CTR to produce an authentication tag.
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
 - en: GMAC is effectively the encryption of the GHASH output with AES-CTR (and a different
     key). Again, the nonce must be unique; otherwise, clever attackers can recover
     the authentication key used by GHASH, which would be catastrophic and would allow
     easy forgery of authentication tags.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
 - en: Finally, AES-GCM can be seen as an intertwined combination of CTR mode and GMAC,
     similar to the Encrypt-then-MAC construction we previously discussed. I illustrate
     the whole algorithm in figure 4.17.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_17.jpg)'
+  id: totrans-132
   prefs: []
   type: TYPE_IMG
 - en: Figure 4.17 AES-GCM works by using AES-CTR with a symmetric key *K* to encrypt
     the plaintext and by using GMAC to authenticate the associated data and the ciphertext
     using an authentication key *H*.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
 - en: The counter starts at 1 for encryption, leaving the 0 counter for encrypting
@@ -743,6 +905,7 @@
     key *H*, which is the encryption of the all-zero block with a key *K*. This way
     one does not need to carry two different keys as the key *K* suffices to derive
     the other one.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
 - en: As I said previously, the 12-byte nonce of AES-GCM needs to be unique and, thus,
@@ -752,6 +915,7 @@
     the user choose the nonce. This allows one to encrypt 2^(12×8) – 1 messages before
     reaching the maximum value of the nonce. Suffice it to say, this is an impossible
     number of messages to reach in practice.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
 - en: On the other hand, having a counter means that one needs to keep *state*. If
@@ -763,9 +927,11 @@
     are used and the higher the chances of getting a collision. Because of the birthday
     bound we talked about in chapter 2, it is recommended not to encrypt more than
     2^(92/3) ≈ 2^(30) messages with the same key when generating nonces randomly.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
 - en: Beyond birthday-bound security
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
 - en: 2^(30) messages is quite a large number of messages. It might never be reached
@@ -777,9 +943,11 @@
     *rekeying* (changing the key used to encrypt) can be a solution. There also exists
     a research field called *beyond birthday-bound security* that aims to improve
     the maximum number of messages that can be encrypted with the same key.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
 - en: 4.5.3 ChaCha20-Poly1305
+  id: totrans-139
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -790,6 +958,7 @@
     the ChaCha20-Poly1305 AEAD in order to make use of it in Android mobile phones
     relying on low-end processors. Nowadays, it is widely adopted by internet protocols
     like OpenSSH, TLS, and Noise.'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
 - en: ChaCha20 is a modification of the Salsa20 stream cipher, which was originally
@@ -800,56 +969,69 @@
     the ciphertext. To decrypt, the same algorithm is used to produce the same keystream,
     which is XORed with the ciphertext to give back the plaintext. I illustrate both
     flows in figure 4.18.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_18.jpg)'
+  id: totrans-142
   prefs: []
   type: TYPE_IMG
 - en: Figure 4.18 ChaCha20 works by taking a symmetric key and a unique nonce. It
     then generates a keystream that is XORed with the plaintext (or ciphertext) to
     produce the ciphertext (or plaintext). The encryption is length-preserving as
     the ciphertext and the plaintext are of the same length.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
 - en: Under the hood, ChaCha20 generates a keystream by repeatedly calling a *block
     function* to produce many 64-byte blocks of keystream. The block function takes
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
 - en: A 256-bit (32-byte) key like AES-256
+  id: totrans-145
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: A 92-bit (12-byte) nonce like AES-GCM
+  id: totrans-146
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: A 32-bit (4-byte) counter like AES-GCM
+  id: totrans-147
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The process to encrypt is the same as with AES-CTR. (I illustrate this flow
     in figure 4.19.)
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
 - en: Run the block function, incrementing the counter every time, until enough keystream
     is produced
+  id: totrans-149
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Truncate the keystream to the length of the plaintext
+  id: totrans-150
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: XOR the keystream with the plaintext
+  id: totrans-151
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: '![](../Images/04_19.jpg)'
+  id: totrans-152
   prefs: []
   type: TYPE_IMG
 - en: Figure 4.19 ChaCha20’s keystream is created by calling an internal block function
     until enough bytes are produced. One block function call creates 64 bytes of random
     keystream.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
 - en: Due to the upper bound on the counter, you can use ChaCha20 to encrypt as many
@@ -860,9 +1042,11 @@
     to AES-GCM arise. An observer can obtain the XOR of the two plaintexts by XORing
     the two ciphertexts and can also recover the authentication key for the nonce.
     These are serious issues that can lead to an attacker being able to forge messages!
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
 - en: The size of nonces and counters
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
 - en: The size of the nonces and the counters are (actually) not always the same everywhere
@@ -871,6 +1055,7 @@
     sizes of nonce, and some applications increase the size of the counter (or the
     nonce) in order to allow encryption of larger messages (or more messages). Increasing
     the size of one component necessarily decreases the size of the other.
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
 - en: To prevent this, while allowing a large number of messages to be encrypted under
@@ -878,19 +1063,23 @@
     increase the size of the nonce while keeping the rest intact, which is important
     in cases where the nonce needs to be generated randomly instead of being a counter
     tracked in the system.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
 - en: Inside the ChaCha20 block function, a state is formed. Figure 4.20 illustrates
     this state.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_20.jpg)'
+  id: totrans-159
   prefs: []
   type: TYPE_IMG
 - en: Figure 4.20 The state of the ChaCha20 block function. It is formed by 16 words
     (represented as squares) of 32 bytes each. The first line stores a constant, the
     second and third lines store the 32-byte symmetric key, the following word stores
     a 4-byte counter, and the last 3 words store the 12-byte nonce.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
 - en: This state is then transformed into 64 bytes of keystream by iterating a round
@@ -899,27 +1088,33 @@
     calling a *Quarter Round* (QR) *function* 4 times per round, acting on different
     words of the internal state each time, depending if the round number is odd or
     even. Figure 4.21 shows this process.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_21.jpg)'
+  id: totrans-162
   prefs: []
   type: TYPE_IMG
 - en: Figure 4.21 A round in ChaCha20 affects all the words contained in a state.
     As the Quarter Round (QR) function only takes 4 arguments, it must be called at
     least 4 times on different words (grayed in the diagram) to modify all 16 words
     of the state.
+  id: totrans-163
   prefs: []
   type: TYPE_NORMAL
 - en: The QR function takes four different arguments and updates them using only Add,
     Rotate, and XOR operations. We say that it is an *ARX* stream cipher. This makes
     ChaCha20 extremely easy to implement and fast in software.
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
 - en: '*Poly1305* is a MAC created via the Wegman-Carter technique, much like the
     GMAC we previously talked about. Figure 4.22 illustrates this cryptographic MAC.'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_22.jpg)'
+  id: totrans-166
   prefs: []
   type: TYPE_IMG
 - en: Figure 4.22 Poly1305’s core function absorbs an input one block at a time by
@@ -927,35 +1122,42 @@
     *r*. The output is fed as an accumulator to the next call of the core function.
     Eventually the output is added to a random value *s* to become the authentication
     tag.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
 - en: In the figure, *r* can be seen as the authentication key of the scheme, like
     the authentication key *H* of GMAC. And *s* makes the MAC secure for multiple
     uses by encrypting the result, thus it must be unique for each usage.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
 - en: The *Poly1305 core function* mixes the key with the accumulator (set to 0 in
     the beginning) and the message to authenticate. The operations are simple multiplications
     modulo a constant *P*.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
 - en: Note Obviously, a lot of details are missing from our description. I seldom
     mention how to encode data or how some arguments should be padded before being
     acted on. These are all implementation specificities that do not matter for us
     as we are trying to get an intuition of how these things work.
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
 - en: Eventually, we can use ChaCha20 and a counter set to 0 to generate a keystream
     and derive the 16-byte *r* and 16-byte *s* values we need for Poly1305\. I illustrate
     the resulting AEAD cipher in figure 4.23.
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/04_23.jpg)'
+  id: totrans-172
   prefs: []
   type: TYPE_IMG
 - en: Figure 4.23 ChaCha20-Poly1305 works by using ChaCha20 to encrypt the plaintext
     and to derive the keys required by the Poly1305 MAC. Poly1305 is then used to
     authenticate the ciphertext as well as the associated data.
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
 - en: The normal ChaCha20 algorithm is first used to derive the authentication secrets
@@ -963,28 +1165,34 @@
     is used to encrypt the plaintext. After that, the associated data and the ciphertext
     (and their respective lengths) are passed to Poly1305 to create an authentication
     tag.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
 - en: To decrypt, the exact same process is applied. ChaCha20 first verifies the authentication
     of the ciphertext and the associated data via the tag received. It then decrypts
     the ciphertext.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
 - en: 4.6 Other kinds of symmetric encryption
+  id: totrans-176
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: 'Let’s pause for a moment and review the symmetric encryption algorithms you
     have learned so far:'
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
 - en: '*Non-authenticated encryption*—AES with a mode of operation but without a MAC.
     This is insecure in practice as ciphertexts can be tampered with.'
+  id: totrans-178
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '*Authenticated encryption*—AES-GCM and ChaCha20-Poly1305 are the two most widely
     adopted ciphers.'
+  id: totrans-179
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -993,9 +1201,11 @@
     in speed, in format, and so on. To that end, let me give you a brief overview
     of other types of symmetric encryption that can be useful when AES-GCM and ChaCha20-Poly1305
     won’t fit.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
 - en: 4.6.1 Key wrapping
+  id: totrans-181
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1008,9 +1218,11 @@
     Wrapping.” These key wrapping algorithms do not take an additional nonce or IV
     and randomize their encryption based on what they are encrypting. Thanks to this,
     they do not have to store an additional nonce or IV next to the ciphertexts.'
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
 - en: 4.6.2 Nonce misuse-resistant authenticated encryption
+  id: totrans-183
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1021,6 +1233,7 @@
     nonce in AES-GCM or ChaCha20-Poly1305 can have catastrophic consequences. It not
     only reveals the XOR of the two plaintexts, but it also allows an attacker to
     recover an authentication key and to forge valid encryption of messages.
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
 - en: 'The point of a nonce misuse-resistant algorithm is that encrypting two plaintexts
@@ -1031,9 +1244,11 @@
     trick behind SIV is that the nonce used in the AEAD to encrypt is generated from
     the plaintext itself, which makes it highly unlikely that two different plaintexts
     would end up being encrypted under the same nonce.'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
 - en: 4.6.3 Disk encryption
+  id: totrans-186
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1042,6 +1257,7 @@
     (saving space is important for a large number of devices). Because the encryption
     can’t expand, AEADs that need a nonce and an authentication tag are not a good
     fit. Instead, unauthenticated encryption is used.'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
 - en: To protect against *bitflip attacks*, large blocks (think thousands of bytes)
@@ -1049,15 +1265,18 @@
     of the whole block. This way, an attack has more of a chance of crashing the device
     than accomplishing its goal. These constructions are called *wide-block ciphers*,
     although this approach has also been dubbed *poor man’s authentication*.
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
 - en: 'Linux systems and some Android devices have adopted this approach using Adiantum,
     a wide-block construction wrapping the ChaCha cipher and standardized by Google
     in 2019\. Still, most devices use non-ideal solutions: both Microsoft and Apple
     make use of AES-XTS, which is unauthenticated and is not a wide-block cipher.'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
 - en: 4.6.4 Database encryption
+  id: totrans-190
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1065,6 +1284,7 @@
     breaches from leaking data, the key used to encrypt and decrypt the data must
     be stored away from the database server. Because clients don’t have the data themselves,
     they are severely limited in the way they can query the data.
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
 - en: The simplest solution is called *transparent data encryption* (TDE) and simply
@@ -1072,6 +1292,7 @@
     to be careful to authenticate associated data identifying the row and the column
     being encrypted; otherwise, encrypted content can be swapped. Still, one cannot
     search through encrypted data and so queries have to use the unencrypted columns.
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
 - en: '*Searchable encryption* is the field of research that aims at solving this
@@ -1081,20 +1302,24 @@
     allows you to search for exact matches, while order-preserving and order-revealing
     encryptions allow you to order results. The bottom line is, the security of these
     solutions are to be looked at carefully as they truly are tradeoffs.'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
 - en: Summary
+  id: totrans-194
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: Encryption (or symmetric encryption) is a cryptographic primitive that can be
     used to protect the confidentiality of data. The security relies on a symmetric
     key that needs to remain secret.
+  id: totrans-195
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Symmetric encryption needs to be authenticated (after which we call it authenticated
     encrption) to be secure, as otherwise, ciphertexts can be tampered with.
+  id: totrans-196
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1102,28 +1327,33 @@
     by using a message authentication code. But best practice is to use an authenticated
     encryption with associated data (AEAD) algorithm as they are all-in-one constructions
     that are harder to misuse.
+  id: totrans-197
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Two parties can use authenticated encryption to hide their communications, as
     long as they both have knowledge of the same symmetric key.
+  id: totrans-198
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: AES-GCM and ChaCha20-Poly1305 are the two most widely adopted AEADs. Most applications
     nowadays use either one of these.
+  id: totrans-199
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Reusing nonces breaks the authentication of AES-GCM and ChaCha20-Poly1305\.
     Schemes like AES-GCM-SIV are nonce misuse resistant, while encryption of keys
     can avoid that problem as nonces are not necessary.
+  id: totrans-200
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Real-world cryptography is about constraints, and AEADs cannot always fit every
     scenario. This is the case for database or disk encryption, for example, that
     require the development of new constructions.
+  id: totrans-201
   prefs:
   - PREF_UL
   type: TYPE_NORMAL

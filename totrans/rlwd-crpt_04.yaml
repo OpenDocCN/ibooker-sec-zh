@@ -1,22 +1,32 @@
 - en: 3 Message authentication codes
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 消息认证码
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: Message authentication codes (MACs)
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 消息认证码（MACs）
 - en: The security properties and the pitfalls of MACs
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: MAC 的安全性属性和陷阱
 - en: The widely adopted standards for MACs
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 广泛采用的 MAC 标准
 - en: 'Mix a hash function with a secret key and you obtain something called a *message
     authentication code* (MAC), a cryptographic primitive to protect the integrity
     of data. The addition of a secret key is the foundation behind any type of security:
@@ -25,31 +35,43 @@
     they do that thanks to an additional trusted channel that cannot be tampered with.
     In this chapter, you will see how a MAC can be used to create such a trusted channel
     and what else it can do as well.'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 将哈希函数与秘密密钥混合在一起，你就得到了一种称为*消息认证码*（MAC）的东西，它是一种用于保护数据完整性的密码原语。添加秘密密钥是任何类型安全的基础：没有密钥就没有机密性，也没有认证。虽然哈希函数可以为任意数据提供认证或完整性，但这要归功于一个不可篡改的额外受信任的通道。在本章中，你将看到
+    MAC 如何用于创建这样一个受信任的通道，以及它还能做些什么。
 - en: Note For this chapter, you’ll need to have read chapter 2 on hash functions.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 对于本章，您需要已阅读了第 2 章的哈希函数。
 - en: 3.1 Stateless cookies, a motivating example for MACs
+  id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 无状态 cookies，MAC 的一个激励示例
 - en: 'Let’s picture the following scenario: you are a web page. You’re bright, full
     of colors, and above all, you’re proud of serving a community of loyal users.
     To interact with you, visitors must first log in by sending you their credentials,
     which you must then validate. If the credentials match the ones that were used
     when the user first signed up, then you have successfully *authenticated* the
     user.'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设下面的场景：你是一个网页。你色彩明亮，充满活力，最重要的是，你以为一群忠实用户提供服务感到自豪。要与你互动，访客必须首先通过发送他们的凭据来登录，然后你必须验证这些凭据。如果凭据与用户首次注册时使用的凭据匹配，那么你已成功*验证*了用户。
 - en: Of course, a web browsing experience is composed not just of one, but of many
     requests. To avoid having the user re-authenticate with every request, you can
     make their browser store the user credentials and resend them automatically within
     each request. Browsers have a feature just for that—*cookies*! Cookies are not
     just for credentials. They can store anything you want the user to send you within
     each of their requests.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 当然，Web 浏览体验不仅仅是一个请求，而是多个请求的组合。为了避免用户在每个请求中重新进行身份验证，你可以让他们的浏览器存储用户凭据，并在每个请求中自动重新发送。浏览器就有一个专门的功能——*cookies*！
+    Cookies 不仅仅用于凭据。它们可以存储任何你希望用户在每个请求中发送给你的内容。
 - en: While this naive approach works well, usually you don’t want to store sensitive
     information like user passwords in cleartext in the browser. Instead, a session
     cookie most often carries a random string, generated right after a user logs in.
@@ -58,106 +80,150 @@
     about the user’s password is leaked (although it can be used to impersonate the
     user). The web server also has the possibility to kill the session by deleting
     the cookie on their side, which is nice.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管这种天真的方法效果很好，但通常你不希望在浏览器中以明文形式存储诸如用户密码之类的敏感信息。相反，会话 cookie 最常携带一个随机字符串，在用户登录后立即生成。Web
+    服务器将随机字符串存储在临时数据库中，使用用户的昵称作为标识。如果浏览器以某种方式发布了会话 cookie，就不会泄露有关用户密码的任何信息（尽管可以使用它来冒充用户）。Web
+    服务器还有可能通过在其端删除 cookie 来终止会话，这很好。
 - en: '![](../Images/03_001_UN01.jpg)'
+  id: totrans-11
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/03_001_UN01.jpg)'
 - en: There is nothing wrong with this approach, but in some cases, it might not scale
     well. If you have many servers, it could be annoying to have all the servers share
     the association between your users and the random strings. Instead, you could
     store more information on the browser side. Let’s see how we can do this.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种方法没有问题，但在某些情况下，它可能不太适合扩展。如果你有许多服务器，让所有服务器共享用户和随机字符串之间的关联可能会很麻烦。相反，你可以在浏览器端存储更多信息。让我们看看如何做到这一点。
 - en: Naively, you can have the cookie contain a username instead of a random string,
     but this is obviously an issue, as I can now impersonate any user by manually
     modifying the username contained in the cookie. Perhaps the hash functions you
     learned about in chapter 2 can help us. Take a few minutes to think of a way hash
     functions can prevent a user from tampering with their own cookies.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 天真地，你可以让 cookie 包含一个用户名而不是一个随机字符串，但这显然是一个问题，因为我现在可以通过手动修改 cookie 中包含的用户名来冒充任何用户。也许你在第二章学到的哈希函数能帮助我们。花几分钟想想哈希函数如何防止用户篡改自己的
+    cookie。
 - en: A second naive approach could be to store not only a username, but a digest
     of that username as well in a cookie. You can use a hash function like SHA-3 to
     hash the username. I illustrate this in figure 3.1\. Do you think this can work?
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二种天真的方法可能是不仅在 cookie 中存储一个用户名，还存储该用户名的摘要。你可以使用像 SHA-3 这样的哈希函数来对用户名进行哈希。我在图3.1中说明了这一点。你认为这个方法可行吗？
 - en: '![](../Images/03_01.jpg)'
+  id: totrans-15
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/03_01.jpg)'
 - en: Figure 3.1 To authenticate the requests for a browser, a web server asks the
     browser to store a username and a hash of that username, sending this information
     in every subsequent request.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 图3.1 为了验证浏览器的请求，web 服务器要求浏览器存储一个用户名和该用户名的哈希，并在每个后续请求中发送这些信息。
 - en: There’s a big problem with this approach. Remember, the hash function is a public
     algorithm and can be recomputed on new data by a malicious user. If you do not
     trust the origin of a hash, it does not provide data integrity! Indeed, figure
     3.2 shows that if a malicious user modifies the username in their cookie, they
     can also simply recompute the digest part of the cookie.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种方法有一个很大的问题。请记住，哈希函数是一个公开的算法，恶意用户可以重新计算新数据上的哈希。如果你不信任哈希的来源，它就无法提供数据完整性！的确，图3.2
+    显示，如果恶意用户修改了其 cookie 中的用户名，他们也可以简单地重新计算 cookie 的摘要部分。
 - en: '![](../Images/03_02.jpg)'
+  id: totrans-18
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/03_02.jpg)'
 - en: Figure 3.2 A malicious user can modify the information contained in their cookies.
     If a cookie contains a username and a hash, both can be modified to impersonate
     a different user.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 图3.2 恶意用户可以修改其 cookie 中包含的信息。如果一个 cookie 包含一个用户名和一个哈希，两者都可以被修改以冒充不同的用户。
 - en: Still, using a hash is not a foolish idea. What else can we do? Turns out that
     there is a similar primitive to the hash function, a MAC, that will do exactly
     what we need.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用哈希仍然不是一个愚蠢的想法。我们还能做什么？事实证明，有一种与哈希函数类似的原始方法，叫做MAC，它正好可以满足我们的需求。
 - en: A *MAC* is a secret key algorithm that takes an input, like a hash function,
     but it also takes a secret key (who saw that coming?) It then produces a unique
     output called an *authentication tag*. This process is deterministic; given the
     same secret key and the same message, a MAC produces the same authentication tag.
     I illustrate this in figure 3.3.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: '*MAC*是一个秘密密钥算法，它像哈希函数一样接受一个输入，但它还接受一个秘密密钥（谁会想到呢？）然后产生一个称为*认证标签*的唯一输出。这个过程是确定性的；给定相同的秘密密钥和相同的消息，MAC会产生相同的认证标签。我在图3.3中说明了这一点。'
 - en: '![](../Images/03_03.jpg)'
+  id: totrans-22
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/03_03.jpg)'
 - en: Figure 3.3 The interface of a message authentication code (MAC). The algorithm
     takes a secret key and a message, and deterministically produces a unique authentication
     tag. Without the key, it should be impossible to reproduce that authentication
     tag.
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 图3.3 一个消息认证码（MAC）的接口。该算法接受一个秘密密钥和一个消息，并确定性地生成一个唯一的认证标签。没有密钥的话，应该无法再现那个认证标签。
 - en: To make sure a user can’t tamper with their cookie, let’s now make use of this
     new primitive. When the user logs in for the first time, you produce an authentication
     tag from your secret key and their username and have them store their username
     and the authentication tag in a *cookie*. Because they don’t know the secret key,
     they won’t be able to forge a valid authentication tag for a different username.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 为了确保用户无法篡改他们的 cookie，让我们现在利用这种新的原始方法。当用户第一次登录时，你使用你的秘密密钥和他们的用户名生成一个认证标签，并要求他们将他们的用户名和认证标签存储在*cookie*中。因为他们不知道秘密密钥，所以他们将无法伪造出不同用户名的有效认证标签。
 - en: 'To validate their cookie, you do the same: produce an authentication tag from
     your secret key and the username contained in the cookie and check if it matches
     the authentication tag contained in the cookie. If it matches, it must have come
     from you, as you were the only one who could have produced a valid authentication
     tag (under your secret key). I illustrate this in figure 3.4.'
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 要验证他们的cookie，你做同样的事情：使用你的秘密密钥和cookie中包含的用户名生成一个身份验证标签，并检查它是否与cookie中包含的身份验证标签匹配。如果匹配，那么它必定来自你，因为只有你能够生成有效的身份验证标签（在你的秘密密钥下）。我在图3.4中说明了这一点。
 - en: '![](../Images/03_04.jpg)'
+  id: totrans-26
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/03_04.jpg)'
 - en: Figure 3.4 A malicious user tampers with his cookie but cannot forge a valid
     authentication tag for the new cookie. Subsequently, the web page cannot verify
     the authenticity and integrity of the cookie and, thus, discards the request.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 3.4 一个恶意用户篡改了他的cookie，但无法伪造新cookie的有效身份验证标签。随后，网页无法验证cookie的真实性和完整性，因此丢弃了请求。
 - en: A MAC is like a private hash function that only you can compute because you
     know the key. In a sense, you can personalize a hash function with a key. The
     relationship with hash functions doesn’t stop there. You will see later in this
     chapter that MACs are often built from hash functions. Next, let’s see a different
     example using real code.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: MAC就像一个私有的哈希函数，只有你知道密钥才能计算出来。在某种意义上，你可以用密钥个性化一个哈希函数。与哈希函数的关系并不止于此。你将在本章后面看到，MAC经常是从哈希函数构建的。接下来，让我们看一个使用真实代码的不同示例。
 - en: 3.2 An example in code
+  id: totrans-29
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 3.2 一个代码示例
 - en: 'So far, you were the only one using a MAC. Let’s increase the number of participants
     and use that as a motivation to write some code to see how MACs are used in practice.
     Imagine that you want to communicate with someone else, and you do not care about
@@ -165,95 +231,138 @@
     integrity of the messages: they must not be modified! A solution is to have both
     you and your correspondent use the same secret key with a MAC to protect the integrity
     of your communications.'
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，只有你在使用MAC。让我们增加参与者的数量，并以此为动机编写一些代码，看看MAC在实践中是如何使用的。想象一下，你想与其他人通信，而不在乎其他人是否阅读你的消息。但你真正关心的是消息的完整性：它们不能被修改！一个解决方案是你和你的通信对象使用相同的秘密密钥和MAC来保护通信的完整性。
 - en: For this example, we’ll use one of the most popular MAC functions—*hash-based
     message authentication code* (HMAC)—with the Rust programming language. HMAC is
     a message authentication code that uses a hash function at its core. It is compatible
     with different hash functions, but it is mostly used in conjunction with SHA-2\.
     As the following listing shows, the sending part simply takes a key and a message
     and returns an authentication tag.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 对于这个示例，我们将使用最流行的MAC函数之一——*基于哈希的消息认证码*（HMAC）与Rust编程语言一起使用。HMAC是一种使用哈希函数作为核心的消息认证码。它与不同的哈希函数兼容，但主要与SHA-2一起使用。如下列表所示，发送部分只需接受一个密钥和一个消息，然后返回一个身份验证标签。
 - en: Listing 3.1 Sending an authenticated message in Rust
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 3.1 在Rust中发送经过身份验证的消息
 - en: '[PRE0]'
+  id: totrans-33
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: ❶ Instantiates HMAC with a secret key and the SHA-256 hash function
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 使用秘密密钥和SHA-256哈希函数实例化HMAC
 - en: ❷ Buffers more input for HMAC
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 为HMAC缓冲更多输入
 - en: ❸ Returns the authentication tag
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 返回身份验证标签
 - en: On the other side, the process is similar. After receiving both the message
     and the authentication tag, your friend can generate their own tag with the same
     secret key and then compare those. Similarly to encryption, both sides need to
     share the same secret key to make this work. The following listing shows how this
     works.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 另一方面，流程类似。在接收到消息和身份验证标签后，你的朋友可以使用相同的秘密密钥生成自己的标签，然后进行比较。与加密类似，双方需要共享相同的秘密密钥才能使其正常工作。以下列表显示了这是如何工作的。
 - en: Listing 3.2 Receiving an authenticated message in Rust
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 3.2 在Rust中接收经过身份验证的消息
 - en: '[PRE1]'
+  id: totrans-39
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: ❶ The receiver needs to recreate the authentication tag from the same key and
     message.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 接收方需要从相同的密钥和消息中重新创建身份验证标签。
 - en: ❷ Checks if the reproduced authentication tag matches the received one
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 检查重现的身份验证标签是否与接收到的标签匹配
 - en: 'Note that this protocol is not perfect: it allows replays. If a message and
     its authentication tag are replayed at a later point in time, they will still
     be authentic, but you’ll have no way of detecting that it is an older message
     being resent to you. Later in this chapter, I’ll tell you about a solution. Now
     that you know what a MAC can be used for, I’ll talk about some of the “gotchas”
     of MACs in the next section.'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意，这个协议并不完美：它允许重放攻击。如果一个消息及其认证标签在以后的某个时间点被重放，它们仍然是真实的，但你将无法检测到它是一条旧消息被重新发送给你。本章后面，我会告诉你一个解决方案。现在你知道了MAC可以用来做什么，我会在下一节谈谈MAC的一些“坑”。
 - en: 3.3 Security properties of a MAC
+  id: totrans-43
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 3.3 MAC的安全属性
 - en: MACs, like all cryptographic primitives, have their oddities and pitfalls. Before
     going any further, I will provide a few explanations on what security properties
     MACs provide and how to use them correctly. You will learn (in this order) that
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: MACs，像所有的密码学原语一样，有它们的怪异之处和陷阱。在继续之前，我将对MAC提供的安全属性以及如何正确使用它们提供一些解释。你会依次学到（按顺序）：
 - en: MACs are resistant against forgery of authentication tags.
+  id: totrans-45
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: MACs抵抗认证标签的伪造。
 - en: An authentication tag needs to be of a minimum length to be secure.
+  id: totrans-46
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个认证标签需要有足够的长度才能保证安全。
 - en: Messages can be replayed if authenticated naively.
+  id: totrans-47
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果简单地进行认证，消息可以被重放。
 - en: Verifying an authentication tag is prone to bugs.
+  id: totrans-48
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 验证认证标签容易出现错误。
 - en: 3.3.1 Forgery of authentication tag
+  id: totrans-49
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3.3.1 认证标签伪造
 - en: The general security goal of a MAC is to prevent *authentication tag forgery*
     on a new message. This means that without knowledge of the secret key, *k*, one
     cannot compute the authentication tag *t* = *MAC*(*k*, *m*) on messages *m* of
     their choice. This sounds fair, right? We can’t compute a function if we’re missing
     an argument.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个MAC的一般安全目标是防止在新消息上*伪造认证标签*。这意味着在不知道秘钥 *k* 的情况下，无法计算出认证标签 *t* = *MAC*(*k*,
+    *m*) 在用户选择的消息 *m* 上。这听起来合理，对吧？如果我们缺少一个参数，我们就不能计算出一个函数。
 - en: MACs provide much more assurance than that, however. Real-world applications
     often let attackers obtain authentication tags on some constrained messages. For
     example, this was the case in our introduction scenario, where a user could obtain
@@ -263,8 +372,10 @@
     authentication tags for a large number of arbitrary messages, the attacker should
     still not be able to forge an authentication tag on a never-seen-before message
     by themselves.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 然而，MACs提供了比这更多的保证。现实世界的应用程序通常会让攻击者获取一些受限制的消息的认证标签。例如，在我们的介绍场景中，这就是问题所在，用户可以通过注册一个可用的昵称来获得几乎任意的认证标签。因此，MACs必须甚至对这些更强大的攻击者也是安全的。一个MAC通常附带一个证明，即使攻击者可以要求你为大量的任意消息产生认证标签，攻击者也不能自己伪造一个以前从未见过的消息的认证标签。
 - en: 'Note One could wonder how proving such an extreme property is useful. If the
     attacker can directly request authentication tags on arbitrary messages, then
     what is there left to protect? But this is how security proofs work in cryptography:
@@ -272,27 +383,36 @@
     hopeless. In practice, the attacker is usually less powerful and, thus, we have
     confidence that if a powerful attacker can’t do something bad, a less powerful
     one has even less recourse.'
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意有人可能会想知道证明这样一个极端性质的用处是什么。如果攻击者可以直接请求任意消息的认证标签，那么还剩下什么需要保护的呢？但这就是密码学中安全证明的工作原理：它们考虑到最强大的攻击者，甚至在那种情况下，攻击者也是无能为力的。在实践中，攻击者通常不那么强大，因此，我们相信如果一个强大的攻击者无法做出恶意行为，一个不那么强大的攻击者就更加无能为力了。
 - en: As such, you should be protected against such forgeries *as long as the secret
     key used with the MAC stays secret*. This implies that the secret key has to be
     random enough (more on that in chapter 8) and large enough (usually 16 bytes).
     Furthermore, a MAC is vulnerable to the same type of ambiguous attack we saw in
     chapter 2\. If you are trying to authenticate structures, make sure to serialize
     them before authenticating them with a MAC; otherwise, forgery might be trivial.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 因此，只要与MAC一起使用的秘钥保持秘密，你就应该受到保护。这意味着秘钥必须足够随机（在第8章中详细讨论）和足够大（通常为16字节）。此外，一个MAC对于我们在第2章中看到的相同类型的模糊攻击也是脆弱的。如果你试图验证结构，请确保在用MAC验证之前将它们序列化；否则，伪造可能是微不足道的。
 - en: 3.3.2 Lengths of authentication tag
+  id: totrans-54
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3.3.2 认证标签的长度
 - en: Another possible attack against usage of MACs are *collisions*. Remember, finding
     a collision for a hash function means finding two different inputs *X* and *Y*
     such that *HASH*(*X*) = *HASH*(*Y*). We can extend this definition to MACs by
     defining a collision when *MAC*(*k*, *X*) = *MAC*(*k*, *Y*) for inputs *X* and
     *Y*.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 针对 MAC 的另一个可能攻击是*碰撞*。记住，找到哈希函数的碰撞意味着找到两个不同的输入 *X* 和 *Y*，使得 *HASH*(*X*) = *HASH*(*Y*)。我们可以通过定义当
+    *MAC*(*k*, *X*) = *MAC*(*k*, *Y*) 时输入 *X* 和 *Y* 发生碰撞来将此定义扩展到 MAC。
 - en: As we learned in chapter 2 with the birthday bound, collisions can be found
     with high probability if the output length of our algorithm is small. For example,
     with MACs, an attacker who has access to a service producing 64-bit authentication
@@ -301,15 +421,22 @@
     some scenarios where collision resistance matters. For this reason, we want an
     authentication tag size that would limit such attacks. In general, 128-bit authentication
     tags are used as they provide enough resistance.
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 正如我们在第 2 章学到的生日攻击边界一样，如果我们算法的输出长度较小，则可以高概率地找到碰撞。例如，对于 MAC，如果攻击者可以访问生成 64 位认证标签的服务，则可以通过请求较少的标签数（232）高概率地找到碰撞。在实践中，这样的碰撞很少能够被利用，但存在一些碰撞抗性很重要的情况。因此，我们希望认证标签大小能够限制此类攻击。一般来说，使用
+    128 位认证标签是因为它们提供足够的抗性。
 - en: '*[requesting 2^(64) authentication tags] would take 250,000 years in a continuous
     1Gbps link, and without changing the secret key K during all this time*.'
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: '*[请求 2^64 个认证标签] 在连续 1Gbps 链路上需要 250,000 年，并且在此期间不更改秘密密钥 K*。'
 - en: '—RFC 2104 (“HMAC: Keyed-Hashing for Message Authentication,” 1997)'
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: —RFC 2104（“HMAC：用于消息认证的键控哈希”，1997）
 - en: Using a 128-bit authentication tag might appear counterintuitive because we
     want 256-bit outputs for hash functions. But hash functions are public algorithms
     that one can compute *offline*, which allows an attacker to optimize and parallelize
@@ -320,46 +447,67 @@
     chance to find collisions, which is deemed large enough. Nonetheless, one might
     still want to increase an authentication tag to 256-bit, which is possible as
     well.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用 128 位认证标签可能看起来有些反直觉，因为我们希望哈希函数的输出为 256 位。但是哈希函数是公开算法，攻击者可以*离线*计算，这使得攻击者能够对攻击进行优化和并行化。使用像
+    MAC 这样的密钥函数，攻击者无法有效地离线优化攻击，而是被迫直接向您请求认证标签，这通常会使攻击速度变慢。128 位认证标签需要攻击者*在线*查询 2^64
+    次，才有 50% 的机会找到碰撞，这被认为足够大。尽管如此，某些情况下可能仍希望将认证标签增加到 256 位，这也是可能的。
 - en: 3.3.3 Replay attacks
+  id: totrans-60
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3.3.3 重播攻击
 - en: One thing I still haven’t mentioned are *replay attacks*. Let’s see a scenario
     that is vulnerable to such attacks. Imagine that Alice and Bob communicate in
     the open using an insecure connection. In order to protect the messages from tampering,
     they append each of their messages with an authentication tag. More specifically,
     they both use two different secret keys to protect different sides of the connection
     (as per best practice). I illustrate this in figure 3.5.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 我还没提到的一件事是*重播攻击*。让我们看一个容易受到此类攻击的场景。假设 Alice 和 Bob 使用不安全的连接在公开场合进行通信。为了防止消息篡改，他们在每条消息后附上认证标签。更具体地说，他们都使用两个不同的秘密密钥来保护连接的不同侧面（按最佳实践）。我在图
+    3.5 中说明了这一点。
 - en: '![](../Images/03_05.jpg)'
+  id: totrans-62
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/03_05.jpg)'
 - en: Figure 3.5 Two users sharing two keys, `k1` and `k2`, exchange messages along
     with authentication tags. These tags are computed from `k1` or `k2`, depending
     on the direction of the messages. A malicious observer replays one of the messages
     to the user.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 3.5 两个用户共享两个密钥 `k1` 和 `k2`，并随消息一起交换认证标签。这些标签是根据消息的方向从 `k1` 或 `k2` 计算出来的。恶意观察者会重播其中一条消息给用户。
 - en: In this scenario, nothing prevents a malicious observer from replaying one of
     the messages to its recipient. A protocol relying on a MAC must be aware of this
     and build protections against this. One way is to add an incrementing counter
     to the input of the MAC as shown in figure 3.6.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这种情况下，没有任何东西能阻止恶意观察者向其接收者重播其中一条消息。依赖于 MAC 的协议必须意识到这一点，并构建对抗措施。一种方法是像图 3.6 中所示，向
+    MAC 的输入添加一个递增计数器。
 - en: '![](../Images/03_06.jpg)'
+  id: totrans-65
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/03_06.jpg)'
 - en: Figure 3.6 Two users sharing two keys, `k1` and `k2`, exchange messages along
     with authentication tags. These tags are computed from `k1` or `k2`, depending
     on the direction of the messages. A malicious observer replays one of the messages
     to the user. Because the victim has incremented his counter, the tag will be computed
     over `2,` `fine and you?` and will not match the tag sent by the attacker. This
     allows the victim to successfully reject the replayed message.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 3.6 两个用户共享两个密钥 `k1` 和 `k2`，并与身份验证标签一起交换消息。这些标签是根据消息的方向从 `k1` 或 `k2` 计算的。恶意观察者向用户重播其中一个消息。因为受害者已经增加了他的计数器，标签将被计算为
+    `2, fine and you?`，并且不会与攻击者发送的标签匹配。这使得受害者能够成功拒绝重放的消息。
 - en: In practice, counters are often a fixed 64-bit length. This allows one to send
     2^(64) messages before filling up the counter (and risking it to wrap around and
     repeat itself). Of course, if the shared secret is rotated frequently (meaning
@@ -367,19 +515,28 @@
     the size of the counter can be reduced and reset to 0 after a key rotation. (You
     should convince yourself that reusing the same counter with two different keys
     is OK.) Again, counters are *never variable-length* because of ambiguous attacks.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 在实践中，计数器通常是固定的 64 位长度。这允许在填满计数器之前发送 2^(64) 条消息（并且有风险包装和重复自身）。当然，如果共享的密钥经常旋转（意味着在*X*条消息后，参与者同意使用新的共享密钥），那么计数器的大小可以缩小，并且在密钥旋转后重置为
+    0。（你应该确信重复使用相同的计数器与两个不同的密钥是可以的。）再次强调，由于存在歧义攻击，计数器*永远不是可变长度*的。
 - en: Exercise
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 练习
 - en: Can you figure out how a variable-length counter could possibly allow an attacker
     to forge an authentication tag?
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 你能想象出一个可变长度计数器如何可能允许攻击者伪造身份验证标签吗？
 - en: 3.3.4 Verifying authentication tags in constant time
+  id: totrans-70
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3.3.4 在恒定时间内验证身份验证标签
 - en: This last gotcha is dear to me as I found this vulnerability many times in applications
     I audited. When verifying an authentication tag, the comparison between the received
     authentication tag and the one you compute must be done in *constant time*. This
@@ -390,62 +547,88 @@
     recreate byte by byte a valid authentication tag by measuring how long it takes
     for the verification to finish. I explain this in the following comic strip. We
     call these types of attacks *timing attacks*.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后一个注意事项对我来说很重要，因为我在审计的应用程序中多次发现了这个漏洞。在验证身份验证标签时，接收到的身份验证标签和你计算的标签之间的比较必须在*恒定时间*内完成。这意味着比较应该始终花费相同的时间，假设接收到的标签是正确大小的。如果比较两个身份验证标签所花费的时间不是恒定时间，那么很可能是因为它在两个标签不同时返回。这通常提供了足够的信息，以启用通过测量验证完成所需时间来逐字节重新创建有效身份验证标签的攻击。我在以下漫画中解释了这一点。我们将这类攻击称为*时序攻击*。
 - en: Fortunately for us, cryptographic libraries implementing MACs also provide convenient
     functions to verify an authentication tag in constant time. If you’re wondering
     how this is done, listing 3.3 shows how Golang implements an authentication tag
     comparison in constant time code.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 幸运的是，实现 MAC 的加密库还提供了方便的函数，以恒定的时间验证身份验证标签。如果你想知道这是如何做到的，清单 3.3 展示了 Golang 如何在恒定时间代码中实现身份验证标签比较。
 - en: '![](../Images/03_06_UN02.jpg)'
+  id: totrans-73
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/03_06_UN02.jpg)'
 - en: Listing 3.3 Constant time comparison in Golang
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 清单 3.3 Golang 中的常量时间比较
 - en: '[PRE2]'
+  id: totrans-75
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: The trick is that no branch is ever taken. How this works exactly is left as
     an exercise for the reader.
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 窍门在于从不采取任何分支。具体工作原理留给读者作为练习。
 - en: 3.4 MAC in the real world
+  id: totrans-77
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 3.4 现实世界中的 MAC
 - en: Now that I have introduced what MACs are and what security properties they provide,
     let’s take a look at how people use them in real settings. The following sections
     address this.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我已经介绍了 MAC 是什么以及它们提供的安全属性，让我们看看人们在实际环境中如何使用它们。以下章节将讨论这一点。
 - en: 3.4.1 Message authentication
+  id: totrans-79
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3.4.1 消息认证
 - en: MACs are used in many places to ensure that the communications between two machines
     or two users are not tampered with. This is necessary in both cases where communications
     are in cleartext and where communications are encrypted. I have already explained
     how this happens when communications are transmitted in cleartext, and in chapter
     4, I will explain how this is done when communications are encrypted.
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: MACs被广泛用于确保两台机器或两个用户之间的通信不被篡改。这在通信以明文传输和通信以加密方式传输的情况下都是必要的。我已经解释了当通信以明文传输时会发生什么，而在第4章中，我将解释在通信加密时如何实现这一点。
 - en: 3.4.2 Deriving keys
+  id: totrans-81
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3.4.2 密钥派生
 - en: One particularity of MACs is that they are often designed to produce bytes that
     look random (like hash functions). You can use this property to implement a single
     key to generate random numbers or to produce more keys. In chapter 8 on secrets
     and randomness, I will introduce the HMAC-based key derivation function (HKDF)
     that does exactly this by using HMAC, one of the MAC algorithms we will talk about
     in this chapter.
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: MACs的一个特点是它们通常被设计为生成看起来随机的字节（就像哈希函数）。您可以利用这个特性实现一个单一的密钥来生成随机数，或者生成更多的密钥。在第8章关于秘密和随机性中，我将介绍基于HMAC的密钥派生函数（HKDF），它通过使用HMAC来实现这一点，HMAC是我们将在本章中讨论的MAC算法之一。
 - en: The pseudorandom function (PRF)
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: 伪随机函数（PRF）
 - en: 'Imagine the set of all functions that take a variable-length input and produce
     a random output of a fixed size. If we could pick a function at random from this
     set and use it as a MAC (without a key), it would be swell. We would just have
@@ -455,28 +638,40 @@
     *pseudorandom functions (PRFs)*. HMAC and most practical MACs are such constructions.
     They are randomized by a key argument instead. Choosing a different key is like
     picking a random function.'
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象一下，所有接受可变长度输入并生成固定大小随机输出的函数的集合。如果我们可以从这个集合中随机选择一个函数并将其用作MAC（没有密钥），那就太好了。我们只需就选择哪个函数达成一致（有点像达成一致选择密钥）。不幸的是，我们不能拥有这样的集合，因为它太大了，但我们可以通过设计一些接近的东西来模拟选择这样一个随机函数：我们称这样的构造为*伪随机函数（PRFs）*。HMAC和大多数实用的MAC都是这样的构造。它们通过一个密钥参数进行随机化。选择不同的密钥就像选择一个随机函数。
 - en: Exercise
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 练习
 - en: 'Caution: not all MACs are PRFs. Can you see why?'
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意：并非所有的MAC都是PRF。你能看出为什么吗？
 - en: 3.4.3 Integrity of cookies
+  id: totrans-87
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3.4.3 Cookie的完整性
 - en: To track your users’ browser sessions, you can send them a random string (associated
     to their metadata) or send them the metadata directly, attached with an authentication
     tag so that they cannot modify it. This is what I explained in the introduction
     example.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 要追踪用户的浏览器会话，您可以向他们发送一个随机字符串（与他们的元数据相关联）或直接发送元数据，附带身份验证标签，以便他们无法修改它。这就是我在引言例子中解释的内容。
 - en: 3.4.4 Hash tables
+  id: totrans-89
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3.4.4 哈希表
 - en: Programming languages usually expose data structures called *hash tables* (also
     called hashmaps, dictionaries, associated arrays, and so on) that make use of
     noncryptographic hash functions. If a service exposes this data structure in such
@@ -484,19 +679,25 @@
     by attackers, this can lead to *denial of service* (DoS) *attacks*, meaning that
     an attacker can render the service unusable. To avoid this, the noncryptographic
     hash function is usually randomized at the start of the program.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 编程语言通常公开称为*哈希表*（也称为哈希映射、字典、关联数组等）的数据结构，这些数据结构使用非密码散列函数。如果一个服务以这样一种方式公开此数据结构，使得攻击者可以控制非密码散列函数的输入，这可能导致*拒绝服务*（DoS）*攻击*，意味着攻击者可以使服务无法使用。为了避免这种情况，非密码散列函数通常在程序启动时进行随机化。
 - en: Many major applications use a MAC with a random key in place of the noncryptographic
     hash function. This is the case for many programming languages (like Rust, Python,
     and Ruby), or for major applications (like the Linux kernel). They all make use
     of *SipHash*, a poorly-named MAC optimized for short authentication tags, with
     a random key generated at the start of the program.
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 许多主要的应用程序使用一个随机密钥的MAC代替非密码散列函数。这适用于许多编程语言（如Rust、Python和Ruby）或主要应用程序（如Linux内核）。它们都使用*SipHash*，一个针对短身份验证标签进行优化的MAC，该标签在程序启动时生成随机密钥。
 - en: 3.5 Message authentication codes (MACs) in practice
+  id: totrans-92
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 3.5 实践中的消息认证码（MACs）
 - en: You learned that MACs are cryptographic algorithms that can be used between
     one or more parties in order to protect the integrity and the authenticity of
     information. As widely used MACs also exhibit good randomness, MACs are also often
@@ -504,12 +705,16 @@
     (for example, the time-based one-time password [TOTP] algorithm that you will
     learn in chapter 11). In this section, we will look at two standardized MAC algorithms
     that one can use nowadays—HMAC and KMAC.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 你已经了解到MAC是一种加密算法，可以在一个或多个参与方之间使用，以保护信息的完整性和真实性。由于广泛使用的MAC也表现出良好的随机性，MAC也经常被用于在不同类型的算法中确定性地产生随机数（例如，你将在第11章学习的基于时间的一次性密码[TOTP]算法）。在本节中，我们将介绍两种现在可以使用的标准化的MAC算法——HMAC和KMAC。
 - en: 3.5.1 HMAC, a hash-based MAC
+  id: totrans-94
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3.5.1 HMAC，一种基于哈希的MAC
 - en: 'The most widely used MAC is HMAC (for *hash-based MAC*), invented in 1996 by
     M. Bellare, R. Canetti, and H. Krawczyk, and specified in RFC 2104, FIPS Publication
     198, and ANSI X9.71\. HMAC, like its name indicates, is a way to use hash functions
@@ -521,145 +726,204 @@
     to transform a hash function into a keyed function? This is what HMAC solves for
     us. Under the hood, HMAC follows these steps, which I illustrate visually in figure
     3.7:'
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 最广泛使用的MAC是HMAC（*基于哈希的MAC*），由M. Bellare、R. Canetti和H. Krawczyk于1996年发明，并在RFC
+    2104、FIPS出版物198和ANSI X9.71中指定。HMAC，正如其名称所示，是一种使用哈希函数和密钥的方法。使用哈希函数构建MAC的概念是一个流行的概念，因为哈希函数有广泛可用的实现，在软件中速度快，并且在大多数系统上也受到硬件支持。记得我在第2章提到过，由于*长度扩展攻击*（本章末尾将详细介绍），SHA-2不应直接用于对秘密进行哈希处理。那么如何将哈希函数转换为带密钥的函数呢？这就是HMAC为我们解决的问题。在幕后，HMAC遵循以下步骤，我在图3.7中通过可视化方式说明：
 - en: 'It first creates two keys from the main key: *k*1 = *k* ⊕ *ipad* and *k*2 =
     *k* ⊕ *opad*, where *ipad* (inner padding) and *opad* (outer padding) are constants,
     and ⊕ is the symbol for the XOR operation.'
+  id: totrans-96
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 它首先从主密钥中创建两个密钥：*k*1 = *k* ⊕ *ipad* 和 *k*2 = *k* ⊕ *opad*，其中*ipad*（内部填充）和*opad*（外部填充）是常数，
+    ⊕ 是异或操作的符号。
 - en: It then concatenates a key, `k1`, with the message and hashes it.
+  id: totrans-97
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 然后将一个密钥`k1`与消息进行串联并对其进行哈希运算。
 - en: The result is concatenated with a key, `k2`, and hashed one more time.
+  id: totrans-98
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 结果与一个密钥`k2`进行串联，并再进行一次哈希运算。
 - en: This produces the final authentication tag.
+  id: totrans-99
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 这产生了最终的认证标签。
 - en: '![](../Images/03_07.jpg)'
+  id: totrans-100
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/03_07.jpg)'
 - en: Figure 3.7 HMAC works by hashing the concatenation (`||`) of a key, `k1`, and
     the input message, and then by hashing the concatenation of a key, `k2`, with
     the output of the first operation. `k1` and `k2` are both deterministically derived
     from a secret key, `k`.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 图3.7 HMAC 通过对一个密钥`k1`和输入消息的串联(`||`)进行哈希运算，然后再对第一次操作的输出与另一个密钥`k2`的串联进行哈希运算来工作。`k1`和`k2`都是从一个秘密密钥`k`派生出来的确定性密钥。
 - en: Because HMAC is customizable, the size of its authentication tag is dictated
     by the hash function used. For example, HMAC-SHA256 makes use of SHA-256 and produces
     an authentication tag of 256 bits, HMAC-SHA512 produces an authentication tag
     of 512 bits, and so on.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于HMAC是可定制的，其认证标签的大小取决于所使用的哈希函数。例如，HMAC-SHA256使用SHA-256并产生256位的认证标签，HMAC-SHA512产生512位的认证标签，依此类推。
 - en: Warning While one can truncate the output of HMAC to reduce its size, an authentication
     tag should be at minimum 128 bits as we talked about earlier. This is not always
     respected, and some applications will go as low as 64 bits due to explicitly handling
     a limited amount of queries. There are tradeoffs with this approach, and once
     again, it is important to read the fine print before doing something nonstandard.
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告虽然可以截断HMAC的输出以减小其大小，但认证标签应至少为128位，正如我们之前讨论的那样。这并不总是得到尊重，一些应用会降低到64位，因为明确处理了有限数量的查询。这种方法存在权衡，再次强调，在执行非标准操作之前，仔细阅读细则是很重要的。
 - en: HMAC was constructed this way in order to facilitate proofs. In several papers,
     HMAC is proven to be secure against forgeries as long as the hash function underneath
     holds some good properties, which all cryptographically secure hash functions
     should. Due to this, we can use HMAC in combination with a large number of hash
     functions. Today, HMAC is mostly used with SHA-2\.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: HMAC是这样构建的，以方便证明。在几篇论文中，已经证明HMAC在底层哈希函数具有一些良好属性时是安全的，而所有的密码学安全哈希函数都应该具备这些属性。由于这一点，我们可以将HMAC与大量的哈希函数结合使用。今天，HMAC主要与SHA-2一起使用。
 - en: 3.5.2 KMAC, a MAC based on cSHAKE
+  id: totrans-105
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 3.5.2 KMAC，基于cSHAKE的MAC
 - en: As SHA-3 is not vulnerable to length-extension attacks (this was actually a
     requirement for the SHA-3 competition), it makes little sense to use SHA-3 with
     HMAC instead of something like `SHA-3-256(key` `||` `message)` that would work
     well in practice. This is exactly what *KMAC* does.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于SHA-3不容易受到长度扩展攻击的影响（这实际上是SHA-3竞赛的要求之一），在实践中使用SHA-3与HMAC相比，使用像`SHA-3-256(key`
+    `||` `message)`这样的方法更合理。这正是*KMAC*所做的。
 - en: KMAC makes use of cSHAKE, the customizable version of the SHAKE extendable output
     function (XOF) that you saw in chapter 2\. KMAC unambiguously encodes the MAC
     key, the input, and the requested output length (KMAC is some sort of extendable
     output MAC) and gives this to cSHAKE as an input to absorb (see figure 3.8). KMAC
     also uses “KMAC” as function name (to customize cSHAKE) and can, in addition,
     take a user-defined customization string.
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: KMAC利用了cSHAKE，即您在第2章中看到的可定制版本的SHAKE可扩展输出函数（XOF）。KMAC以一种明确的方式对MAC密钥、输入和请求的输出长度进行编码（KMAC是一种可扩展输出MAC），并将其作为cSHAKE的输入来吸收（参见图3.8）。KMAC还使用“KMAC”作为函数名称（以定制cSHAKE），并且还可以接受用户定义的定制字符串。
 - en: '![](../Images/03_08.jpg)'
+  id: totrans-108
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/03_08.jpg)'
 - en: Figure 3.8 KMAC is simply a wrapper around cSHAKE. To use a key, it encodes
     (in a unambiguous way) the key, the input, and the output length as the input
     to cSHAKE.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 图3.8 KMAC只是cSHAKE的一个包装器。为了使用密钥，它对密钥、输入和输出长度进行编码（以一种明确的方式），然后将其作为cSHAKE的输入。
 - en: Interestingly, because KMAC also absorbs the requested output length, several
     calls with different output lengths provide totally different results, which is
     rarely the case for XOFs in general. This makes KMAC quite a versatile function
     in practice.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 有趣的是，由于KMAC还吸收了请求的输出长度，使用不同输出长度进行多次调用会得到完全不同的结果，这在一般情况下很少见于XOFs。这使得KMAC在实践中成为一种非常多功能的函数。
 - en: 3.6 SHA-2 and length-extension attacks
+  id: totrans-111
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 3.6 SHA-2和长度扩展攻击
 - en: We have mentioned several times that one shouldn’t hash secrets with SHA-2 as
     it is not resistant to *length-extension attacks*. In this section, we aim to
     provide a simple explanation of this attack.
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们已经多次提到，不应该使用SHA-2来哈希秘密，因为它对*长度扩展攻击*不具有抵抗力。在本节中，我们旨在对这种攻击进行简单解释。
 - en: Let’s go back to our introduction scenario, to the step where we attempted to
     simply use SHA-2 in order to protect the integrity of the cookie. Remember that
     it was not good enough as the user can tamper with the cookie (for example, by
     adding an `admin=true` field) and recompute the hash over the cookie. Indeed,
     SHA-2 is a public function and nothing prevents the user from doing this. Figure
     3.9 illustrates this.
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们回到我们的引言情景，回到我们尝试简单地使用SHA-2来保护cookie的完整性的步骤。请记住，这还不够好，因为用户可以篡改cookie（例如，添加一个`admin=true`字段）并重新计算cookie的哈希。确实，SHA-2是一个公共函数，没有任何东西阻止用户这样做。图3.9说明了这一点。
 - en: '![](../Images/03_09.jpg)'
+  id: totrans-114
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/03_09.jpg)'
 - en: Figure 3.9 A web page sends a cookie followed by a hash of that cookie to a
     user. The user is then required to send the cookie to authenticate themselves
     in every subsequent request. Unfortunately, a malicious user can tamper with the
     cookie and recompute the hash, breaking the integrity check. The cookie is then
     accepted as valid by the web page.
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 图3.9 一个网页发送一个cookie，然后跟随着该cookie的哈希给一个用户。然后，要求用户在每次后续请求中发送cookie以验证自己。不幸的是，一个恶意用户可以篡改cookie并重新计算哈希，从而破坏完整性检查。然后网页接受该cookie为有效。
 - en: The next best idea was to add a secret key to what we hash. This way, the user
     cannot recompute the digest as the secret key is required, much like a MAC. On
     receipt of the tampered cookie, the page computes `SHA-256(key` `||` `tampered_cookie)`,
     where `||` represents the concatenation of the two values and obtains something
     that won’t match what the malicious user probably sent. Figure 3.10 illustrates
     this approach.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来最好的想法是在我们哈希的内容中添加一个秘钥。这样，用户无法重新计算摘要，因为需要秘钥，就像MAC一样。在接收到篡改的cookie时，页面计算`SHA-256(key`
+    `||` `tampered_cookie)`，其中`||`表示两个值的连接，并得到一个与恶意用户可能发送的内容不匹配的结果。图3.10说明了这种方法。
 - en: '![](../Images/03_10.jpg)'
+  id: totrans-117
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/03_10.jpg)'
 - en: Figure 3.10 By using a key when computing the hash of the cookie, one could
     think that a malicious user who wants to tamper with their own cookie wouldn’t
     be able to compute the correct digest over the new cookie. We will see later that
     this is not true for SHA-256.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 图3.10通过在计算cookie的哈希时使用一个秘钥，人们可能会认为想要篡改自己的cookie的恶意用户无法计算出新cookie的正确摘要。我们将在后面看到，对于SHA-256来说这并不成立。
 - en: 'Unfortunately, SHA-2 has an annoying peculiarity: from a digest over an input,
     one can compute the digest of an input and more. What does this mean? Let’s take
     a look at figure 3.11, where one uses SHA-256 as `SHA-256(secret` `||` `input1)`.'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 不幸的是，SHA-2有一个令人讨厌的特点：从一个输入的摘要中，可以计算出输入的摘要以及更多内容。这是什么意思呢？让我们看看图3.11，其中使用SHA-256作为`SHA-256(secret`
+    `||` `input1)`。
 - en: '![](../Images/03_11.jpg)'
+  id: totrans-120
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/03_11.jpg)'
 - en: Figure 3.11 SHA-256 hashes a secret concatenated with a cookie (here named `input1`).
     Remember that SHA-256 works by using the Merkle–Damgård construction to iteratively
     call a compression function over blocks of the input, starting from an initialization
     vector (IV).
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 图3.11 SHA-256对一个与cookie（这里命名为`input1`）连接的秘密进行哈希。请记住，SHA-256通过使用Merkle–Damgård构造来迭代地调用压缩函数对输入的块进行处理，从初始化向量（IV）开始。
 - en: Figure 3.11 is highly simplified but imagine that `input1` is the string `user=bob`.
     Notice that the digest obtained is effectively the full intermediate state of
     the hash function at this point. Nothing prevents one from pretending that the
@@ -667,81 +931,115 @@
     figure 3.12, we illustrate this attack, where one would take the digest and compute
     the hash of `input1` `||` `padding` `||` `input2`. In our example, `input2` is
     `&admin=true`.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 图3.11非常简化，但想象一下`input1`是字符串`user=bob`。请注意，获得的摘要实际上是哈希函数在这一点的完整中间状态。没有什么可以阻止假装`填充`部分是输入的一部分，继续Merkle–Damgård舞蹈。在图3.12中，我们说明了这种攻击，其中一个人会取得摘要并计算`input1`
+    `||` `padding` `||` `input2`的哈希。在我们的例子中，`input2`是`&admin=true`。
 - en: '![](../Images/03_12.jpg)'
+  id: totrans-123
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/03_12.jpg)'
 - en: Figure 3.12 The output of the SHA-256 hash of a cookie (the middle digest) is
     used to extend the hash to more data, creating a hash (the right digest) of the
     secret concatenated with `input1`, the first padding bytes, and `input2`.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 图3.12 SHA-256对cookie的哈希输出（中间摘要）用于扩展哈希到更多数据，创建一个哈希（右侧摘要），其中包括秘密与`input1`、第一个填充字节和`input2`的连接。
 - en: This vulnerability allows one to continue hashing from a given digest, like
     the operation was not finished. This breaks our previous protocol, as figure 3.13
     illustrates.
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个漏洞允许从给定的摘要继续哈希，就好像操作还没有完成一样。这打破了我们先前的协议，正如图3.13所示。
 - en: '![](../Images/03_13.jpg)'
+  id: totrans-126
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/03_13.jpg)'
 - en: Figure 3.13 An attacker successfully uses a length-extension attack to tamper
     with their cookie and computes the correct hash using the previous hash.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 图3.13 攻击者成功使用长度扩展攻击篡改他们的cookie，并使用先前的哈希计算出正确的哈希。
 - en: The fact that the first padding now needs to be part of the input might prevent
     some protocols from being exploitable. Still, the smallest amount of change can
     reintroduce a vulnerability. For this reason one should *never* hash secrets with
     SHA-2\. Of course, there are several other ways to do it correctly (for example,
     `SHA-256(k` `||` `message` `||` `k)` works), which is what HMAC provides. Thus,
     use HMAC if you want to use SHA-2 and use KMAC if you prefer SHA-3\.
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在第一个填充需要成为输入的一部分，这可能会阻止一些协议被利用。但是，最小的更改可能会重新引入漏洞。因此，永远不要使用SHA-2对秘密信息进行哈希。当然，还有几种正确的方法（例如，`SHA-256(k`
+    `||` `message` `||` `k)`），这就是HMAC提供的功能。因此，如果要使用SHA-2，请使用HMAC，如果更喜欢SHA-3，请使用KMAC。
 - en: Summary
+  id: totrans-129
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 总结
 - en: Message authentication codes (MACs) are symmetric cryptographic algorithms that
     allow one or more parties who share the same key to verify the integrity and authenticity
     of messages.
+  id: totrans-130
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 消息验证码（MACs）是对称加密算法，允许共享相同密钥的一个或多个参与方验证消息的完整性和真实性。
 - en: To verify the authenticity of a message and its associated authentication tag,
     one can recompute the authentication tag of the message and a secret key, and
     then match the two authentication tags. If they differ, the message has been tampered
     with.
+  id: totrans-131
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 要验证消息及其相关的认证标签的真实性，可以重新计算消息和一个秘密密钥的认证标签，然后比较这两个认证标签。如果它们不同，则消息已被篡改。
 - en: Always compare a received authentication tag with a computed one in constant
     time.
+  id: totrans-132
   prefs:
   - PREF_IND
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 总是在恒定时间内将接收到的认证标签与计算得到的标签进行比较。
 - en: While MACs protect the integrity of messages by default, they do not detect
     when messages are replayed.
+  id: totrans-133
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 虽然消息验证码默认保护消息的完整性，但它们不能检测到消息被重播的情况。
 - en: Standardized and well-accepted MACs are the HMAC and the KMAC standards.
+  id: totrans-134
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 标准化和广受认可的消息验证码包括 HMAC 和 KMAC 标准。
 - en: One can use HMAC with different hash functions. In practice, HMAC is often used
     with the SHA-2 hash function.
+  id: totrans-135
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 可以使用不同的哈希函数来进行 HMAC。实际上，HMAC 常与 SHA-2 哈希函数一起使用。
 - en: Authentication tags should be of a minimum length of 128 bits to prevent collisions
     and forgery of authentication tags.
+  id: totrans-136
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 认证标签的最小长度应为 128 位，以防止认证标签的碰撞和伪造。
 - en: Never use SHA-256 directly to build a MAC as it can be done incorrectly. Always
     use a function like HMAC to do this.
+  id: totrans-137
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 永远不要直接使用 SHA-256 来构建消息验证码，因为可能会出错。始终使用像 HMAC 这样的函数来完成这个任务。

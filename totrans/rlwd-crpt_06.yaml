@@ -1,50 +1,71 @@
 - en: 5 Key exchanges
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 5 密钥交换
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: What key exchanges are and how they can be useful
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 密钥交换是什么以及它们如何有用
 - en: The Diffie-Hellman and Elliptic Curve Diffie-Hellman key exchanges
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Diffie-Hellman 和椭圆曲线 Diffie-Hellman 密钥交换
 - en: Security considerations when using key exchanges
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用密钥交换时的安全考虑
 - en: 'We are now entering the realm of *asymmetric cryptography* (also called *public
     key cryptography*) with our first asymmetric cryptographic primitive: the *key
     exchange*. A key exchange is, as the name hints, an exchange of keys. For example,
     Alice sends a key to Bob, and Bob sends a key to Alice. This allows the two peers
     to agree on a shared secret, which can then be used to encrypt communications
     with an authenticated encryption algorithm.'
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在我们进入了 *非对称加密* 领域（也称为 *公钥加密* ） ，我们的第一个非对称加密原语：*密钥交换*。密钥交换正如其名称所示，是密钥的交换。例如，Alice
+    发送一个密钥给 Bob，Bob 发送一个密钥给 Alice。这使得两个对等方可以达成共识，产生一个共享密钥，然后可以使用认证加密算法对通信进行加密。
 - en: Warning As I hinted in the introduction of this book, there is much more math
     involved in asymmetric cryptography; therefore, the next chapters are going to
     be a tad more difficult for some readers. Don’t get discouraged! What you will
     learn in this chapter will be helpful to understand many other primitives based
     on the same fundamentals.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 正如我在本书引言中所暗示的，非对称加密涉及更多的数学；因此，接下来的章节对某些读者来说可能会更加困难。不要气馁！本章学到的内容将有助于理解基于相同基础的许多其他原语。
 - en: Note For this chapter, you’ll need to have read chapter 3 on message authentication
     codes and chapter 4 on authenticated encryption.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 对于本章，你需要已经阅读了第 3 章关于消息认证码和第 4 章关于认证加密。
 - en: 5.1 What are key exchanges?
+  id: totrans-8
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 5.1 什么是密钥交换？
 - en: Let’s start by looking at a scenario where both Alice and Bob want to communicate
     privately but have never talked to each other before. This will motivate what
     key exchanges can unlock in the simplest of situations.
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们首先看一个场景，Alice 和 Bob 都想要私下交流，但之前从未互相交谈过。这将激发出在最简单的情况下密钥交换可以解锁什么。
 - en: To encrypt communications, Alice can use the authenticated encryption primitive
     you learned about in chapter 4\. For this, Bob needs to know the same symmetric
     key so Alice can generate one and send it over to Bob. After that, they can simply
@@ -54,8 +75,12 @@
     This is where using a key exchange can be interesting for Alice and Bob (and for
     ourselves in the future). By using a key exchange, they can obtain a symmetric
     key that a passive observer won’t be able to reproduce.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 要加密通信，Alice 可以使用你在第 4 章中了解到的认证加密原语。为此，Bob 需要知道相同的对称密钥，以便 Alice 可以生成一个并将其发送给
+    Bob。之后，他们可以简单地使用该密钥来加密他们的通信。但是，如果有人窃听他们的对话怎么办？现在敌人拥有对称密钥，可以解密 Alice 和 Bob 互相发送的所有加密内容！这就是在这种情况下使用密钥交换可以对
+    Alice 和 Bob（以及我们将来自己）有趣的地方。通过使用密钥交换，他们可以获得一个被动观察者无法复制的对称密钥。
 - en: 'A *key exchange* starts with both Alice and Bob generating some keys. To do
     this, they both use a key generation algorithm, which generates a *key pair* :
     a private key (or secret key) and a public key. Alice and Bob then send their
@@ -64,48 +89,70 @@
     own private key to compute the shared secret. Bob can, similarly, use his private
     key with Alice’s public key to obtain the same shared secret. I illustrate this
     in figure 5.1.'
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: '*密钥交换* 从 Alice 和 Bob 生成一些密钥开始。为此，他们都使用一个密钥生成算法，生成一个*密钥对*：一个私钥（或秘密密钥）和一个公钥。然后
+    Alice 和 Bob 将各自的公钥发送给对方。这里的 *公开* 意味着敌人可以观察到，但不会产生后果。然后 Alice 使用 Bob 的公钥和她自己的私钥计算共享密钥。同样地，Bob
+    可以使用他的私钥和 Alice 的公钥来获得相同的共享密钥。我在图 5.1 中说明了这一点。'
 - en: '![](../Images/05_01.jpg)'
+  id: totrans-12
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/05_01.jpg)'
 - en: 'Figure 5.1 A key exchange provides the following interface: it takes your peer’s
     public key and your private key to produce a shared secret. Your peer can obtain
     the same shared secret by using your public key and their private key.'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 5.1 一个密钥交换提供以下接口：它采用你的对等方的公钥和你的私钥生成一个共享密钥。你的对等方可以通过使用你的公钥和他们自己的私钥获得相同的共享密钥。
 - en: Knowing how a key exchange works from a high level, we can now go back to our
     initial scenario and see how this helps. By starting their communication with
     a key exchange, Alice and Bob produce a shared secret to use as a key to an authenticated
     encryption primitive. Because any man-in-the-middle (MITM) adversaries observing
     the exchange cannot derive the same shared secret, they won’t be able to decrypt
     communications. I illustrate this in figure 5.2.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 从高层次了解密钥交换的工作原理后，我们现在可以回到我们的初始情景，看看这如何帮助。通过以密钥交换开始他们的通信，Alice 和 Bob 生成了一个共享的密钥，用作身份验证加密原语的密钥。因为任何观察交换的中间人（MITM）对手都无法推导出相同的共享密钥，他们将无法解密通信。我在图
+    5.2 中说明了这一点。
 - en: '![](../Images/05_02.jpg)'
+  id: totrans-15
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/05_02.jpg)'
 - en: Figure 5.2 A key exchange between two participants allows them to agree on a
     secret key, while a man-in-the-middle (MITM) adversary can’t derive the same secret
     key from passively observing the key exchange.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 5.2 两个参与者之间的密钥交换使他们能够就一个密钥达成一致，而中间人（MITM）对手无法通过被动观察密钥交换来推导出相同的密钥。
 - en: Note that the MITM here is passive; an *active* MITM would have no problem intercepting
     the key exchange and impersonating both sides. In this attack, Alice and Bob would
     effectively perform a key exchange with the MITM, both thinking that they agreed
     on a key with each other. The reason this is possible is that none of our characters
     have a way to verify who the public key they receive really belongs to. The key
     exchange is *unauthenticated*! I illustrate the attack in figure 5.3.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，这里的MITM是被动的；一个*主动的*MITM将没有问题拦截密钥交换并冒充双方。在这种攻击中，Alice 和 Bob 实际上将与MITM执行密钥交换，都认为他们已经就密钥达成了一致。之所以可能是因为我们的任何一个角色都没有办法验证他们收到的公钥真正属于谁。这个密钥交换是*未经身份验证*的！我在图
+    5.3 中说明了这次攻击。
 - en: '![](../Images/05_03.jpg)'
+  id: totrans-18
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/05_03.jpg)'
 - en: Figure 5.3 An unauthenticated key exchange is vulnerable to an active MITM attacker.
     Indeed, the attacker can simply impersonate both sides of the connection and perform
     two separate key exchanges.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 5.3 一个未经身份验证的密钥交换容易受到主动的中间人攻击。事实上，攻击者可以简单地冒充连接的双方并执行两次单独的密钥交换。
 - en: Let’s take a look at a different scenario to motivate *authenticated key exchanges*.
     Imagine that you want to run a service that gives you the time of day. Yet, you
     do not want this information to be modified by a MITM adversary. Your best bet
@@ -118,8 +165,10 @@
     new user that wants to connect to your service, you will need to manually provision
     both your service and the user with a new MAC key. It would be so much better
     if you didn’t have anything to do on the server side, wouldn’t it?
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们看一个不同的情景来激发*经过身份验证的密钥交换*。想象一下，你想运行一个给你提供当天时间的服务。然而，你不希望这个信息被中间人攻击者修改。你最好的选择是使用你在第三章学到的消息认证码（MACs）对你的响应进行身份验证。由于MACs需要一个密钥，你可以简单地生成一个并手动与所有用户共享。但是，现在任何用户都拥有与其他用户一起使用的MAC密钥，并且可能有一天会利用它对其他人执行前面讨论的MITM攻击。你可以为每个用户设置不同的密钥，但这也不理想。对于想要连接到你的服务的每个新用户，你都需要手动为你的服务和用户提供一个新的MAC密钥。如果服务器端不需要做任何事情就好多了，是不是？
 - en: Key exchanges can help here! What you could do is have your service generate
     a key exchange key pair and provision any new user with the service’s public key.
     This is known as an *authenticated key exchange* ; your users know the server’s
@@ -128,16 +177,20 @@
     own key exchange (as the client side of the connection is not authenticated).
     By the way, when both sides are authenticated, we call that a *mutually authenticated
     key exchange*.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 密钥交换可以在这里发挥作用！你可以做的是让你的服务生成一个密钥交换密钥对，并向服务的任何新用户提供服务的公钥。这被称为*身份验证密钥交换*；你的用户知道服务器的公钥，因此，主动的中间人对手无法冒充该密钥交换的一方。然而，一个恶意的人可以做的是执行他们自己的密钥交换（因为连接的客户端未经身份验证）。顺便说一句，当双方都经过身份验证时，我们称之为*双向身份验证密钥交换*。
 - en: This scenario is extremely common, and the key exchange primitive allows it
     to scale well with an increase of users. But this scenario doesn’t scale well
     if the number of services increase as well! The internet is a good example of
     this. We have many browsers trying to communicate securely with many websites.
     Imagine if you had to hardcode the public key of all the websites you might one
     day visit in your browser and what happens when more websites come online?
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种情况非常普遍，密钥交换原语使其能够随着用户数量的增加而扩展得很好。但是，如果服务数量也增加，这种情况就不容易扩展！互联网就是一个很好的例子。我们有许多浏览器试图与许多网站进行安全通信。想象一下，如果你不得不在浏览器中硬编码你可能有一天会访问的所有网站的公钥，以及当更多的网站上线时会发生什么？
 - en: While key exchanges are useful, they do not scale well in all scenarios without
     their sister primitive—the *digital signature*. This is just a teaser though.
     In chapter 7, you will learn about that new cryptographic primitive and how it
@@ -145,133 +198,194 @@
     however. They are often just building blocks of a more complex protocol. That
     being said, they can still be useful on their own in certain situations (for example,
     as we saw previously against passive adversaries).
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 虽然密钥交换很有用，但在没有姊妹原语——*数字签名*的情况下，并不是所有情况下都能很好地扩展。不过这只是一个引子。在第 7 章中，你将了解到有关这种新的密码原语以及它如何帮助系统中的信任扩展的信息。密钥交换在实践中很少直接使用。它们通常只是更复杂协议的组成部分。话虽如此，在某些情况下它们仍然可以是有用的（例如，正如我们之前对抗被动对手时看到的）。
 - en: Let’s now look at how you *would* use a key exchange cryptographic primitive
     in practice. libsodium is one of the most well known and widely used C/C++ libraries.
     The following listing shows how you would use libsodium in practice in order to
     perform a key exchange.
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在让我们看看在实践中如何*使用*密钥交换密码原语。libsodium 是最知名和广泛使用的 C/C++ 库之一。以下示例显示了在实践中如何使用 libsodium
+    来执行密钥交换。
 - en: Listing 5.1 A key exchange in C
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 5.1 C 语言中的密钥交换示例
 - en: '[PRE0]'
+  id: totrans-26
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: ❶ Generates the client’s key pair
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 生成客户端的密钥对
 - en: ❷ We assume that we have some way to obtain the server’s public key.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 我们假设我们有一种获取服务器公钥的方式。
 - en: ❸ libsodium derives two symmetric keys instead of one per best practice; each
     key is used to encrypt a single direction.
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ libsodium 根据最佳实践派生两个对称密钥，而不是一个；每个密钥用于加密单个方向。
 - en: ❹ We perform a key exchange with our secret key and the server’s public key.
+  id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 我们使用我们的秘密密钥和服务器的公钥进行密钥交换。
 - en: ❺ If the public key is malformed, the function returns an error.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: ❺ 如果公钥格式错误，则函数返回错误。
 - en: libsodium hides a lot of details from the developer while also exposing safe-to-use
     interfaces. In this instance, libsodium makes use of the *X25519 key exchange
     algorithm*, which you will learn more about later in this chapter. In the rest
     of this chapter, you will learn about the different standards used for key exchanges,
     as well as how they work under the hood.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: libsodium 将许多细节隐藏在开发者之外，同时还公开了安全可用的接口。在这种情况下，libsodium 使用 *X25519 密钥交换算法*，你将在本章后面更多了解这个算法。在本章的其余部分，你将了解有关密钥交换的不同标准以及它们在幕后的工作原理。
 - en: 5.2 The Diffie-Hellman (DH) key exchange
+  id: totrans-33
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 5.2 Diffie-Hellman（DH）密钥交换
 - en: In 1976, Whitfield Diffie and Martin E. Hellman wrote their seminal paper on
     the Diffie-Hellman (DH) key exchange algorithm entitled “New Direction in Cryptography.”
     What a title! DH was the first key exchange algorithm invented and one of the
     first formalizations of a public key cryptographic algorithm. In this section,
     I lay out the math foundations of this algorithm, explain how it works, and finally,
     talk about the standards that specify how to use it in a cryptographic application.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 1976年，Whitfield Diffie 和 Martin E. Hellman 发表了题为“密码学的新方向”的关键论文，介绍了 Diffie-Hellman（DH）密钥交换算法。多么响亮的标题啊！DH
+    是第一个发明的密钥交换算法，也是第一个公钥加密算法的正式化之一。在本节中，我将阐述该算法的数学基础，解释其工作原理，并最终讨论规定如何在加密应用中使用它的标准。
 - en: 5.2.1 Group theory
+  id: totrans-35
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5.2.1 群论
 - en: The DH key exchange is built on top of a field of mathematics called *group
     theory*, which is the base of most public key cryptography today. For this reason,
     I will spend some time in this chapter giving you the basics on group theory.
     I will do my best to provide good insights on how these algorithms work, but there’s
     no way around it, there is going to be some math.
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: DH 密钥交换建立在一种称为*群论*的数学领域之上，这是当今大多数公钥加密的基础。因此，在本章中，我将花一些时间向你介绍群论的基础知识。我将尽力提供有关这些算法如何工作的深入见解，但无论如何，这都将涉及到一些数学。
 - en: 'Let’s start with the obvious question: what’s a *group*? It’s two things:'
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们从一个显而易见的问题开始：什么是*群*？它有两个方面：
 - en: A set of elements
+  id: totrans-38
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一组元素
 - en: A special binary operation (like + or ×) defined on these elements
+  id: totrans-39
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在这些元素上定义的特殊二元运算（例如 + 或 ×）
 - en: 'If the set and the operation manage to satisfy some properties, then we have
     a group. And, if we have a group, then we can do magical things . . . (more on
     that later). Note that DH works in a *multiplicative group* : a group where the
     multiplication is used as the defined binary operation. Due to this, the rest
     of the explanations use a multiplicative group as examples. I will also often
     omit the × symbol (for example, I will write *a* × *b* as *ab* instead).'
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果集合和运算能够满足一些属性，那么我们就有了一个群。如果我们有一个群，那么我们就可以做出神奇的事情......（稍后详述）。注意，DH 工作在一个*乘法群*中：一种使用乘法作为定义的二元运算的群。由于这一点，其余的解释使用乘法群作为示例。我也经常省略乘号符号（例如，我会将
+    *a* × *b* 写成 *ab*）。
 - en: I need to be a bit more specific here. For the set and its operation to be a
     group, they need the following properties. (As usual, I illustrate these properties
     in a more visual way in figure 5.4 to provide you with more material to grasp
     this new concept.)
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 我需要在这里更加具体。为了使集合及其运算成为一个群，它们需要具有以下特性。（和往常一样，我会在图 5.4 中以更加视觉化的方式来说明这些特性，以提供更多材料来理解这个新概念。）
 - en: '*Closure*—Operating on two elements results in another element of the same
     set. For example, for two elements of the group *a* and *b*, *a* × *b* results
     in another group element.'
+  id: totrans-42
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*封闭性*——对两个元素进行操作会得到同一集合的另一个元素。例如，对于群的两个元素 *a* 和 *b*，*a* × *b* 会得到另一个群元素。'
 - en: '*Associativity*—Operating on several elements at a time can be done in any
     order. For example, for three elements of the group *a*, *b*, and *c*, then *a*(*bc*)
     and (*ab*)*c* result in the same group element.'
+  id: totrans-43
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*结合性*——同时对几个元素进行操作可以按任意顺序进行。例如，对于群的三个元素 *a*、*b* 和 *c*，那么 *a*(*bc*) 和 (*ab*)*c*
+    会得到相同的群元素。'
 - en: '*Identity element*—Operating with this element does not change the result of
     the other operand. For example, we can define the identity element as 1 in our
     multiplicative group. For any group element *a*, we have *a* × 1 = *a*.'
+  id: totrans-44
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*单位元素*——与此元素进行运算不会改变另一个操作数的结果。例如，我们可以在我们的乘法群中将单位元素定义为 1。对于任何群元素 *a*，我们有 *a*
+    × 1 = *a*。'
 - en: '*Inverse element*—Existing as an inverse to all group elements. For example,
     for any group element *a*, there’s an inverse element *a*^(–1) (also written as
     1/*a*) such that *a* × *a*^(–1) = 1 (also written as *a* × 1/*a* = 1).'
+  id: totrans-45
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*逆元素*——存在一个逆元素与所有群元素相对应。例如，对于任何群元素 *a*，都存在一个逆元素 *a*^(–1)（也写作 1/*a*），使得 *a*
+    × *a*^(–1) = 1（也写作 *a* × 1/*a* = 1）。'
 - en: '![](../Images/05_04.jpg)'
+  id: totrans-46
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/05_04.jpg)'
 - en: 'Figure 5.4 The four properties of a group: closure, associativity, identity
     element, and inverse element.'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 5.4 群的四个属性：封闭性、结合性、单位元素和逆元素。
 - en: 'I can imagine that my explanation of a group can be a bit abstract, so let’s
     see what DH uses as a group in practice. First, DH uses a group comprised of the
     set of strictly positive integers: 1, 2, 3, 4, ···, *p* – 1, where *p* is a prime
     number and 1 is the identity element. Different standards specify different numbers
     for *p*, but intuitively, it has to be a large prime number for the group to be
     secure.'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 我可以想象我对群的解释可能有点抽象，所以让我们看看 DH 在实践中使用的群是什么。首先，DH 使用由严格正整数集合组成的群：1、2、3、4、····、*p*
+    – 1，其中 *p* 是素数，1 是单位元素。不同的标准为 *p* 指定不同的数字，但直观地说，它必须是一个大素数，以确保群的安全性。
 - en: Prime numbers
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 素数
 - en: A *prime number* is a number that can only be divided by 1 or by itself. The
     first prime numbers are 2, 3, 5, 7, 11, and so on. Prime numbers are everywhere
     in asymmetric cryptography! And, fortunately, we have efficient algorithms to
@@ -280,8 +394,11 @@
     Interestingly, such optimizations were broken several times in the past; the most
     infamous occurrence was in 2017, when the ROCA vulnerability uncovered more than
     a million devices generating incorrect primes for their cryptographic applications.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '*素数* 是只能被 1 或它本身整除的数字。前几个素数是 2、3、5、7、11 等等。素数在非对称密码学中随处可见！而且，幸运的是，我们有高效的算法来找到大素数。为了加快速度，大多数密码库会寻找*伪素数*（有很高概率是素数的数字）。有趣的是，此类优化在过去几次被打破过；最臭名昭著的一次发生在
+    2017 年，当时 ROCA 漏洞发现了超过一百万台设备为其密码应用生成了不正确的素数。'
 - en: Second, DH uses the *modular multiplication* as a special operation. Before
     I can explain what modular multiplication is, I need to explain what *modular
     arithmetic* is. Modular arithmetic, intuitively, is about numbers that “wrap around”
@@ -289,172 +406,251 @@
     be 5, we say that numbers past 5 go back to 1; for example, 6 becomes 1, 7 becomes
     2, and so on. (We also note 5 as 0, but because it is not in our multiplicative
     group, we don’t care too much about it.)
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 第二，DH 使用 *模乘法* 作为一种特殊操作。在我解释模乘法是什么之前，我需要解释什么是 *模算术*。直观地说，模算术是关于在达到一个称为*模数*的某个数后“环绕”的数字。例如，如果我们将模数设置为
+    5，我们说超过 5 的数字回到 1；例如，6 变成 1，7 变成 2，依此类推。（我们也将 5 记为 0，但因为它不在我们的乘法群中，所以我们不太在乎它。）
 - en: The mathematical way to express modular arithmetic is to take the *remainder*
     of a number and its *Euclidian division* with the modulus. Let’s take, for example,
     the number 7 and write its Euclidian division with 5 as 7 = 5 × 1 + 2\. Notice
     that the remainder is 2\. Then we say that 7 = 2 mod 5 (sometimes written as 7
     ≡ 2 (mod 5)). This equation can be read as 7 is congruent to 2 modulo 5\. Similarly
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 表达模算术的数学方式是取一个数与其模数的*欧几里得除法*的余数。让我们以数字 7 为例，并将其与 5 进行欧几里得除法得到 7 = 5 × 1 + 2。注意余数为
+    2。然后我们说 7 = 2 mod 5（有时写成 7 ≡ 2 (mod 5)）。这个方程可以读作 7 对模 5 同余于 2。同样地
 - en: 8 = 1 mod 7
+  id: totrans-53
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 8 = 1 mod 7
 - en: 54 = 2 mod 13
+  id: totrans-54
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 54 = 2 mod 13
 - en: 170 = 0 mod 17
+  id: totrans-55
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 170 = 0 mod 17
 - en: and so on
+  id: totrans-56
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 等等
 - en: The classical way of picturing such a concept is with a clock. Figure 5.5 illustrates
     this concept.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 描绘这样一个概念的传统方式是用时钟。图 5.5 说明了这个概念。
 - en: '![](../Images/05_05.jpg)'
+  id: totrans-58
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/05_05.jpg)'
 - en: Figure 5.5 The group of integers modulo the prime number 5 can be pictured as
     a clock that resets to 0 after the number 4\. Thus 5 is represented as 0, 6 as
     1, 7 as 2, 8 as 3, 9 as 4, 10 as 0, and so on.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 5.5 整数模素数 5 的群可以被描绘成一个时钟，在数字 4 之后重新归零。因此 5 被表示为 0，6 被表示为 1，7 被表示为 2，8 被表示为
+    3，9 被表示为 4，10 被表示为 0，依此类推。
 - en: 'A modular multiplication is quite natural to define over such a set of numbers.
     Let’s take the following multiplication as an example:'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这样一组数字上定义模乘法是相当自然的。让我们以以下乘法为例：
 - en: 3 × 2 = 6
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 3 × 2 = 6
 - en: 'With what you learned previously, you know that 6 is congruent to 1 modulo
     5, and thus the equation can be rewritten as:'
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 根据你之前学到的知识，你知道 6 对模 5 同余于 1，因此方程可以重写为：
 - en: 3 × 2 = 1 mod 5
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 3 × 2 = 1 mod 5
 - en: 'Quite straightforward, isn’t it? Note that the previous equation tells us that
     3 is the inverse of 2 and vice versa. We could also write the following:'
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 相当直接，是吗？请注意，前一个方程告诉我们 3 是 2 的倒数，反之亦然。我们也可以写成以下形式：
 - en: 3^(–1) = 2 mod 5
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 3^(–1) = 2 mod 5
 - en: When the context is clear, the modulus part (mod 5 here) is often left out from
     equations. So don’t be surprised if I sometimes omit it in this book.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 当上下文清晰时，方程中的模数部分（此处为 mod 5）通常会被省略。所以如果我在这本书中有时省略了它，请不要感到惊讶。
 - en: Note It happens that when we use the positive numbers modulo a prime number,
     only the *zero* element lacks an inverse. (Indeed, can you find an element *b*
     such that 0 × *b* = 1 mod 5?) This is the reason why we do not include zero as
     one of our elements in the group.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 注 事实上，当我们使用素数模下的正数时，只有*零*元素缺乏逆元。（确实，你能找到一个元素 *b* 使得 0 × *b* = 1 mod 5 吗？）这就是为什么我们不将零包含在群的元素中的原因。
 - en: 'OK, we now have a group, which includes the set of strictly positive integers
     1, 2, ···, *p* – 1 for *p* a prime number, along with modular multiplication.
     The group we formed also happens to be two things:'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 好的，现在我们有了一个组，其中包括严格正整数 1、2、···、*p* – 1，*p* 是一个素数，以及模乘法。我们形成的组也恰好是两者：
 - en: '*Commutative*—The order of operations doesn’t matter. For example, given two
     group elements *a* and *b*, then *ab* = *ba*. A group that has this property is
     often called a *Galois group*.'
+  id: totrans-69
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*交换性*——操作的顺序不重要。例如，给定两个群元素 *a* 和 *b*，则 *ab* = *ba*。具有此属性的群通常被称为*伽罗瓦群*。'
 - en: '*A finite field*—A Galois group that has more properties, as well as an additional
     operation (in our example, we can also add numbers together).'
+  id: totrans-70
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*有限域*——具有更多属性的伽罗瓦群，以及一个额外的运算（在我们的例子中，我们也可以将数字相加）。'
 - en: Due to the last point, DH defined over this type of group is sometimes called
     *Finite Field Diffie-Hellman* (FFDH). If you understand what a group is (and make
     sure you do before reading any further), then a *subgroup* is just a group contained
     inside your original group. That is, it’s a subset of the group elements. Operating
     on elements of the subgroup results in another subgroup element, and every subgroup
     element has an inverse in the subgroup, etc.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 由于最后一点，DH定义在这种类型的群上有时被称为*有限域Diffie-Hellman*（FFDH）。如果你理解什么是群（并确保在继续阅读之前理解），那么*子群*只是原始群中包含的一个群。也就是说，它是群元素的子集。在子群元素上操作会产生另一个子群元素，并且每个子群元素在子群中都有一个逆元素，等等。
 - en: 'A *cyclic subgroup* is a subgroup that can be generated from a single *generator*
     (or *base*). A generator generates a cyclic subgroup by multiplying itself over
     and over. For example, the generator 4 defines a subgroup consisting of the numbers
     1 and 4:'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: '*循环子群*是可以从单个*生成器*（或*基数*）生成的子群。生成器通过反复相乘来生成循环子群。例如，生成器4定义了由数字1和4组成的子群：'
 - en: 4 mod 5 = 4
+  id: totrans-73
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 4 mod 5 = 4
 - en: 4 × 4 mod 5 = 1
+  id: totrans-74
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 4 × 4 mod 5 = 1
 - en: 4 × 4 × 4 mod 5 = 4 (we start again from the beginning)
+  id: totrans-75
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 4 × 4 × 4 mod 5 = 4（我们从头开始）
 - en: 4 × 4 × 4 × 4 mod 5 = 1
+  id: totrans-76
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 4 × 4 × 4 × 4 mod 5 = 1
 - en: and so on
+  id: totrans-77
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 以此类推
 - en: Note  We can also write 4 × 4 × 4 as 43.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意  我们也可以将4 × 4 × 4写为43。
 - en: It happens that when our modulus is prime, every element of our group is a generator
     of a subgroup. These different subgroups can have different sizes, which we call
     *orders*. I illustrate this in figure 5.6.
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 恰好当我们的模数是素数时，我们群中的每个元素都是一个子群的生成器。这些不同的子群可以有不同的大小，我们称之为*阶*。我在图5.6中进行了说明。
 - en: '![](../Images/05_06.jpg)'
+  id: totrans-80
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/05_06.jpg)'
 - en: Figure 5.6 The different subgroups of the multiplicative group modulo 5\. These
     all include the number 1 (called the *identity element*) and have different orders
     (number of elements).
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: 图5.6 不同的模5乘法群的子群。这些都包括数字1（称为*单位元素*）并且具有不同的阶（元素数量）。
 - en: All right, you now understand
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 好了，现在你明白了
 - en: A group is a set of numbers with a binary operation that respects some properties
     (closure, associativity, identity element, inverse element).
+  id: totrans-83
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 一个群是一组具有二元运算的数字集合，遵守一些性质（封闭性，结合性，单位元素，逆元素）。
 - en: DH works in the Galois group (a group with commutativity), formed by the set
     of strictly positive numbers up to a prime number (not included) and the modular
     multiplication.
+  id: totrans-84
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: DH在Galois群（一个具有交换性的群）中运行，由严格正数组成，直到一个素数（不包括在内）和模乘法形成。
 - en: In a DH group, every element is a generator of a subgroup.
+  id: totrans-85
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在DH群中，每个元素都是一个子群的生成器。
 - en: Groups are the center of a huge amount of different cryptographic primitives.
     It is important to have good intuitions about group theory if you want to understand
     how other cryptographic primitives work.
+  id: totrans-86
   prefs: []
   type: TYPE_NORMAL
+  zh: 群是大量不同加密原语的中心。如果你想要理解其他加密原语的工作原理，对群论有良好的直觉是很重要的。
 - en: '5.2.2 The discrete logarithm problem: The basis of Diffie-Hellman'
+  id: totrans-87
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5.2.2 离散对数问题：Diffie-Hellman的基础
 - en: The security of the DH key exchange relies on the *discrete logarithm problem*
     in a group, a problem believed to be hard to solve. In this section, I briefly
     introduce this problem.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: DH密钥交换的安全性依赖于群中的*离散对数问题*，这是一个被认为难以解决的问题。在本节中，我简要介绍这个问题。
 - en: Imagine that I take a generator, let’s say 3, and give you a random element
     among the ones it can generate, let’s say 2 = 3^x mod 5 for some *x* unknown to
     you. Asking you “what is *x*?” is the same as asking you to find the discrete
@@ -462,40 +658,56 @@
     about finding out how many times we multiplied the generator with itself in order
     to produce a given group element. This is an important concept! Take a few minutes
     to think about it before continuing.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 想象一下，我拿一个生成器，比如说3，然后给你一个它可以生成的随机元素，比如说2 = 3^x mod 5，其中*x*对你来说是未知的。问你“*x*是多少？”就等同于让你找到基于3的2的离散对数。因此，在我们的群中，离散对数问题就是找出我们将生成器与自身相乘多少次才能产生给定的群元素。这是一个重要的概念！在继续之前花几分钟思考一下。
 - en: 'In our example group, you can quickly find that 3 is the answer (indeed, 3³
     = 2 mod 5). But if we picked a much larger prime number than 5, things get much
     more complicated: it becomes hard to solve. This is the secret sauce behind Diffie-Hellman.
     You now know enough to understand how to generate a key pair in DH:'
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们的示例群中，你可以快速发现答案是3（确实，3³ = 2 mod 5）。但是，如果我们选择一个比5大得多的素数，事情就变得复杂得多：变得难以解决。这就是Diffie-Hellman背后的秘密。现在你已经了解如何在DH中生成密钥对了：
 - en: All the participants must agree on a large prime *p* and a generator *g*.
+  id: totrans-91
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 所有参与者都必须就一个大素数 *p* 和一个生成器 *g* 达成一致。
 - en: Each participant generates a random number *x*, which becomes their private
     key.
+  id: totrans-92
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 每个参与者都生成一个随机数 *x*，这个数就成了他们的私钥。
 - en: Each participant derives their public key as *g*^x mod *p*.
+  id: totrans-93
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 每个参与者都根据 *g*^x mod *p* 推导出他们的公钥。
 - en: The fact that the discrete logarithm problem is *hard* means that no one should
     be able to recover the private key from the public key. I illustrate this in figure
     5.7.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 离散对数问题的“困难”意味着没有人应该能够从公钥中恢复出私钥。我在图 5.7 中进行了说明。
 - en: '![](../Images/05_07.jpg)'
+  id: totrans-95
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/05_07.jpg)'
 - en: Figure 5.7 Choosing a private key in Diffie-Hellman is like choosing an index
     in a list of numbers produced by a generator *g*. The discrete logarithm problem
     is to find the index from the number alone.
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 5.7 在 Diffie-Hellman 中选择私钥就像在生成器 *g* 产生的数字列表中选择索引一样。离散对数问题就是仅凭数字找到索引的问题。
 - en: 'While we do have algorithms to compute discrete logarithms, they are not efficient
     in practice. On the other hand, if I give you the solution *x* to the problem,
     you have extremely efficient algorithms at your disposal to check that, indeed,
@@ -503,46 +715,66 @@
     the state-of-the-art technique to compute the modular exponentiation is called
     *square and multiply*. This computes the result efficiently by going through *x*
     bit by bit.'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管我们有算法来计算离散对数，但在实践中它们并不高效。另一方面，如果我给你问题的解 *x*，你就可以利用你手头上非常高效的算法来验证，确实我给你的是正确的解：*g*^x
+    mod *p*。如果你感兴趣，计算模幂的最先进技术被称为“平方乘”。它通过逐位地遍历 *x* 来高效地计算结果。
 - en: Note Like everything in cryptography, it is *not impossible* to find a solution
     by simply trying to guess. Yet, by choosing large enough parameters (here, a large
     prime number), it is possible to reduce the efficacy of such a search for a solution
     down to negligible odds. This means that even after hundreds of years of random
     tries, your odds of finding a solution should still be statistically close to
     zero.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意就像密码学中的一切一样，仅仅通过猜测来找到解决方案是*不可能*的。然而，通过选择足够大的参数（在这里，一个大素数），可以将寻找解决方案的效果降低到可以忽略的几率。这意味着即使经过数百年的随机尝试，你找到解决方案的几率仍然在统计上接近于零。
 - en: Great. How do we use all of this math for our DH key exchange algorithm? Imagine
     that
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 很好。我们如何利用所有这些数学知识来进行 DH 密钥交换算法呢？想象一下
 - en: Alice has a private key *a* and a public key *A* = *g*^a mod *p*.
+  id: totrans-100
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Alice 有一个私钥 *a* 和一个公钥 *A* = *g*^a mod *p*。
 - en: Bob has a private key *b* and a public key *B* = *g*^b mod *p*.
+  id: totrans-101
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Bob 有一个私钥 *b* 和一个公钥 *B* = *g*^b mod *p*。
 - en: 'With the knowledge of Bob’s public key, Alice can compute the shared secret
     as *B*^a mod *p*. Bob can do a similar computation with Alice’s public key and
     his own private key: *A*^b mod *p*. Naturally, we can see that these two calculations
     end up computing the same number:'
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 借助 Bob 的公钥，Alice 可以计算出共享秘密 *B*^a mod *p*。Bob 也可以利用 Alice 的公钥和他自己的私钥进行类似的计算：*A*^b
+    mod *p*。自然地，我们可以看到这两个计算最终得到的结果是相同的：
 - en: '*B*^a = (*g*^b)^a = *g*^(ab) = (*g*^a)^b = *A*^b mod *p*'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: '*B*^a = (*g*^b)^a = *g*^(ab) = (*g*^a)^b = *A*^b mod *p*'
 - en: And that’s the magic of DH. From an outsider’s point of view, just observing
     the public keys *A* and *B* does not help in any way to compute the result of
     the key exchange *g*^(ab) mod *p*. Next, you will learn about how real-world applications
     make use of this algorithm and the different standards that exist.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 这就是 DH 的魔力。从外部人士的角度来看，仅观察公钥 *A* 和 *B* 并不能以任何方式计算出密钥交换的结果 *g*^(ab) mod *p*。接下来，你将了解到现实世界的应用是如何利用这个算法以及存在的不同标准的。
 - en: Computational and decisional Diffie-Hellman
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: 计算和决策 Diffie-Hellman
 - en: By the way, in theoretical cryptography, the idea that observing *g*^a mod *p*
     and *g*^b mod *p* does not help you to compute *g*^(ab) mod *p* is called the
     *computational Diffie-Hellman assumption* (CDH). It is often confused with the
@@ -552,33 +784,45 @@
     the two public keys (*g*^(ab) mod *p*) or just a random element of the group.
     Both are useful theoretical assumptions that have been used to build many different
     algorithms in cryptography.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 顺便说一句，在理论密码学中，观察*g*^a mod *p*和*g*^b mod *p*并不会帮助你计算*g*^(ab) mod *p*的想法被称为*计算Diffie-Hellman假设*（CDH）。它经常与更强的*决策Diffie-Hellman假设*（DDH）混淆，直观地说明了在给定*g*^a
+    mod *p*，*g*^b mod *p*和*z* mod *p*的情况下，没有人应该能够自信地猜测后者是否是两个公钥之间的密钥交换结果（*g*^(ab)
+    mod *p*）还是组中的随机元素。这两者都是有用的理论假设，已被用于构建密码学中的许多不同算法。
 - en: 5.2.3 The Diffie-Hellman standards
+  id: totrans-107
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 5.2.3 Diffie-Hellman标准
 - en: Now that you have seen how DH works, you can understand that participants need
     to agree on a set of parameters, specifically on a prime number *p* and a generator
     *g*. In this section, you’ll learn about how real-world applications choose these
     parameters and the different standards that exist.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在您已经了解了DH的工作原理，您可以理解参与者需要在一组参数上达成一致，具体来说是质数*p*和生成器*g*。在本节中，您将了解现实世界应用是如何选择这些参数以及存在的不同标准的。
 - en: First things first is the prime number *p*. As I stated earlier, the bigger,
     the better. Because DH is based on the discrete logarithm problem, its security
     is directly correlated to the best attacks known on the problem. Any advances
     in this area can weaken the algorithm. With time, we managed to obtain a pretty
     good idea of how fast (or slow) these advances are and how much is enough security.
     The currently known best practices are to use a prime number of 2,048 bits.
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先是质数*p*。正如我之前所述，数字越大，效果越好。因为DH基于离散对数问题，其安全性与该问题已知的最佳攻击直接相关。该领域的任何进展都可能削弱算法。随着时间的推移，我们成功地对这些进展的速度（或缓慢程度）以及足够的安全性有了相当好的了解。目前已知的最佳实践是使用2048位的质数。
 - en: Note In general, [https://keylength.com](https://keylength.com) summarizes recommendations
     on parameter lengths for common cryptographic algorithms. The results are taken
     from authoritative documents produced by research groups or government bodies
     like the ANSSI (France), the NIST (US), and the BSI (Germany). While they do not
     always agree, they often converge towards similar orders of magnitude.
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 一般来说，[https://keylength.com](https://keylength.com) 总结了常见加密算法的参数长度建议。结果来自研究组织或政府机构（如法国国家信息安全局（ANSSI）、美国国家标准与技术研究所（NIST）和德国联邦信息安全办公室（BSI））发布的权威文件。虽然它们并不总是一致，但它们通常会趋于类似数量级。
 - en: In the past, many libraries and software often generated and hardcoded their
     own parameters. Unfortunately, they were sometimes found to be either weak or,
     worse, completely broken. In 2016, someone found out that Socat, a popular command-line
@@ -587,39 +831,51 @@
     standardized DH groups might seem like a better idea, but DH is one of the unfortunate
     counterexamples. Only a few months after the Socat issue, Antonio Sanso, while
     reading RFC 5114, found that the standard had specified broken DH groups as well.
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 在过去，许多库和软件通常会生成和硬编码自己的参数。不幸的是，有时会发现它们要么是薄弱的，要么更糟，完全是破碎的。在2016年，有人发现了Socat，一个流行的命令行工具，一年前已经使用了一个损坏的默认DH组，这就引发了一个问题，这是一个错误还是一个有意的后门。使用标准化的DH组可能看起来像一个更好的主意，但是DH是不幸的反例之一。在Socat问题发生几个月后，安东尼奥·桑索（Antonio
+    Sanso）在阅读RFC 5114时发现，该标准也指定了损坏的DH组。
 - en: 'Due to all of these issues, newer protocols and libraries have converged towards
     either deprecating DH in favor of Elliptic Curve Diffie-Hellman (ECDH) or using
     the groups defined in the better standard, RFC 7919 ([https://www.rfc-editor.org/info/rfc7919](https://www.rfc-editor.org/info/rfc7919)).
     For this reason, best practice nowadays is to use RFC 7919, which defines several
     groups of different sizes and security. For example, ffdhe2048 is the group defined
     by the 2,048-bit prime modulus:'
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
 - en: '*p*   =  3231700607131100730015351347782516336248805713348907517458843413926980683413621000279205636264016468'
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
 - en: '54585563579353308169288290230805734726252735547424612457410262025279165729728627063003252634282131457669'
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
 - en: '31414223654220941111348629991657478268034230553086349050635557712219187890332729569696129743856241741236'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
 - en: '23722519734640269185579776797682301462539793305801522685873076119753243646747585546071504389684494036613'
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
 - en: 04976978128542959586595975670512838521327844685229255045682728791137200989318739591433741758378260002780
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
 - en: '34973198552060607533234122603254684088120031105907484281003994966956119696956248629032338072839127039'
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
 - en: and with generator *g* = 2
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
 - en: Note It is common to choose the number 2 for the generator as computers are
     quite efficient at multiplying with 2 using a simple left shift (`<<`) instruction.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
 - en: The group size (or *order*) is also specified as *q* = (*p* – 1)/2\. This implies
@@ -628,9 +884,11 @@
     for example, that are usually 128-bit long). You will see in the next section
     that defining a group over the elliptic curves allow us to obtain much smaller
     keys for the same amount of security.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
 - en: 5.3 The Elliptic Curve Diffie-Hellman (ECDH) key exchange
+  id: totrans-122
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -640,15 +898,18 @@
     of curves studied in mathematics. The idea was proposed in 1985 by Neal Koblitz
     and Victor S. Miller, independently, and much later in 2000, it was adopted when
     cryptographic algorithms based on elliptic curves started seeing standardization.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
 - en: The world of applied cryptography quickly adopted elliptic curve cryptography
     as it provided much smaller keys than the previous generation of public key cryptography.
     Compared to the recommended 2,048-bit parameters in DH, parameters of 256 bits
     were possible with the elliptic curve variant of the algorithm.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
 - en: 5.3.1 What’s an elliptic curve?
+  id: totrans-125
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -656,38 +917,47 @@
     understand that elliptic curves are just curves! Meaning that they are defined
     by all the coordinates *x* and *y* that solves an equation. Specifically, this
     equation
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
 - en: '*y*² + *a*[1]*xy* + *a*[3]*y* = *x*³ + *a*[2]*x*² + *a*[4]*x* + *a*[6]'
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
 - en: 'for some *a*[1], *a*[2], *a*[3], *a*[4], and *a*[6]. Note that for most practical
     curves today, this equation can be simplified as the *short Weierstrass equation*:'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
 - en: '*y*² = *x*³ + *ax* + *b* (where 4*a*³ + 27*b*² ≠ 0)'
+  id: totrans-129
   prefs: []
   type: TYPE_NORMAL
 - en: While the simplification is not possible for two types of curves (called *binary
     curves* and *curves of characteristic 3*), these are used rarely enough that we
     will use the Weierstrass form in the rest of this chapter. Figure 5.8 shows an
     example of an elliptic curve with two points taken at random.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/05_08.jpg)'
+  id: totrans-131
   prefs: []
   type: TYPE_IMG
 - en: Figure 5.8 One example of an elliptic curve defined by an equation.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
 - en: At some point in the history of elliptic curves, it was found that a *group*
     could be constructed over them. From there, implementing DH on top of these groups
     was straightforward. I will use this section to explain the intuition behind elliptic
     curve cryptography.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
 - en: Groups over elliptic curves are often defined as *additive groups*. Unlike multiplicative
     groups defined in the previous section, the + sign is used instead.
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
 - en: Note Using an addition or a multiplication does not matter much in practice,
@@ -695,40 +965,49 @@
     notation, the literature around elliptic curves has gravitated around an additive
     notation, and thus, this is what I will use when referring to elliptic curve groups
     in this book.
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
 - en: This time, I will define the operation before defining the elements of the group.
     Our *addition operation* is defined in the following way. Figure 5.9 illustrates
     this process.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
 - en: Draw a line going through two points that you want to add. The line hits the
     curve at another point.
+  id: totrans-137
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Draw a vertical line from this newly found point. The vertical line hits the
     curve in yet another point.
+  id: totrans-138
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: This point is the result of adding the original two points together.
+  id: totrans-139
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: '![](../Images/05_09.jpg)'
+  id: totrans-140
   prefs: []
   type: TYPE_IMG
 - en: Figure 5.9 An addition operation can be defined over points of an elliptic curve
     by using geometry.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
 - en: 'There are two special cases where this rule won’t work. Let’s define these
     as well:'
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
 - en: '*How do we add a point to itself ?* The answer is to draw the tangent to that
     point (instead of drawing a line between two points).'
+  id: totrans-143
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -738,45 +1017,56 @@
     point (something we make up). This newly invented point is called the *point at
     infinity* (that we usually write with a big letter *O*). Figure 5.10 illustrates
     these special cases.'
+  id: totrans-144
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '![](../Images/05_10.jpg)'
+  id: totrans-145
   prefs: []
   type: TYPE_IMG
 - en: Figure 5.10 Building on figure 5.9, addition on an elliptic curve is also defined
     when adding a point to itself or when two points cancel each other to result in
     the point at infinity (*O*).
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
 - en: 'I know this point at infinity is some next-level weirdness, but don’t worry
     too much about it. It is really just something we came up with in order to make
     the addition operation work. Oh, and by the way, it behaves like a zero, and it
     is our identity element:'
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
 - en: '*O* + *O* = *O*'
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
 - en: and for any point *P* on the curve
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
 - en: '*P* + *O* = *P*'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
 - en: All good. So far, we saw that to create a group on top of an elliptic curve,
     we need
+  id: totrans-151
   prefs: []
   type: TYPE_NORMAL
 - en: An elliptic curve equation that defines a set of valid points.
+  id: totrans-152
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: A definition of what addition means in this set.
+  id: totrans-153
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: An imaginary point called a point at infinity.
+  id: totrans-154
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -787,21 +1077,25 @@
     sound familiar! For this reason, when thinking of elliptic curve cryptography,
     you should think of a graph that looks much more like the one on the right in
     figure 5.11.
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/05_11.jpg)'
+  id: totrans-156
   prefs: []
   type: TYPE_IMG
 - en: Figure 5.11 Elliptic curve cryptography (ECC), in practice, is mostly specified
     with elliptic curves in coordinates modulo a large prime number *p*. This means
     that what we use in cryptography looks much more like the right graph than the
     left graph.
+  id: totrans-157
   prefs: []
   type: TYPE_NORMAL
 - en: And that’s it! We now have a group we can do cryptography on, the same way we
     had a group made with the numbers (excluding 0) modulo a prime number and a multiplication
     operation for Diffie-Hellman. How can we do Diffie-Hellman with this group defined
     on elliptic curves? Let’s see how the *discrete logarithm* works now in this group.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
 - en: Let’s take a point *G* and add it to itself *x* times to produce another point
@@ -809,74 +1103,90 @@
     + *G* (*x* times) or use some mathematical syntactic sugar to write that as *P*
     = [*x*]*G*, which reads *x* times *G*. The *elliptic curve discrete logarithm
     problem* (ECDLP) is to find the number *x* from knowing just *P* and *G*.
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
 - en: Note We call [*x*]*G* scalar multiplication as *x* is usually called a scalar
     in such groups.
+  id: totrans-160
   prefs: []
   type: TYPE_NORMAL
 - en: 5.3.2 How does the Elliptic Curve Diffie-Hellman (ECDH) key exchange work?
+  id: totrans-161
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
 - en: 'Now that we built a group on elliptic curves, we can instantiate the same Diffie-Hellman
     key exchange algorithm on it. To generate a key pair in ECDH:'
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
 - en: All the participants agree on an elliptic curve equation, a finite field (most
     likely a prime number), and a generator *G* (usually called a *base point* in
     elliptic curve cryptography).
+  id: totrans-163
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Each participant generates a random number *x*, which becomes their private
     key.
+  id: totrans-164
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Each participant derives their public key as [*x*]*G*.
+  id: totrans-165
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Because the elliptic curve discrete logarithm problem is hard, you guessed it,
     no one should be able to recover your private key just by looking at your public
     key. I illustrate this in figure 5.12.
+  id: totrans-166
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/05_12.jpg)'
+  id: totrans-167
   prefs: []
   type: TYPE_IMG
 - en: Figure 5.12 Choosing a private key in ECDH is like choosing an index in a list
     of numbers produced by a generator (or base point) *G*. The Elliptic Curve Discrete
     Logarithm Problem (ECDLP) is to find the index from the number alone.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
 - en: All of this might be a bit confusing as the operation we defined for our DH
     group was the multiplication, and for an elliptic curve, we now use addition.
     Again, these distinctions do not matter at all because they are equivalent. You
     can see a comparison in figure 5.13.
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/05_13.jpg)'
+  id: totrans-170
   prefs: []
   type: TYPE_IMG
 - en: Figure 5.13 Some comparisons between the group used in Diffie-Hellman and the
     group used in Elliptic Curve Diffie-Hellman (ECDH).
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
 - en: You should now be convinced that the only thing that matters for cryptography
     is that we have a group defined with its operation, and that the discrete logarithm
     for this group is hard. For completion, figure 5.14 shows the difference between
     the discrete logarithm problem in the two types of groups we’ve seen.
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/05_14.jpg)'
+  id: totrans-173
   prefs: []
   type: TYPE_IMG
 - en: Figure 5.14 A comparison between the discrete logarithm problem modulo large
     primes and the discrete logarithm problem in elliptic curve cryptography (ECC).
     They both relate to the DH key exchange, as the problem is to find the private
     key from a public key.
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
 - en: A last note on the theory, the group we formed on top of elliptic curves differs
@@ -885,16 +1195,20 @@
     as *index calculus* or *number field sieve* attacks) do not work well on the elliptic
     curve groups. This is the main reason why parameters for ECDH can be much lower
     than the parameters for DH at the same level of security.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
 - en: OK, we are done with the theory. Let’s go back to defining ECDH. Imagine that
+  id: totrans-176
   prefs: []
   type: TYPE_NORMAL
 - en: Alice has a private key *a* and a public key *A* = [*a*]*G*.
+  id: totrans-177
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Bob has a private key *b* and a public key *B* = [*b*]*G*.
+  id: totrans-178
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -902,16 +1216,20 @@
     as [*a*]*B*. Bob can do a similar computation with Alice’s public key and his
     own private key: [*b*]*A*. Naturally, we can see that these two calculations end
     up computing the same number:'
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
 - en: '[*a*]*B* = [*a*][*b*]*G* = [*ab*]*G* = [*b*][*a*]*G* = [*b*]*A*'
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
 - en: No passive adversary should be able to derive the shared point just from observing
     the public keys. Looks familiar, right? Next, let’s talk about standards.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
 - en: 5.3.3 The standards for Elliptic Curve Diffie-Hellman
+  id: totrans-182
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -920,9 +1238,11 @@
     other NATO nations have all adopted some form of elliptic curve cryptography for
     future systems to protect classified information throughout and between their
     governments*.'
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
 - en: —NSA (“The Case for Elliptic Curve Cryptography,” 2005)
+  id: totrans-184
   prefs: []
   type: TYPE_NORMAL
 - en: The standardization of ECDH has been pretty chaotic. Many standardization bodies
@@ -931,18 +1251,22 @@
     amount of research, mostly led by Daniel J. Bernstein, pointed out the fact that
     a number of curves standardized by NIST could potentially be part of a weaker
     class of curves only known to NSA.
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
 - en: '*I no longer trust the constants. I believe the NSA has manipulated them through
     their relationships with industry*.'
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
 - en: —Bruce Schneier (“The NSA Is Breaking Most Encryption on the Internet,” 2013)
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
 - en: 'Nowadays, most of the curves in use come from a couple standards, and most
     applications have fixated on two curves: P-256 and Curve25519\. In the rest of
     this section, I will go over these curves.'
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
 - en: 'NIST FIPS 186-4, “Digital Signature Standard,” initially published as a standard
@@ -951,57 +1275,72 @@
     curve was also specified in Standards for Efficient Cryptography (SEC) 2, v2,
     “Recommended Elliptic Curve Domain Parameters,” published in 2010 under a different
     name, secp256r1\. P-256 is defined with the short Weierstrass equation:'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
 - en: '*y*² = *x*³ + *ax* + *b* mod *p*'
+  id: totrans-190
   prefs: []
   type: TYPE_NORMAL
 - en: where *a* = –3 and
+  id: totrans-191
   prefs: []
   type: TYPE_NORMAL
 - en: '*b* = 41058363725152142129326129780047268409114441015993725554835256314039467401291'
+  id: totrans-192
   prefs: []
   type: TYPE_NORMAL
 - en: and
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
 - en: '*p* = 2^(256) – 2^(224) + 2^(192) + 2^(96) – 1'
+  id: totrans-194
   prefs: []
   type: TYPE_NORMAL
 - en: 'This defines a curve of prime order:'
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
 - en: '*n* = 115792089210356248762697446949407573529996955224135760342422259061068512044369'
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
 - en: meaning that there are exactly *n* points on the curve (including the point
     at infinity). The base point is specified as
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
 - en: '*G* = (48439561293906451759052585252797914202762949526041747995844080717082404635286,
     36134250956749795798585127919587881956611106672985015071877198253568414405109)'
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
 - en: The curve provides 128 bits of security. For applications that are using other
     cryptographic algorithms providing 256-bit security instead of 128 bits of security
     (for example, AES with a 256-bit key), P-521 is available in the same standard
     to match the level of security.
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
 - en: Can we trust P-256?
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
 - en: Interestingly, P-256 and other curves defined in FIPS 186-4 are said to be generated
     from a *seed*. For P-256, the seed is known to be the byte string
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
 - en: '0xc49d360886e704936a6678e1139d26b7819f7e90'
+  id: totrans-202
   prefs: []
   type: TYPE_NORMAL
 - en: I talked about this notion of “nothing-up-my-sleeve” numbers before—constants
     that aim to prove that there was no room for backdooring the design of the algorithm.
     Unfortunately, there isn’t much explanation behind the P-256 seed other than the
     fact that it is specified along the curve’s parameter.
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
 - en: 'RFC 7748, “Elliptic Curves for Security,” which was published in 2016, specifies
@@ -1010,27 +1349,35 @@
     want to hedge against potential advances in the state of attacks against elliptic
     curves. I will only talk about Curve25519 here, which is a Montgomery curve defined
     by the equation:'
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
 - en: '*y*² = *x*³ + 486662 *x*² + *x* mod *p*, where *p* = 2^(255) – 19'
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
 - en: Curve25519 has an order
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
 - en: '*n* = 2^(252) + 27742317777372353535851937790883648493'
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
 - en: and the base point used is
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
 - en: '*G* = (9, 14781619447589544791020593568409986887264606134616475288964881837755586237401)'
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
 - en: The combination of ECDH with Curve25519 is often dubbed *X25519*.
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
 - en: 5.4 Small subgroup attacks and other security considerations
+  id: totrans-211
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -1042,6 +1389,7 @@
     protocols that are too relaxed (many protocols, like older versions of TLS, don’t
     mandate what DH groups to use), software that uses broken custom DH groups (the
     socat issue mentioned previously), and so on.
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
 - en: 'If you do have to use Diffie-Hellman, make sure to *stick to the standards*.
@@ -1052,15 +1400,18 @@
     there exist no prime-order groups in DH.) The scarcity of small subgroups prevent
     a type of attack known as *small subgroup attack* (more on that later). Safe primes
     create secure groups because of two things:'
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
 - en: The order of a multiplicative group modulo a prime *p* is calculated as p –
     1.
+  id: totrans-214
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The order of a group’s subgroups are the factors of the group’s order (this
     is the Lagrange theorem).
+  id: totrans-215
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -1071,6 +1422,7 @@
     is an attack on key exchanges in which an attacker sends several invalid public
     keys to leak bits of your private key gradually, and where the invalid public
     keys are generators of small subgroups.
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
 - en: For example, an attacker could choose –1 (the generator of a subgroup of size
@@ -1080,6 +1432,7 @@
     to the power of your private key. Depending on what you do with that shared secret,
     the attacker could guess what it is, and leak some information about your private
     key.
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
 - en: 'With our example of malicious public key, if your private key was even, the
@@ -1088,14 +1441,17 @@
     bit of your private key. Many subgroups of different sizes can lead to more opportunities
     for the attacker to learn more about your private key until the entire key is
     recovered. I illustrate this issue in figure 5.15.'
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
 - en: '![](../Images/05_15.jpg)'
+  id: totrans-219
   prefs: []
   type: TYPE_IMG
 - en: Figure 5.15 A small subgroup attack impacts DH groups that have many subgroups.
     By choosing generators of small subgroups as public keys, an attacker can leak
     bits of someone’s private key little by little.
+  id: totrans-220
   prefs: []
   type: TYPE_NORMAL
 - en: While it is always a good idea to verify if the public key you receive is in
@@ -1105,6 +1461,7 @@
     et al.) Make sure that the DH implementations you’re using do! You can do this
     by raising the public key to the order of the subgroup, which should give you
     back the identity element if it is an element of that subgroup.
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
 - en: On the other hand, elliptic curves allow for groups of prime order. That is,
@@ -1113,6 +1470,7 @@
     not so fast . . . In 2000, Biehl, Meyer, and Muller found that small subgroup
     attacks are possible even in such prime-order elliptic curve groups due to an
     attack called *invalid curve attack*.
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
 - en: 'The idea behind invalid curve attacks is the following. First, the formulas
@@ -1125,6 +1483,7 @@
     goes on with the key exchange by performing a scalar multiplication with the given
     point, effectively doing a key exchange on a different curve. This trick ends
     up re-enabling the small subgroup attack, even on prime-order curves.'
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
 - en: The obvious way to fix this is to, again, validate public keys. This can be
@@ -1136,6 +1495,7 @@
     key exchange due to the quality of the design (which takes into account invalid
     curve attacks), the quality of available implementations, and the resistance against
     timing attacks by design.
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
 - en: 'Curve25519 has one caveat though—it is not a prime-order group. The curve has
@@ -1145,6 +1505,7 @@
     found in different types of protocols that were making use of the primitive in
     more exotic ways. (One of these I found in the Matrix messaging protocol, which
     I talk about in chapter 11.)'
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
 - en: 'Not verifying public keys can have unexpected behaviors with X25519\. The reason
@@ -1157,6 +1518,7 @@
     not! I would recommend making sure that your implementation performs the check,
     although it’s unlikely that you’re going to run into any issues unless you use
     X25519 in a nonstandard way.'
+  id: totrans-226
   prefs: []
   type: TYPE_NORMAL
 - en: Because many protocols rely on Curve25519, this has been an issue for more than
@@ -1166,54 +1528,64 @@
     The construction has been gaining traction as it simplifies the security assumptions
     made by other types of cryptographic primitives that want to benefit from Curve25519
     but want a prime-order field.
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
 - en: Summary
+  id: totrans-228
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: Unauthenticated key exchanges allow two parties to agree on a shared secret,
     while preventing any passive man-in-the-middle (MITM) attacker from being able
     to derive it as well.
+  id: totrans-229
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: An authenticated key exchange prevents an active MITM from impersonating one
     side of the connection, while a mutually authenticated key exchange prevents an
     active MITM from impersonating both sides.
+  id: totrans-230
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: One can perform an authenticated key exchange by knowing the other party’s public
     key, but this doesn’t always scale and signatures will unlock more complex scenarios
     (see chapter 7).
+  id: totrans-231
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Diffie-Hellman (DH) is the first key exchange algorithm invented and is still
     widely used.
+  id: totrans-232
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The recommended standard to use for DH is RFC 7919, which includes several parameters
     to choose from. The smallest option is the recommended 2,048-bit prime parameter.
+  id: totrans-233
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Elliptic Curve Diffie-Hellman (ECDH) has much smaller key sizes than DH. For
     128 bits of security, DH needs 2,048-bit parameters, whereas ECDH needs 256-bit
     parameters.
+  id: totrans-234
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: The most widely used curves for ECDH are P-256 and Curve25519\. Both provide
     128 bits of security. For 256-bit security, P-521 and Curve448 are available in
     the same standards.
+  id: totrans-235
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Make sure that implementations verify the validity of public keys you receive
     as invalid keys are the source of many bugs.
+  id: totrans-236
   prefs:
   - PREF_UL
   type: TYPE_NORMAL

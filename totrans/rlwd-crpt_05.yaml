@@ -931,16 +931,19 @@
   id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.14 如果AES-CTR的密钥流比明文长，则在与明文进行异或之前将其截断为与明文相同的长度。这使得AES-CTR可以在不填充的情况下工作。
 - en: 'Figure 4.14 shows an interesting aspect of CTR mode: no padding is required.
     We say that it turns a block cipher (AES) into a stream cipher. It encrypts the
     plaintext byte by byte.'
   id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.14展示了CTR模式的一个有趣特点：不需要填充。我们说它将分组密码（AES）转变为流密码。它按字节加密明文。
 - en: Stream ciphers
   id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 流密码
 - en: Stream ciphers are another category of ciphers. They are different than block
     ciphers because we can use them directly to encrypt a ciphertext by XORing it
     with a keystream. No need for padding or a mode of operation, allowing the ciphertext
@@ -948,6 +951,7 @@
   id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 流密码是密码的另一类。它们与分组密码不同，因为我们可以直接使用它们通过与密钥流进行异或来加密密文。无需填充或操作模式，允许密文与明文长度相同。
 - en: In practice, there isn’t much difference between these two categories of ciphers
     because block ciphers can easily be transformed into stream ciphers via the CTR
     mode of operation. But, in theory, block ciphers have the advantage as they can
@@ -956,6 +960,7 @@
   id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 在实践中，这两类密码之间没有太大的区别，因为通过CTR操作模式，分组密码很容易转换为流密码。但是，在理论上，分组密码具有优势，因为它们在构建其他类别的基元时可能会有用（类似于第2章中所见的哈希函数）。
 - en: This is also a good moment to note that, by default, encryption doesn’t (or
     badly) hides the length of what you are encrypting. Because of this, the use of
     compression before encryption can lead to attacks if an attacker can influence
@@ -963,6 +968,7 @@
   id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 此时也是值得注意的好时机，默认情况下，加密不会（或很差地）隐藏您正在加密的内容的长度。因此，在加密之前使用压缩可能会导致攻击，如果攻击者可以影响正在加密的部分。
 - en: The second part of AES-GCM is *GMAC*. It is a MAC constructed from a keyed hash
     (called *GHASH*). In technical terms, GHASH is an almost XORed universal hash
     (AXU), which is also called a *difference unpredictable function* (DUF). The requirement
@@ -972,15 +978,18 @@
   id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: AES-GCM的第二部分是*GMAC*。它是从带有密钥散列（称为*GHASH*）构造的MAC。从技术角度来看，GHASH是几乎异或的通用哈希（AXU），也称为*差异不可预测函数*（DUF）。这样的函数的要求比哈希要弱。例如，AXU不需要抗碰撞性。由于这个原因，GHASH可以显着加快速度。图4.15说明了GHASH算法。
 - en: '![](../Images/04_15.jpg)'
   id: totrans-125
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_15.jpg)'
 - en: Figure 4.15 GHASH takes a key and absorbs the input block by block in a manner
     resembling CBC mode. It produces a digest of 16 bytes.
   id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.15 GHASH使用密钥并以类似CBC模式的方式逐块吸收输入。它产生一个16字节的摘要。
 - en: To hash something with GHASH, we break the input into blocks of 16 bytes and
     then hash them in a way similar to CBC mode. As this hash takes a key as input,
     it can theoretically be used as a MAC, but only once (otherwise, the algorithm
@@ -990,15 +999,18 @@
   id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用GHASH进行哈希时，我们将输入分成16字节的块，然后以类似CBC模式的方式对它们进行哈希。由于此哈希需要一个密钥作为输入，因此理论上可以用作MAC，但只能用一次（否则，算法就会破坏）—这是*一次性MAC*。由于这对我们来说不理想，我们使用一种技术（由Wegman-Carter提出）将GHASH转换为*多次MAC*。我在图4.16中进行了说明。
 - en: '![](../Images/04_16.jpg)'
   id: totrans-128
   prefs: []
   type: TYPE_IMG
+  zh: '![](../Images/04_16.jpg)'
 - en: Figure 4.16 GMAC uses GHASH with a key to hash the input, then encrypts it with
     a different key and AES-CTR to produce an authentication tag.
   id: totrans-129
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.16 GMAC使用带有密钥的GHASH对输入进行哈希，然后使用不同的密钥和AES-CTR进行加密，以生成认证标签。
 - en: GMAC is effectively the encryption of the GHASH output with AES-CTR (and a different
     key). Again, the nonce must be unique; otherwise, clever attackers can recover
     the authentication key used by GHASH, which would be catastrophic and would allow
@@ -1006,12 +1018,14 @@
   id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: GMAC实际上是使用AES-CTR（和不同的密钥）加密GHASH输出。再次强调，随机数必须是唯一的；否则，聪明的攻击者可以恢复GHASH使用的认证密钥，这将是灾难性的，并且将允许轻松伪造认证标签。
 - en: Finally, AES-GCM can be seen as an intertwined combination of CTR mode and GMAC,
     similar to the Encrypt-then-MAC construction we previously discussed. I illustrate
     the whole algorithm in figure 4.17.
   id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，AES-GCM可以被看作是CTR模式和GMAC的交织组合，类似于我们之前讨论的加密-然后-MAC构造。我在图4.17中说明了整个算法。
 - en: '![](../Images/04_17.jpg)'
   id: totrans-132
   prefs: []

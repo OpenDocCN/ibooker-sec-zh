@@ -1,32 +1,38 @@
 - en: front matter
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
 - en: preface
+  id: totrans-1
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: Years ago, I searched Amazon for a Python-based application security book. I
     assumed there would be multiple books to choose from. There were already so many
     other Python books for topics such as performance, machine learning, and web development.
+  id: totrans-2
   prefs: []
   type: TYPE_NORMAL
 - en: To my surprise, the book I was searching for didn’t exist. I could not find
     a book about the everyday problems my colleagues and I were solving. How do we
     ensure that all network traffic is encrypted? Which frameworks should we use to
     secure a web application? What algorithms should we hash or sign data with?
+  id: totrans-3
   prefs: []
   type: TYPE_NORMAL
 - en: In the years to follow, my colleagues and I found the answers to these questions
     while settling upon a standard set of open source tools and best practices. During
     this time, we designed and implemented several systems, protecting the data and
     privacy of millions of new end users. Meanwhile, three competitors were hacked.
+  id: totrans-4
   prefs: []
   type: TYPE_NORMAL
 - en: Like everyone else in the world, my life changed in early 2020\. Every headline
     was about COVID-19, and suddenly remote work became the new normal. I think it’s
     fair to say each person had their own unique response to the pandemic; for myself,
     it was severe boredom.
+  id: totrans-5
   prefs: []
   type: TYPE_NORMAL
 - en: Writing this book allowed me to kill two birds with one stone. First, this was
@@ -34,24 +40,29 @@
     a resident of Silicon Valley, this silver lining was amplified in the fall of
     2020\. At this time, a spate of nearby wildfires destroyed the air quality for
     most of the state, leaving many residents confined to their homes.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
 - en: Second, and more importantly, it has been very satisfying to write the book
     I could not buy. Like so many Silicon Valley startups, a lot of books begin for
     the sole purpose of obtaining a title such as *author* or *founder*. But a startup
     or book must solve real-world problems if it will ever produce value for others.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
 - en: I hope this book enables you to solve many of your real-world security problems.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
 - en: acknowledgments
+  id: totrans-9
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: Writing entails a great deal of solitary effort. It is therefore easy to lose
     sight of who has helped you. I’d like to acknowledge the following people for
     helping me (in the order in which I met them).
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
 - en: To Kathryn Berkowitz, thank you for being the best high-school English teacher
@@ -66,6 +77,7 @@
     learned so much about technical writing. To Michael Jensen, my technical editor,
     thank you for your thoughtful feedback and quick turnaround times. Your comments
     and suggestions have helped make this book a success.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
 - en: 'Finally, I’d like to thank all the Manning reviewers who gave me their time
@@ -76,9 +88,11 @@
     Acton, Ninoslav Cerkez, Patrick Regan, Richard Vaughan, Tim van Deurzen, Veena
     Garapaty, and William Jamir Silva, your suggestions helped make this a better
     book.'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
 - en: about this book
+  id: totrans-13
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -88,14 +102,17 @@
     writing volumes of custom security code isn’t the best way to secure a system;
     the heavy lifting should almost always be delegated to Python, a library, or a
     tool.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
 - en: This book covers beginner- and intermediate-level security concepts. These concepts
     are implemented with beginner-level Python code. None of the material for either
     security or Python is advanced.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
 - en: Who should read this book
+  id: totrans-16
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -105,156 +122,215 @@
     experience with any other major language, is required. You certainly do not have
     to be a web developer to learn from this book, but a basic understanding of the
     web makes it easier to absorb the second half.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
 - en: Perhaps you don’t build or maintain systems; instead, you test them. If so,
     you will gain a much deeper understanding of *what* to test, but I do not even
     try to teach *how* to test. As you know, these are two different skill sets.
+  id: totrans-18
   prefs: []
   type: TYPE_NORMAL
 - en: Unlike some security books, none of the examples here assume the attacker’s
     point of view. This group will therefore learn the least. If it is any consolation
     to them, in some chapters I let the villains win.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 与一些安全书籍不同，这里的例子都不假设攻击者的视角。因此，这个群体将学到最少。如果对他们来说有任何安慰的话，在一些章节中，我会让坏人获胜。
 - en: 'How this book is organized: A roadmap'
+  id: totrans-20
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 本书的组织方式：一份路线图
 - en: The first chapter of this book sets expectations with a brief tour of security
     standards, best practices, and fundamentals. The remaining 17 chapters are divided
     into three parts.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书的第一章通过简要介绍安全标准、最佳实践和基础知识来设定期望。剩下的17章分为三个部分。
 - en: Part 1, “Cryptographic foundations,” lays the groundwork with a handful of cryptographic
     concepts. This material resurfaces repeatedly throughout parts 2 and 3.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 第1部分，“密码学基础”，通过少量的密码学概念奠定了基础。这部分内容在第2部分和第3部分中反复出现。
 - en: Chapter 2 dives straight into cryptography with hashing and data integrity.
     Along the way, I introduce a small group of characters who appear throughout the
     book.
+  id: totrans-23
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第2章直接介绍了散列和数据完整性的密码学。在讲解的过程中，我介绍了一小组在全书中频繁出现的字符。
 - en: Chapter 3 was extracted from chapter 2\. This chapter tackles data authentication
     with key generation and keyed hashing.
+  id: totrans-24
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第3章是从第2章中提取出来的。该章涉及到使用密钥生成和键控散列进行数据验证。
 - en: 'Chapter 4 covers two compulsory topics for any security book: symmetric encryption
     and confidentiality.'
+  id: totrans-25
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第4章涵盖了任何安全书籍都必不可少的两个主题：对称加密和保密性。
 - en: Like chapter 3, chapter 5 was extracted from its predecessor. This chapter covers
     asymmetric encryption, digital signatures, and nonrepudiation.
+  id: totrans-26
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 类似于第3章，第5章也是从其前一章中提取出来的。该章涵盖了非对称加密、数字签名和不可否认性。
 - en: Chapter 6 combines many of the main ideas from previous chapters into a ubiquitous
     networking protocol, Transport Layer Security.
+  id: totrans-27
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第6章将前几章的许多主要思想结合起来，形成了一个无处不在的网络协议，传输层安全性。
 - en: Part 2, “Authentication and authorization,” contains the most commercially useful
     material in the book. This part is characterized by lots of hands-on instructions
     for common user workflows related to security.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 第2部分，“认证和授权”，包含了本书中最具商业价值的材料。该部分以大量关于与安全相关的常见用户工作流的实际操作指导为特点。
 - en: Chapter 7 covers HTTP session management and cookies, setting the stage for
     many of the attacks discussed in later chapters.
+  id: totrans-29
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第7章介绍了HTTP会话管理和Cookies，为后续章节讨论的许多攻击做好了铺垫。
 - en: Chapter 8 is all about identity, introducing workflows for user registration
     and user authentication.
+  id: totrans-30
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第8章完全关于身份，介绍了用户注册和用户认证的工作流程。
 - en: Chapter 9 covers password management, and was the most fun chapter to write.
     This material builds heavily upon previous chapters.
+  id: totrans-31
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第9章介绍了密码管理，是我写作过程中最有趣的一章。这部分内容在之前的章节中得到了大量的延伸。
 - en: Chapter 10 transitions from authentication to authorization with another workflow
     about permissions and groups.
+  id: totrans-32
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第10章从认证转向了授权，介绍了关于权限和用户组的另一个工作流程。
 - en: Chapter 11 closes part 2 with OAuth, an industry standard authorization protocol
     designed for sharing protected resources.
+  id: totrans-33
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第11章通过OAuth结束了第2部分，OAuth是一个为了共享受保护资源而设计的行业标准授权协议。
 - en: Readers find part 3, “Attack resistance,” to be the most adversarial portion
     of the book. This material is easier to digest and more exciting.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 读者们发现第3部分，“抵御攻击”，是本书中最具对抗性的部分。这部分内容更易于理解，也更加刺激。
 - en: Chapter 12 dives into the operating system with topics such as filesystems,
     external executables, and shells.
+  id: totrans-35
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第12章深入操作系统，涉及到文件系统、外部可执行文件和Shell等主题。
 - en: Chapter 13 teaches you how to resist numerous injection attacks with various
     input validation strategies.
+  id: totrans-36
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第13章教会你如何通过各种输入验证策略来抵制众多的注入攻击。
 - en: Chapter 14 focuses entirely on the most infamous injection attack of all, cross-site
     scripting. You probably saw this coming.
+  id: totrans-37
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第14章完全专注于最臭名昭著的所有注入攻击，即跨站脚本攻击。你可能早就预料到了这一点。
 - en: Chapter 15 introduces Content Security Policy. In some ways, this can be considered
     an additional chapter on cross-site scripting.
+  id: totrans-38
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第15章介绍了内容安全策略。在某种程度上，这可以被视为关于跨站脚本攻击的附加章节。
 - en: Chapter 16 covers cross-site request forgery. This chapter combines several
     topics from previous chapters with REST best practices.
+  id: totrans-39
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第16章介绍了跨站请求伪造。这一章结合了前几章的几个主题，并且遵循了REST的最佳实践。
 - en: Chapter 17 explains the same-origin policy, and why we use Cross-Origin Resource
     Sharing to relax it from time to time.
+  id: totrans-40
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第17章解释了同源策略，以及我们为什么会不时地使用跨源资源共享来放宽同源策略。
 - en: Chapter 18 ends the book with content about clickjacking and a few resources
     to keep your skills up-to-date.
+  id: totrans-41
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 第 18 章以关于点击劫持的内容结束了本书，并提供了一些资源来保持你的技能更新。
 - en: About the code
+  id: totrans-42
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 关于代码
 - en: This book contains many examples of source code both in numbered listings and
     in line with normal text. In both cases, source code is formatted in a `fixed-width
     font like this` to separate it from ordinary text. Sometimes code is also **`in
     bold`** to highlight code that has changed from previous steps in the chapter,
     such as when a new feature adds to an existing line of code.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书包含许多源代码示例，包括编号列表和与普通文本一致的代码。在这两种情况下，源代码都以`固定宽度字体格式`显示，以将其与普通文本分隔开。有时代码也会以**`粗体`**显示，以突出显示从本章的先前步骤更改的代码，例如当新功能添加到现有代码行时。
 - en: In many cases, the original source code has been reformatted; we’ve added line
     breaks and reworked indentation to accommodate the available page space in the
     book. In rare cases, even this was not enough, and listings include line-continuation
     markers (➥). Additionally, comments in the source code have often been removed
     from the listings when the code is described in the text. Code annotations accompany
     many of the listings, highlighting important concepts.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 在许多情况下，原始源代码已经重新格式化；我们添加了换行符并重新调整了缩进以适应书中可用的页面空间。在少数情况下，即使这样还不够，列表中也包含行续标记（➥）。此外，当文本描述代码时，源代码中的注释通常已从列表中删除。代码注释伴随着许多列表，突出显示重要概念。
 - en: liveBook discussion forum
+  id: totrans-45
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: liveBook 讨论论坛
 - en: Purchase of *Full Stack Python Security* includes free access to a private web
     forum run by Manning Publications where you can make comments about the book,
     ask technical questions, and receive help from the author and from other users.
     To access the forum, go to [https://livebook.manning.com/book/practical-python-security/welcome/v-4/](https://livebook.manning.com/book/practical-python-security/welcome/v-4/).
     You can also learn more about Manning’s forums and the rules of conduct at [https://livebook.manning.com/#!/discussion](https://livebook.manning.com/#!/discussion).
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 购买《全栈 Python 安全》包括免费访问 Manning Publications 维护的私人网络论坛，您可以在论坛上发表对书籍的评论，提出技术问题，并从作者和其他用户那里获得帮助。要访问论坛，请访问[https://livebook.manning.com/book/practical-python-security/welcome/v-4/](https://livebook.manning.com/book/practical-python-security/welcome/v-4/)。您还可以在[https://livebook.manning.com/#!/discussion](https://livebook.manning.com/#!/discussion)了解有关
+    Manning 论坛和行为规则的更多信息。
 - en: Manning’s commitment to our readers is to provide a venue where a meaningful
     dialogue between individual readers and between readers and the author can take
     place. It is not a commitment to any specific amount of participation on the part
@@ -262,23 +338,32 @@
     We suggest you try asking the author some challenging questions lest his interest
     stray! The forum and the archives of previous discussions will be accessible from
     the publisher’s website as long as the book is in print.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: Manning 对我们的读者的承诺是提供一个场所，个人读者和读者与作者之间可以进行有意义的对话。这并不意味着作者需要承诺任何特定数量的参与，作者对论坛的贡献仍然是自愿的（并且未付费的）。我们建议您尝试向作者提出一些具有挑战性的问题，以免他失去兴趣！只要书籍在印刷中，论坛和以前讨论的存档将可以从出版商的网站访问。
 - en: about the author
+  id: totrans-48
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 关于作者
 - en: Dennis Byrne is a member of the 23andMe architecture team, protecting the genetic
     data and privacy of more than 10 million customers. Prior to 23andMe, Dennis was
     a software engineer for LinkedIn. Dennis is a bodybuilder and a Global Underwater
     Explorers (GUE) cave diver. He currently lives in Silicon Valley, far away from
     Alaska, where he grew up and went to school.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: Dennis Byrne 是 23andMe 架构团队的成员，保护着超过 1000 万客户的基因数据和隐私。在加入 23andMe 之前，Dennis
+    曾是 LinkedIn 的软件工程师。Dennis 是一名健美运动员和全球水下探险者（GUE）洞穴潜水员。他目前住在硅谷，远离他成长并上学的阿拉斯加。
 - en: about the cover illustration
+  id: totrans-50
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 关于封面插图
 - en: The figure on the cover of *Full Stack Python Security* is captioned “Homme
     Touralinze,” or Tyumen man of a region in Siberia. The illustration is taken from
     a collection of dress costumes from various countries by Jacques Grasset de Saint-Sauveur
@@ -289,18 +374,26 @@
     different dialects and languages. In the streets or in the countryside, it was
     easy to identify where they lived and what their trade or station in life was
     just by their dress.
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: '*全栈Python安全*封面上的人物题为“Homme Touralinze”，是西伯利亚一个地区的图茂人。这幅插图选自雅克·格拉塞·德·圣索维尔（Jacques
+    Grasset de Saint-Sauveur）（1757-1810）收集的各国服装集《不同国家的服装》，该书于1797年在法国出版。每幅插图都经过精细绘制和手工上色。格拉塞·德·圣索维尔收集的丰富多样性生动地提醒我们，仅仅200年前，世界各地的城镇和地区在文化上是多么分隔开的。人们彼此孤立，说着不同的方言和语言。在街上或乡间，仅仅通过他们的着装就能轻易地辨认出他们住在哪里，以及他们的贸易或社会地位。'
 - en: The way we dress has changed since then and the diversity by region, so rich
     at the time, has faded away. It is now hard to tell apart the inhabitants of different
     continents, let alone different towns, regions, or countries. Perhaps we have
     traded cultural diversity for a more varied personal life—certainly for a more
     varied and fast-paced technological life.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 我们的着装方式自那时起已经发生了变化，地区之间的多样性在当时是如此丰富，但现在已经逐渐消失了。现在很难区分不同大陆的居民，更不用说不同的城镇、地区或国家了。也许我们已经用更加多样化的个人生活换取了文化多样性——当然也换来了更加多样化和快节奏的技术生活。
 - en: At a time when it is hard to tell one computer book from another, Manning celebrates
     the inventiveness and initiative of the computer business with book covers based
     on the rich diversity of regional life of two centuries ago, brought back to life
     by Grasset de Saint-Sauveur’s pictures.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 在如今很难辨别一本电脑书和另一本电脑书的时代，曼宁庆祝计算机行业的创造力和主动性，其书籍封面基于两个世纪前丰富多样的地区生活，由格拉塞·德·圣索维尔（Grasset
+    de Saint-Sauveur）的图片带回到人们的视线中。

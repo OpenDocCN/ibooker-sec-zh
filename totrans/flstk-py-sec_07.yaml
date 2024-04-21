@@ -1,114 +1,161 @@
 - en: 6 Transport Layer Security
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 6 传输层安全性
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章内容包括
 - en: Resisting man-in-the-middle attacks
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 抵制中间人攻击
 - en: Understanding the Transport Layer Security handshake
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 理解传输层安全握手
 - en: Building, configuring, and running a Django web application
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 构建、配置和运行Django Web应用程序
 - en: Installing a public-key certificate with Gunicorn
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 在使用Gunicorn安装公钥证书
 - en: Securing HTTP, email, and database traffic with Transport Layer Security
+  id: totrans-6
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用传输层安全保护HTTP、电子邮件和数据库流量
 - en: In the previous chapters, I introduced you to cryptography. You learned about
     hashing, encryption, and digital signatures. In this chapter, you’ll learn how
     to use *Transport Layer Security* (*TLS*), a ubiquitous secure networking protocol.
     This protocol is an application of data integrity, data authentication, confidentiality,
     and nonrepudiation.
+  id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 在之前的章节中，我向你介绍了密码学。你学到了哈希、加密和数字签名等知识。在本章中，你将学习如何使用*传输层安全* (*TLS*)，这是一种普遍的安全网络协议。该协议是数据完整性、数据认证、机密性和不可否认性的应用。
 - en: After reading this chapter, you’ll understand how the TLS handshake and public-key
     certificates work. You’ll also learn how to generate and configure a Django web
     application. Finally, you’ll learn how to secure email and database traffic with
     TLS.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 阅读完本章后，你将了解TLS握手和公钥证书的工作原理。你还将学会如何生成和配置Django Web应用程序。最后，你将学会如何使用TLS保护电子邮件和数据库流量。
 - en: 6.1 SSL? TLS? HTTPS?
+  id: totrans-9
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.1 SSL? TLS? HTTPS?
 - en: Before we dive into this subject, let’s establish some vocabulary terms. Some
     programmers use the terms *SSL*, *TLS*, and *HTTPS* interchangeably, even though
     they mean different things.
+  id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 在我们深入探讨这个主题之前，让我们先确定一些词汇术语。一些程序员将*SSL*、*TLS*和*HTTPS*这些术语用来互换使用，尽管它们的含义不同。
 - en: The *Secure Sockets Layer* (*SSL*) protocol is the insecure predecessor of TLS.
     The latest version of SSL is more than 20 years old. Over time, numerous vulnerabilities
     have been discovered in this protocol. In 2015, the IETF deprecated it ([https://tools.ietf.org/html/rfc7568](https://tools.ietf.org/html/rfc7568)).
     TLS supersedes SSL with better security and performance.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: '*安全套接字层* (*SSL*) 协议是TLS的不安全前身。SSL的最新版本已经超过20年了。随着时间的推移，这个协议发现了许多漏洞。2015年，IETF废弃了它
+    ([https://tools.ietf.org/html/rfc7568](https://tools.ietf.org/html/rfc7568))。TLS以更好的安全性和性能取代了SSL。'
 - en: SSL is dead, but the term *SSL* is unfortunately alive and well. It survives
     in method signatures, command-line arguments, and module names; this book contains
     many examples. APIs preserve this term for the sake of backward compatibility.
     Sometimes a programmer refers to *SSL* when they actually mean *TLS*.
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: SSL已经过时，但是术语*SSL*遗憾地仍然存在。它在方法签名、命令行参数和模块名中保留下来；本书包含了许多例子。API为了向后兼容性而保留了这个术语。有时，程序员在实际上指的是*TLS*时会提到*SSL*。
 - en: '*Hypertext Transfer Protocol Secure* (*HTTPS*) is simply Hypertext Transfer
     Protocol (HTTP) over SSL or TLS. HTTP is a point-to-point protocol for transferring
     data such as web pages, images, videos, and more over the internet; this isn’t
     going to change anytime soon.'
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: '*安全超文本传输协议* (*HTTPS*) 简单地说就是SSL或TLS上的超文本传输协议(HTTP)。HTTP是一种用于在互联网上传输数据（如网页、图像、视频等）的点对点协议；这在短期内不会改变。'
 - en: Why should you run HTTP over TLS? HTTP was defined in the 1980s, when the internet
     was a smaller and safer place. By design, HTTP provides no security; the conversation
     is not confidential, and neither participant is authenticated. In the next section,
     you’ll learn about a category of attacks designed to exploit the limitations of
     HTTP.
+  id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 为什么你应该在TLS上运行HTTP？HTTP是在上世纪80年代定义的，当时互联网是一个更小、更安全的地方。从设计上来看，HTTP不提供任何安全性；对话不是机密的，也没有任何一方经过身份验证。在下一节中，你将了解一类旨在利用HTTP限制的攻击。
 - en: 6.2 Man-in-the-middle attack
+  id: totrans-15
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.2 中间人攻击
 - en: '*Man-in-the-middle* (*MITM*) is a classic attack. An attacker begins by taking
     control of a position between two vulnerable parties. This position can be a network
     segment or an intermediary system. The attacker can use their position to launch
     either of these forms of MITM attack:'
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: '*中间人攻击* (*MITM*) 是一种经典攻击。攻击者首先控制两个易受攻击的方之间的位置。这个位置可以是一个网络段或一个中间系统。攻击者可以利用他们的位置发起以下任一形式的中间人攻击：'
 - en: Passive MITM attack
+  id: totrans-17
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 被动中间人攻击
 - en: Active MITM attack
+  id: totrans-18
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 主动中间人攻击
 - en: Suppose Eve, an eavesdropper, launches a passive MITM attack after gaining unauthorized
     access to Bob’s wireless network. Bob sends HTTP requests to bank.alice.com, and
     bank.alice.com sends HTTP responses to Bob. Meanwhile Eve, unbeknownst to Bob
     and Alice, passively intercepts each request and response. This gives Eve access
     to Bob’s password and personal information. Figure 6.1 illustrates a passive MITM
     attack.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设伊夫，一个窃听者，在未经授权的情况下，获得了鲍勃的无线网络的访问权限后，发动了被动中间人攻击。鲍勃向bank.alice.com发送HTTP请求，bank.alice.com向鲍勃发送HTTP响应。与此同时，伊夫，未经鲍勃和艾丽斯知情，被动拦截每个请求和响应。这使伊夫能够访问鲍勃的密码和个人信息。图6.1说明了被动中间人攻击。
 - en: TLS cannot protect Bob’s wireless network. It would, however, provide confidentiality—preventing
     Eve from reading the conversation in a meaningful way. TLS does this by encrypting
     the conversation between Bob and Alice.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: TLS无法保护鲍勃的无线网络。然而，它可以提供保密性——阻止伊夫以有意义的方式阅读对话。TLS通过加密鲍勃和艾丽斯之间的对话来实现这一点。
 - en: '![CH06_F01_Byrne](Images/CH06_F01_Byrne.png)'
+  id: totrans-21
   prefs: []
   type: TYPE_IMG
+  zh: '![CH06_F01_Byrne](Images/CH06_F01_Byrne.png)'
 - en: Figure 6.1 Eve carries out a passive MITM attack over HTTP.
+  id: totrans-22
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.1 伊夫通过HTTP进行被动中间人攻击。
 - en: Now suppose Eve launches an active MITM attack after gaining unauthorized access
     to an intermediary network device between Bob and bank.alice.com. Eve can listen
     to or even modify the conversation. Using this position, Eve can deceive Bob and
@@ -116,25 +163,35 @@
     Alice, and by tricking Alice that she is Bob, Eve can now relay messages back
     and forth between them both. While doing this, Eve modifies the conversation (figure
     6.2).
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在假设伊夫在未经授权的情况下获得了位于鲍勃和bank.alice.com之间的中间网络设备的访问权限后，发动了主动中间人攻击。伊夫可以监听或甚至修改对话。利用这个位置，伊夫可以欺骗鲍勃和艾丽斯，使他们相信她是另一位参与者。通过欺骗鲍勃认为她是艾丽斯，以及欺骗艾丽斯认为她是鲍勃，伊夫现在可以在他们之间来回传递消息。在此过程中，伊夫修改了对话（图6.2）。
 - en: '![CH06_F02_Byrne](Images/CH06_F02_Byrne.png)'
+  id: totrans-24
   prefs: []
   type: TYPE_IMG
+  zh: '![CH06_F02_Byrne](Images/CH06_F02_Byrne.png)'
 - en: Figure 6.2 Eve carries out an active MITM attack over HTTP.
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.2 伊夫通过HTTP进行主动中间人攻击。
 - en: TLS cannot protect the network device between Bob and Alice. It would, however,
     prevent Eve from impersonating Bob or Alice. TLS does this by authenticating the
     conversation, ensuring Bob that he is communicating directly to Alice. If Alice
     and Bob want to communicate securely, they need to start using HTTP over TLS.
     The next section explains how an HTTP client and server establish a TLS connection.
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: TLS无法保护位于鲍勃和艾丽斯之间的网络设备。然而，它可以防止伊夫冒充鲍勃或艾丽斯。TLS通过认证对话来实现这一点，确保鲍勃正在直接与艾丽斯通信。如果艾丽斯和鲍勃想要安全地通信，他们需要开始使用TLS上的HTTP。下一节将解释HTTP客户端和服务器如何建立TLS连接。
 - en: 6.3 The TLS handshake
+  id: totrans-27
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.3 TLS握手
 - en: TLS is a point-to-point, client/server protocol. Every TLS connection begins
     with a handshake between the client and server. You may have already heard of
     the *TLS handshake*. In reality, there isn’t one TLS handshake; there are many.
@@ -142,57 +199,81 @@
     protocol. Even within each TLS version, the handshake is affected by which algorithms
     the client and server use to communicate. Furthermore, many parts of the handshake,
     such as server authentication and client authentication, are optional.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: TLS是一种点对点的客户端/服务器协议。每个TLS连接都以客户端和服务器之间的握手开始。您可能已经听说过*TLS握手*。实际上，并不存在一个TLS握手；有许多种。例如，TLS的1.1、1.2和1.3版本都定义了不同的握手协议。即使在每个TLS版本中，握手也会受到客户端和服务器用于通信的算法的影响。此外，握手的许多部分，如服务器身份验证和客户端身份验证，都是可选的。
 - en: 'In this section, I cover the most common type of TLS handshake: the one that
     your browser (the client) performs with a modern web server. This handshake is
     always initiated by the client. The client and server will use version 1.3 of
     TLS. Version 1.3 is faster, more secure—and, fortunately, for you and I—simpler
     than version 1.2\. The whole point of this handshake is to perform three tasks:'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，我将介绍最常见的TLS握手类型：您的浏览器（客户端）与现代Web服务器执行的握手。此握手始终由客户端发起。客户端和服务器将使用TLS的1.3版本。版本1.3更快、更安全——而且，幸运的是，对您和我来说——比版本1.2更简单。这次握手的整个目的是执行三项任务：
 - en: Cipher suite negotiation
+  id: totrans-30
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 密码套件协商
 - en: Key exchange
+  id: totrans-31
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 密钥交换
 - en: Server authentication
+  id: totrans-32
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 服务器身份验证
 - en: 6.3.1 Cipher suite negotiation
+  id: totrans-33
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6.3.1 密码套件协商
 - en: 'TLS is an application of encryption and hashing. To communicate, the client
     and server must first agree on a common set of algorithms known as a *cipher suite*.
     Each cipher suite defines an encryption algorithm and a hashing algorithm. The
     TLS 1.3 spec defines the following five cipher suites:'
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: TLS是加密和哈希的应用。为了通信，客户端和服务器必须首先就一组称为*密码套件*的算法达成一致。每个密码套件定义了一个加密算法和一个哈希算法。TLS 1.3规范定义了以下五个密码套件：
 - en: TLS_AES_128_CCM_8_SHA256
+  id: totrans-35
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: TLS_AES_128_CCM_8_SHA256
 - en: TLS_AES_128_CCM_SHA256
+  id: totrans-36
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: TLS_AES_128_CCM_SHA256
 - en: TLS_AES_128_GCM_SHA256
+  id: totrans-37
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: TLS_AES_128_GCM_SHA256
 - en: TLS_AES_256_GCM_SHA384
+  id: totrans-38
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: TLS_AES_256_GCM_SHA384
 - en: TLS_CHACHA20_POLY1305_SHA256
+  id: totrans-39
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: TLS_CHACHA20_POLY1305_SHA256
 - en: The name of each cipher suite is composed of three segments. The first segment
     is a common prefix, TLS_. The second segment designates an encryption algorithm.
     The last segment designates a hashing algorithm. For example, suppose a client
@@ -201,185 +282,262 @@
     and SHA-256\. GCM is a block cipher mode known for speed. It provides data authentication
     in addition to confidentiality. Figure 6.3 dissects the anatomy of this cipher
     suite.
+  id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个密码套件的名称由三个部分组成。第一个部分是一个常见前缀，TLS_。第二部分指定一个加密算法。最后一部分指定一个哈希算法。例如，假设客户端和服务器同意使用密码套件TLS_AES_128_GCM_SHA256。这意味着双方同意使用AES以128位密钥在GCM模式下，并使用SHA-256进行通信。GCM是一种以速度著称的块密码模式。除了机密性外，它还提供数据认证。图6.3解剖了这个密码套件的结构。
 - en: '![CH06_F03_Byrne](Images/CH06_F03_Byrne.png)'
+  id: totrans-41
   prefs: []
   type: TYPE_IMG
+  zh: '![CH06_F03_Byrne](Images/CH06_F03_Byrne.png)'
 - en: Figure 6.3 TLS cipher suite anatomy
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.3 TLS密码套件解剖
 - en: 'The five cipher suites are easily summarized: encryption boils down to AES
     or ChaCha20; hashing boils down to SHA-256 or SHA-384\. You learned about all
     four of these tools in the previous chapters. Take a moment to appreciate how
     simple TLS 1.3 is in comparison to its predecessor. TLS 1.2 defined 37 cipher
     suites!'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 这五个密码套件可以简单总结为：加密使用AES或ChaCha20；哈希使用SHA-256或SHA-384。在前几章中，你已经了解了这四种工具。花点时间欣赏一下TLS
+    1.3相对于其前身有多简单。TLS 1.2定义了37个密码套件！
 - en: Notice that all five cipher suites use symmetric, rather than asymmetric, encryption.
     AES and ChaCha20 were invited to the party; RSA was not. TLS ensures confidentiality
     with symmetric encryption because it is more efficient than asymmetric encryption,
     by three to four orders of magnitude. In the previous chapter, you learned that
     symmetric encryption is computationally less expensive than asymmetric encryption.
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 请注意，这五个密码套件都使用对称加密，而不是非对称加密。AES和ChaCha20受邀参加了派对；RSA没有。TLS通过对称加密确保机密性，因为它比非对称加密更高效，效率提高了三到四个数量级。在前一章中，你了解到对称加密的计算成本比非对称加密低。
 - en: The client and server must share more than just the same cipher suite to encrypt
     their conversation. They also must share a key.
+  id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 客户端和服务器在加密对话时必须共享不仅仅是相同的密码套件，还必须共享一个密钥。
 - en: 6.3.2 Key exchange
+  id: totrans-46
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6.3.2 密钥交换
 - en: The client and server must exchange a key. This key will be used in combination
     with the encryption algorithm of the cipher suite to ensure confidentiality. The
     key is scoped to the current conversation. This way, if the key is somehow compromised,
     the damage is isolated to only a single conversation.
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 客户端和服务器必须交换一个密钥。这个密钥将与密码套件的加密算法结合使用，以确保机密性。该密钥仅限于当前对话。这样，如果密钥某种方式被泄露，损害仅限于单个对话。
 - en: TLS key exchange is an example of the key-distribution problem. (You learned
     about this problem in the previous chapter.) TLS 1.3 solves this problem with
     the Diffie-Hellman method.
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: TLS密钥交换是密钥分发问题的一个例子。（你在前一章中学习过这个问题。）TLS 1.3通过Diffie-Hellman方法解决了这个问题。
 - en: Diffie-Hellman key exchange
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: Diffie-Hellman密钥交换
 - en: The *Diffie-Hellman* (*DH*) *key exchange* method allows two parties to safely
     establish a shared key over an insecure channel. This mechanism is an efficient
     solution to the key-distribution problem.
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Diffie-Hellman*（*DH*）*密钥交换*方法允许两个方安全地在不安全的通道上建立共享密钥。这种机制是密钥分发问题的有效解决方案。'
 - en: 'In this section, I use Alice, Bob, and Eve to walk you through the DH method.
     Alice and Bob, representing the client and server, will both generate their own
     temporary key pair. Alice and Bob will use their key pairs as stepping-stones
     to a final shared secret key. As you read this, it is important not to conflate
     the intermediate key pairs with the final shared key. Here is a simplified version
     of the DH method:'
+  id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，我使用爱丽丝、鲍勃和伊夫来引导您了解 DH 方法。代表客户端和服务器的爱丽丝和鲍勃将各自生成临时密钥对。爱丽丝和鲍勃将使用他们的密钥对作为最终共享秘密密钥的跳板。在阅读本文时，重要的是不要将中间密钥对与最终共享密钥混淆。以下是
+    DH 方法的简化版本：
 - en: Alice and Bob openly agree on two parameters.
+  id: totrans-52
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 爱丽丝和鲍勃公开同意两个参数。
 - en: Alice and Bob each generate a private key.
+  id: totrans-53
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 爱丽丝和鲍勃各自生成一个私钥。
 - en: Alice and Bob each derive a public key from the parameters and their private
     key.
+  id: totrans-54
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 爱丽丝和鲍勃分别从参数和他们的私钥推导出一个公钥。
 - en: Alice and Bob openly exchange public keys.
+  id: totrans-55
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 爱丽丝和鲍勃公开交换公钥。
 - en: Alice and Bob independently compute a shared secret key.
+  id: totrans-56
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 爱丽丝和鲍勃独立计算一个共享的秘密密钥。
 - en: Alice and Bob begin this protocol by openly agreeing on two numbers, called
     p and g. These numbers are openly transmitted. Eve, an eavesdropper, can see both
     of these numbers. She is not a threat.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 爱丽丝和鲍勃通过公开同意两个数字 p 和 g 开始此协议。这些数字是公开传输的。窃听者伊夫可以看到这两个数字。她不构成威胁。
 - en: Alice and Bob both generate private keys a and b, respectively. These numbers
     are secrets. Alice hides her private key from Eve and Bob. Bob hides his private
     key from Eve and Alice.
+  id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 爱丽丝和鲍勃分别生成私钥 a 和 b。这些数字是秘密的。爱丽丝将她的私钥隐藏起来，不让伊夫和鲍勃知道。鲍勃将他的私钥隐藏起来，不让伊夫和爱丽丝知道。
 - en: Alice derives her public key A from p, g, and her private key. Likewise, Bob
     derives his public key B from p, g, and his private key.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 爱丽丝从 p、g 和她的私钥推导出她的公钥 A。同样，鲍勃从 p、g 和他的私钥推导出他的公钥 B。
 - en: Alice and Bob exchange their public keys. These keys are openly transmitted;
     they are not secrets. Eve, an eavesdropper, can see both public keys. She is still
     not a threat.
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: 爱丽丝和鲍勃交换他们的公钥。这些密钥是公开传输的；它们不是秘密。窃听者伊夫可以看到两个公钥。她仍然不构成威胁。
 - en: Finally, Alice and Bob use each other’s public keys to independently compute
     an identical number K. Alice and Bob throw away their key pairs and hold on to
     K. Alice and Bob use K to encrypt the rest of their conversation. Figure 6.4 illustrates
     Alice and Bob using this protocol to arrive at a shared key, the number 14.
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，爱丽丝和鲍勃使用彼此的公钥独立计算出相同的数字 K。爱丽丝和鲍勃丢弃他们的密钥对并保留 K。爱丽丝和鲍勃使用 K 加密他们余下的对话。图 6.4
+    说明了爱丽丝和鲍勃使用此协议达成共享密钥，即数字 14。
 - en: '![CH06_F04_Byrne](Images/CH06_F04_Byrne.png)'
+  id: totrans-62
   prefs: []
   type: TYPE_IMG
+  zh: '![CH06_F04_Byrne](Images/CH06_F04_Byrne.png)'
 - en: Figure 6.4 Alice and Bob independently compute a shared key, the number 14,
     with the Diffie-Hellman method.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 6.4 爱丽丝和鲍勃使用 Diffie-Hellman 方法独立计算出一个共享密钥，即数字 14。
 - en: In the real world, p, the private keys, and K are much larger than this. Larger
     numbers make it infeasible for Eve to reverse engineer the private keys or K,
     despite having eavesdropped on the entire conversation. Even though Eve knows
     p, g, and both public keys, her only option is brute force.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 在现实世界中，p、私钥和 K 要比这大得多。更大的数字使得即使伊夫窃听了整个对话，也不可能逆向工程私钥或 K。尽管伊夫知道 p、g 和两个公钥，但她唯一的选择是暴力破解。
 - en: Public-key encryption
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 公钥加密
 - en: Many people are surprised to see public-key encryption absent from the handshake
     so far; it isn’t even part of the cipher suite. SSL and older versions of TLS
     commonly used public-key encryption for key exchange. Eventually, this solution
     didn’t scale well.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 许多人对握手过程中缺少公钥加密感到惊讶；它甚至不是密码套件的一部分。SSL 和较早版本的 TLS 通常使用公钥加密进行密钥交换。最终，这种解决方案并不具有良好的可扩展性。
 - en: During this time, the falling costs of hardware made brute-force attacks cheaper.
     To compensate for this, people began to use larger key pairs in order to keep
     the cost of brute-force attacks high.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 在此期间，硬件成本的下降使得暴力破解攻击变得更便宜。为了弥补这一点，人们开始使用更大的密钥对，以保持暴力破解攻击的成本高昂。
 - en: 'Larger key pairs had an unfortunate side effect, though: web servers were spending
     unacceptable amounts of time performing asymmetric encryption for the sake of
     key exchange. TLS 1.3 addressed this problem by explicitly requiring the DH method.'
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 更大的密钥对却带来了一个不幸的副作用：Web 服务器花费了不可接受的时间执行非对称加密以进行密钥交换。TLS 1.3 通过明确要求 DH 方法来解决了这个问题。
 - en: The DH approach is a more efficient solution to the key-distribution problem
     than public-key encryption, using modular arithmetic instead of incurring the
     computational overhead of a cryptosystem like RSA. This approach doesn’t actually
     distribute a key from one party to another; the key is independently created in
     tandem by both parties. Public-key encryption isn’t dead, though; it is still
     used for authentication.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: DH方法是比使用RSA等密码系统产生计算开销的公钥加密更有效的解决方案，它使用模算术而不是分发密钥。这种方法实际上并不是从一方向另一方分发密钥；密钥是由双方独立创建的。公钥加密并没有死；它仍然用于身份验证。
 - en: 6.3.3 Server authentication
+  id: totrans-70
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6.3.3 服务器身份验证
 - en: Cipher suite negotiation and key exchange are the prerequisites to confidentiality.
     But what good is a private conversation without verifying the identity of who
     you are talking to? TLS is a means of *authentication* in addition to privacy.
     Authentication is bidirectional and optional. For this version of the handshake
     (the one between your browser and a web server), the server will be authenticated
     by the client.
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: 密码套件协商和密钥交换是保密性的前提条件。但是，如果不验证与您交谈的人的身份，私密对话有何用？TLS除了提供隐私外，还是一种*身份验证*手段。身份验证是双向的，也是可选的。对于这个握手版本（即你的浏览器和Web服务器之间的握手），服务器将由客户端进行验证。
 - en: A server authenticates itself, and completes the TLS handshake, by sending a
     *public-key certificate* to the client. The certificate contains, and proves ownership
     of, the server’s public key. The certificate must be created and issued by a *certificate
     authority* (*CA*), an organization dedicated to digital certification.
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器通过向客户端发送*公钥证书*来验证自身，并完成TLS握手。证书包含并证明了服务器的公钥的所有权。证书必须由*证书颁发机构*（*CA*）创建和颁发，这是一个致力于数字认证的组织。
 - en: The public-key owner applies for a certificate by sending a *certificate signing
     request* (*CSR*) to a CA. The CSR contains information about the public key owner
     and the public key itself. Figure 6.5 illustrates this process. The dashed arrows
     indicate a successful CSR, as the CA issues a public-key certificate to the public-key
     owner. The solid arrows illustrate the installation of the certificate to a server,
     where it is served to a browser.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 公钥所有者通过向CA发送*证书签名请求*（*CSR*）申请证书。CSR包含有关公钥所有者和公钥本身的信息。图 6.5说明了此过程。虚线箭头表示成功的CSR，因为CA向公钥所有者发放了公钥证书。实线箭头说明了证书安装到服务器上，其中它被提供给浏览器。
 - en: '![CH06_F05_Byrne](Images/CH06_F05_Byrne.png)'
+  id: totrans-74
   prefs: []
   type: TYPE_IMG
+  zh: '![CH06_F05_Byrne](Images/CH06_F05_Byrne.png)'
 - en: Figure 6.5 A public-key certificate is issued to an owner and installed on a
     server.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 6.5 一个公钥证书被颁发给一个所有者并安装在一个服务器上。
 - en: Public-key certificates
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 公钥证书
 - en: A *public-key certificate* resembles your driver’s license in a lot of ways.
     You identify yourself with a driver’s license; a server identifies itself with
     a public-key certificate. Your license is issued to you by a government agency;
@@ -388,137 +546,207 @@
     scrutinized by a browser (or any other TLS client) before a server can be trusted.
     Your license confirms driving skills; a certificate confirms public-key ownership.
     Your license and a certificate both have an expiration date.
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: '*公钥证书*在很多方面类似于您的驾驶执照。您通过驾驶执照来识别自己；服务器通过公钥证书来识别自己。您的驾驶执照由政府机构颁发给您；证书由证书颁发机构颁发给密钥所有者。警察在信任您之前会仔细检查您的驾驶执照；浏览器（或任何其他TLS客户端）在信任服务器之前会仔细检查证书。您的驾驶执照确认了驾驶技能；证书确认了公钥所有权。您的驾驶执照和证书都有过期日期。'
 - en: Let’s dissect a public-key certificate of a website you’ve already used, Wikipedia.
     The Python script in the next listing uses the `ssl` module to download Wikipedia’s
     production public-key certificate. The downloaded certificate is the output of
     the script.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们解剖一个您已经使用过的网站维基百科的公钥证书。下一个清单中的Python脚本使用`ssl`模块下载维基百科的生产公钥证书。下载的证书是该脚本的输出。
 - en: Listing 6.1 get_server_certificate.py
+  id: totrans-79
   prefs: []
   type: TYPE_NORMAL
+  zh: 代码清单 6.1 get_server_certificate.py
 - en: '[PRE0]'
+  id: totrans-80
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: ❶ Downloads the public-key certificate of Wikipedia
+  id: totrans-81
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 下载维基百科的公钥证书
 - en: 'Use the following command line to run this script. This will download the certificate
     and write it to a file named wikipedia.crt:'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用以下命令行运行此脚本。这将下载证书并将其写入名为wikipedia.crt的文件：
 - en: '[PRE1]'
+  id: totrans-83
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: The structure of the public-key certificate is defined by X.509, a security
     standard described by RFC 5280 ([https://tools.ietf.org/html/rfc5280](https://tools.ietf.org/html/rfc5280)).
     TLS participants use X.509 for the sake of interoperability. A server can identify
     itself to any client, and a client can verify the identity of any server.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 公钥证书的结构由 RFC 5280 描述的安全标准 X.509 定义（[https://tools.ietf.org/html/rfc5280](https://tools.ietf.org/html/rfc5280)）。TLS
+    参与者使用 X.509 以实现互操作性。服务器可以向任何客户端标识自己，客户端可以验证任何服务器的身份。
 - en: 'The anatomy of an X.509 certificate is composed of a common set of fields.
     You can develop a greater appreciation for TLS authentication by thinking about
     these fields from a browser’s perspective. The following `openssl` command demonstrates
     how to display these fields in human-readable format:'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: X.509 证书的解剖结构由一组常见字段组成。通过从浏览器的角度思考这些字段，您可以更加欣赏 TLS 认证。下面的 `openssl` 命令演示了如何以人类可读格式显示这些字段：
 - en: '[PRE2]'
+  id: totrans-86
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: 'Before a browser can trust the server, it will parse the certificate and probe
     each field individually. Let’s examine some of the more important fields:'
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 在浏览器信任服务器之前，它将解析证书并逐个检查每个字段。让我们检查一些更重要的字段：
 - en: Subject
+  id: totrans-88
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 主体
 - en: Issuer
+  id: totrans-89
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 颁发者
 - en: Subject’s public key
+  id: totrans-90
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 主体的公钥
 - en: Certificate validity period
+  id: totrans-91
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 证书有效期
 - en: Certificate authority signature
+  id: totrans-92
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 证书颁发机构签名
 - en: Each certificate identifies the owner, just like a driver’s license. The certificate
     owner is designated by the Subject field. The most important property of the Subject
     field is the *common name*, which identifies the domain names that the certificate
     is allowed to be served from.
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个证书都像驾驶执照一样标识所有者。证书所有者由“主体”字段指定。 “主体”字段最重要的属性是*通用名称*，它标识了证书允许从中提供服务的域名。
 - en: The browser will reject the certificate if it cannot match the common name with
     the URL of the request; server authentication and the TLS handshake will fail.
     The following listing illustrates the Subject field of Wikipedia’s public-key
     certificate in bold. The `CN` property designates the common name.
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果浏览器无法将通用名称与请求的 URL 匹配，将拒绝该证书；服务器验证和 TLS 握手将失败。下面的列表以粗体显示了维基百科公钥证书的主体字段。`CN`
+    属性指定了通用名称。
 - en: Listing 6.2 Subject field of wikipedia.org
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 6.2 Wikipedia.org 的主体字段
 - en: '[PRE3]'
+  id: totrans-96
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: ❶ The certificate owner common name
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 证书所有者通用名称
 - en: Each certificate identifies the issuer, just like a driver’s license. The CA
     that issued Wikipedia's certificate is Let’s Encrypt. This nonprofit CA specializes
     in automated certification, free of charge. The following listing illustrates
     the Issuer field of Wikipedia’s public-key certificate in bold.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个证书都标识了颁发者，就像驾驶执照一样。颁发维基百科证书的 CA 是 Let's Encrypt。这家非营利 CA 专门提供免费的自动认证服务。下面的列表以粗体显示了维基百科公钥证书的颁发者字段。
 - en: Listing 6.3 Certificate issuer of wikipedia.org
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 6.3 Wikipedia.org 的证书颁发者
 - en: '[PRE4]'
+  id: totrans-100
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: ❶ The certificate issuer, Let’s Encrypt
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 证书颁发者，Let's Encrypt
 - en: The public key of the certificate owner is embedded within each public-key certificate.
     The next listing illustrates Wikipedia’s public key; this one is a 256-bit elliptic-curve
     public key. You were introduced to elliptic-curve key pairs in the previous chapter.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个公钥证书中都嵌入了证书所有者的公钥。下一个列表展示了维基百科的公钥；这是一个 256 位的椭圆曲线公钥。你在上一章已经介绍过椭圆曲线密钥对。
 - en: Listing 6.4 Public key of wikipedia.org
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 6.4 Wikipedia.org 的公钥
 - en: '[PRE5]'
+  id: totrans-104
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: ❶ Elliptic-curve public key
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 椭圆曲线公钥
 - en: ❷ Specifies a 256-bit key
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 指定了一个 256 位的密钥
 - en: ❸ The actual public key, encoded
+  id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 实际的公钥，已编码
 - en: Every certificate has a validity period, just like a driver’s license. The browser
     will not trust the server if the current time is outside this time range. The
     following listing indicates that Wikipedia’s certificate has a three-month validity
     period, shown in bold.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个证书都有一个有效期，就像驾驶执照一样。如果当前时间不在此时间范围内，浏览器将不信任服务器。下面的列表显示了维基百科的证书具有三个月的有效期，以粗体显示。
 - en: Listing 6.5 Certificate validity period for wikipedia.org
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 6.5 Wikipedia.org 的证书有效期
 - en: '[PRE6]'
+  id: totrans-110
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: At the bottom of every certificate is a digital signature, designated by the
     Signature Algorithm field. (You learned about digital signatures in the previous
     chapter.) Who has signed what? In this example, the certificate authority, Let’s
@@ -527,232 +755,350 @@
     public key by hashing it with SHA-256 and encrypting the hash value with an RSA
     private key, shown in bold. (You learned how to do this in Python in the previous
     chapter.)
+  id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: 在每个证书的底部都有一个数字签名，由Signature Algorithm字段指定。（您在上一章学习了数字签名。）谁签署了什么？在这个例子中，证书颁发机构Let’s
+    Encrypt签署了证书所有者的公钥——与证书中嵌入的相同的公钥。下一个清单表明Let’s Encrypt通过使用SHA-256对其进行哈希并用RSA私钥加密哈希值来签署了维基百科的公钥，加粗显示。（您在上一章学习了如何在Python中执行此操作。）
 - en: Listing 6.6 Certificate authority signature for wikipedia.org
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 清单6.6 维基百科.org的证书颁发机构签名
 - en: '[PRE7]'
+  id: totrans-113
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: ❶ Let’s Encrypt signs with SHA-256 and RSA.
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ Let’s Encrypt使用SHA-256和RSA进行签名。
 - en: ❷ The digital signature, encoded
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 数字签名，编码
 - en: Figure 6.6 illustrates the most important contents of this public-key certificate.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.6展示了这个公钥证书的最重要内容。
 - en: '![CH06_F06_Byrne](Images/CH06_F06_Byrne.png)'
+  id: totrans-117
   prefs: []
   type: TYPE_IMG
+  zh: '![CH06_F06_Byrne](Images/CH06_F06_Byrne.png)'
 - en: Figure 6.6 A wikipedia.org web server transfers a public-key certificate to
     a browser.
+  id: totrans-118
   prefs: []
   type: TYPE_NORMAL
+  zh: 图6.6 维基百科.org Web服务器向浏览器传输公钥证书。
 - en: The browser will verify the signature of Let’s Encrypt. If the signature fails
     verification, the browser will reject the certificate, and the TLS handshake will
     end in failure. If the signature passes verification, the browser will accept
     the certificate, and the handshake will end in success. The handshake is over;
     the rest of the conversation is symmetrically encrypted using the cipher suite
     encryption algorithm and the shared key.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 浏览器将验证Let’s Encrypt的签名。如果签名未通过验证，浏览器将拒绝证书，TLS握手将以失败结束。如果签名通过验证，浏览器将接受证书，握手将以成功结束。握手结束后，对话的其余部分将使用密码套件加密算法和共享密钥进行对称加密。
 - en: 'In this section, you learned how a TLS connection is established. A typical
     successful TLS handshake establishes three things:'
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，您了解了TLS连接是如何建立的。一个典型的成功的TLS握手建立了三件事：
 - en: An agreed-upon cipher suite
+  id: totrans-121
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 一个商定的密码套件
 - en: A key shared by only the client and server
+  id: totrans-122
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 仅由客户端和服务器共享的密钥
 - en: Server authentication
+  id: totrans-123
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 服务器认证
 - en: In the next two sections, you’ll apply this knowledge as you build, configure,
     and run a Django web application server. You’ll secure the traffic of this server
     by generating and installing a public-key certificate of your own.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 在接下来的两节中，您将应用这些知识，构建、配置和运行一个Django Web应用程序服务器。您将通过生成和安装自己的公钥证书来保护此服务器的流量。
 - en: 6.4 HTTP with Django
+  id: totrans-125
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.4 使用Django进行HTTP
 - en: 'In this section, you’ll learn how to build, configure, and run a Django web
     application. *Django* is a Python web application framework you’ve probably already
     heard of. I use Django for every web example in this book. From within your virtual
     environment, run the following command to install Django:'
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，您将学习如何构建、配置和运行一个Django Web应用程序。*Django*是一个您可能已经听说过的Python Web应用程序框架。我在本书的每个Web示例中都使用Django。在您的虚拟环境中，运行以下命令安装Django：
 - en: '[PRE8]'
+  id: totrans-127
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: 'After installing Django, the django-admin script will be in your shell path.
     This script is an administrative utility that will generate the skeleton of your
     Django project. Use the following command to start a simple yet functional Django
     project named *alice*:'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 安装完Django后，django-admin脚本将会在您的shell路径中。这个脚本是一个管理实用程序，将生成您的Django项目的框架。使用以下命令启动一个简单但功能齐全的Django项目，命名为*alice*：
 - en: '[PRE9]'
+  id: totrans-129
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: The `startproject` subcommand will create a new directory with the same name
     as your project. This directory is called the *project root*. Within the project
     root is an important file named manage.py. This script is a project-specific administrative
     utility. Later in this section, you will use it to start your Django application.
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: '`startproject`子命令将创建一个与您的项目同名的新目录。这个目录称为*项目根目录*。在项目根目录中有一个重要的文件名为manage.py。这个脚本是一个特定于项目的管理实用程序。在本节的后面，您将使用它来启动您的Django应用程序。'
 - en: Within the project root directory, right next to manage.py, is a directory with
     the exact same name as the project root. This ambiguously named subdirectory is
     called the *Django root*. Many programmers find this confusing, understandably.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 在项目根目录旁边，就在manage.py旁边，有一个与项目根目录同名的目录。这个名称模糊的子目录称为*Django根目录*。许多程序员会觉得这很令人困惑，可以理解。
 - en: In this section, you’ll be using an important module within the Django root
     directory, the `settings` module. This module is a central place for maintaining
     project configuration values. You will see this module many times in this book
     because I cover dozens of Django settings related to security.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一部分，你将使用 Django 根目录中的一个重要模块，即`settings`模块。这个模块是维护项目配置数值的中心位置。在本书中你会多次看到这个模块，因为我涵盖了与安全相关的许多
+    Django 设置。
 - en: The Django root directory also contains a module named `wsgi`. I cover the `wsgi`
     module later in this chapter. You’ll be using it to serve traffic to and from
     your Django application over TLS. Figure 6.7 illustrates the directory structure
     of your project.
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: Django 根目录还包含一个名为`wsgi`的模块。我稍后会介绍`wsgi`模块。你将使用它来在本章后面为你的 Django 应用程序提供 TLS 服务。图
+    6.7 展示了你项目的目录结构。
 - en: '![CH06_F07_Byrne](Images/CH06_F07_Byrne.png)'
+  id: totrans-134
   prefs: []
   type: TYPE_IMG
+  zh: '![CH06_F07_Byrne](Images/CH06_F07_Byrne.png)'
 - en: Figure 6.7 Directory structure of a new Django project
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 6.7 新 Django 项目的目录结构
 - en: Note Some programmers are incredibly opinionated about Django project directory
     structure. In this book, all Django examples use the default generated project
     structure.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 一些程序员对 Django 项目目录结构有着极强的意见。在本书中，所有 Django 示例都使用默认生成的项目结构。
 - en: 'Use the following commands to run your Django server. From within the project
     root directory, run the manage.py script with the `runserver` subcommand. The
     command line should hang:'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用以下命令运行你的 Django 服务器。从项目根目录中，使用`runserver`子命令运行 manage.py 脚本。命令行应该会挂起：
 - en: '[PRE10]'
+  id: totrans-138
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: ❶ From the project root
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 从项目根目录开始
 - en: ❷ The runserver subcommand should hang.
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷`runserver`子命令应该会挂起。
 - en: Point your browser at http:/./localhost:8000 to verify that the server is up
     and running. You will see a friendly welcome page similar to the one in figure
     6.8.
+  id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 将浏览器指向 http:/./localhost:8000，以验证服务器是否正常运行。你将看到一个友好的欢迎页面，类似于图 6.8 中的页面。
 - en: '![CH06_F08_Byrne](Images/CH06_F08_Byrne.png)'
+  id: totrans-142
   prefs: []
   type: TYPE_IMG
+  zh: '![CH06_F08_Byrne](Images/CH06_F08_Byrne.png)'
 - en: Figure 6.8 Django’s welcome page for new projects
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 6.8 Django 新项目的欢迎页面
 - en: The welcome page reads, “You are seeing this page because DEBUG=True.” The `DEBUG`
     setting is an important configuration parameter for every Django project. As you
     might have guessed, the `DEBUG` setting is found within the `settings` module.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 欢迎页面上写着：“你看到这个页面是因为 DEBUG=True。”`DEBUG`设置是每个 Django 项目的重要配置参数。你可能已经猜到，`DEBUG`设置位于`settings`模块中。
 - en: 6.4.1 The DEBUG setting
+  id: totrans-145
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6.4.1 DEBUG 设置
 - en: Django generates settings.py with a `DEBUG` setting of `True`. When `DEBUG`
     is set to `True`, Django displays detailed error pages. The details in these error
     pages include information about your project directory structure, configuration
     settings, and program state.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: Django 生成带有`DEBUG`设置为`True`的 settings.py。当`DEBUG`设置为`True`时，Django 显示详细的错误页面。这些错误页面中的详细信息包括关于项目目录结构、配置设置和程序状态的信息。
 - en: WARNING `DEBUG` is great for development and terrible for production. The information
     provided by this setting helps you debug the system in development but also reveals
     information that an attacker can use to compromise the system. Always set `DEBUG`
     to `False` in production.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 `DEBUG`对开发很有帮助，但对生产环境很糟糕。这个设置提供的信息帮助你在开发中调试系统，但也会暴露攻击者可以利用来破坏系统的信息。在生产环境中始终将`DEBUG`设置为`False`。
 - en: TIP You must restart the server before changes to the `settings` module take
     effect. To restart Django, press Ctrl-C in your shell to stop the server, and
     then restart the server with the manage.py script again.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 提示 在更改`settings`模块之前，必须重新启动服务器才能生效。要重新启动 Django，在 shell 中按下 Ctrl-C 停止服务器，然后再次使用
+    manage.py 脚本启动服务器。
 - en: At this point, your application can serve a web page over HTTP. As you already
     know, HTTP has no support for confidentiality or server authentication. The application,
     in its current state, is vulnerable to a MITM attack. To solve these problems,
     the protocol must be upgraded from HTTP to HTTPS.
+  id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: 此时，你的应用程序可以通过 HTTP 提供网页服务。如你所知，HTTP 不支持机密性或服务器身份验证。当前状态下的应用程序容易受到中间人攻击。为解决这些问题，协议必须从
+    HTTP 升级到 HTTPS。
 - en: An application server like Django doesn't actually know or do anything about
     HTTPS. It doesn’t host a public-key certificate and doesn’t perform a TLS handshake.
     In the next section, you’ll learn how to handle these responsibilities with another
     process between Django and the browser.
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 像 Django 这样的应用服务器实际上并不知道或处理 HTTPS。它不托管公钥证书，也不执行 TLS 握手。在下一节中，你将学习如何通过 Django
+    和浏览器之间的另一个进程来处理这些责任。
 - en: 6.5 HTTPS with Gunicorn
+  id: totrans-151
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.5 使用 Gunicorn 进行 HTTPS
 - en: In this section, you’ll learn how to host a public-key certificate with Gunicorn,
     a pure Python implementation of the Web Server Gateway Interface (WSGI) protocol.
     This protocol is defined by Python Enhancement Proposal (PEP) 3333 ([www.python.org/dev/peps/pep-3333/](https://www.python.org/dev/peps/pep-3333/)),
     which is designed to decouple web application frameworks from web server implementations.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，您将学习如何使用 Gunicorn 托管公钥证书，Gunicorn 是 Web 服务器网关接口（WSGI）协议的纯 Python 实现。该协议由
+    Python 增强提案（PEP）3333 ([www.python.org/dev/peps/pep-3333/](https://www.python.org/dev/peps/pep-3333/))
+    定义，旨在将 Web 应用程序框架与 Web 服务器实现分离。
 - en: Your Gunicorn process will sit between your web server and your Django application
     server. Figure 6.9 depicts a Python application stack, using an NGINX web server,
     a Gunicorn WSGI application, and a Django application server.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 您的 Gunicorn 进程将位于您的 Web 服务器和 Django 应用程序服务器之间。图 6.9 描绘了一个 Python 应用程序堆栈，使用 NGINX
+    Web 服务器、Gunicorn WSGI 应用程序和 Django 应用程序服务器。
 - en: '![CH06_F09_Byrne](Images/CH06_F09_Byrne.png)'
+  id: totrans-154
   prefs: []
   type: TYPE_IMG
+  zh: '![CH06_F09_Byrne](Images/CH06_F09_Byrne.png)'
 - en: Figure 6.9 A common Python application stack using NGINX, Gunicorn, and Django
+  id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 6.9 一个常见的 Python 应用程序堆栈，使用 NGINX、Gunicorn 和 Django
 - en: 'From within your virtual environment, install Gunicorn with the following command:'
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: 在你的虚拟环境中，使用以下命令安装 Gunicorn：
 - en: '[PRE11]'
+  id: totrans-157
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: After installation, the `gunicorn` command will be in your shell path. This
     command requires one argument, a WSGI application module. The django-admin script
     has already generated a WSGI application module for you, located beneath the Django
     root directory.
+  id: totrans-158
   prefs: []
   type: TYPE_NORMAL
+  zh: 安装后，`gunicorn`命令将在您的 shell 路径中。此命令需要一个参数，即一个 WSGI 应用程序模块。django-admin 脚本已经为您生成了一个
+    WSGI 应用程序模块，位于 Django 根目录下。
 - en: 'Before running Gunicorn, make sure you stop your running Django application
     first. Press Ctrl-C in your shell to do this. Next, run the following command
     from the project root directory to bring your Django server back up with Gunicorn.
     The command line should hang:'
+  id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 在运行 Gunicorn 之前，请确保先停止正在运行的 Django 应用程序。在您的 shell 中按下 Ctrl-C 来执行此操作。接下来，从项目根目录运行以下命令，使用
+    Gunicorn 重新启动您的 Django 服务器。命令行应该会挂起：
 - en: '[PRE12]'
+  id: totrans-160
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: ❶ The alice.wsgi module is located at alice/alice/wsgi.py.
+  id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ alice.wsgi 模块位于 alice/alice/wsgi.py。
 - en: Point your browser at http:/./localhost:8000 and refresh the welcome page. Your
     application is now being served through Gunicorn but is still using HTTP. To upgrade
     the application to HTTPS, you need to install a public-key certificate.
+  id: totrans-162
   prefs: []
   type: TYPE_NORMAL
+  zh: 将您的浏览器指向 http:/./localhost:8000 并刷新欢迎页面。您的应用程序现在通过 Gunicorn 提供服务，但仍在使用 HTTP。要将应用程序升级为
+    HTTPS，您需要安装一个公钥证书。
 - en: 6.5.1 Self-signed public-key certificates
+  id: totrans-163
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6.5.1 自签名的公钥证书
 - en: A *self-signed public-key certificate*, as the name implies, is a public-key
     certificate that is not issued or signed by a CA. You make it and you sign it.
     This is a cheap and convenient stepping-stone toward a proper certificate. These
@@ -760,65 +1106,102 @@
     for development and testing but unsuitable for production. It will take you about
     60 seconds to create a self-signed public-key certificate, and a maximum of 5
     minutes to get your browser or operating system to trust it.
+  id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 如其名称所示，*自签名的公钥证书*是一个不由 CA 颁发或签名的公钥证书。您自己制作并签名。这是朝向正确证书的一条廉价便捷的过渡。这些证书提供机密性而无需认证；它们适用于开发和测试，但不适用于生产。创建一个自签名的公钥证书大约需要
+    60 秒，最多需要 5 分钟让您的浏览器或操作系统信任它。
 - en: 'Generate a key pair and a self-signed public-key certificate with the following
     `openssl` command. This example generates an elliptic-curve key pair and a self-signed
     public-key certificate. The certificate is valid for 10 years:'
+  id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用以下`openssl`命令生成一个密钥对和自签名的公钥证书。此示例生成一个椭圆曲线密钥对和一个自签名的公钥证书。证书有效期为 10 年：
 - en: '[PRE13]'
+  id: totrans-166
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: ❶ Generates an X.509 certificate
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 生成一个 X.509 证书
 - en: ❷ Uses a validity period of 10 years
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 使用 10 年的有效期
 - en: ❸ Generates an elliptic-curve key pair
+  id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 生成一个椭圆曲线密钥对
 - en: ❹ Writes the private key to this location
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 将私钥写入此位置
 - en: ❺ Writes the public-key certificate to this location
+  id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: ❺ 将公钥证书写入此位置
 - en: 'The output of this command prompts you for the certificate subject details.
     You are the subject. Specify a common name of `localhost` to use this certificate
     for local development:'
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 此命令的输出会提示您输入证书主题详细信息。您是主题。指定一个通用名称为`localhost`，以便在本地开发中使用此证书：
 - en: '[PRE14]'
+  id: totrans-173
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: ❶ For local development
+  id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 用于本地开发
 - en: Stop the running Gunicorn instance by pressing Ctrl-C at the prompt. To install
     your certificate, restart Gunicorn with the following command line. The `keyfile`
     and `certfile` arguments accept the paths to your key file and certificate, respectively.
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 在提示符处按 Ctrl-C 停止运行的 Gunicorn 实例。要安装您的证书，请使用以下命令行重新启动 Gunicorn。`keyfile` 和 `certfile`
+    参数接受分别指向您的密钥文件和证书的路径。
 - en: '[PRE15]'
+  id: totrans-176
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: ❶ The alice.wsgi module is located at alice/alice/wsgi.py.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ alice.wsgi 模块位于 alice/alice/wsgi.py。
 - en: ❷ Your private-key file
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 您的私钥文件
 - en: ❸ Your public-key certificate
+  id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 您的公钥证书
 - en: Gunicorn automatically uses the installed certificate to serve Django traffic
     over HTTPS instead of HTTP. Point your browser to https:/./localhost:8000 to request
     the welcome page again. This will validate your certificate installation and begin
     a TLS handshake. Remember to change the URL scheme from *http* to *https*.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: Gunicorn 自动使用安装的证书来通过 HTTPS 而不是 HTTP 提供 Django 流量。将浏览器指向 https:/./localhost:8000
+    再次请求欢迎页面。这将验证您的证书安装并开始 TLS 握手。记得将 URL 方案从 *http* 更改为 *https*。
 - en: 'Don’t be surprised when your browser displays an error page. This error page
     will be specific to your browser, but the underlying problem is the same: a browser
     has no way to verify the signature of a self-signed certificate. You are using
@@ -826,78 +1209,113 @@
     system to trust your self-signed certificate. I cannot cover every way to solve
     this problem because the solution is specific to your operating system. Listed
     here are the steps for trusting a self-signed certificate on macOS:'
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 当您的浏览器显示错误页面时不要感到惊讶。此错误页面将特定于您的浏览器，但根本问题相同：浏览器无法验证自签名证书的签名。您现在正在使用 HTTPS，但握手失败了。要继续，您需要让操作系统信任您的自签名证书。我无法覆盖解决此问题的每种方法，因为解决方案特定于您的操作系统。以下是在
+    macOS 上信任自签名证书的步骤：
 - en: Open up Keychain Access, a password management utility developed by Apple.
+  id: totrans-182
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 打开密钥链访问，这是由 Apple 开发的密码管理实用程序。
 - en: Drag your self-signed certificate into the Certificates section of Keychain
     Access.
+  id: totrans-183
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 将您的自签名证书拖到密钥链访问的证书部分。
 - en: Double-click the certificate in Keychain Access.
+  id: totrans-184
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 在密钥链访问中双击证书。
 - en: Expand the Trust section.
+  id: totrans-185
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 展开信任部分。
 - en: In the When Using This Certificate drop-down list, select Always Trust.
+  id: totrans-186
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 在使用此证书下拉列表中，选择始终信任。
 - en: If you're using a different operating system for local development, I recommend
     an internet search for “How to trust a self-signed certificate in <my operating
     system>.” Expect the solution to take a maximum of 5 minutes. Meanwhile, your
     browser will continue to prevent a MITM attack.
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果您使用不同的操作系统进行本地开发，我建议您搜索“如何在 <我的操作系统> 中信任自签名证书”。预计解决方案最多需要 5 分钟。与此同时，您的浏览器将继续防止中间人攻击。
 - en: Your browser will trust your self-signed certificate after your operating system
     does. Restart the browser to ensure this happens quickly. Refresh the page at
     https:/./localhost:8000 to retrieve the welcome page. Your application is now
     using HTTPS, and your browser has successfully completed the handshake!
+  id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 浏览器会在操作系统之后信任您的自签名证书。重新启动浏览器以确保此过程快速完成。在 https:/./localhost:8000 上刷新页面以获取欢迎页面。您的应用程序现在正在使用
+    HTTPS，并且您的浏览器已成功完成握手！
 - en: 'Upgrading your protocol from HTTP to HTTPS is a giant leap forward in terms
     of security. I finish this section with two things you can do to make your server
     even more secure:'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 将您的协议从 HTTP 升级到 HTTPS 是在安全方面的巨大进步。我用两件事情来结束这一节，您可以做两件事来使您的服务器更安全：
 - en: Forbid HTTP requests with the `Strict-Transport-Security` response header
+  id: totrans-190
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 禁止具有 `Strict-Transport-Security` 响应头的 HTTP 请求
 - en: Redirect inbound HTTP requests to HTTPS
+  id: totrans-191
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将入站 HTTP 请求重定向到 HTTPS
 - en: 6.5.2 The Strict-Transport-Security response header
+  id: totrans-192
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6.5.2 Strict-Transport-Security 响应头
 - en: 'A server uses the HTTP `Strict-Transport-Security` (HSTS) response header to
     tell a browser that it should be accessed only via HTTPS. For example, a server
     would use the following response header to instruct the browser that it should
     be accessed only over HTTPS for the next 3600 seconds (1 hour):'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器使用 HTTP `Strict-Transport-Security`（HSTS）响应头告诉浏览器只能通过 HTTPS 访问。例如，服务器将使用以下响应头指示浏览器在接下来的
+    3600 秒（1 小时）内只能通过 HTTPS 访问：
 - en: '[PRE16]'
+  id: totrans-194
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: The key-value pair to the right of the colon, shown in bold font, is known as
     a *directive*. Directives are used to parameterize HTTP headers. In this case,
     the `max-age` directive represents the time, in seconds, that a browser should
     access the site only over HTTPS.
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: 冒号右侧的键值对，以粗体字显示，被称为*指令*。指令用于参数化HTTP头。在这种情况下，`max-age`指令表示浏览器应该仅在HTTPS上访问站点的时间，以秒为单位。
 - en: Ensure that each response from your Django application has an HSTS header with
     the `SECURE_HSTS_SECONDS` setting. The value assigned to this setting translates
     to the `max-age` directive of the header. Any positive integer is a valid value.
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 确保您的Django应用程序的每个响应都具有带有`SECURE_HSTS_SECONDS`设置的HSTS头。分配给此设置的值将转换为头文件的`max-age`指令。任何正整数都是有效值。
 - en: WARNING Be very careful with `SECURE_HSTS_SECONDS` if you are working with a
     system already in production. This setting applies to the entire site, not just
     the requested resource. If your change breaks anything, the impact could last
@@ -905,69 +1323,92 @@
     system with a large `max-age` directive is therefore risky. Incrementing `SECURE_HSTS_SECONDS`
     from a small number is a much safer way to roll out a change like this. How small?
     Ask yourself how much downtime you can afford if something breaks.
+  id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：如果您正在处理已经投入生产的系统，请非常小心处理`SECURE_HSTS_SECONDS`。此设置适用于整个站点，而不仅仅是请求的资源。如果您的更改导致任何问题，影响可能会持续与`max-age`指令值一样长。因此，向具有较大`max-age`指令的现有系统添加HSTS头是有风险的。逐步增加`SECURE_HSTS_SECONDS`从一个小数字开始是一个更安全的部署更改的方法。多小？问问自己如果出现问题，您可以承受多少停机时间。
 - en: 'A server sends the HSTS response header with an `includeSubDomains` directive
     to tell a browser that all subdomains should be accessed only via HTTPS, in addition
     to the domain. For example, alice.com would use the following response header
     to instruct a browser that alice.com, and sub.alice.com, should be accessed only
     over HTTPS:'
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 服务器使用`includeSubDomains`指令发送HSTS响应头，告诉浏览器除了域名之外，所有子域都应该仅通过HTTPS访问。例如，alice.com将使用以下响应头指示浏览器，alice.com和sub.alice.com应该仅通过HTTPS访问：
 - en: '[PRE17]'
+  id: totrans-199
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: The `SECURE_HSTS_INCLUDE_SUBDOMAINS` setting configures Django to send the HSTS
     response header with an `includeSubDomains` directive. This setting defaults to
     `False`, and is ignored if `SECURE_HSTS_SECONDS` is not a positive integer.
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: '`SECURE_HSTS_INCLUDE_SUBDOMAINS`设置配置Django发送带有`includeSubDomains`指令的HSTS响应头。该设置默认为`False`，如果`SECURE_HSTS_SECONDS`不是正整数，则会被忽略。'
 - en: WARNING Every risk associated with `SECURE_HSTS_SECONDS` applies to `SECURE_HSTS_INCLUDE_SUBDOMAINS`.
     A bad rollout can impact every subdomain for as long as the `max-age` directive
     value. If you’re working on a system already in production, start with a small
     value.
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：与`SECURE_HSTS_SECONDS`相关的每个风险都适用于`SECURE_HSTS_INCLUDE_SUBDOMAINS`。糟糕的部署可能会影响每个子域，持续时间为`max-age`指令值。如果您正在处理已经投入生产的系统，请从一个小值开始。
 - en: 6.5.3 HTTPS redirects
+  id: totrans-202
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6.5.3 HTTPS重定向
 - en: The HSTS header is a good layer of defense but can only do so much as a response
     header; a browser must first send a request before the HSTS header is received.
     It is therefore useful to redirect the browser to HTTPS when the initial request
     is over HTTP. For example, a request for http:/./alice.com should be redirected
     to https:/./alice.com.
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: HSTS头是一个很好的防御层，但作为响应头只能做到这么多；浏览器必须先发送请求，然后才能接收到HSTS头。因此，在初始请求结束时将浏览器重定向到HTTPS是很有用的。例如，对于http:/./alice.com的请求应该被重定向到https:/./alice.com。
 - en: Ensure that your Django application redirects HTTP requests to HTTPS by setting
     `SECURE_SSL_REDIRECT` to `True`. Assigning this setting to `True` activates two
     other settings, `SECURE_REDIRECT_EXEMPT` and `SECURE_SSL_HOST`, both of which
     are covered next.
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过将`SECURE_SSL_REDIRECT`设置为`True`，确保您的Django应用程序将HTTP请求重定向到HTTPS。将此设置分配为`True`会激活另外两个设置，`SECURE_REDIRECT_EXEMPT`和`SECURE_SSL_HOST`，下面将介绍这两个设置。
 - en: WARNING `SECURE_SSL_REDIRECT` defaults to `False`. You should set this to `True`
     if your site uses HTTPS.
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：`SECURE_SSL_REDIRECT`默认为`False`。如果您的站点使用HTTPS，则应将其设置为`True`。
 - en: The `SECURE_REDIRECT_EXEMPT` setting is a list of regular expressions used to
     suspend HTTPS redirects for certain URLs. If a regular expression in this list
     matches the URL of an HTTP request, Django will not redirect it to HTTPS. The
     items in this list must be strings, not actual compiled regular expression objects.
     The default value is an empty list.
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: '`SECURE_REDIRECT_EXEMPT`设置是用于暂停某些URL的HTTPS重定向的正则表达式列表。如果此列表中的正则表达式与HTTP请求的URL匹配，Django将不会将其重定向到HTTPS。此列表中的项目必须是字符串，而不是实际编译的正则表达式对象。默认值为空列表。'
 - en: The `SECURE_SSL_HOST` setting is used to override the hostname for HTTPS redirects.
     If this value is set to `bob.com`, Django will permanently redirect a request
     for http:/./alice.com to https:/./bob.com instead of https:/./alice.com. The default
     value is `None`.
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
 - en: By now, you’ve learned a lot about how browser and web servers communicate with
     HTTPS; but browsers aren’t the only HTTPS clients. In the next section, you’ll
     see how to use HTTPS when sending requests programmatically in Python.
+  id: totrans-208
   prefs: []
   type: TYPE_NORMAL
 - en: 6.6 TLS and the requests package
+  id: totrans-209
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -975,23 +1416,30 @@
     use this package to send and receive data between other systems. In this section,
     I cover a few features related to TLS. From within your virtual environment, install
     `requests` with the following command:'
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE18]'
+  id: totrans-211
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: 'The `requests` package automatically uses TLS when the URL scheme is HTTPS.
     The `verify` keyword argument, shown in bold in the following code, disables server
     authentication. This argument doesn’t disable TLS; it relaxes TLS. The conversation
     is still confidential, but the server is no longer authenticated:'
+  id: totrans-212
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE19]'
+  id: totrans-213
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: This feature is obviously inappropriate for production. It is often useful in
     integration testing environments, when a system needs to communicate to a server
     without a static hostname, or to a server using a self-signed certificate.
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
 - en: 'TLS authentication is a two-way street: the client can be authenticated in
@@ -1001,35 +1449,45 @@
     expects a two-part tuple. This tuple represents the paths to the certificate and
     the private-key files. The `verify` kwarg does not affect client authentication;
     the `cert` kwarg does not affect server authentication:'
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE20]'
+  id: totrans-216
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: 'Alternatively, the functionality for the `verify` and `cert` kwargs is available
     through properties of a `requests` `Session` object, shown here in bold:'
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE21]'
+  id: totrans-218
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE21]'
 - en: 'TLS accommodates more than just HTTP. Database traffic, email traffic, Telnet,
     Lightweight Directory Access Protocol (LDAP), File Transfer Protocol (FTP), and
     more run over TLS as well. TLS clients for these protocols have more “personality”
     than browsers. These clients vary greatly in their capabilities, and their configuration
     is more vendor specific. This chapter finishes with a look at two use cases for
     TLS beyond HTTP:'
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
 - en: Database connections
+  id: totrans-220
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: Email
+  id: totrans-221
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 6.7 TLS and database connections
+  id: totrans-222
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
@@ -1037,6 +1495,7 @@
     well. TLS ensures that your application is connecting to the correct database
     and that data being written to and read from the database cannot be intercepted
     by a network attacker.
+  id: totrans-223
   prefs: []
   type: TYPE_NORMAL
 - en: Django database connections are managed by the `DATABASES` setting. Each entry
@@ -1044,83 +1503,122 @@
     illustrates the default Django `DATABASES` setting. The `ENGINE` key specifies
     SQLite, a file-based database. The `NAME` key specifies the file to store data
     in.
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: Django 数据库连接由 `DATABASES` 设置管理。该字典中的每个条目代表不同的数据库连接。以下清单展示了默认的 Django `DATABASES`
+    设置。`ENGINE` 键指定了 SQLite，一个基于文件的数据库。`NAME` 键指定了存储数据的文件。
 - en: Listing 6.7 The default Django DATABASES setting
+  id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: 清单 6.7 默认的 Django DATABASES 设置
 - en: '[PRE22]'
+  id: totrans-226
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE22]'
 - en: ❶ Stores data in db.sqlite3 at the project root
+  id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 在项目根目录的 db.sqlite3 中存储数据
 - en: By default, SQLite stores data as plaintext. Few Django applications make it
     to production with SQLite. Most production Django applications will connect to
     a database over a network.
+  id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，SQLite 将数据存储为明文。很少有 Django 应用程序使用 SQLite 进入生产环境。大多数生产 Django 应用程序将通过网络连接到数据库。
 - en: 'A database network connection requires universal self-explanatory fields: `NAME`,
     `HOST`, `PORT`, `USER`, and `PASSWORD`. TLS configuration, on the other hand,
     is particular to each database. Vendor-specific settings are handled by the `OPTIONS`
     field. This listing shows how to configure Django to use TLS with PostgreSQL.'
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据库网络连接需要通用的自解释字段：`NAME`、`HOST`、`PORT`、`USER` 和 `PASSWORD`。另一方面，TLS 配置对每个数据库都是特定的。供应商特定的设置由
+    `OPTIONS` 字段处理。此清单展示了如何配置 Django 以在 PostgreSQL 中使用 TLS。
 - en: Listing 6.8 Using Django with PostgreSQL safely
+  id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: 清单 6.8 安全地使用 Django 与 PostgreSQL
 - en: '[PRE23]'
+  id: totrans-231
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE23]'
 - en: ❶ Vendor specific configuration settings fall under OPTIONS
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 供应商特定的配置设置位于 OPTIONS 下
 - en: 'Do not assume that every TLS client performs server authentication to the extent
     a browser does. A TLS client may not verify the hostname of the server if it isn’t
     configured to do so. For example, PostgreSQL clients verify the signature of the
     certificate when connecting in two modes: `verify-ca` and `verify-full`. In `verify-ca`
     mode, the client will not validate the server hostname against the common name
     of the certificate. This check is performed only in `verify-full` mode.'
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 不要假设每个 TLS 客户端都像浏览器一样执行服务器身份验证。如果未配置，TLS 客户端可能不会验证服务器的主机名。例如，PostgreSQL 客户端在连接时以两种模式验证证书的签名：`verify-ca`
+    和 `verify-full`。在 `verify-ca` 模式下，客户端不会根据证书的通用名称验证服务器主机名。这种检查只在 `verify-full`
+    模式下执行。
 - en: Note Encrypting database traffic is no substitute for encrypting the database
     itself; always do both. Consult the documentation of your database vendor to learn
     more about database-level encryption.
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意：加密数据库流量不能替代加密数据库本身；请始终同时进行。请查阅您的数据库供应商文档，了解更多关于数据库级加密的信息。
 - en: 6.8 TLS and email
+  id: totrans-235
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 6.8 TLS 和电子邮件
 - en: Django’s answer to email is the `django.core.mail` module, a wrapper API for
     Python’s `smtplib` module. Django applications send email with the Simple Mail
     Transfer Protocol (SMTP). This popular email protocol commonly uses port 25\.
     Like HTTP, SMTP is a product of the 1980s. It makes no attempt to ensure confidentiality
     or authentication.
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: Django 对电子邮件的回应是 `django.core.mail` 模块，这是 Python 的 `smtplib` 模块的包装 API。Django
+    应用程序使用简单邮件传输协议（SMTP）发送电子邮件。这种流行的电子邮件协议通常使用端口 25。与 HTTP 类似，SMTP 是上世纪 80 年代的产物。它不会尝试确保机密性或身份验证。
 - en: Attackers are highly motivated to send and receive unauthorized email. Any vulnerable
     email server is a potential source of spam revenue. An attacker may want to gain
     unauthorized access to confidential information. Many phishing attacks are launched
     from compromised email servers.
+  id: totrans-237
   prefs: []
   type: TYPE_NORMAL
+  zh: 攻击者极有动机发送和接收未经授权的电子邮件。任何易受攻击的电子邮件服务器都可能成为垃圾邮件收入的潜在来源。攻击者可能希望未经授权地访问机密信息。许多网络钓鱼攻击都是从受攻击的电子邮件服务器发起的。
 - en: Organizations resist these attacks by encrypting email in transit. To prevent
     a network eavesdropper from intercepting SMTP traffic, you must use SMTPS. This
     is simply SMTP over TLS. SMTP and SMTPS are analogous to HTTP and HTTPS. You can
     upgrade your connection from SMTP to SMTPS with the settings covered in the next
     two sections.
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: 组织通过在传输中加密电子邮件来抵御这些攻击。为防止网络窃听者拦截 SMTP 流量，必须使用 SMTPS。这只是 TLS 上的 SMTP。SMTP 和 SMTPS
+    类似于 HTTP 和 HTTPS。您可以通过下面两节中介绍的设置将连接从 SMTP 升级到 SMTPS。
 - en: 6.8.1 Implicit TLS
+  id: totrans-239
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 6.8.1 隐式 TLS
 - en: There are two ways to initiate a TLS connection to an email server. RFC 8314
     describes the traditional method as “the client establishes a cleartext application
     session . . . a TLS handshake follows that can upgrade the connection.” RFC 8314
     recommends “an alternate mechanism where TLS is negotiated immediately at connection
     start on a separate port.” The recommended mechanism is known as *implicit TLS*.
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
 - en: The `EMAIL_USE_SSL` and `EMAIL_USE_TLS` settings configure Django to send email
@@ -1129,14 +1627,17 @@
     over `EMAIL_USE_SSL`. TLS, after all, replaced SSL years ago with better security
     and performance. Unfortunately, implicit TLS is configured by `EMAIL_USE_SSL`,
     not `EMAIL_USE_TLS`.
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
 - en: Using `EMAIL_USE_TLS` is better than nothing, but you should use `EMAIL_USE
     _SSL` if your email server supports implicit TLS. I have no idea why `EMAIL_USE_SSL`
     wasn’t named `EMAIL_USE_IMPLICIT_TLS`.
+  id: totrans-242
   prefs: []
   type: TYPE_NORMAL
 - en: 6.8.2 Email client authentication
+  id: totrans-243
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1144,20 +1645,24 @@
     The `EMAIL_SSL_KEYFILE` and `EMAIL_SSL_CERTFILE` settings represent the paths
     of the private key and client certificate. Both options do nothing if `EMAIL_USE_TLS`
     or `EMAIL_USE_SSL` aren’t enabled, as expected.
+  id: totrans-244
   prefs: []
   type: TYPE_NORMAL
 - en: Do not assume that every TLS client performs server authentication. At the time
     of this writing, Django unfortunately does not perform server authentication when
     sending email.
+  id: totrans-245
   prefs: []
   type: TYPE_NORMAL
 - en: Note As with your database traffic, encrypting email in transit is no substitute
     for encrypting email at rest; always do both. Most vendors encrypt email at rest
     for you automatically. If not, consult the documentation of your email vendor
     to learn more about email encryption at rest.
+  id: totrans-246
   prefs: []
   type: TYPE_NORMAL
 - en: 6.8.3 SMTP authentication credentials
+  id: totrans-247
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -1166,24 +1671,32 @@
     credentials. SMTP makes no attempt to hide these credentials in transit; without
     TLS, they are an easy target for a network eavesdropper. The following code demonstrates
     how to override these settings when programmatically sending email.
+  id: totrans-248
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 6.9 Programmatically sending email in Django
+  id: totrans-249
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE24]'
+  id: totrans-250
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE24]'
 - en: ❶ From email
+  id: totrans-251
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Recipient list
+  id: totrans-252
   prefs: []
   type: TYPE_NORMAL
 - en: ❸ Overrides EMAIL_HOST_USER
+  id: totrans-253
   prefs: []
   type: TYPE_NORMAL
 - en: ❹ Overrides EMAIL_HOST_PASSWORD
+  id: totrans-254
   prefs: []
   type: TYPE_NORMAL
 - en: In this chapter, you learned a lot about TLS, the industry standard for encryption
@@ -1193,41 +1706,58 @@
     as HTTP session IDs, user authentication credentials, and OAuth tokens. You’ll
     also build several secure workflows on top of the Django application you created
     in this chapter.
+  id: totrans-255
   prefs: []
   type: TYPE_NORMAL
 - en: Summary
+  id: totrans-256
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
 - en: SSL, TLS, and HTTPS are not synonyms.
+  id: totrans-257
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: 'Man-in-the-middle attacks come in two flavors: passive and active.'
+  id: totrans-258
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 中间人攻击有两种形式：被动和主动。
 - en: A TLS handshake establishes a cipher suite, a shared key, and server authentication.
+  id: totrans-259
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: TLS 握手建立了一个密码套件、一个共享密钥和服务器身份验证。
 - en: The Diffie-Hellman method is an efficient solution to the key-distribution problem.
+  id: totrans-260
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Diffie-Hellman 方法是密钥分发问题的高效解决方案。
 - en: A public-key certificate is analogous to your driver’s license.
+  id: totrans-261
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 公钥证书类似于您的驾驶执照。
 - en: Django isn’t responsible for HTTPS; Gunicorn is.
+  id: totrans-262
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Django 不负责 HTTPS；Gunicorn 负责。
 - en: TLS authentication applies to both the client and the server.
+  id: totrans-263
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: TLS 身份验证适用于客户端和服务器。
 - en: TLS protects database and email traffic in addition to HTTP.
+  id: totrans-264
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: TLS 除了保护 HTTP 外，还保护数据库和电子邮件流量。

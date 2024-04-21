@@ -1035,17 +1035,20 @@
   id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表中的任何密码哈希器都可以根据先前存储的哈希值验证认证尝试。例如，使用前面示例配置的项目将使用PBKDF2对新密码或更改的密码进行哈希，但它可以验证先前由PBKDF2SHA1、Argon2或BCryptSHA256哈希的密码。
 - en: Each time a user successfully logs in, Django checks to see if their password
     was hashed with the first password hasher in the list. If not, the password is
     rehashed with the first password hasher, and the hash value is stored in the database.
   id: totrans-154
   prefs: []
   type: TYPE_NORMAL
+  zh: 每次用户成功登录时，Django会检查他们的密码是否是使用列表中的第一个密码哈希器哈希的。如果不是，则会重新使用第一个密码哈希器对密码进行哈希，并将哈希值存储在数据库中。
 - en: 9.3.1 Native password hashers
   id: totrans-155
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 9.3.1 本地密码哈希器
 - en: 'Django natively supports 10 password hashers. `MD5PasswordHasher`, `SHA1PasswordHasher`,
     and their unsalted counterparts are insecure. These components are shown in bold.
     Django maintains these password hashers for backward compatibility with legacy
@@ -1053,56 +1056,67 @@
   id: totrans-156
   prefs: []
   type: TYPE_NORMAL
+  zh: Django原生支持10个密码哈希器。`MD5PasswordHasher`、`SHA1PasswordHasher`及其非盐值对应项都是不安全的。这些组件已用粗体显示。Django保留这些密码哈希器以向后兼容旧系统：
 - en: '`django.contrib.auth.hashers.PBKDF2PasswordHasher`'
   id: totrans-157
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`django.contrib.auth.hashers.PBKDF2PasswordHasher`'
 - en: '`django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher`'
   id: totrans-158
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher`'
 - en: '`django.contrib.auth.hashers.Argon2PasswordHasher`'
   id: totrans-159
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`django.contrib.auth.hashers.Argon2PasswordHasher`'
 - en: '`django.contrib.auth.hashers.BCryptSHA256PasswordHasher`'
   id: totrans-160
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`django.contrib.auth.hashers.BCryptSHA256PasswordHasher`'
 - en: '`django.contrib.auth.hashers.BCryptPasswordHasher`'
   id: totrans-161
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`django.contrib.auth.hashers.BCryptPasswordHasher`'
 - en: '`**django.contrib.auth.hashers.SHA1PasswordHasher**`'
   id: totrans-162
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`**django.contrib.auth.hashers.SHA1PasswordHasher**`'
 - en: '`**django.contrib.auth.hashers.MD5PasswordHasher**`'
   id: totrans-163
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`**django.contrib.auth.hashers.MD5PasswordHasher**`'
 - en: '`**django.contrib.auth.hashers.UnsaltedSHA1PasswordHasher**`'
   id: totrans-164
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`**django.contrib.auth.hashers.UnsaltedSHA1PasswordHasher**`'
 - en: '`**django.contrib.auth.hashers.UnsaltedMD5PasswordHasher**`'
   id: totrans-165
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`**django.contrib.auth.hashers.UnsaltedMD5PasswordHasher**`'
 - en: '`django.contrib.auth.hashers.CryptPasswordHasher`'
   id: totrans-166
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`django.contrib.auth.hashers.CryptPasswordHasher`'
 - en: WARNING It is unsafe to configure a Django project with `SHA1PasswordHasher`,
     `MD5PasswordHasher`, `UnsaltedSHA1PasswordHasher`, or `UnsaltedMD5PasswordHasher`.
     Passwords hashed with these components are trivial to crack because the underlying
@@ -1111,6 +1125,7 @@
   id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：使用`SHA1PasswordHasher`、`MD5PasswordHasher`、`UnsaltedSHA1PasswordHasher`或`UnsaltedMD5PasswordHasher`配置Django项目是不安全的。因为这些组件生成的密码易于破解，底层哈希函数速度快且加密弱。本章后面，我将向你展示如何解决这个问题。
 - en: At the time of this writing, Django defaults to `PBKDF2PasswordHasher` with
     260,000 iterations. The iteration count is increased by the Django development
     team with each new release. Python programmers who want to increase this value
@@ -1119,11 +1134,13 @@
   id: totrans-168
   prefs: []
   type: TYPE_NORMAL
+  zh: 在编写本文时，Django默认使用具有260,000次迭代的`PBKDF2PasswordHasher`。随着每个新版本的发布，Django开发团队会增加迭代次数。希望自行增加此值的Python程序员可以使用自定义密码哈希器。如果系统不幸卡在旧版本的Django上，则这是有用的。
 - en: 9.3.2 Custom password hashers
   id: totrans-169
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 9.3.2 自定义密码哈希器
 - en: 'Configuring a custom password hasher is easy when extending a native password
     hasher. Observe `TwoFoldPBKDF2PasswordHasher` in the following code. This class
     descends from `PBKDF2PasswordHasher` and bumps the iteration count by a factor
@@ -1132,6 +1149,7 @@
   id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: 当扩展本地密码哈希器时，配置自定义密码哈希器非常简单。请看以下代码中的`TwoFoldPBKDF2PasswordHasher`。此类继承自`PBKDF2PasswordHasher`，并将迭代次数增加了两倍。请记住，这样的配置更改并非没有代价。根据设计，此更改也会增加登录延迟：
 - en: '[PRE12]'
   id: totrans-171
   prefs: []
@@ -1141,11 +1159,13 @@
   id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 将迭代次数加倍
 - en: 'Custom password hashers are configured via `PASSWORD_HASHERS`, just like native
     password hashers:'
   id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过`PASSWORD_HASHERS`配置自定义密码哈希器，就像本地密码哈希器一样：
 - en: '[PRE13]'
   id: totrans-174
   prefs: []
@@ -1158,11 +1178,13 @@
   id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: '`TwoFoldPBKDF2PasswordHasher`可以验证先前由`PBKDF2PasswordHasher`计算的哈希值的认证尝试，因为底层的KDF是相同的。这意味着在现有生产系统上可以安全地进行这样的更改。当用户进行身份验证时，Django会升级先前存储的哈希值。'
 - en: 9.3.3 Argon2 password hashing
   id: totrans-176
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 9.3.3 Argon2密码哈希
 - en: Every new Django project should hash passwords with Argon2\. This will cost
     you only a few seconds of your time if you make this change before the system
     is pushed to production. The amount of work goes up dramatically if you want to
@@ -1268,21 +1290,27 @@
   id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 这个系统的作者因使用 `UnsaltedMD5PasswordHasher` 而被解雇。现在轮到 Alice 负责将系统迁移到 `Argon2PasswordHasher`
+    而不会出现任何停机。该系统有 150 万用户，因此她不能强制每个用户都重新登录。可以理解的是，产品经理不想重置每个帐户的密码。Alice 意识到前进的唯一方法是对密码进行两次哈希，一次使用
+    `UnsaltedMD5PasswordHasher`，再一次使用 `Argon2PasswordHasher`。Alice 的游戏计划是 添加-迁移-删除：
 - en: Add `Argon2PasswordHasher`
   id: totrans-190
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 添加 `Argon2PasswordHasher`
 - en: Migrate hash values
   id: totrans-191
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 迁移哈希值
 - en: Delete `UnsaltedMD5PasswordHasher`
   id: totrans-192
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 删除 `UnsaltedMD5PasswordHasher`
 - en: 'First, Alice adds `Argon2PasswordHasher` to `PASSWORD_HASHERS`. This limits
     the problem to existing users who haven’t logged in recently. Introducing `Argon2PasswordHasher`
     is the easy part; getting rid of `UnsaltedMD5PasswordHasher` is the hard part.
@@ -1291,6 +1319,9 @@
   id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，Alice 将 `Argon2PasswordHasher` 添加到 `PASSWORD_HASHERS` 中。这将问题限制在那些最近没有登录的现有用户身上。引入
+    `Argon2PasswordHasher` 是简单的一部分；摆脱 `UnsaltedMD5PasswordHasher` 则是困难的一部分。Alice 将
+    `UnsaltedMD5PasswordHasher` 保留在列表中以确保现有用户可以访问他们的帐户：
 - en: '[PRE16]'
   id: totrans-194
   prefs: []
@@ -1300,6 +1331,7 @@
   id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 将 Argon2PasswordHasher 添加到列表的开头
 - en: Next, Alice must migrate the hash values; this is most of the work. She can’t
     just rehash the passwords with Argon2 so she has to double-hash them instead.
     In other words, she plans to read each MD5 hash value out of the database and
@@ -1310,14 +1342,19 @@
   id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，Alice 必须迁移哈希值；这是大部分工作。她不能只是用 Argon2 重新哈希密码，所以她必须将它们双重哈希。换句话说，她计划从数据库中读取每个
+    MD5 哈希值，并将其传递到 Argon2 中；Argon2 的输出，另一个哈希值，然后将替换数据库中的原始哈希值。Argon2 需要盐并且比 MD5 慢得多；这意味着像
+    Mallory 这样的破解者需要超过 31 年才能破解这些密码。图 9.8 说明了 Alice 的迁移计划。
 - en: '![CH09_F08_Byrne](Images/CH09_F08_Byrne.png)'
   id: totrans-197
   prefs: []
   type: TYPE_IMG
+  zh: '![CH09_F08_Byrne](Images/CH09_F08_Byrne.png)'
 - en: Figure 9.8 Hashed once with MD5, and hashed again with Argon2
   id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 9.8 用 MD5 哈希一次，然后用 Argon2 哈希
 - en: Alice can’t just modify the hash values of a production authentication system
     without affecting users. Neither `Argon2PasswordHasher` or `UnsaltedMD5PasswordHasher`
     would know what to do with the new hash values; users wouldn’t be able to log
@@ -1326,6 +1363,8 @@
   id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: Alice 不能仅仅修改生产认证系统的哈希值而不影响用户。`Argon2PasswordHasher` 和 `UnsaltedMD5PasswordHasher`
+    都不知道如何处理新的哈希值；用户将无法登录。在 Alice 修改哈希值之前，她必须首先编写并安装一个能够解释新哈希值的自定义密码哈希器。
 - en: 'Alice authors `UnsaltedMD5ToArgon2PasswordHasher`, shown in listing 9.8\. This
     password hasher bridges the gap between `Argon2PasswordHasher` and `UnsaltedMD5PasswordHasher`.
     Like all password hashers, this one implements two methods: encode and verify.
@@ -1336,10 +1375,14 @@
   id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: Alice 编写了 `UnsaltedMD5ToArgon2PasswordHasher`，如列表 9.8 所示。这个密码哈希器弥合了 `Argon2PasswordHasher`
+    和 `UnsaltedMD5PasswordHasher` 之间的差距。和所有密码哈希器一样，这个哈希器实现了两个方法：encode 和 verify。当你设置密码时，Django
+    调用 `encode` 方法；这个方法负责对密码进行哈希。当你登录时，Django 调用 `verify` 方法；这个方法负责比较数据库中的原始哈希值和重现密码的哈希值。
 - en: Listing 9.8 Migrating hash values with a custom password hasher
   id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 9.8 使用自定义密码哈希器迁移哈希值
 - en: '[PRE17]'
   id: totrans-202
   prefs: []
@@ -1349,18 +1392,22 @@
   id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 当你设置密码时由 Django 调用
 - en: ❷ Hashes with both MD5 and Argon2
   id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 使用 MD5 和 Argon2 进行哈希
 - en: ❸ Called by Django when you log in
   id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 当你登录时由 Django 调用
 - en: ❹ Compares hash values
   id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 比较哈希值
 - en: 'Alice adds `UnsaltedMD5ToArgon2PasswordHasher` in `PASSWORD_HASHERS`, shown
     in bold in the following code. This has no immediate effect because no password
     hash values have been modified yet; every user’s password is still hashed with

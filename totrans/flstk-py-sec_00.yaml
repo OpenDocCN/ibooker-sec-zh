@@ -3,17 +3,21 @@
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 前言部分
 - en: preface
   id: totrans-1
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 前言
 - en: Years ago, I searched Amazon for a Python-based application security book. I
     assumed there would be multiple books to choose from. There were already so many
     other Python books for topics such as performance, machine learning, and web development.
   id: totrans-2
   prefs: []
   type: TYPE_NORMAL
+  zh: 多年前，我在亚马逊搜索了一本基于 Python 的应用程序安全书。我以为会有多本书可供选择。已经有了很多其他主题的 Python 书籍，如性能、机器学习和
+    Web 开发。
 - en: To my surprise, the book I was searching for didn’t exist. I could not find
     a book about the everyday problems my colleagues and I were solving. How do we
     ensure that all network traffic is encrypted? Which frameworks should we use to
@@ -21,6 +25,8 @@
   id: totrans-3
   prefs: []
   type: TYPE_NORMAL
+  zh: 令我惊讶的是，我搜索的那本书并不存在。我找不到一本关于我和我的同事们正在解决的日常问题的书。我们如何确保所有网络流量都是加密的？我们应该使用哪些框架来保护
+    Web 应用程序？我们应该用什么算法来对数据进行哈希或签名？
 - en: In the years to follow, my colleagues and I found the answers to these questions
     while settling upon a standard set of open source tools and best practices. During
     this time, we designed and implemented several systems, protecting the data and
@@ -28,6 +34,7 @@
   id: totrans-4
   prefs: []
   type: TYPE_NORMAL
+  zh: 在接下来的几年里，我和我的同事们在确定一套标准的开源工具和最佳实践的同时，找到了这些问题的答案。在此期间，我们设计并实施了几个系统，保护了数百万新用户的数据和隐私。与此同时，有三家竞争对手遭受了黑客攻击。
 - en: Like everyone else in the world, my life changed in early 2020\. Every headline
     was about COVID-19, and suddenly remote work became the new normal. I think it’s
     fair to say each person had their own unique response to the pandemic; for myself,
@@ -35,6 +42,7 @@
   id: totrans-5
   prefs: []
   type: TYPE_NORMAL
+  zh: 像世界上其他人一样，我的生活在 2020 年初发生了变化。每条头条新闻都是关于 COVID-19 的，突然间远程工作成为了新常态。我认为可以说，每个人对这场大流行都有自己独特的反应；对我来说，是严重的无聊。
 - en: Writing this book allowed me to kill two birds with one stone. First, this was
     an excellent way to stave off boredom during a year of pandemic lockdowns. As
     a resident of Silicon Valley, this silver lining was amplified in the fall of
@@ -43,6 +51,7 @@
   id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 写这本书让我一举两得。首先，在疫情封锁的一年里，这是一种避免无聊的好方法。作为硅谷的居民，在 2020 年秋天，这个银色光辉在我这里被放大了。在此期间，一连串附近的山火破坏了该州大部分地区的空气质量，许多居民被困在家中。
 - en: Second, and more importantly, it has been very satisfying to write the book
     I could not buy. Like so many Silicon Valley startups, a lot of books begin for
     the sole purpose of obtaining a title such as *author* or *founder*. But a startup
@@ -50,21 +59,25 @@
   id: totrans-7
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次，更重要的是，写这本书是非常令人满意的，因为我找不到可以购买的这本书。像许多硅谷初创公司一样，很多书最初的目的就是获得“作者”或“创始人”这样的头衔。但是，如果一家初创公司或一本书永远不会为他人产生价值，它必须解决现实世界的问题。
 - en: I hope this book enables you to solve many of your real-world security problems.
   id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 我希望这本书能让您解决许多您面临的真实安全问题。
 - en: acknowledgments
   id: totrans-9
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 致谢
 - en: Writing entails a great deal of solitary effort. It is therefore easy to lose
     sight of who has helped you. I’d like to acknowledge the following people for
     helping me (in the order in which I met them).
   id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 写作需要很多孤独的努力。因此很容易忘记谁帮助了你。我想感谢以下人员帮助我（按我遇到他们的顺序）。
 - en: To Kathryn Berkowitz, thank you for being the best high-school English teacher
     in the world. My apologies for being such a troublemaker. To Amit Rathore, my
     fellow ThoughtQuitter, thank you for introducing me to Manning. I’d like to thank
@@ -80,6 +93,10 @@
   id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 致Kathryn Berkowitz，感谢你是世界上最好的高中英语老师。对于我造成的麻烦，我深感抱歉。致Amit Rathore，我的ThoughtQuitter同伴，感谢你介绍我认识Manning。我要感谢Jay
+    Fields、Brian Goetz和Dean Wampler，在我寻找出版商时给予的建议和支持。致Cary Kempston，感谢你对认证团队的支持。没有实际工作经验，我就不应该写出这样的书。致Mike
+    Stephens，感谢你看过我的原始“手稿”并看到了潜力。我要感谢Toni Arritola，我的开发编辑，教会我许多知识。我非常感谢你的反馈，通过它我学到了很多关于技术写作的东西。致我的技术编辑Michael
+    Jensen，感谢你周到的反馈和快速的交稿时间。你的评论和建议帮助这本书取得了成功。
 - en: 'Finally, I’d like to thank all the Manning reviewers who gave me their time
     and feedback during the development phase of this effort: Aaron Barton, Adriaan
     Beiertz, Bobby Lin, Daivid Morgan, Daniel Vasquez, Domingo Salazar, Grzegorz Mika,
@@ -91,11 +108,17 @@
   id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，我要感谢在这一努力的开发阶段给予我时间和反馈的所有Manning评论员：Aaron Barton，Adriaan Beiertz，Bobby Lin，Daivid
+    Morgan，Daniel Vasquez，Domingo Salazar，Grzegorz Mika，Håvard Wall，Igor van Oostveen，Jens
+    Christian Bredahl Madsen，Kamesh Ganesan，Manu Sareena，Marc-Anthony Taylor，Marco
+    Simone Zuppone，Mary Anne Thygesen，Nicolas Acton，Ninoslav Cerkez，Patrick Regan，Richard
+    Vaughan，Tim van Deurzen，Veena Garapaty和William Jamir Silva，你们的建议帮助这本书更上一层楼。
 - en: about this book
   id: totrans-13
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 关于本书
 - en: I use Python to teach security, not the other way around. In other words, as
     you read this book, you will learn much more about security than Python. There
     are two reasons for this. First, security is complicated, and Python is not. Second,
@@ -105,17 +128,20 @@
   id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 我用Python来教授安全，而不是反过来。换句话说，当你阅读本书时，你将学到更多关于安全而不是Python的知识。这有两个原因。首先，安全是复杂的，而Python并不是。其次，编写大量的自定义安全代码并不是保护系统的最佳方式；几乎总是应该把繁重的工作委托给Python、一个库或一个工具。
 - en: This book covers beginner- and intermediate-level security concepts. These concepts
     are implemented with beginner-level Python code. None of the material for either
     security or Python is advanced.
   id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书涵盖了初学者和中级安全概念。这些概念是用初级Python代码实现的。无论是安全还是Python的材料都不是高级的。
 - en: Who should read this book
   id: totrans-16
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 谁应该阅读这本书
 - en: All of the examples in this book simulate the challenges of developing and securing
     systems in the real world. Programmers who push code to production environments
     are therefore going to learn the most. Beginner Python skills, or intermediate
@@ -125,12 +151,14 @@
   id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 本书中的所有示例都模拟了在现实世界中开发和保护系统的挑战。因此，将代码推送到生产环境的程序员将学到最多。需要具备初级Python技能，或者对任何其他主要语言有中级经验。你当然不必是web开发人员才能从这本书中学习，但对web的基本了解会使吸收后半部分内容变得更容易。
 - en: Perhaps you don’t build or maintain systems; instead, you test them. If so,
     you will gain a much deeper understanding of *what* to test, but I do not even
     try to teach *how* to test. As you know, these are two different skill sets.
   id: totrans-18
   prefs: []
   type: TYPE_NORMAL
+  zh: 也许你不是构建或维护系统的人；相反，你是测试它们。如果是这样，你将更深入地了解*什么*要测试，但我甚至不会试图教你如何测试。你知道，这是两种不同的技能。
 - en: Unlike some security books, none of the examples here assume the attacker’s
     point of view. This group will therefore learn the least. If it is any consolation
     to them, in some chapters I let the villains win.

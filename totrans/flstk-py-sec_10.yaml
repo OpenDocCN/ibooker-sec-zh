@@ -144,21 +144,25 @@
   id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 在你开始编写代码之前，我将定义一些 Django Web 开发的基本构建模块。你即将创建的工作流由三个基本构建模块组成：
 - en: Views
   id: totrans-21
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 视图
 - en: Models
   id: totrans-22
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 模型
 - en: Templates
   id: totrans-23
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 模板
 - en: Django represents each inbound HTTP request with an object. The properties of
     this object map to attributes of the request, such as the URL and cookies. Django
     maps each request to a *view*—a request handler written in Python. Views can be
@@ -169,6 +173,9 @@
   id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: Django 用一个对象表示每个传入的 HTTP 请求。该对象的属性映射到请求的属性，比如 URL 和 Cookie。Django 将每个请求映射到一个*视图*—一个用
+    Python 编写的请求处理程序。视图可以由类或函数实现；我在本书的示例中使用类。Django 调用视图，将请求对象传递给它。视图负责创建并返回响应对象。响应对象表示出站的
+    HTTP 响应，携带数据如内容和响应头。
 - en: A *model* is an object-relational mapping class. Like views, models are written
     in Python. Models bridge the gap between the object-oriented world of your application
     and the relational database where you store data. A *model class* is analogous
@@ -178,6 +185,7 @@
   id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: '*模型*是一个对象关系映射类。与视图一样，模型是用 Python 编写的。模型弥合了应用程序的面向对象世界与存储数据的关系数据库之间的差距。*模型类*类似于数据库表。模型类的*属性*类似于数据库表列。模型*对象*类似于数据库表中的行。视图使用模型来创建、读取、更新和删除数据库记录。'
 - en: A *template* represents the response of a request. Unlike views and models,
     templates are written primarily in HTML and a simple templating syntax. A view
     often uses a template to compose a response from static and dynamic content. Figure
@@ -185,15 +193,19 @@
   id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: '*模板*代表了请求的响应。与视图和模型不同，模板主要是用 HTML 和简单的模板语法编写的。视图通常使用模板来组合静态和动态内容生成响应。图 8.2
+    描述了视图、模型和模板之间的关系。'
 - en: '![CH08_F02_Byrne](Images/CH08_F02_Byrne.png)'
   id: totrans-27
   prefs: []
   type: TYPE_IMG
+  zh: '![CH08_F02_Byrne](Images/CH08_F02_Byrne.png)'
 - en: Figure 8.2 A Django application server uses a model-view-template architecture
     to process requests.
   id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 8.2 Django 应用服务器使用模型-视图-模板架构来处理请求。
 - en: 'This architecture is commonly referred to as *model-view-template* (*MVT* ).
     This can be a little confusing if you’re already familiar with *model-view-controller*
     (MVC) architecture. These architectures agree on what to call a model: a model
@@ -204,27 +216,34 @@
   id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 这种架构通常被称为*模型-视图-模板*（*MVT*）。如果你已经熟悉*模型-视图-控制器*（MVC）架构，这可能会有点令人困惑。这些架构对于模型的称呼是一致的：模型是一个对象关系映射层。但是对于视图的称呼则不一致。MVT
+    视图大致等同于 MVC 控制器；MVC 视图大致等同于 MVT 模板。表 8.1 比较了两种架构的词汇。
 - en: Table 8.1 MVT terminology vs. MVC terminology
   id: totrans-30
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 8.1 MVT 术语与 MVC 术语对照
 - en: '| MVT term | MVC term | Description |'
   id: totrans-31
   prefs: []
   type: TYPE_TB
+  zh: '| MVT 术语 | MVC 术语 | 描述 |'
 - en: '| Model | Model | Object-relational mapping layer |'
   id: totrans-32
   prefs: []
   type: TYPE_TB
+  zh: '| 模型 | 模型 | 对象关系映射层 |'
 - en: '| View | Controller | Request handler responsible for logic and orchestration
     |'
   id: totrans-33
   prefs: []
   type: TYPE_TB
+  zh: '| 视图 | 控制器 | 负责逻辑和协调的请求处理程序 |'
 - en: '| Template | View | Response content production |'
   id: totrans-34
   prefs: []
   type: TYPE_TB
+  zh: '| 模板 | 视图 | 响应内容的生成 |'
 - en: In this book, I use MVT terminology. The user-registration workflow you are
     about to build is composed of views, models, and templates. You do not need to
     author the views or models; this work has already been done for you by the `django-registration`
@@ -232,12 +251,14 @@
   id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本书中，我使用 MVT 术语。你即将构建的用户注册工作流由视图、模型和模板组成。你不需要编写视图或模型；这项工作已经由`django-registration`扩展库为你完成。
 - en: 'You leverage `django-registration` by installing it as a *Django app* in your
     *Django project*. What is the difference between an app and a project? These two
     terms are often confused, understandably:'
   id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 通过将`django-registration`安装为*Django 应用*来利用它在你的*Django 项目*中。那么应用和项目有什么区别呢？这两个术语经常会令人困惑，可以理解：
 - en: '*Django project*—This is a collection of configuration files, such as settings.py
     and urls.py, and one or more Django apps. I showed you how to generate a Django
     project in chapter 6 with the django-admin script.'
@@ -245,6 +266,8 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*Django 项目*—这是一个配置文件集合，如 settings.py 和 urls.py，并且一个或多个 Django 应用程序。我在第 6 章用
+    django-admin 脚本向你展示了如何生成 Django 项目。'
 - en: '*Django app*—This is a modular component of a Django project. Each component
     is responsible for a discrete set of functionality, such as user registration.
     Multiple projects can make use of the same Django app. A Django app typically
@@ -253,11 +276,14 @@
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*Django 应用程序*—这是 Django 项目的模块化组件。每个组件负责一组离散的功能，如用户注册。多个项目可以使用相同的 Django 应用程序。一个
+    Django 应用程序通常不会变得足够大，以至于被视为一个应用程序。'
 - en: 'From within your virtual environment, install `django-registration` with the
     following command:'
   id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 在你的虚拟环境中，使用以下命令安装`django-registration`：
 - en: '[PRE0]'
   id: totrans-40
   prefs: []
@@ -270,6 +296,8 @@
   id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，打开你的`settings`模块，并添加下面加粗显示的代码行。这将`django-registration`添加到`INSTALLED_APPS`设置中。此设置是一个表示
+    Django 项目中 Django 应用程序的列表。确保不要删除任何现有的应用程序：
 - en: '[PRE1]'
   id: totrans-42
   prefs: []
@@ -279,11 +307,13 @@
   id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 安装 django-registration 库
 - en: 'Next, run the following command from the Django project root directory. This
     command performs all database modifications needed to accommodate `django-registration`:'
   id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，在 Django 根目录中运行以下命令。这个命令执行所有需要的数据库修改以适应`django-registration`：
 - en: '[PRE2]'
   id: totrans-45
   prefs: []
@@ -297,10 +327,14 @@
   id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，在 Django 根目录中打开 urls.py。在文件开头添加一个`include`函数的导入，如列表 8.1 中加粗显示的。在导入下面是一个名为
+    urlpatterns 的列表。Django 使用这个列表将入站请求的 URL 映射到视图。将以下 URL 路径条目添加到 urlpatterns，也用加粗显示，不要删除任何现有的
+    URL 路径条目。
 - en: Listing 8.1 Mapping views to URL paths
   id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 8.1 将视图映射到 URL 路径
 - en: '[PRE3]'
   id: totrans-48
   prefs: []
@@ -310,54 +344,66 @@
   id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 添加 include 导入
 - en: ❷ Maps django-registration views to URL paths
   id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 将 django-registration 视图映射到 URL 路径
 - en: Adding this line of code maps five URL paths to `django-registration` views.
     Table 8.2 illustrates which URL patterns are mapped to which views.
   id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加这行代码会将五个 URL 路径映射到`django-registration`视图。表 8.2 说明了哪些 URL 模式映射到哪些视图。
 - en: Table 8.2 URL path to user-registration view mappings
   id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 8.2 URL 路径到用户注册视图的映射
 - en: '| URL path | django-registration view |'
   id: totrans-53
   prefs: []
   type: TYPE_TB
+  zh: '| URL 路径 | django-registration 视图 |'
 - en: '| /accounts/activate/complete/ | TemplateView |'
   id: totrans-54
   prefs: []
   type: TYPE_TB
+  zh: '| /accounts/activate/complete/ | TemplateView |'
 - en: '| /accounts/activate/<activation_key>/ | ActivationView |'
   id: totrans-55
   prefs: []
   type: TYPE_TB
+  zh: '| /accounts/activate/<activation_key>/ | 激活视图 |'
 - en: '| /accounts/register/ | RegistrationView |'
   id: totrans-56
   prefs: []
   type: TYPE_TB
+  zh: '| /accounts/register/ | 注册视图 |'
 - en: '| /accounts/register/complete/ | TemplateView |'
   id: totrans-57
   prefs: []
   type: TYPE_TB
+  zh: '| /accounts/register/complete/ | TemplateView |'
 - en: '| /accounts/register/closed/ | TemplateView |'
   id: totrans-58
   prefs: []
   type: TYPE_TB
+  zh: '| /accounts/register/closed/ | TemplateView |'
 - en: Three of these URL paths map to `TemplateView` classes. `TemplateView` performs
     no logic and simply renders a template. In the next section, you’ll author these
     templates.
   id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些 URL 路径中的三个映射到`TemplateView`类。`TemplateView`不执行任何逻辑，只是简单地呈现模板。在下一节中，你将创建这些模板。
 - en: 8.1.1 Templates
   id: totrans-60
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 8.1.1 模板
 - en: Every generated Django project is configured with a fully functional template
     engine. A *template engine* converts templates into responses by merging dynamic
     and static content. Figure 8.3 depicts a template engine generating an ordered
@@ -365,14 +411,18 @@
   id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个生成的 Django 项目都配置有一个完全功能的模板引擎。*模板引擎*通过合并动态和静态内容将模板转换为响应。图 8.3 描述了一个模板引擎在 HTML
+    中生成一个有序列表。
 - en: '![CH08_F03_Byrne](Images/CH08_F03_Byrne.png)'
   id: totrans-62
   prefs: []
   type: TYPE_IMG
+  zh: '![CH08_F03_Byrne](Images/CH08_F03_Byrne.png)'
 - en: Figure 8.3 A template engine combines static HTML and dynamic content.
   id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 8.3 模板引擎将静态 HTML 和动态内容结合在一起。
 - en: 'Like every other major Django subsystem, the template engine is configured
     in the `settings` module. Open the `settings` module in the Django root directory.
     At the top of this module, add an import for the `os` module, as shown in bold
@@ -644,15 +694,19 @@
   id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本节中，你将为 Bob 构建第二个工作流程。此工作流程允许 Bob 在访问敏感个人信息之前证明他的身份。Bob 通过请求和提交登录表单开始此工作流程。服务器将
+    Bob 重定向到一个简单的个人资料页面。Bob 登出，服务器将他重定向回登录表单。图 8.6 说明了这个工作流程。
 - en: '![CH08_F06_Byrne](Images/CH08_F06_Byrne.png)'
   id: totrans-105
   prefs: []
   type: TYPE_IMG
+  zh: '![CH08_F06_Byrne](Images/CH08_F06_Byrne.png)'
 - en: Figure 8.6 In this authentication workflow, Bob logs in, accesses his profile
     information, and logs out.
   id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 8.6 在此认证工作流程中，Bob 登录，访问他的个人资料信息，然后登出。
 - en: As with the user-registration workflow, the authentication workflow is composed
     of views, models, and templates. This time, Django has done most of the work for
     you. Django natively ships with many built-in views, models, and templates. These
@@ -662,17 +716,22 @@
   id: totrans-107
   prefs: []
   type: TYPE_NORMAL
+  zh: 与用户注册工作流程一样，认证工作流程由视图、模型和模板组成。这次，Django 已经为你完成了大部分工作。Django 本地支持许多内置视图、模型和模板。这些组件支持常见的站点功能，如登录、登出、更改密码和重置密码。在下一节中，你将利用两个内置
+    Django 视图。
 - en: 8.2.1 Built-in Django views
   id: totrans-108
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 8.2.1 内置 Django 视图
 - en: 'To leverage Django’s built-in views, open urls.py in the Django root directory.
     Add the following URL path entry, shown in bold, to urlpatterns; do not remove
     any preexisting URL path entries:'
   id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 要利用 Django 的内置视图，打开 Django 根目录中的 urls.py。将以下 URL 路径条目，显示为粗体，添加到 urlpatterns；不要删除任何现有的
+    URL 路径条目：
 - en: '[PRE12]'
   id: totrans-110
   prefs: []
@@ -682,6 +741,7 @@
   id: totrans-111
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 将 URL 路径映射到内置 Django 视图
 - en: Adding this line of code maps eight URL paths to built-in views. Table 8.3 illustrates
     which URL patterns are mapped to which view classes. In this chapter, you’ll use
     the first two views, `LoginView` and `LogoutView`. You will use the other views
@@ -689,46 +749,58 @@
   id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: 添加这行代码将八个 URL 路径映射到内置视图。表 8.3 显示了哪些 URL 模式映射到哪些视图类。在本章中，你将使用前两个视图，`LoginView`
+    和 `LogoutView`。后续章节将使用其他视图。
 - en: Table 8.3 Mapping URL paths to views
   id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 8.3 将 URL 路径映射到视图
 - en: '| URL path | Django view |'
   id: totrans-114
   prefs: []
   type: TYPE_TB
+  zh: '| URL 路径 | Django 视图 |'
 - en: '| accounts/login/ | LoginView |'
   id: totrans-115
   prefs: []
   type: TYPE_TB
+  zh: '| accounts/login/ | LoginView |'
 - en: '| accounts/logout/ | LogoutView |'
   id: totrans-116
   prefs: []
   type: TYPE_TB
+  zh: '| accounts/logout/ | LogoutView |'
 - en: '| accounts/password_change/ | PasswordChangeView |'
   id: totrans-117
   prefs: []
   type: TYPE_TB
+  zh: '| accounts/password_change/ | PasswordChangeView |'
 - en: '| accounts/password_change/done/ | PasswordChangeDoneView |'
   id: totrans-118
   prefs: []
   type: TYPE_TB
+  zh: '| accounts/password_change/done/ | PasswordChangeDoneView |'
 - en: '| accounts/password_reset/ | PasswordResetView |'
   id: totrans-119
   prefs: []
   type: TYPE_TB
+  zh: '| accounts/password_reset/ | PasswordResetView |'
 - en: '| accounts/password_reset/done/ | PasswordResetDoneView |'
   id: totrans-120
   prefs: []
   type: TYPE_TB
+  zh: '| accounts/password_reset/done/ | PasswordResetDoneView |'
 - en: '| accounts/reset/<uidb64>/<token>/ | PasswordResetConfirmView |'
   id: totrans-121
   prefs: []
   type: TYPE_TB
+  zh: '| accounts/reset/<uidb64>/<token>/ | PasswordResetConfirmView |'
 - en: '| accounts/reset/done/ | PasswordResetCompleteView |'
   id: totrans-122
   prefs: []
   type: TYPE_TB
+  zh: '| accounts/reset/done/ | PasswordResetCompleteView |'
 - en: Many Django projects make it to production with these views. These views are
     popular for two primary reasons. First, you get to push your code to production
     faster without reinventing the wheel. Second, and more importantly, these components
@@ -736,22 +808,27 @@
   id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 许多 Django 项目都使用这些视图进行生产。这些视图之所以受欢迎，有两个主要原因。首先，你可以在不重复造轮子的情况下更快地将代码推向生产。其次，更重要的是，这些组件通过遵循最佳实践来保护你和你的用户。
 - en: In the next section, you will create and configure your own view. Your view
     will live within a new Django app. This app lets Bob access his personal information.
   id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一节中，你将创建和配置你自己的视图。你的视图将存在于一个新的 Django 应用程序中。这个应用程序允许 Bob 访问他的个人信息。
 - en: 8.2.2 Creating a Django app
   id: totrans-125
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 8.2.2 创建一个 Django 应用程序
 - en: 'Previously, you generated a *Django project*; in this section, you’ll generate
     a *Django app*. Run the following command from the project root directory to create
     a new app. This command generates a Django app in a new directory called profile_info:'
   id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 在之前，你生成了一个 *Django 项目*；在本节中，你将生成一个 *Django 应用程序*。从项目根目录运行以下命令来创建一个新应用程序。该命令在一个名为
+    profile_info 的新目录中生成一个 Django 应用程序：
 - en: '[PRE13]'
   id: totrans-127
   prefs: []
@@ -763,14 +840,18 @@
   id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 8.7 显示了新应用程序的目录结构。注意，为应用程序特定的模型、测试和视图生成了一个单独的模块。在本章中，你将修改 `views` 和 `tests`
+    模块。
 - en: '![CH08_F07_Byrne](Images/CH08_F07_Byrne.png)'
   id: totrans-129
   prefs: []
   type: TYPE_IMG
+  zh: '![CH08_F07_Byrne](Images/CH08_F07_Byrne.png)'
 - en: Figure 8.7 Directory structure of a new Django app
   id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 8.7 新 Django 应用程序的目录结构
 - en: Open the `views` module and add the code in listing 8.3 to it. The `ProfileView`
     class accesses the user object via the request. This object is a built-in model
     defined and created by Django. Django automatically creates the user object and
@@ -781,10 +862,13 @@
   id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 打开`views`模块，并将列表 8.3 中的代码添加到其中。`ProfileView`类通过请求访问用户对象。此对象是由 Django 定义和创建的内置模型。Django
+    在调用视图之前自动创建用户对象并将其添加到请求中。如果用户未经身份验证，`ProfileView`将以 401 状态响应。此状态通知客户端未经授权访问配置文件信息。如果用户已经经过身份验证，`ProfileView`将以用户的配置文件信息响应。
 - en: Listing 8.3 Adding a view to your app
   id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 8.3 将视图添加到您的应用程序
 - en: '[PRE14]'
   id: totrans-133
   prefs: []
@@ -794,20 +878,24 @@
   id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 以编程方式访问用户对象
 - en: ❷ Rejects unauthenticated users
   id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 拒绝未经身份验证的用户
 - en: ❸ Renders a response
   id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 渲染一个响应
 - en: 'Under the new app directory (not the project root directory), add a new file
     named urls.py with the following content. This file maps URL paths to app-specific
     views:'
   id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: 在新的应用程序目录（而不是项目根目录）下，添加一个名为 urls.py 的新文件，并使用以下内容。此文件将 URL 路径映射到特定于应用程序的视图：
 - en: '[PRE15]'
   id: totrans-138
   prefs: []
@@ -819,6 +907,8 @@
   id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 在项目根目录（而不是应用程序目录）中，重新打开 urls.py 并添加一个新的 URL 路径条目，如下所示。此 URL 路径条目将 `ProfileView`
+    映射到 /accounts/profile/。保留 urlpatterns 中的所有现有 URL 路径条目不变：
 - en: '[PRE16]'
   id: totrans-140
   prefs: []
@@ -832,6 +922,9 @@
   id: totrans-141
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，您已经重用了 Django 的内置视图并创建了自己的视图，`ProfileView`。现在是为您的视图创建模板的时候了。在 templates
+    目录下创建一个名为 registration 的子目录。创建并打开一个名为 login.html 的文件，位于 registration 下。默认情况下，`LoginView`
+    在此处查找登录表单。
 - en: 'Add the following HTML to login.html; Bob is going to submit his authentication
     credentials with this form. The template expression `{{ form.as_p }}` renders
     a labeled input field for both the username and password. As with the user-registration
@@ -839,6 +932,8 @@
   id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 将以下 HTML 添加到 login.html；Bob 将使用此表单提交他的身份验证凭据。模板表达式 `{{ form.as_p }}` 为用户名和密码分别呈现一个带有标签的输入字段。与用户注册表单一样，请忽略
+    `csrf_token` 语法；这将在第 16 章中介绍：
 - en: '[PRE17]'
   id: totrans-143
   prefs: []
@@ -848,10 +943,12 @@
   id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 必要的，但将在另一章节中讨论
 - en: ❷ Dynamically rendered as username and password form fields
   id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 动态呈现为用户名和密码表单字段
 - en: 'Create and open a file named profile.html beneath the templates directory.
     Add the following HTML to profile.html; this template is going to render Bob’s
     profile information and a logout link. The `{{ user }}` syntax in this template
@@ -861,6 +958,9 @@
   id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建并打开一个名为 profile.html 的文件，位于 templates 目录下。将以下 HTML 添加到 profile.html；此模板将呈现
+    Bob 的配置文件信息和注销链接。此模板中的 `{{ user }}` 语法引用了由 `ProfileView` 访问的同一用户模型对象。最后一个段落包含一个名为
+    `url` 的内置模板标签。此标签将查找并呈现映射到 `LogoutView` 的 URL 路径：
 - en: '[PRE18]'
   id: totrans-147
   prefs: []
@@ -870,37 +970,45 @@
   id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 通过模型对象渲染配置文件信息，来自数据库
 - en: ❷ Dynamically generates a logout link
   id: totrans-149
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 动态生成注销链接
 - en: Now it’s time to log in as Bob. Before beginning the next section, you should
     do two things. First, ensure that all of your changes are written to disk. Second,
     restart the server.
   id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 现在是时候以 Bob 的身份登录了。在开始下一节之前，您应该做两件事。首先，确保所有更改都已写入磁盘。其次，重新启动服务器。
 - en: 8.2.3 Bob logs into and out of his account
   id: totrans-151
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 8.2.3 Bob 登录并退出他的帐户
 - en: 'Point your browser to https:/./localhost:8000/accounts/login/ and log in as
     Bob. After a successful login, `LoginView` will send a response to the browser
     containing two important details:'
   id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: 将浏览器指向 https:/./localhost:8000/accounts/login/ 并以 Bob 的身份登录。成功登录后，`LoginView`
+    将向浏览器发送一个响应，其中包含两个重要的细节：
 - en: '`Set-Cookie` response header'
   id: totrans-153
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Set-Cookie` 响应头'
 - en: Status code of 302
   id: totrans-154
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 状态码为 302
 - en: The `Set-Cookie` response header delivers the session ID to the browser. (You
     learned about this header in the previous chapter.) Bob’s browser will hold on
     to a local copy of his session ID and send it back to the server on subsequent
@@ -1030,6 +1138,7 @@
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 8.3 简洁地要求身份验证
 - en: Secure websites prohibit anonymous access to restricted resources. When a request
     arrives without a valid session ID, a website typically responds with an error
     code or a redirect. Django supports this behavior with a class named `LoginRequiredMixin`.
@@ -1038,6 +1147,7 @@
   id: totrans-174
   prefs: []
   type: TYPE_NORMAL
+  zh: 安全的网站禁止匿名访问受限资源。当请求到达时没有有效的会话ID，网站通常会用错误代码或重定向来响应。Django支持使用名为`LoginRequiredMixin`的类来支持此行为。当您的视图继承自`LoginRequiredMixin`时，无需验证当前用户是否已经通过身份验证；`LoginRequiredMixin`会为您执行此操作。
 - en: In the profile_info directory, reopen the views.py file and add `LoginRequiredMixin`
     to `ProfileView`. This redirects requests from anonymous users to your login page.
     Next, delete any code used to programmatically verify the request; this code is
@@ -1046,10 +1156,12 @@
   id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: 在`profile_info`目录中，重新打开`views.py`文件，并将`LoginRequiredMixin`添加到`ProfileView`。这会将来自匿名用户的请求重定向到您的登录页面。接下来，删除任何用于程序化验证请求的代码；这些代码现在已经是多余的。您的类应该像这里显示的一样；`LoginRequiredMixin`和删除的代码以粗体字显示。
 - en: Listing 8.4 Prohibiting anonymous access concisely
   id: totrans-176
   prefs: []
   type: TYPE_NORMAL
+  zh: 清单 8.4 简洁地禁止匿名访问
 - en: '[PRE20]'
   id: totrans-177
   prefs: []
@@ -1059,24 +1171,29 @@
   id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 添加此导入。
 - en: ❷ Delete this import.
   id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 删除此导入。
 - en: ❸ Add LoginRequiredMixin.
   id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 添加`LoginRequiredMixin`。
 - en: ❹ Delete these lines of code.
   id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 删除这些行代码。
 - en: 'The `login_required` decorator is the function-based equivalent of the `LoginRequiredMixin`
     class. The following code illustrates how to prohibit anonymous access to a function-based
     view with the `login_required` decorator:'
   id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: '`login_required`装饰器是函数式视图的等效物。以下代码示例说明了如何使用`login_required`装饰器禁止匿名访问函数式视图：'
 - en: '[PRE21]'
   id: totrans-183
   prefs: []
@@ -1086,23 +1203,27 @@
   id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 等同于`LoginRequiredMixin`
 - en: Your application now supports user authentication. It has been said that authentication
     makes testing difficult. This may be true in some web application frameworks,
     but in the next section, you’ll learn why Django isn’t one of them.
   id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 您的应用程序现在支持用户身份验证。有人说认证会使测试变得困难。在一些Web应用程序框架中，这可能是真的，但在接下来的章节中，您将了解为什么Django不是其中之一。
 - en: 8.4 Testing authentication
   id: totrans-186
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 8.4 测试身份验证
 - en: 'Security and testing have one thing in common: programmers often underestimate
     the importance of both. Typically, neither of these areas receive enough attention
     when a codebase is young. The long-term health of the system then suffers.'
   id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 安全性和测试有一个共同点：程序员经常低估了这两者的重要性。通常，在代码库年轻时，这两个领域都没有得到足够的关注。然后，系统的长期健康状态就会受到影响。
 - en: Every new feature of a system should be accompanied by tests. Django encourages
     testing by generating a `tests` module for every new Django app. This module is
     where you author test classes. The responsibility of a test class, or `TestCase`,
@@ -1112,6 +1233,7 @@
   id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 系统的每个新功能都应该配有测试。Django通过为每个新的Django应用程序生成一个`tests`模块来鼓励测试。这个模块是您编写测试类的地方。测试类或`TestCase`的责任是为一组离散功能定义测试。`TestCase`类由测试方法组成。测试方法旨在通过执行单个功能并执行断言来维护代码库的质量。
 - en: Authentication is no obstacle for testing. Actual users with real passwords
     can log into and out of your Django project programmatically from within a test.
     Under the profile_info directory, open the tests.py file and add the code in listing
@@ -1122,10 +1244,12 @@
   id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 身份验证对测试不构成障碍。具有真实密码的实际用户可以从测试中以编程方式登录和退出您的Django项目。在`profile_info`目录下，打开`tests.py`文件，并添加清单8.5中的代码。`TestAuthentication`类演示了如何测试本章中所做的一切。`test_authenticated_workflow`方法首先为Bob创建一个用户模型。然后，它以他的身份登录，访问他的个人资料页面，然后将其注销。
 - en: Listing 8.5 Testing user authentication
   id: totrans-190
   prefs: []
   type: TYPE_NORMAL
+  zh: 清单 8.5 测试用户身份验证
 - en: '[PRE22]'
   id: totrans-191
   prefs: []
@@ -1135,36 +1259,44 @@
   id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 为Bob创建一个测试用户帐户
 - en: ❷ Bob logs in.
   id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ Bob登录。
 - en: ❸ Accesses Bob’s profile page
   id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 访问Bob的个人资料页面
 - en: ❹ Simulates HTTPS
   id: totrans-195
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 模拟HTTPS
 - en: ❺ Verifies the response
   id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: ❺ 验证响应
 - en: ❻ Verifies Bob is logged out
   id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: ❻ 验证Bob已注销
 - en: Next, add the `test_prohibit_anonymous_access` method, shown in listing 8.6\.
     This method attempts to anonymously access the profile page. The response is tested
     to ensure that the user is redirected to the login page.
   id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，添加`test_prohibit_anonymous_access`方法，如列表 8.6 所示。该方法尝试匿名访问个人资料页面。测试响应以确保用户被重定向到登录页面。
 - en: Listing 8.6 Testing anonymous access restrictions
   id: totrans-199
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 8.6 测试匿名访问限制
 - en: '[PRE23]'
   id: totrans-200
   prefs: []
@@ -1174,16 +1306,19 @@
   id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 尝试匿名访问
 - en: ❷ Verifies the response
   id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 验证响应
 - en: 'Run the following command from the project root directory. This executes the
     Django test runner. The test runner automatically finds and executes both tests;
     both of them pass:'
   id: totrans-203
   prefs: []
   type: TYPE_NORMAL
+  zh: 从项目根目录运行以下命令。这会执行 Django 测试运行器。测试运行器会自动找到并执行这两个测试；两个测试都通过了：
 - en: '[PRE24]'
   id: totrans-204
   prefs: []
@@ -1197,33 +1332,41 @@
   id: totrans-205
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一章中，你学会了如何构建任何系统中最重要的一些功能。你知道如何创建和激活账户；你知道如何让用户登录和退出他们的账户。在接下来的章节中，你将进一步扩展这些知识，涉及的主题包括密码管理、授权、OAuth
+    2.0 和社交登录。
 - en: Summary
   id: totrans-206
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 摘要
 - en: Verify the user’s email address with a two-step user-registration workflow.
   id: totrans-207
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用两步用户注册工作流程验证用户的电子邮件地址。
 - en: Views, models, and templates are the building blocks of Django web development.
   id: totrans-208
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 视图、模型和模板是 Django Web 开发的构建模块。
 - en: Don’t reinvent the wheel; authenticate users with built-in Django components.
   id: totrans-209
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 不要重复造轮子；使用内置的 Django 组件对用户进行认证。
 - en: Prohibit anonymous access to restricted resources.
   id: totrans-210
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 禁止匿名访问受限资源。
 - en: Authentication is no excuse for untested functionality.
   id: totrans-211
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 认证不是对未经测试功能的借口。

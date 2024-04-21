@@ -1,26 +1,38 @@
 - en: 9 User password management
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 9 用户密码管理
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章内容
 - en: Changing, validating, and resetting user passwords
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 更改、验证和重置用户密码
 - en: Resisting breaches with salted hashing
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用加盐哈希抵抗突破
 - en: Resisting brute-force attacks with key derivation functions
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用密钥派生函数抵抗暴力攻击
 - en: Migrating hashed passwords
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 迁移哈希密码
 - en: 'In previous chapters, you learned about hashing and authentication; in this
     chapter, you’ll learn about the intersection of these topics. Bob uses two new
     workflows in this chapter: a password-change workflow and a password-reset workflow.
@@ -28,18 +40,26 @@
     and a key derivation function as a defense layer against breaches and brute-force
     attacks. Along the way, I’ll show you how to choose and enforce a password policy.
     Finally, I’ll show you how to migrate from one password-hashing strategy to another.'
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 在之前的章节中，你已经了解了哈希和认证； 在本章中，你将了解这些主题的交集。 Bob 在本章中使用了两个新的工作流程：密码更改工作流程和密码重置工作流程。
+    数据认证再次出现。 你将盐化哈希和密钥派生函数结合起来作为防范突破和暴力攻击的防御层。 在此过程中，我将向你展示如何选择和执行密码策略。 最后，我将向你展示如何从一种密码哈希策略迁移到另一种密码哈希策略。
 - en: 9.1 Password-change workflow
+  id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.1 密码更改工作流程
 - en: 'In the previous chapter, you mapped URL paths to a collection of built-in Django
     views. You used two of these views, `LoginView` and `LogoutView`, to build an
     authentication workflow. In this section, I’ll show you another workflow composed
     of two more of these views: `PasswordChangeView` and `PasswordChangeDoneView`.'
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 在前一章中，你将 URL 路径映射到一组内置 Django 视图。 你使用了其中的两个视图，`LoginView` 和 `LogoutView`，构建了认证工作流程。
+    在本节中，我将向你展示另一个由另外两个视图组成的工作流程：`PasswordChangeView` 和 `PasswordChangeDoneView`。
 - en: 'You’re in luck; your project is already using the built-in views for this workflow.
     You did this work in the previous chapter. Start your server, if it isn’t already
     running, log back in as Bob, and point your browser to [https://localhost:8000/admin/password
@@ -47,350 +67,528 @@
     this URL to `PasswordChangeView`, a view that renders a simple form for changing
     users’ passwords. This form contains three required fields, as shown in figure
     9.1:'
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 你很幸运；你的项目已经在使用内置视图进行此工作流程。 你在前一章已经完成了这项工作。 如果服务器尚未运行，请启动服务器，然后作为 Bob 重新登录，并将浏览器指向
+    [https://localhost:8000/admin/password _change/](https://localhost:8000/admin/password%20_change/)。
+    之前，你将此 URL 映射到 `PasswordChangeView`，一个用于更改用户密码的视图，该表单包含三个必填字段，如图 9.1 所示：
 - en: The user’s password
+  id: totrans-10
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 用户的密码
 - en: The new password
+  id: totrans-11
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 新密码
 - en: The new password confirmation
+  id: totrans-12
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 新密码确认
 - en: Notice the four input constraints next to the New Password field. These constraints
     represent the project *password policy*. This is a set of rules designed to prevent
     users from choosing weak passwords. `PasswordChangeView` enforces this policy
     when the form is submitted.
+  id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意新密码字段旁边的四个输入约束。 这些约束代表项目的*密码策略*。 这是一组旨在防止用户选择弱密码的规则。 `PasswordChangeView`
+    在提交表单时执行此策略。
 - en: '![CH09_F01_Byrne](Images/CH09_F01_Byrne.png)'
+  id: totrans-14
   prefs: []
   type: TYPE_IMG
+  zh: '![CH09_F01_Byrne](Images/CH09_F01_Byrne.png)'
 - en: Figure 9.1 A built-in password change form enforces a password policy with four
     constraints.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 9.1 内置密码更改表单强制执行四个约束的密码策略。
 - en: The password policy of a Django project is defined by the `AUTH_PASSWORD_VALIDATORS`
     setting. This setting is a list of password validators used to ensure password
     strength. Each password validator enforces a single constraint. This setting defaults
     to an empty list, but every generated Django project comes configured with four
     sensible built-in validators. The following listing illustrates the default password
     policy; this code already appears in the `settings` module of your project.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: Django 项目的密码策略由 `AUTH_PASSWORD_VALIDATORS` 设置定义。 此设置是用于确保密码强度的密码验证器列表。 每个密码验证器强制执行单个约束。
+    此设置默认为空列表，但每个生成的 Django 项目都配置有四个明智的内置验证器。 以下清单说明了默认密码策略； 这段代码已经出现在项目的 `settings`
+    模块中。
 - en: Listing 9.1 The default password policy
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 清单 9.1 默认密码策略
 - en: '[PRE0]'
+  id: totrans-18
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: '`UserAttributeSimilarityValidator` rejects any password that is similar to
     the username, first name, last name, or email. This prevents Mallory from guessing
     passwords like `alice12345` or `bob@bob.com`.'
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '`UserAttributeSimilarityValidator` 拒绝任何类似于用户名、名字、姓氏或电子邮件的密码。 这可以防止 Mallory
+    猜测像 `alice12345` 或 `bob@bob.com` 这样的密码。'
 - en: 'This validator accommodates two optional fields: `user_attributes` and `max_
     similarity`. The `user_attributes` option modifies which user attributes the validator
     checks. The `max_similarity` option modifies how strict the validator behaves.
     The default value is 0.7; lowering this number makes the validator more strict.
     The following listing demonstrates how you would configure the `UserAttributeSimilarityValidator`
     to strictly test three custom attributes.'
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 此验证器包含两个可选字段：`user_attributes` 和 `max_similarity`。`user_attributes` 选项修改验证器检查的用户属性。`max_similarity`
+    选项修改验证器的严格程度。默认值为 0.7；降低此数字会使验证器更加严格。以下列表演示了如何配置 `UserAttributeSimilarityValidator`
+    来严格测试三个自定义属性。
 - en: Listing 9.2 Validating password similarity
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 9.2 验证密码相似性
 - en: '[PRE1]'
+  id: totrans-22
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: ❶ Default value is 0.7
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 默认值为 0.7
 - en: '`MinimumLengthValidator`, shown in listing 9.3, rejects any password that is
     too short. This prevents Mallory from brute-forcing her way into an account protected
     by a password such as `b06`. By default, this validator rejects any password with
     fewer than eight characters. This validator accommodates an optional `min_length`
     field to enforce longer passwords.'
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: '`MinimumLengthValidator`，如列表 9.3 所示，拒绝任何太短的密码。这可以防止 Mallory 通过诸如 `b06` 这样的密码暴力破解受密码保护的帐户。默认情况下，此验证器拒绝少于八个字符的任何密码。此验证器包含一个可选的
+    `min_length` 字段，以强制执行更长的密码。'
 - en: Listing 9.3 Validating password length
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 9.3 验证密码长度
 - en: '[PRE2]'
+  id: totrans-26
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: ❶ Default value is 8.
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 默认值为 8。
 - en: The `CommonPasswordValidator` rejects any password found in a list of 20,000
     common passwords; see listing 9.4\. This prevents Mallory from hacking an account
     protected by a password such as `password` or `qwerty`. This validator accommodates
     an optional `password_list_path` field to override the common password list.
+  id: totrans-28
   prefs: []
   type: TYPE_NORMAL
+  zh: '`CommonPasswordValidator` 拒绝在 20,000 个常见密码列表中找到的任何密码；请参见列表 9.4。这可以防止 Mallory
+    破解受密码保护的帐户，例如 `password` 或 `qwerty`。此验证器包含一个可选的 `password_list_path` 字段，以覆盖常见密码列表。'
 - en: Listing 9.4 Prohibiting common passwords
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 9.4 禁止常见密码
 - en: '[PRE3]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: '`NumericPasswordValidator`, as the name implies, rejects numeric passwords.
     In the next section. I’ll show you how to strengthen your password policy with
     a custom password validator.'
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: '`NumericPasswordValidator`，顾名思义，拒绝纯数字密码。在下一节中，我将向您展示如何通过自定义密码验证器加强密码策略。'
 - en: 9.1.1 Custom password validation
+  id: totrans-32
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 9.1.1 自定义密码验证
 - en: Create a file named validators.py under the profile_info directory of your project.
     In this file, add the code in listing 9.5\. `PassphraseValidator` ensures that
     the password is a four-word passphrase. You learned about passphrases in chapter
     3\. `PassphraseValidator` initializes itself by loading a dictionary file into
     memory. The `get_help_text` method communicates the constraint; Django relays
     this message to the user interface.
+  id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 在项目的 profile_info 目录下创建一个名为 validators.py 的文件。在此文件中，添加列表 9.5 中的代码。`PassphraseValidator`
+    确保密码是一个由四个单词组成的密码短语。您在第 3 章学习了有关密码短语的知识。`PassphraseValidator` 通过将字典文件加载到内存中来初始化自身。`get_help_text`
+    方法传达约束；Django 将此消息传递给用户界面。
 - en: Listing 9.5 A custom password validator
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 9.5 自定义密码验证器
 - en: '[PRE4]'
+  id: totrans-35
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: ❶ Loads a dictionary file into memory
+  id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 将字典文件加载到内存中
 - en: ❷ Communicates the constraint to the user
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 将约束传达给用户
 - en: Next, add the method in listing 9.6 to the `PassphraseValidator`. The `validate`
     method verifies two properties of each password. The password must consist of
     four words, and the dictionary must contain each word. If the password does not
     meet both criteria, the `validate` method raises a `ValidationError`, rejecting
     the password. Django then rerenders the form with the `ValidationError` message.
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，在 `PassphraseValidator` 中添加列表 9.6 中的方法。`validate` 方法验证每个密码的两个属性。密码必须由四个单词组成，并且字典必须包含每个单词。如果密码不符合这两个条件，`validate`
+    方法会引发 `ValidationError`，拒绝密码。然后 Django 重新渲染带有 `ValidationError` 消息的表单。
 - en: Listing 9.6 The validate method
+  id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 9.6 validate 方法
 - en: '[PRE5]'
+  id: totrans-40
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: ❶ Ensures each password is four words
+  id: totrans-41
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 确保每个密码由四个单词组成
 - en: ❷ Ensures each word is valid
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 确保每个单词有效
 - en: By default, `PassphraseValidator` uses a dictionary file shipped with many standard
     Linux distributions. Non-Linux users will have no problem downloading a substitute
     from the web ([www.karamasoft.com/UltimateSpell/Dictionary.aspx](https://www.karamasoft.com/UltimateSpell/Dictionary.aspx)).
     `PassphraseValidator` accommodates an alternate dictionary file with an optional
     field, `dictionary_file`. This option represents a path to the overriding dictionary
     file.
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 默认情况下，`PassphraseValidator`使用许多标准Linux发行版中附带的字典文件。非Linux用户可以从网上下载替代品（[www.karamasoft.com/UltimateSpell/Dictionary.aspx](https://www.karamasoft.com/UltimateSpell/Dictionary.aspx)）。`PassphraseValidator`可以使用可选字段`dictionary_file`来适应替代字典文件。此选项表示覆盖字典文件的路径。
 - en: 'A custom password validator like `PassphraseValidator` is configured in the
     same way as a native password validator. Open the `settings` module and replace
     all four native password validators in `AUTH_PASSWORD_VALIDATORS` with `PassphraseValidator`:'
+  id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个类似`PassphraseValidator`的自定义密码验证器配置方式与本机密码验证器相同。打开`settings`模块，将`AUTH_PASSWORD_VALIDATORS`中的所有四个本机密码验证器替换为`PassphraseValidator`：
 - en: '[PRE6]'
+  id: totrans-45
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: ❶ Optionally overrides the dictionary path
+  id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 可选地覆盖字典路径
 - en: 'Restart your Django server and refresh the page at /accounts/password_change/.
     Notice that all four input constraints for the new password field are replaced
     by a single constraint: `Your` `password` `must` `contain` `4` `words` (figure
     9.2). This is the same message you returned from the `get_help_text` method.'
+  id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 重新启动您的Django服务器，并刷新页面/ accounts / password_change /。请注意，新密码字段的所有四个输入约束都被一个约束替换：`Your`
+    `password` `must` `contain` `4` `words`（图9.2）。这与您从`get_help_text`方法返回的消息相同。
 - en: '![CH09_F02_Byrne](Images/CH09_F02_Byrne.png)'
+  id: totrans-48
   prefs: []
   type: TYPE_IMG
+  zh: '![CH09_F02_Byrne](Images/CH09_F02_Byrne.png)'
 - en: Figure 9.2 A built-in password-change form requiring a passphrase
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 图9.2 需要口令的内置密码更改表单
 - en: 'Finally, choose a new passphrase for Bob and submit the form. Why a passphrase?
     Generally speaking:'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，为Bob选择一个新的口令并提交表单。为什么要选择一个口令？一般来说：
 - en: It is *easier* for Bob to *remember* a passphrase than a regular password.
+  id: totrans-51
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Bob*记住*一个口令比记住一个常规密码*更容易*。
 - en: It is *harder* for Mallory to *guess* a passphrase than a regular password.
+  id: totrans-52
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Mallory*猜测*一个口令比猜测一个常规密码*更难*。
 - en: After submitting the form, the server redirects you to a simple template confirming
     Bob’s password change. In the next section, I’ll explain how Bob’s password is
     stored.
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 提交表单后，服务器将您重定向到一个简单的模板，确认Bob的密码更改。在下一节中，我将解释Bob的密码是如何存储的。
 - en: 9.2 Password storage
+  id: totrans-54
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.2 密码存储
 - en: Every authentication system stores a representation of your password. You must
     reproduce this password in response to a username and password challenge when
     you log in. The system compares your reproduced password with the stored representation
     of it as a means of authenticating you.
+  id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个身份验证系统都存储着您密码的表示。当您登录时，必须根据用户名和密码的挑战来重现此密码。系统将您重现的密码与存储的表示进行比较，以验证您的身份。
 - en: 'Organizations have represented passwords in many ways. Some ways are much safer
     than others. Let’s take a look at three approaches:'
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: 组织以许多方式表示密码。一些方式比其他方式更安全。让我们看看三种方法：
 - en: Plaintext
+  id: totrans-57
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 明文
 - en: Ciphertext
+  id: totrans-58
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 密文
 - en: Hash value
+  id: totrans-59
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 哈希值
 - en: '*Plaintext* is the most egregious way to store user passwords. In this scenario,
     the system stores a verbatim copy of the password. The password in storage is
     literally compared to the password reproduced by the user when they log in. This
     is a horrible practice because an attacker has access to every user’s account
     if they gain unauthorized access to the password store. This could be an attacker
     from outside the organization or an employee such as a system administrator.'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: '*明文* 是存储用户密码的最严重的方式。在这种情况下，系统存储密码的文字副本。存储的密码与用户登录时用户复制的密码直接进行比较。这是一个可怕的做法，因为如果攻击者未经授权地访问密码存储，他将可以访问每个用户的帐户。这可能是来自组织外部的攻击者，也可能是系统管理员等员工。'
 - en: Plaintext password storage
+  id: totrans-61
   prefs: []
   type: TYPE_NORMAL
+  zh: 明文密码存储
 - en: Fortunately, plaintext password storage is rare. Unfortunately, some news organizations
     create a false impression about how common it is with sensational headlines.
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: 幸运的是，明文密码存储很少见。不幸的是，一些新闻机构通过轰动的标题制造了一个假象，即这种现象很常见。
 - en: For example, in early 2019, the security sphere saw a wave of headlines such
     as “Facebook admits storing passwords in plain text.” Anyone who read beyond the
     headline knows Facebook wasn’t intentionally storing passwords as plaintext; Facebook
     was accidentally logging them.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 例如，在2019年初，安全领域出现了一波标题，比如“Facebook承认以明文形式存储密码”。任何看过标题后面内容的人都知道Facebook并不是故意以明文形式存储密码；Facebook是在意外记录它们。
 - en: This is inexcusable, but not the same as the headlines made it out to be. If
     you do an internet search for “storing passwords as plaintext,” you can find similar
     sensational headlines about security incidents at Yahoo and Google.
+  id: totrans-64
   prefs: []
   type: TYPE_NORMAL
+  zh: 这是不可原谅的，但并非标题所宣传的那样。如果您在互联网上搜索“以明文形式存储密码”，您会发现关于雅虎和谷歌的安全事件的类似耸人听闻的标题。
 - en: Storing passwords as ciphertext isn’t much of an improvement over storing them
     as plaintext. In this scenario, the system encrypts each password and stores the
     ciphertext. When a user logs in, the system encrypts the reproduced password and
     compares the ciphertext to the ciphertext in storage. Figure 9.3 illustrates this
     horrible idea.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 将密码存储为密文并没有比将其存储为明文好多少。在这种情况下，系统加密每个密码并存储密文。当用户登录时，系统加密再现密码并将密文与存储中的密文进行比较。图9.3说明了这个可怕的想法。
 - en: '![CH09_F03_Byrne](Images/CH09_F03_Byrne.png)'
+  id: totrans-66
   prefs: []
   type: TYPE_IMG
+  zh: '![CH09_F03_Byrne](Images/CH09_F03_Byrne.png)'
 - en: Figure 9.3 How not to store passwords
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 图9.3 如何不存储密码
 - en: Storing encrypted passwords is a slippery slope. This means an attacker has
     access to every user’s account if they gain unauthorized access to the password
     store and the key; system administrators often have both. Encrypted passwords
     are therefore an easy target for a malicious system administrator, or an attacker
     who can manipulate a system administrator.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: 存储加密密码是一条很滑的坡。这意味着如果攻击者未经授权地访问密码存储和密钥，系统管理员通常都拥有这两者，那么攻击者就可以访问每个用户的账户。因此，加密密码对于恶意系统管理员或者可以操纵系统管理员的攻击者来说是一个容易的目标。
 - en: In 2013, the encrypted passwords of more than 38 million Adobe users were breached
     and publicized. The passwords were encrypted with 3DES in ECB mode. (You learned
     about 3DES and ECB mode in chapter 4.) Within a month, millions of these passwords
     were reverse engineered, or *cracked*, by hackers and cryptography analysts.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 2013年，超过3800万Adobe用户的加密密码被泄露并公开。这些密码是用ECB模式中的3DES加密的。（你在第4章学习了3DES和ECB模式。）一个月内，数百万这些密码被黑客和密码分析师逆向工程，或者*破解*。
 - en: Any modern authentication system doesn’t store your password; it hashes your
     password. When you log in, the system compares a hash value of your reproduced
     password to the hash value in storage. If the two values match, you are authenticated.
     If the two values don’t match, you have to try again. Figure 9.4 illustrates a
     simplified version of this process.
+  id: totrans-70
   prefs: []
   type: TYPE_NORMAL
+  zh: 任何现代身份验证系统都不会存储您的密码；它会对您的密码进行哈希。当您登录时，系统会将您再现密码的哈希值与存储中的哈希值进行比较。如果两个值匹配，您就通过了身份验证。如果两个值不匹配，您必须再试一次。图9.4说明了这个过程的简化版本。
 - en: '![CH09_F04_Byrne](Images/CH09_F04_Byrne.png)'
+  id: totrans-71
   prefs: []
   type: TYPE_IMG
+  zh: '![CH09_F04_Byrne](Images/CH09_F04_Byrne.png)'
 - en: Figure 9.4 A simplified example of hash-based password verification
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: 图9.4 基于哈希的密码验证的简化示例
 - en: Password management is a great real-world example of cryptographic hash function
     properties. Unlike encryption algorithms, hash functions are one-way; the password
     is easy to verify but difficult to recover. The importance of collision resistance
     is obvious; if two passwords collide with matching hash values, either password
     can be used to access the same account.
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 密码管理是加密哈希函数属性的一个很好的现实世界示例。与加密算法不同，哈希函数是单向的；密码易于验证但难以恢复。碰撞抗性的重要性是显而易见的；如果两个密码与匹配的哈希值发生碰撞，任何一个密码都可以用来访问同一个账户。
 - en: Is a hash function by itself suitable for hashing passwords? The answer is no.
     In 2012, the hash values for over 6 million LinkedIn passwords were breached and
     published to a Russian hacking forum.[1](#pgfId-1099658) At the time, LinkedIn
     was hashing passwords with SHA1, a hash function you learned about in chapter
     2\. Within two weeks, more than 90% of the passwords were cracked.
+  id: totrans-74
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个哈希函数本身是否适合用于哈希密码？答案是否定的。2012年，超过600万LinkedIn密码的哈希值被泄露并发布到一个俄罗斯黑客论坛。[1](#pgfId-1099658)
+    当时，LinkedIn正在用SHA1对密码进行哈希，这是你在第2章学习过的一个哈希函数。两周内，超过90%的密码被破解。
 - en: How were these passwords cracked so quickly? Suppose it is 2012 and Mallory
     wants to crack the recently published hash values. She downloads the dataset in
     table 9.1 containing breached usernames and SHA1 hash values.
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: 这些密码是如何被破解的呢？假设现在是 2012 年，Malory 想要破解最近发布的哈希值。她下载了包含被泄露的用户名和 SHA1 哈希值的表 9.1
+    数据集。
 - en: Table 9.1 The abridged password store for LinkedIn
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 9.1 领英的摘要密码存储
 - en: '| username | hash_value |'
+  id: totrans-77
   prefs: []
   type: TYPE_TB
+  zh: '| username | hash_value |'
 - en: '| ... | ... |'
+  id: totrans-78
   prefs: []
   type: TYPE_TB
+  zh: '| ... | ... |'
 - en: '| alice | 5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8 |'
+  id: totrans-79
   prefs: []
   type: TYPE_TB
+  zh: '| alice | 5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8 |'
 - en: '| bob | 6eb5f4e39660b2ead133b19b6996b99a017e91ff |'
+  id: totrans-80
   prefs: []
   type: TYPE_TB
+  zh: '| bob | 6eb5f4e39660b2ead133b19b6996b99a017e91ff |'
 - en: '| charlie | 5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8 |'
+  id: totrans-81
   prefs: []
   type: TYPE_TB
+  zh: '| charlie | 5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8 |'
 - en: '| ... | ... |'
+  id: totrans-82
   prefs: []
   type: TYPE_TB
+  zh: '| ... | ... |'
 - en: 'Mallory has several tools at her disposal:'
+  id: totrans-83
   prefs: []
   type: TYPE_NORMAL
+  zh: Malory 可以使用多种工具：
 - en: Common password lists
+  id: totrans-84
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 常见密码列表
 - en: Hash function determinism
+  id: totrans-85
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 哈希函数确定性
 - en: Rainbow tables
+  id: totrans-86
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 彩虹表
 - en: First, Mallory can avoid hashing every possible password by just hashing the
     most common ones. Previously, you learned how Django uses a common password list
     to enforce a password policy. Ironically, Mallory can use the same list to crack
     passwords of a site without this layer of defense.
+  id: totrans-87
   prefs: []
   type: TYPE_NORMAL
+  zh: 首先，Malory 可以避免对每个可能的密码进行哈希，只需对最常见的密码进行哈希。之前，你了解了 Django 如何使用常见密码列表来执行密码策略。具有讽刺意味的是，Malory
+    可以使用相同的列表来破解没有此防御层的站点的密码。
 - en: Second, did you notice that the hash values for Alice and Charlie are the same?
     Mallory can’t immediately determine anyone’s password, but with minimal effort
     she knows Alice and Charlie have the same password.
+  id: totrans-88
   prefs: []
   type: TYPE_NORMAL
+  zh: 其次，你有没有注意到 Alice 和 Charlie 的哈希值是相同的？Malory 不能立即确定任何人的密码，但是通过最小的努力，她知道 Alice
+    和 Charlie 使用相同的密码。
 - en: Last but not least, Mallory can try her luck with a *rainbow table*. This very
     large table of messages is mapped to precomputed hash values. This allows Mallory
     to quickly find which message (password) a hash value maps to without resorting
@@ -399,190 +597,284 @@
     computational overhead of brute-force cracking. For example, the SHA1 rainbow
     table at [https://project-rainbowcrack .com](https://project-rainbowcrack.com)
     is 690 GB.
+  id: totrans-89
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后但并非最不重要的，Malory 可以尝试运气，使用 *彩虹表*。这是一个非常庞大的消息表，映射到预先计算的哈希值。这允许 Malory 快速找到哈希值映射到哪条消息（密码），而不必采用暴力破解；她可以用空间换时间。换句话说，她可以支付获取彩虹表的存储和传输成本，而不是支付暴力破解的计算开销。例如，[https://project-rainbowcrack.com](https://project-rainbowcrack.com)
+    上的 SHA1 彩虹表大小为 690 GB。
 - en: The passwords for all three users are shown in table 9.2, an extremely abridged
     rainbow table. Notice that Bob is using a much stronger password than Alice and
     Charlie.
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 所有三个用户的密码都显示在表 9.2 中，这是一个极为简化的彩虹表。注意，Bob 使用的密码比 Alice 和 Charlie 的密码强得多。
 - en: Table 9.2 An abridged SHA1 rainbow table downloaded by Mallory
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: 表 9.2 Malory 下载的一个简化的 SHA1 彩虹表
 - en: '| hash_value | sha1_password |'
+  id: totrans-92
   prefs: []
   type: TYPE_TB
+  zh: '| hash_value | sha1_password |'
 - en: '| ... | ... |'
+  id: totrans-93
   prefs: []
   type: TYPE_TB
+  zh: '| ... | ... |'
 - en: '| 5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8 | password |'
+  id: totrans-94
   prefs: []
   type: TYPE_TB
+  zh: '| 5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8 | password |'
 - en: '| ... | ... |'
+  id: totrans-95
   prefs: []
   type: TYPE_TB
+  zh: '| ... | ... |'
 - en: '| 6eb5f4e39660b2ead133b19b6996b99a017e91ff | +y;kns:]+7Y] |'
+  id: totrans-96
   prefs: []
   type: TYPE_TB
+  zh: '| 6eb5f4e39660b2ead133b19b6996b99a017e91ff | +y;kns:]+7Y] |'
 - en: '| ... | ... |'
+  id: totrans-97
   prefs: []
   type: TYPE_TB
+  zh: '| ... | ... |'
 - en: Clearly, a hash function by itself is unsuitable for password hashing. In the
     next two sections, I show a couple of ways to resist attackers like Mallory.
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 显然，单独使用哈希函数不适合用于密码哈希。在接下来的两个部分中，我会展示几种抵抗像 Malory 这样的攻击者的方法。
 - en: 9.2.1 Salted hashing
+  id: totrans-99
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 9.2.1 加盐哈希
 - en: '*Salting* is a way to compute a different hash value from two or more identical
     messages. A *salt* is a random string of bytes that accompanies the message as
     input to a hash function. Each message is paired with a unique salt. Figure 9.5
     illustrates salted hashing.'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: '*加盐* 是一种通过两个或更多相同消息计算出不同哈希值的方法。*盐* 是一串随机的字节，作为输入附加到消息中，输入到哈希函数中。每个消息都与一个唯一的盐值配对。图
+    9.5 展示了加盐哈希。'
 - en: '![CH09_F05_Byrne](Images/CH09_F05_Byrne.png)'
+  id: totrans-101
   prefs: []
   type: TYPE_IMG
+  zh: '![CH09_F05_Byrne](Images/CH09_F05_Byrne.png)'
 - en: Figure 9.5 Salting a message yields a different hash value.
+  id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 9.5 对消息进行加盐会产生不同的哈希值。
 - en: 'In many ways, a salt is to hashing what an initialization vector is to encryption.
     You learned about IVs in chapter 4\. Here’s a comparison:'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: 在许多方面，盐就像哈希值，而初始化向量就像加密。在第 4 章中你学过 IVs。这里是一个比较：
 - en: Salts individualize hash values; IVs individualize ciphertexts.
+  id: totrans-104
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 盐值个性化哈希值；IV 个性化密文。
 - en: A salted hash value is useless if the salt is lost; ciphertext is useless if
     the IV is lost.
+  id: totrans-105
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 如果盐值丢失，加盐的哈希值就毫无用处；如果 IV 丢失，密文也毫无用处。
 - en: A salt or IV is stored unobfuscated with the hash value or ciphertext, respectively.
+  id: totrans-106
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 盐值或 IV 与哈希值或密文一起未经混淆地存储。
 - en: Neither a salt or IV should ever be reused.
+  id: totrans-107
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 盐值或 IV 任何一个都不应该被重用。
 - en: WARNING Many programmers conflate *salts* with *keys*, but these are two totally
     different concepts. Salts and keys are treated differently and produce different
     effects. A salt is not a secret and should be used to hash one and only one message.
     A key is intended to be a secret and can be used to hash one or more messages.
     Salts are used to differentiate hash values for identical messages; keys should
     never be used for this purpose.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：许多程序员混淆*盐*和*密钥*，但这是两个完全不同的概念。盐和密钥的处理方式不同，产生不同的效果。盐值不是秘密，应该用于哈希一个且仅一个消息。密钥是用来保密的，可以用于哈希一个或多个消息。盐值用于区分相同消息的哈希值；密钥绝不应该用于此目的。
 - en: 'Salting is an effective countermeasure against crackers like Mallory. By individualizing
     each hash value, Alice and Charlie’s identical passwords hash to different hash
     values. This deprives Mallory of a hint: she no longer knows that Alice and Charlie
     have the same password. More importantly, Mallory cannot use a rainbow table to
     crack salted hash values. There are no rainbow tables for salted hash values because
     there is no way for a rainbow table author to predict the salt value in advance.'
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 盐处理是对付像Mallory这样的黑客的有效对策。通过使每个哈希值个性化，Alice 和 Charlie 的相同密码哈希成不同的哈希值。这使得Mallory失去了线索：她不再知道Alice
+    和 Charlie 有相同的密码。更重要的是，Mallory 无法使用彩虹表来破解加盐哈希值。因为彩虹表中没有加盐哈希值，因为彩虹表作者无法预先预测盐值。
 - en: 'The following code demonstrates salted hashing with BLAKE2\. (You learned about
     BLAKE2 in chapter 2.) This code hashes the same message twice. Each message is
     hashed with a unique 16-byte salt, resulting in a unique hash value:'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码演示了使用 BLAKE2 进行盐处理。（你在第二章学到了 BLAKE2。）这段代码对同一消息进行了两次哈希处理。每个消息都使用一个唯一的 16
+    字节盐进行哈希处理，从而产生一个唯一的哈希值：
 - en: '[PRE7]'
+  id: totrans-111
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: ❶ Generates two random 16-byte salts
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 生成两个随机的 16 字节盐值
 - en: ❷ Same message, different salt
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 相同的消息，不同的盐值
 - en: ❸ Different hash values
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 不同的哈希值
 - en: 'Despite built-in support for salt, BLAKE2 is unsuitable for password hashing,
     and so is every other regular cryptographic hash function. The primary limitation
     of these functions is counterintuitive: these functions are too fast. The faster
     a hash function, the less it costs to carry out a brute-force attack. This makes
     it cheaper for someone such as Mallory to crack passwords.'
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管 BLAKE2 内置支持盐处理，但不适合用于密码哈希，其他常规的加密哈希函数也是如此。这些函数的主要限制是反直觉的：这些函数太快了。哈希函数越快，通过暴力破解密码的成本就越低。这使得像Mallory这样的人更便宜地破解密码。
 - en: WARNING BLAKE2 appears in this section for instructional purposes. It should
     never be used for password hashing. It is way too fast.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：BLAKE2 出现在本节是为了教学目的。它绝不能用于密码哈希。它太快了。
 - en: Password hashing is one of the only situations in which you actually want to
     strive for inefficiency. Fast is bad; slow is good. Regular hash functions are
     the wrong tool for the job. In the next section, I’ll introduce you to a category
     of functions that are slow by design.
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 密码哈希是您实际上想要追求低效率的少数情况之一。快速是坏事；慢速是好事。常规哈希函数不是这项工作的正确工具。在下一节中，我将向您介绍一类设计上慢速的函数。
 - en: 9.2.2 Key derivation functions
+  id: totrans-118
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 9.2.2 密钥派生函数
 - en: '*Key* *derivation functions* (*KDFs*) occupy an interesting niche in computer
     science because they are one of the only valid use cases for excessive resource
     consumption. These functions hash data while intentionally consuming a lot of
     computational resources, memory, or both. For this reason, KDFs have displaced
     regular hash functions as the safest way to hash passwords. The higher the resource
     consumption, the more expensive it is to crack the passwords with brute force.'
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: '*密钥* *派生函数* (*KDFs*) 在计算机科学中占据着一个有趣的位置，因为它们是过度消耗资源的仅有的有效用例之一。这些函数在故意消耗大量计算资源、内存或两者的同时对数据进行哈希处理。因此，KDFs
+    已经取代了常规哈希函数成为哈希密码的最安全方式。资源消耗越高，使用暴力破解密码的成本就越高。'
 - en: Like a hash function, a KDF accepts a message and produces a hash value. The
     message is known as the *initial key*, and the hash value is known as the *derived
     key*. In this book, I do not use the terms *initial key* or *derived key*, to
     avoid overloading you with unnecessary vocabulary. A KDF also accepts a salt.
     As you saw earlier with BLAKE2, the
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: 像哈希函数一样，KDF 接受一条消息并生成一个哈希值。该消息称为*初始密钥*，哈希值称为*派生密钥*。在本书中，我不使用*初始密钥*或*派生密钥*这两个术语，以避免向您提供不必要的词汇。KDF
+    还接受一个盐。就像之前看到的 BLAKE2 一样，
 - en: salt individualizes each hash value.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: salt 个性化每个哈希值。
 - en: '![CH09_F06_Byrne](Images/CH09_F06_Byrne.png)'
+  id: totrans-122
   prefs: []
   type: TYPE_IMG
+  zh: '![CH09_F06_Byrne](Images/CH09_F06_Byrne.png)'
 - en: Figure 9.6 Key derivation functions accept a message, salt, and at least one
     configuration parameter.
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 9.6 密钥派生函数接受一条消息、盐和至少一个配置参数。
 - en: Unlike regular hash functions, a KDF accepts at least one configuration parameter
     designed to tune resource consumption. A KDF doesn’t just run slow; you tell it
     how slow to run. Figure 9.6 illustrates the inputs and output of a KDF.
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: 与常规哈希函数不同，KDF 接受至少一个配置参数，旨在调整资源消耗。KDF 不仅运行缓慢；你告诉它要多慢。图 9.6 说明了 KDF 的输入和输出。
 - en: 'KDFs are distinguished by the kinds of resources they consume. All KDFs are
     designed to be computationally intensive; some are designed to be memory intensive.
     In this section, I examine two of them:'
+  id: totrans-125
   prefs: []
   type: TYPE_NORMAL
+  zh: KDFs 通过其消耗的资源种类进行区分。所有的 KDF 都被设计为计算密集型；其中一些被设计为内存密集型。在本节中，我将研究其中的两种：
 - en: Password-Based Key Derivation Function 2
+  id: totrans-126
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 基于密码的密钥派生函数 2
 - en: Argon2
+  id: totrans-127
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Argon2
 - en: '*Password-Based Key Derivation Function 2* (*PBKDF2*) is a popular password-based
     KDF. This is arguably the most widely used KDF in Python, because Django uses
     it to hash passwords by default. PBKDF2 is designed to wrap and iteratively call
     a hash function. The iteration count and the hash function are both configurable.
     In the real world, PBKDF2 usually wraps an HMAC function, which in turn often
     wraps SHA-256\. Figure 9.7 depicts an instance of PBKDF2 wrapping HMAC-SHA256.'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: '*基于密码的密钥派生函数 2*（*PBKDF2*）是一种流行的基于密码的 KDF。这可以说是 Python 中最广泛使用的 KDF，因为 Django
+    默认使用它来哈希密码。PBKDF2 被设计为包装并迭代调用哈希函数。迭代次数和哈希函数都是可配置的。在现实世界中，PBKDF2 通常包装一个 HMAC 函数，而
+    HMAC 函数又经常包装 SHA-256。图 9.7 描述了一个 PBKDF2 包装 HMAC-SHA256 的实例。'
 - en: '![CH09_F07_Byrne](Images/CH09_F07_Byrne.png)'
+  id: totrans-129
   prefs: []
   type: TYPE_IMG
+  zh: '![CH09_F07_Byrne](Images/CH09_F07_Byrne.png)'
 - en: Figure 9.7 SHA-256 wrapped by HMAC, and HMAC wrapped by PBKDF2
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 9.7 SHA-256 被 HMAC 包装，HMAC 被 PBKDF2 包装
 - en: Create a file named pbkdf2.py and add the code in listing 9.7 to it. This script
     establishes a crude performance benchmark for PBKDF2.
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: 创建一个名为 pbkdf2.py 的文件，并将列表 9.7 中的代码添加到其中。此脚本为 PBKDF2 建立了一个简单的性能基准。
 - en: It begins by parsing the iteration count from the command line. This number
     tunes PBKDF2 by telling it how many times to call HMAC-SHA256\. Next, the script
     defines a function called `test`; this function wraps `pbkdf2_hmac`, a function
@@ -590,45 +882,71 @@
     underlying hash function, a message, a salt, and the iteration count. Finally,
     the script uses the `timeit` module to record the number of seconds it takes to
     run the test method 10 times.
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: 它开始通过解析命令行中的迭代次数。这个数字通过告诉 PBKDF2 调整它调用 HMAC-SHA256 的次数来调整 PBKDF2。接下来，脚本定义了一个名为
+    `test` 的函数；此函数包装了 Python 的 `hashlib` 模块中的 `pbkdf2_hmac` 函数。`pbkdf2_hmac` 函数期望一个底层哈希函数的名称、一条消息、一个盐和迭代次数。最后，脚本使用
+    `timeit` 模块记录运行测试方法 10 次所需的秒数。
 - en: Listing 9.7 A single call to PBKDF2 wrapping HMAC-SHA256
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 9.7 对 PBKDF2 包装 HMAC-SHA256 的单个调用
 - en: '[PRE8]'
+  id: totrans-134
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: ❶ Parameterizes the iteration count
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 参数化迭代次数
 - en: ❷ Tunes resource consumption
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 调整资源消耗
 - en: ❸ Runs the test method 10 times
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 运行测试方法 10 次
 - en: 'Run the following command, shown in bold font, to execute the script with an
     iteration count of 260,000\. At the time of this writing, Django defaults to this
     number when hashing passwords with PBKDF2\. The last line of output, also shown
     in bold, is the number of seconds the script takes to run PBKDF2 10 times:'
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 运行以下命令，以粗体字体显示，以执行具有 260,000 次迭代次数的脚本。在撰写本文时，Django 在使用 PBKDF2 哈希密码时默认使用此数字。输出的最后一行，也以粗体显示，是运行
+    PBKDF2 10 次所需的秒数：
 - en: '[PRE9]'
+  id: totrans-139
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: 'Next, add a 0 to the end of the command line and run the script again. Notice
     the steep increase in response time, shown here in bold:'
+  id: totrans-140
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，在命令行的末尾添加一个 0 并再次运行脚本。请注意响应时间的急剧增加，如下所示（粗体显示）：
 - en: '[PRE10]'
+  id: totrans-141
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE10]'
 - en: When Bob logs in to a Django project, he must wait for PBKDF2 to return once.
     If Mallory tries to crack Bob’s password, she must wait for it to return over
     and over again, until she generates whatever password Bob has. This task can easily
     take more time than Mallory has to live if Bob chose a passphrase.
+  id: totrans-142
   prefs: []
   type: TYPE_NORMAL
+  zh: 当 Bob 登录 Django 项目时，他必须等待 PBKDF2 返回一次。如果 Mallory 尝试破解 Bob 的密码，她必须一次又一次地等待它返回，直到她生成了
+    Bob 的任何密码。如果 Bob 选择了一个密码短语，这个任务可能需要比 Mallory 活着的时间更长。
 - en: Attackers like Mallory often use *graphics processing units* (*GPUs*) to reduce
     the time of a brute-force attack by orders of magnitude. GPUs are specialized
     processors, originally designed for rendering graphics. Like a CPU, a GPU processes
@@ -638,64 +956,93 @@
     learning, bitcoin mining, and—you guessed it—password cracking. Cryptographers
     have responded to this threat by creating a new generation of KDFs designed to
     resist this kind of attack.
+  id: totrans-143
   prefs: []
   type: TYPE_NORMAL
+  zh: 类似 Mallory 这样的攻击者经常使用 *图形处理单元*（*GPUs*）来将暴力破解攻击的时间减少数个数量级。GPU 是专门的处理器，最初设计用于渲染图形。与
+    CPU 类似，GPU 使用多个核心处理数据。CPU 核心比 GPU 核心更快，但是 GPU 可以比 CPU 拥有更多的核心。这使 GPU 能够在许多可并行化的子任务中表现出色。此类任务包括机器学习、比特币挖掘，以及——你猜对了——密码破解。密码学家对这种威胁作出了回应，创建了一代新的
+    KDF，旨在抵抗这种类型的攻击。
 - en: In 2013, a group of cryptographers and security practitioners announced a new
     Password Hashing Competition (PHC). Its goal was to select and standardize on
     a password hashing algorithm capable of resisting modern cracking techniques ([https://password-hashing.net](https://password-hashing.net)).
     Two years later, a password-based KDF named *Argon2* won the PHC.
+  id: totrans-144
   prefs: []
   type: TYPE_NORMAL
+  zh: 2013 年，一群密码学家和安全从业者宣布了一个新的密码哈希竞赛（PHC）。其目标是选择并标准化一个能够抵抗现代破解技术的密码哈希算法（[https://password-hashing.net](https://password-hashing.net)）。两年后，名为
+    *Argon2* 的基于密码的 KDF 赢得了 PHC。
 - en: Argon2 is both memory-intensive and computationally intensive. This means an
     aspiring password cracker must acquire a large amount of memory as well as a large
     amount of computational resources. Argon2 is lauded for its ability to resist
     FPGA- and GPU-driven cracking efforts.
+  id: totrans-145
   prefs: []
   type: TYPE_NORMAL
+  zh: Argon2 既是内存密集型又是计算密集型。这意味着一个有抱负的密码破解者必须获取大量的内存以及大量的计算资源。Argon2 因其抵抗 FPGA 和 GPU
+    驱动的破解而受到赞扬。
 - en: The workhorse of Argon2 is BLAKE2\. This is ironic. Argon2 is known for how
     slow it can be. What’s under the hood? A hash function with a reputation for speed.
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: Argon2 的主力是 BLAKE2。这是具有让人惊讶的缓慢速度的 Argon2 的讽刺。底层是什么？一个以速度著称的哈希函数。
 - en: Note Use Argon2 for new projects. PBKDF2 is a better-than-average KDF but isn’t
     the best tool for the job. Later I will show you how to migrate a Django project
     from PBKDF2 to Argon2.
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意：对于新项目，请使用 Argon2。PBKDF2 是一个比平均水平更好的 KDF，但不是最适合这项工作的工具。稍后我将向你展示如何将 Django
+    项目从 PBKDF2 迁移到 Argon2。
 - en: In the next section, I’ll show you how to configure password hashing in Django.
     This allows you to harden PBKDF2 or replace it with Argon2.
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一节中，我将向你展示如何在 Django 中配置密码哈希。这使你可以加固 PBKDF2 或将其替换为 Argon2。
 - en: 9.3 Configuring password hashing
+  id: totrans-149
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.3 配置密码哈希
 - en: 'Django password hashing is highly extensible. As usual, this behavior is configured
     via the `settings` module. The `PASSWORD_HASHERS` setting is a list of password
     hashers. The default value is a list of four password hasher implementations.
     Each of these password hashers wraps a KDF. The first three should look familiar:'
+  id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: Django 的密码哈希是高度可扩展的。通常情况下，通过 `settings` 模块进行配置。`PASSWORD_HASHERS` 设置是一个密码哈希函数列表。默认值是四个密码哈希函数实现的列表。这些密码哈希器中的每一个都包装了一个
+    KDF。前三个应该看起来很熟悉：
 - en: '[PRE11]'
+  id: totrans-151
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE11]'
 - en: Django hashes new passwords with the first password hasher in the list. This
     happens when your account is created and when you change your password. The hash
     value is stored in the database, where it can be used to verify future authentication
     attempts.
+  id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: Django 在密码列表中使用第一个密码哈希函数来对新密码进行哈希。这发生在你的账户创建时以及你更改密码时。哈希值存储在数据库中，可以用于验证未来的认证尝试。
 - en: Any password hasher in the list can verify authentication attempts against previously
     stored hash values. For example, a project configured with the previous example
     will hash new or changed passwords with PBKDF2, but it can verify passwords previously
     hashed by PBKDF2SHA1, Argon2, or BCryptSHA256.
+  id: totrans-153
   prefs: []
   type: TYPE_NORMAL
 - en: Each time a user successfully logs in, Django checks to see if their password
     was hashed with the first password hasher in the list. If not, the password is
     rehashed with the first password hasher, and the hash value is stored in the database.
+  id: totrans-154
   prefs: []
   type: TYPE_NORMAL
 - en: 9.3.1 Native password hashers
+  id: totrans-155
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -703,45 +1050,56 @@
     and their unsalted counterparts are insecure. These components are shown in bold.
     Django maintains these password hashers for backward compatibility with legacy
     systems:'
+  id: totrans-156
   prefs: []
   type: TYPE_NORMAL
 - en: '`django.contrib.auth.hashers.PBKDF2PasswordHasher`'
+  id: totrans-157
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '`django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher`'
+  id: totrans-158
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '`django.contrib.auth.hashers.Argon2PasswordHasher`'
+  id: totrans-159
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '`django.contrib.auth.hashers.BCryptSHA256PasswordHasher`'
+  id: totrans-160
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '`django.contrib.auth.hashers.BCryptPasswordHasher`'
+  id: totrans-161
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '`**django.contrib.auth.hashers.SHA1PasswordHasher**`'
+  id: totrans-162
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '`**django.contrib.auth.hashers.MD5PasswordHasher**`'
+  id: totrans-163
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '`**django.contrib.auth.hashers.UnsaltedSHA1PasswordHasher**`'
+  id: totrans-164
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '`**django.contrib.auth.hashers.UnsaltedMD5PasswordHasher**`'
+  id: totrans-165
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
 - en: '`django.contrib.auth.hashers.CryptPasswordHasher`'
+  id: totrans-166
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
@@ -750,6 +1108,7 @@
     Passwords hashed with these components are trivial to crack because the underlying
     hash function is fast and cryptographically weak. Later in this chapter, I will
     show you how to fix this problem.
+  id: totrans-167
   prefs: []
   type: TYPE_NORMAL
 - en: At the time of this writing, Django defaults to `PBKDF2PasswordHasher` with
@@ -757,9 +1116,11 @@
     team with each new release. Python programmers who want to increase this value
     themselves can do so with a custom password hasher. This is useful if a system
     is unfortunately stuck with an old release of Django.
+  id: totrans-168
   prefs: []
   type: TYPE_NORMAL
 - en: 9.3.2 Custom password hashers
+  id: totrans-169
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -768,28 +1129,37 @@
     descends from `PBKDF2PasswordHasher` and bumps the iteration count by a factor
     of two. Keep in mind that a configuration change like this isn’t free. By design,
     this change would also increase login latency:'
+  id: totrans-170
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE12]'
+  id: totrans-171
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE12]'
 - en: ❶ Doubles the iteration count
+  id: totrans-172
   prefs: []
   type: TYPE_NORMAL
 - en: 'Custom password hashers are configured via `PASSWORD_HASHERS`, just like native
     password hashers:'
+  id: totrans-173
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE13]'
+  id: totrans-174
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE13]'
 - en: '`TwoFoldPBKDF2PasswordHasher` can verify authentication attempts against hash
     values previously computed by `PBKDF2PasswordHasher` because the underlying KDF
     is the same. This means a change like this can be done safely on an existing production
     system. Django will upgrade a previously stored hash value when the user authenticates.'
+  id: totrans-175
   prefs: []
   type: TYPE_NORMAL
 - en: 9.3.3 Argon2 password hashing
+  id: totrans-176
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
@@ -798,67 +1168,96 @@
     is pushed to production. The amount of work goes up dramatically if you want to
     make this change after users create accounts for themselves. I cover the easy
     way in this section; I cover the hard way in the next section.
+  id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: 每个新的 Django 项目都应该使用 Argon2 进行密码哈希。如果在系统推送到生产环境之前进行此更改，这将只花费你几秒钟的时间。如果想要在用户为自己创建账户之后再进行此更改，工作量将会大幅增加。本节介绍了简单的方法；下一节将介绍困难的方法。
 - en: 'Configuring Django to use Argon2 is easy. First, ensure that `Argon2PasswordHasher`
     is the first and only password hasher in `PASSWORD_HASHERS`. Next, run the following
     command from within your virtual environment. This installs the `argon2-cffi`
     package, providing `Argon2PasswordHasher` with an Argon2 implementation:'
+  id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: 配置 Django 使用 Argon2 很容易。首先，确保`Argon2PasswordHasher`是`PASSWORD_HASHERS`中的第一个且唯一的密码哈希器。接下来，在虚拟环境中运行以下命令。这将安装`argon2-cffi`软件包，为`Argon2PasswordHasher`提供一个
+    Argon2 实现。
 - en: '[PRE14]'
+  id: totrans-179
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE14]'
 - en: WARNING It is unwise to replace every default password hasher with `Argon2PasswordHasher`
     on a system that is already in production. Doing this prevents existing users
     from logging in.
+  id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：在已经处于生产状态的系统上将所有默认密码哈希器替换为`Argon2PasswordHasher`是不明智的。这样做会阻止现有用户登录。
 - en: If a system is already in production, `Argon2PasswordHasher` will be unable
     to verify future authentication attempts of existing users by itself; older user
     accounts would become inaccessible. In this scenario, `Argon2PasswordHasher` must
     be the head of `PASSWORD_HASHERS`, and the legacy password hasher should be the
     tail. This configures Django to hash new users’ passwords with Argon2\. Django
     will also upgrade existing user’s passwords to Argon2 as they log in.
+  id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果系统已经处于生产状态，则`Argon2PasswordHasher`将无法单独验证现有用户的未来身份验证尝试；旧用户账户将变得不可访问。在这种情况下，`Argon2PasswordHasher`必须是`PASSWORD_HASHERS`的首选，并且传统的密码哈希器应该是尾部。这样配置
+    Django 可以使用 Argon2 对新用户的密码进行哈希。Django 还会在用户登录时将现有用户的密码升级为 Argon2。
 - en: WARNING Django upgrades the existing password hash value only when a user authenticates.
     This is not a concern if every user authenticates within a short period of time,
     but often this is not the case.
+  id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：Django 仅在用户进行身份验证时才升级现有的密码哈希值。如果每个用户在短时间内都进行身份验证，则这不是问题，但通常情况下并非如此。
 - en: The safety provided by a stronger password hasher is not realized for a user
     until they log in after the upgrade. For some users, this can be a few seconds;
     for others, it will never happen. Until they log in, the original hash value will
     remain unchanged (and possibly vulnerable) in the password store. The next section
     explains how to migrate all users to an upgraded password hasher.
+  id: totrans-183
   prefs: []
   type: TYPE_NORMAL
+  zh: 更强的密码哈希器提供的安全性直到用户升级后登录才会被用户意识到。对于一些用户，这可能是几秒钟；对于其他用户，永远不会发生。在他们登录之前，原始哈希值将保持不变（可能是脆弱的）存储在密码存储中。下一节将解释如何将所有用户迁移到升级后的密码哈希器。
 - en: 9.3.4 Migrating password hashers
+  id: totrans-184
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 9.3.4 迁移密码哈希器
 - en: 'In June 2012, during the same week LinkedIn’s breach was announced, the unsalted
     hash values for more than 1.5 million eharmony passwords were breached and published.
     See them for yourself at [https://defuse.ca/files/eharmony-hashes.txt](https://defuse.ca/files/eharmony-hashes.txt).
     At the time, eharmony was hashing passwords with MD5, an insecure hash function
     you learned about in chapter 2\. According to one cracker ([http://mng.bz/jBPe](http://mng.bz/jBPe)):'
+  id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: 在 2012 年 6 月，在 LinkedIn 宣布泄露的同一周，超过 150 万个 eharmony 密码的未加盐哈希值被泄露并发布。您可以在 [https://defuse.ca/files/eharmony-hashes.txt](https://defuse.ca/files/eharmony-hashes.txt)
+    上查看。当时，eharmony 使用的是 MD5 进行密码哈希，这是你在第二章学到的一种不安全的哈希函数。根据一个破解者 ([http://mng.bz/jBPe](http://mng.bz/jBPe))
+    的说法：
 - en: If eharmony had used salt in their hashes like they should have been, I wouldn't
     have been able to run this attack. In fact, salting would have forced me to run
     a dictionary attack on each hash by itself, and that would have taken me over
     31 years.
+  id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果 eharmony 在它们的哈希中使用了盐，就像它们应该的那样，我就不能运行这次攻击了。事实上，盐会迫使我对每个哈希值分别进行字典攻击，这将花费我超过
+    31 年的时间。
 - en: 'Let’s consider how eharmony could have mitigated this problem. Suppose it is
     Alice’s first day on the job at eharmony. She has inherited an existing system
     with the following configuration:'
+  id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们考虑 eharmony 如何缓解这个问题。假设 Alice 在 eharmony 的第一天上班。她继承了一个具有以下配置的现有系统：
 - en: '[PRE15]'
+  id: totrans-188
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE15]'
 - en: 'The author of this system was fired for using `UnsaltedMD5PasswordHasher`.
     It’s now Alice’s responsibility to migrate the system to `Argon2PasswordHasher`
     without any downtime. The system has 1.5 million users, so she can’t force every
@@ -866,17 +1265,21 @@
     for every account, understandably. Alice realizes the only way to move forward
     is to hash the passwords twice, once with `UnsaltedMD5PasswordHasher` and again
     with `Argon2PasswordHasher`. Alice’s game plan is Add-Migrate-Delete:'
+  id: totrans-189
   prefs: []
   type: TYPE_NORMAL
 - en: Add `Argon2PasswordHasher`
+  id: totrans-190
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Migrate hash values
+  id: totrans-191
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
 - en: Delete `UnsaltedMD5PasswordHasher`
+  id: totrans-192
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
@@ -885,12 +1288,16 @@
     is the easy part; getting rid of `UnsaltedMD5PasswordHasher` is the hard part.
     Alice keeps `UnsaltedMD5PasswordHasher` in the list to ensure that existing users
     can access their accounts:'
+  id: totrans-193
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE16]'
+  id: totrans-194
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE16]'
 - en: ❶ Adds Argon2PasswordHasher to the head of the list
+  id: totrans-195
   prefs: []
   type: TYPE_NORMAL
 - en: Next, Alice must migrate the hash values; this is most of the work. She can’t
@@ -900,12 +1307,15 @@
     the original hash value in the database. Argon2 requires salt and is way slower
     than MD5; this means it’s going to take crackers like Mallory way more than 31
     years to crack these passwords. Figure 9.8 illustrates Alice’s migration plan.
+  id: totrans-196
   prefs: []
   type: TYPE_NORMAL
 - en: '![CH09_F08_Byrne](Images/CH09_F08_Byrne.png)'
+  id: totrans-197
   prefs: []
   type: TYPE_IMG
 - en: Figure 9.8 Hashed once with MD5, and hashed again with Argon2
+  id: totrans-198
   prefs: []
   type: TYPE_NORMAL
 - en: Alice can’t just modify the hash values of a production authentication system
@@ -913,6 +1323,7 @@
     would know what to do with the new hash values; users wouldn’t be able to log
     in. Before Alice can modify the hash values, she must first author and install
     a custom password hasher capable of interpreting the new hash values.
+  id: totrans-199
   prefs: []
   type: TYPE_NORMAL
 - en: 'Alice authors `UnsaltedMD5ToArgon2PasswordHasher`, shown in listing 9.8\. This
@@ -922,160 +1333,234 @@
     for hashing the password. Django calls the `verify` method when you log in; this
     method is responsible for comparing the original hash value in the database to
     the hash value of the reproduced password.'
+  id: totrans-200
   prefs: []
   type: TYPE_NORMAL
 - en: Listing 9.8 Migrating hash values with a custom password hasher
+  id: totrans-201
   prefs: []
   type: TYPE_NORMAL
 - en: '[PRE17]'
+  id: totrans-202
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE17]'
 - en: ❶ Called by Django when your password is set
+  id: totrans-203
   prefs: []
   type: TYPE_NORMAL
 - en: ❷ Hashes with both MD5 and Argon2
+  id: totrans-204
   prefs: []
   type: TYPE_NORMAL
 - en: ❸ Called by Django when you log in
+  id: totrans-205
   prefs: []
   type: TYPE_NORMAL
 - en: ❹ Compares hash values
+  id: totrans-206
   prefs: []
   type: TYPE_NORMAL
 - en: 'Alice adds `UnsaltedMD5ToArgon2PasswordHasher` in `PASSWORD_HASHERS`, shown
     in bold in the following code. This has no immediate effect because no password
     hash values have been modified yet; every user’s password is still hashed with
     either MD5 or Argon2:'
+  id: totrans-207
   prefs: []
   type: TYPE_NORMAL
+  zh: 爱丽丝在`PASSWORD_HASHERS`中添加了`UnsaltedMD5ToArgon2PasswordHasher`，如下面代码中加粗显示的部分所示。这没有立即效果，因为尚未修改任何密码哈希值；每个用户的密码仍然使用
+    MD5 或 Argon2 哈希：
 - en: '[PRE18]'
+  id: totrans-208
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE18]'
 - en: Alice is now finally in a position to retrieve each MD5 hash value, hash it
     with Argon2, and store it back in the database. Alice executes this portion of
     the plan with a Django *migration*. Migrations let Django programmers coordinate
     database changes in pure Python. Typically, a migration modifies the database
     schema; Alice’s migration will only modify data.
+  id: totrans-209
   prefs: []
   type: TYPE_NORMAL
+  zh: 爱丽丝现在终于有能力检索每个 MD5 哈希值，用 Argon2 哈希，并将其存储回数据库。爱丽丝使用 Django 的 *迁移* 执行计划的这部分。迁移让
+    Django 程序员可以在纯 Python 中协调数据库更改。通常，迁移会修改数据库模式；爱丽丝的迁移只会修改数据。
 - en: Listing 9.9 illustrates Alice’s migration. It begins by loading the `User` model
     object for every account with an MD5 hashed password. For each user, the MD5 hash
     value is hashed with Argon2\. The Argon2 hash value is then written to the database.
+  id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 9.9 展示了爱丽丝的迁移过程。它首先加载每个带有 MD5 哈希密码的账户的`User`模型对象。对于每个用户，MD5 哈希值会被 Argon2
+    哈希。然后将 Argon2 哈希值写入数据库。
 - en: Listing 9.9 A data migration for double hashing
+  id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 9.9 用于双重哈希的数据迁移
 - en: '[PRE19]'
+  id: totrans-212
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE19]'
 - en: ❶ References the User model
+  id: totrans-213
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 引用了用户模型
 - en: ❷ Retrieves users with an MD5 hashed password
+  id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 检索具有 MD5 哈希密码的用户
 - en: ❸ Hashes each MD5 hash value with Argon2
+  id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 用 Argon2 哈希每个 MD5 哈希值
 - en: ❹ Saves double hash values
+  id: totrans-216
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 保存双重哈希值
 - en: ❺ Ensures this code runs after the password table is created
+  id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: ❺ 确保此代码在密码表创建后运行
 - en: Alice knows this operation will take more than a few minutes; Argon2 is slow
     by design. Meanwhile, in production, `UnsaltedMD5ToArgon2PasswordHasher` is there
     to authenticate these users. Eventually, each password is migrated with no downtime;
     this breaks the dependency on `UnsaltedMD5PasswordHasher`.
+  id: totrans-218
   prefs: []
   type: TYPE_NORMAL
+  zh: 爱丽丝知道这个操作将花费不止几分钟；Argon2 是故意设计得慢。与此同时，在生产环境中，`UnsaltedMD5ToArgon2PasswordHasher`
+    用于验证这些用户。最终，每个密码都会在没有停机时间的情况下迁移；这打破了对`UnsaltedMD5PasswordHasher`的依赖。
 - en: 'Finally, Alice deletes `UnsaltedMD5PasswordHasher` from `PASSWORD_HASHERS`.
     She also ensures that the hash values created by it are deleted or retired from
     all existing backup copies of the production database:'
+  id: totrans-219
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后，爱丽丝从`PASSWORD_HASHERS`中删除了`UnsaltedMD5PasswordHasher`。她还确保由它创建的哈希值被从所有现有生产数据库的备份副本中删除或废弃：
 - en: '[PRE20]'
+  id: totrans-220
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE20]'
 - en: Like most Add-Migrate-Delete work efforts, the first and last steps are the
     easiest. Add-Migrate-Delete doesn’t just apply to password migrations. This mindset
     is useful for any kind of migration effort (e.g., changing a URL to a service,
     switching libraries, renaming a database column).
+  id: totrans-221
   prefs: []
   type: TYPE_NORMAL
+  zh: 像大多数添加-迁移-删除工作一样，第一步和最后一步是最容易的。添加-迁移-删除不仅适用于密码迁移。这种思维方式对于任何类型的迁移工作（例如，将 URL
+    更改为服务，切换库，重命名数据库列）都是有用的。
 - en: By now, you have learned a lot about password management. You have composed
     a password-change workflow out of two built-in views. You understand how passwords
     are represented in storage and know how to hash them safely. In the next section,
     I’ll show you another password-based workflow composed of four more built-in views.
+  id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: 到目前为止，你已经学到了很多关于密码管理的知识。你已经将一个密码更改工作流程组合成了两个内置视图。你了解密码在存储中的表示方式，并知道如何安全地对其进行哈希。在下一节中，我将向你展示另一个基于密码的工作流程，由另外四个内置视图组成���
 - en: 9.4 Password-reset workflow
+  id: totrans-223
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 9.4 密码重置工作流程
 - en: 'Bob has forgotten his password. In this section, you’ll help him reset it with
     another workflow. You’re in luck; you do not have to write any code this time.
     You did this work in the previous chapter when you mapped eight URL paths to built-in
     Django views. The password-reset workflow is composed of the last four of these
     views:'
+  id: totrans-224
   prefs: []
   type: TYPE_NORMAL
+  zh: 鲍勃忘记了他的密码。在这一部分，你将帮助他通过另一个工作流程重置密码。你很幸运；这次你不必编写任何代码。在上一章中，当你将八个 URL 路径映射到内置的
+    Django 视图时，你已经完成了这项工作。密码重置工作流程由这些视图中的最后四个组成：
 - en: '`PasswordResetView`'
+  id: totrans-225
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`PasswordResetView`'
 - en: '`PasswordResetDoneView`'
+  id: totrans-226
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`PasswordResetDoneView`'
 - en: '`PasswordResetConfirmView`'
+  id: totrans-227
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`PasswordResetConfirmView`'
 - en: '`PasswordResetCompleteView`'
+  id: totrans-228
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`PasswordResetCompleteView`'
 - en: Bob enters this workflow with an unauthenticated request to a password-reset
     page. This page renders a form. He enters his email, submits the form, and receives
     an email with a password-reset link. Bob clicks the link, taking him to a page
     where he resets his password. Figure 9.9 illustrates this workflow.
+  id: totrans-229
   prefs: []
   type: TYPE_NORMAL
+  zh: Bob通过未经身份验证的请求进入密码重置页面的工作流程。该页面呈现一个表单。他输入了他的电子邮件，提交表单，然后收到了一封带有密码重置链接的电子邮件。Bob点击链接，进入一个页面，在那里他重置了密码。图9.9说明了这个工作流程。
 - en: '![CH09_F09_Byrne](Images/CH09_F09_Byrne.png)'
+  id: totrans-230
   prefs: []
   type: TYPE_IMG
+  zh: '![CH09_F09_Byrne](Images/CH09_F09_Byrne.png)'
 - en: Figure 9.9 A password-reset workflow
+  id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: 图9.9 密码重置工作流程
 - en: 'Log out of the site and restart your Django server. Point your browser to the
     password-reset page at https:/./localhost:8000/accounts/password_reset/. By design,
     this page is accessible to unauthenticated users. This page has one form with
     one field: the user’s email address. Enter `bob@bob.com` and submit the form.'
+  id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: 退出站点并重新启动您的Django服务器。将浏览器指向密码重置页面https:/./localhost:8000/accounts/password_reset/。按设计，此页面可供未经身份验证的用户访问。此页面有一个表单，一个字段：用户的电子邮件地址。输入`bob@bob.com`并提交表单。
 - en: The form post of the password-reset page is handled by `PasswordResetView`.
     An email with a password-reset link is sent to the inbound email address if it
     is associated with an account. If the email address is not associated with an
     account, this view sends nothing. This prevents a malicious anonymous user from
     using your server to bombard someone with unsolicited email.
+  id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 密码重置页面的表单提交由`PasswordResetView`处理。如果与账户关联的入站电子邮件地址，将向该地址发送带有密码重置链接的电子邮件。如果电子邮件地址未与账户关联，此视图将不发送任何内容。这可以防止恶意的匿名用户使用您的服务器向某人发送未经请求的电子邮件。
 - en: The password-reset URL contains the user’s ID and a token. This token isn’t
     just a random string of characters and numbers; it is a keyed hash value. `PasswordResetView`
     produces this hash value with an HMAC function. The message is a handful of user
     fields such as the ID and `last_login`. The key is the `SECRET_KEY` setting. Figure
     9.10 illustrates this process.
+  id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: 密码重置URL包含用户的ID和一个令牌。这个令牌不仅仅是一串随机的字符和数字；它是一个带键哈希值。`PasswordResetView`使用HMAC函数生成这个哈希值。消息是一些用户字段，如ID和`last_login`。密钥是`SECRET_KEY`设置。图9.10说明了这个过程。
 - en: '![CH09_F10_Byrne](Images/CH09_F10_Byrne.png)'
+  id: totrans-235
   prefs: []
   type: TYPE_IMG
+  zh: '![CH09_F10_Byrne](Images/CH09_F10_Byrne.png)'
 - en: Figure 9.10 Bob submits a password-reset request and receives a password-reset
     token; the token is a keyed hash value.
+  id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: 图9.10 Bob提交密码重置请求并收到密码重置令牌；该令牌是一个带键哈希值。
 - en: In the previous chapter, you configured Django to redirect email to your console.
     Copy and paste Bob’s password-reset URL from your console into another browser
     tab. This delivers the password-reset token and the user’s ID back to the server.
@@ -1085,67 +1570,95 @@
     If the tokens do not match, the server knows the inbound password-reset token
     is forged or tampered with. This prevents someone such as Mallory from resetting
     the password for someone else’s account.
+  id: totrans-237
   prefs: []
   type: TYPE_NORMAL
+  zh: '在上一章中，您配置了Django将电子邮件重定向到控制台。从控制台复制并粘贴Bob的密码重置URL到另一个浏览器选项卡中。这将传递密码重置令牌和用户的ID回服务器。服务器使用用户ID重建令牌。然后重建的令牌与入站密码重置令牌进行比较。如果两个令牌匹配，服务器知道它是令牌的作者；Bob被允许更改他的密码。如果令牌不匹配，服务器知道入站密码重置令牌是伪造的或被篡改的。这可以防止像Mallory这样的人为别人的帐户重置密码。 '
 - en: The password-reset token is not reusable. If Bob wants to reset his password
     again, he must restart and finish the workflow. This mitigates the risk of Mallory
     accessing Bob’s email account after he receives a password-reset email. Mallory
     can still harm Bob in this scenario, but she cannot change Bob’s password with
     an old and forgotten password-reset email.
+  id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: 密码重置令牌不可重复使用。如果Bob想再次重置密码，他必须重新开始并完成工作流程。这减轻了Mallory在Bob收到密码重置电子邮件后访问Bob的电子邮件账户的风险。在这种情况下，Mallory仍然可以伤害Bob，但她无法使用旧的和被遗忘的密码重置电子邮件更改Bob的密码。
 - en: The password-reset token has an expiry. This also mitigates the risk of Mallory
     accessing Bob’s password-reset email. The default password-reset time-out is three
     days. This is reasonable for a social media site but unsuitable for a missile-guidance
     system. Only you can determine the appropriate value for the systems you build.
+  id: totrans-239
   prefs: []
   type: TYPE_NORMAL
+  zh: 密码重置令牌有一个过期时间。这也减轻了Mallory访问Bob的密码重置电子邮件的风险。默认的密码重置超时时间为三天。这对于一个社交媒体网站来说是合理的，但对于导弹制导系统来说是不合适的。只有你可以确定你构建的系统的适当值。
 - en: Use the `PASSWORD_RESET_TIMEOUT` setting to configure the password-reset expiry
     in seconds. This setting deprecates `PASSWORD_RESET_TIMEOUT_DAYS`, which is too
     coarse-grained for some systems.
+  id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`PASSWORD_RESET_TIMEOUT`设置来配置密码重置的过期时间（以秒为单位）。该设置弃用了`PASSWORD_RESET_TIMEOUT_DAYS`，对于某些系统来说，这种设置太粗糙了。
 - en: In previous chapters, you learned a lot about hashing and authentication. In
     this chapter, you learned about the relationships between these two topics. Changing
     and resetting passwords are fundamental features of any system; both depend heavily
     on hashing. The things you’ve learned about authentication so far prepare you
     for the main topic of the next chapter, authorization.
+  id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: 在前几章中，您学到了很多关于哈希和认证的知识。在本章中，您了解了这两个主题之间的关系。更改和重置密码是任何系统的基本功能；两者都严重依赖哈希。到目前为止，您学到的关于认证的知识为下一章的主题做好了准备，即授权。
 - en: Summary
+  id: totrans-242
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 总结
 - en: Don’t reinvent the wheel; change and reset user passwords with built-in Django
     components.
+  id: totrans-243
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 不要重复造轮子；使用内置的Django组件更改和重置用户密码。
 - en: Enforce and fine-tune your password policy with password validation.
+  id: totrans-244
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用密码验证强制和微调您的密码策略。
 - en: Resist brute-force attacks with salted hashing.
+  id: totrans-245
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 用盐哈希抵御暴力破解攻击。
 - en: Do not hash passwords with a regular hash function; always use a key derivation
     function, preferably Argon2.
+  id: totrans-246
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 不要使用常规哈希函数对密码进行哈希；始终使用密钥派生函数，最好选择Argon2。
 - en: Migrate legacy password hash values with a Django data migration.
+  id: totrans-247
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用Django数据迁移迁移遗留密码哈希值。
 - en: Password-reset workflows are yet another application of data authentication
     and keyed hashing.
+  id: totrans-248
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 密码重置工作流是数据认证和键控哈希的又一应用。
 - en: '* * *'
+  id: totrans-249
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
 - en: 1. In 2016, LinkedIn acknowledged this number was actually more than 170 million.
+  id: totrans-250
   prefs: []
   type: TYPE_NORMAL
+  zh: 1. 在2016年，LinkedIn承认这个数字实际上超过了1.7亿。

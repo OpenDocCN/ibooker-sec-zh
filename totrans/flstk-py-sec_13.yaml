@@ -136,30 +136,36 @@
   id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: '*授权类型*定义了资源所有者如何授予对受保护资源的访问权限。OAuth 规范定义了四种授权类型。在本书中，我只讨论了一种，即授权码。这种授权类型占据了绝大多数
+    OAuth 使用情况；现在先不要关注其他三种。以下列表概述了每种授权类型及其适用的用例：'
 - en: '*Authorization code grants* accommodate websites, mobile applications, and
     browser-based applications.'
   id: totrans-20
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*授权码授权*适用于网站、移动应用程序和基于浏览器的应用程序。'
 - en: '*Implicit grants* used to be the recommended grant type for mobile and browser-based
     applications. This grant type has been abandoned.'
   id: totrans-21
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*隐式授权*曾经是移动和基于浏览器的应用程序的推荐授权类型。但这种授权类型已经被弃用。'
 - en: '*Password grants* remove the need for an authorization server by requiring
     the resource owner to provide their credentials through a third party.'
   id: totrans-22
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*密码授权*通过要求资源所有者通过第三方提供其凭据，从而消除了对授权服务器的需求。'
 - en: '*Client credentials grants* apply when the resource owner and the third party
     are the same entity.'
   id: totrans-23
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '*客户端凭据授权*适用于资源所有者和第三方是同一实体的情况。'
 - en: In your job and personal life, you are probably going to see only authorization
     code grants. Implicit grants are deprecated, password grants are inherently less
     secure, and the use case for client credentials grants is rare. The next section
@@ -167,11 +173,14 @@
   id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: 在您的工作和个人生活中，您可能只会看到授权码授权。隐式授权已被弃用，密码授权固有地不太安全，客户端凭据授权的用例很少见。下一节将介绍授权码流，OAuth
+    的主要部分。
 - en: 11.1.1 Authorization code flow
   id: totrans-25
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.1.1 授权码流
 - en: '*Authorization* *code flow* is implemented by a well-defined protocol. Before
     this protocol can begin, the third party must first register as an OAuth client
     of the authorization server. OAuth client registration establishes several prerequisites
@@ -180,39 +189,48 @@
   id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: '*授权* *码流*由一个明确定义的协议实现。在此协议开始之前，第三方必须首先注册为授权服务器的 OAuth 客户端。OAuth 客户端注册为协议建立了几个前提条件，包括
+    OAuth 客户端的名称和凭据。协议中的每个参与者在协议的各个阶段使用此信息。'
 - en: 'The authorization code flow protocol is broken into four phases:'
   id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 授权码流协议分为四个阶段：
 - en: Requesting authorization
   id: totrans-28
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 请求授权
 - en: Granting authorization
   id: totrans-29
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 授予权限
 - en: Performing token exchange
   id: totrans-30
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 执行令牌交换
 - en: Accessing protected resources
   id: totrans-31
   prefs:
   - PREF_OL
   type: TYPE_NORMAL
+  zh: 访问受保护的资源
 - en: The first of four phases begins when a resource owner visits the OAuth client
     site.
   id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 四个阶段中的第一个始于资源所有者访问 OAuth 客户端站点时。
 - en: Requesting authorization
   id: totrans-33
   prefs: []
   type: TYPE_NORMAL
+  zh: 请求授权
 - en: During this phase of the protocol, illustrated in figure 11.2, the OAuth client
     requests authorization from the resource owner by sending them to the authorization
     server. With an ordinary link, an HTTP redirect, or JavaScript, the site directs
@@ -221,24 +239,30 @@
   id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 在协议的此阶段（图 11.2 中所示）期间，OAuth 客户端通过将资源所有者发送到授权服务器来请求授权。通过普通链接、HTTP 重定向或 JavaScript，站点将资源所有者指向*授权
+    URL*。这是授权服务器托管的授权表单的地址。
 - en: '![CH11_F02_Byrne](Images/CH11_F02_Byrne.png)'
   id: totrans-35
   prefs: []
   type: TYPE_IMG
+  zh: '![CH11_F02_Byrne](Images/CH11_F02_Byrne.png)'
 - en: Figure 11.2 The resource owner visits a third-party site; the site directs them
     to an authorization form, hosted by an authorization server.
   id: totrans-36
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 11.2 资源所有者访问第三方站点；该站点将其指向授权服务器托管的授权表单。
 - en: This next phase begins when the authorization server renders an authorization
     form to the resource owner.
   id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: 下一阶段开始时，授权服务器向资源所有者呈现授权表单。
 - en: Granting authorization
   id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: 授予权限
 - en: During this phase of the protocol, illustrated in figure 11.3, the resource
     owner grants access to the OAuth client through the authorization server. The
     authorization form is responsible for ensuring that the resource owner makes an
@@ -247,6 +271,7 @@
   id: totrans-39
   prefs: []
   type: TYPE_NORMAL
+  zh: 在协议的此阶段（图 11.3 中所示）期间，资源所有者通过授权服务器向 OAuth 客户端授予对受保护资源的访问权限。授权表单负责确保资源所有者做出知情决定。然后，资源所有者通过提交授权表单来授予权限。
 - en: Next, the authorization server sends the resource owner back to where they came
     from, the OAuth client site. This is done by redirecting them to a URL known as
     a *redirect URI*. The third party establishes the redirect URI beforehand, during
@@ -254,16 +279,20 @@
   id: totrans-40
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，授权服务器将资源所有者重定向回到他们来自的地方，即 OAuth 客户端站点。这是通过将他们重定向到一个称为*重定向 URI*的 URL 来完成的。第三方在
+    OAuth 客户端注册过程中预先设置了重定向 URI。
 - en: '![CH11_F03_Byrne](Images/CH11_F03_Byrne.png)'
   id: totrans-41
   prefs: []
   type: TYPE_IMG
+  zh: '![CH11_F03_Byrne](Images/CH11_F03_Byrne.png)'
 - en: Figure 11.3 The resource owner grants authorization by submitting the authorization
     form; the authorization server redirects the owner back to the third-party site
     with an authorization code.
   id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 11.3 资源所有者通过提交授权表单来授予授权；授权服务器会使用授权码将所有者重定向回第三方站点。
 - en: The authorization server will append an important query parameter to the redirect
     URI; this query parameter is named `code`, as in *authorization code*. In other
     words, the authorization server transfers the authorization code to the OAuth
@@ -271,21 +300,26 @@
   id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 授权服务器将一个重要的查询参数附加到重定向 URI 中；此查询参数被命名为`code`，如*authorization code*中所示。换句话说，授权服务器通过将其反射到资源所有者身上将授权码传递给
+    OAuth 客户端。
 - en: The third phase begins when the OAuth client parses the authorization code from
     the inbound redirect URI.
   id: totrans-44
   prefs: []
   type: TYPE_NORMAL
+  zh: 第三阶段始于 OAuth 客户端从入站重定向 URI 中解析授权码。
 - en: Performing Token exchange
   id: totrans-45
   prefs: []
   type: TYPE_NORMAL
+  zh: 执行令牌交换
 - en: During this phase, depicted in figure 11.4, the OAuth client exchanges the authorization
     code for an access token. The code is then sent straight back to where it came
     from, the authorization server, along with OAuth client registration credentials.
   id: totrans-46
   prefs: []
   type: TYPE_NORMAL
+  zh: 在此阶段，如图 11.4 所示，OAuth 客户端会将授权码交换为访问令牌。然后，该代码将与 OAuth 客户端注册凭据一起直接发送回到它来自的地方，即授权服务器。
 - en: The authorization server validates the code and OAuth client credentials. The
     code must be familiar, unused, recent, and associated with the OAuth client identifier.
     The client credentials must be valid. If each of these criteria are met, the authorization
@@ -293,24 +327,29 @@
   id: totrans-47
   prefs: []
   type: TYPE_NORMAL
+  zh: 授权服务器验证代码和 OAuth 客户端凭据。代码必须熟悉、未使用、最近的，并且与 OAuth 客户端标识符关联。客户端凭据必须有效。如果满足每个标准，授权服务器将响应一个访问令牌。
 - en: '![CH11_F04_Byrne](Images/CH11_F04_Byrne.png)'
   id: totrans-48
   prefs: []
   type: TYPE_IMG
+  zh: '![CH11_F04_Byrne](Images/CH11_F04_Byrne.png)'
 - en: Figure 11.4 After parsing the authorization code from the redirect URI, the
     OAuth client sends it back to where it came from; the authorization server responds
     with an access token.
   id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 11.4 从重定向 URI 解析授权码后，OAuth 客户端将其发送回到它来自的地方；授权服务器将响应一个访问令牌。
 - en: The last phase begins with a request from the OAuth client to the resource server.
   id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: 最后一个阶段始于 OAuth 客户端向资源服务器发送请求。
 - en: Accessing protected resources
   id: totrans-51
   prefs: []
   type: TYPE_NORMAL
+  zh: 访问受保护资源
 - en: During this phase, shown in figure 11.5, the OAuth client uses the access token
     to access a protected resource. This request carries the access token in a header.
     The resource server is responsible for validating the access token. If the token
@@ -318,37 +357,46 @@
   id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: 在此阶段，如图 11.5 所示，OAuth 客户端使用访问令牌来访问受保护的资源。此请求在标头中携带访问令牌。资源服务器负责验证访问令牌。如果令牌有效，则授予
+    OAuth 客户端对受保护资源的访问权限。
 - en: '![CH11_F05_Byrne](Images/CH11_F05_Byrne.png)'
   id: totrans-53
   prefs: []
   type: TYPE_IMG
+  zh: '![CH11_F05_Byrne](Images/CH11_F05_Byrne.png)'
 - en: Figure 11.5 Using the access token, the third-party site requests the protected
     resource from the resource server.
   id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 11.5 使用访问令牌，第三方站点向资源服务器请求受保护的资源。
 - en: Figure 11.6 illustrates the authorization code flow from start to end.
   id: totrans-55
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 11.6 描述了从开始到结束的授权码流程。
 - en: '![CH11_F06_Byrne](Images/CH11_F06_Byrne.png)'
   id: totrans-56
   prefs: []
   type: TYPE_IMG
+  zh: '![CH11_F06_Byrne](Images/CH11_F06_Byrne.png)'
 - en: Figure 11.6 Our OAuth authorization code flow
   id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 11.6 我们的 OAuth 授权码流程
 - en: In the next section, I walk through this protocol again with Alice, Bob, and
     Charlie. Along the way, I cover it in more technical detail.
   id: totrans-58
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一节中，我将再次与 Alice、Bob 和 Charlie 一起详细介绍此协议。
 - en: 11.2 Bob authorizes Charlie
   id: totrans-59
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 11.2 Bob 授权 Charlie
 - en: In previous chapters, you made a website for Alice; Bob registered himself as
     a user of it. During this process, Bob trusted Alice with his personal information—namely,
     his email. In this section, Alice, Bob, and Charlie collaborate on a new workflow.
@@ -982,6 +1030,7 @@
   id: totrans-150
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`AUTHORIZATION_CODE_EXPIRE_SECONDS`设置来配置授权码的过期时间。此设置表示授权码的生存时间，以秒为单位。此设置在授权服务器中配置，并由其执行。此设置的默认值为1分钟；OAuth规范建议最长为10分钟。以下示例配置DOT拒绝任何早于10秒的授权码：
 - en: '[PRE12]'
   id: totrans-151
   prefs: []
@@ -994,42 +1043,50 @@
   id: totrans-152
   prefs: []
   type: TYPE_NORMAL
+  zh: DOT提供了一个授权码管理的管理控制台UI。通过点击管理员控制台欢迎页面上的授权码链接或导航到/admin/oauth2_provider/grant/来访问授权页面。管理员使用此页面搜索和手动删除授权码。
 - en: Administrators navigate to the grant code detail page by clicking any grant.
     This page lets administrators view or modify grant code properties such as expiry,
     redirect URI, or scope.
   id: totrans-153
   prefs: []
   type: TYPE_NORMAL
+  zh: 管理员通过点击任何授权码来导航到授权码详情页面。该页面允许管理员查看或修改授权码属性，如过期时间、重定向URI或范围。
 - en: 11.3.2 Resource server responsibilities
   id: totrans-154
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.3.2 资源服务器责任
 - en: 'As with authorization server development, DOT provides web UIs, configuration
     settings, and utilities for handling the responsibilities of a resource server.
     These responsibilities include the following:'
   id: totrans-155
   prefs: []
   type: TYPE_NORMAL
+  zh: 与授权服务器开发一样，DOT提供了用于处理资源服务器责任的Web界面、配置设置和实用程序。这些责任包括以下内容：
 - en: Managing access tokens
   id: totrans-156
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 管理访问令牌
 - en: Serving protected resources
   id: totrans-157
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 为受保护的资源提供服务
 - en: Enforcing scope
   id: totrans-158
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 强制作用域
 - en: Managing access tokens
   id: totrans-159
   prefs: []
   type: TYPE_NORMAL
+  zh: 管理访问令牌
 - en: Like authorization codes, access tokens have an expiry as well. Resource servers
     enforce this expiry by rejecting any request with an expired access token. This
     won’t prevent the access token from falling into the wrong hands but can limit
@@ -1037,6 +1094,7 @@
   id: totrans-160
   prefs: []
   type: TYPE_NORMAL
+  zh: 与授权码一样，访问令牌也有一个过期时间。资源服务器通过拒绝任何带有过期访问令牌的请求来执行此过期。这不会阻止访问令牌落入错误手中，但如果发生这种情况，可以限制损害。
 - en: 'Use the `ACCESS_TOKEN_EXPIRE_SECONDS` setting to configure the time to live
     for each access token. The default value, shown here in bold, is 36,000 seconds
     (10 hours). In your project, this value should be as short as possible but long
@@ -1044,6 +1102,7 @@
   id: totrans-161
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用`ACCESS_TOKEN_EXPIRE_SECONDS`设置来配置每个访问令牌的生存时间。默认值在这里以粗体显示，为36,000秒（10小时）。在您的项目中，此值应尽可能短，但足以让OAuth客户端完成其工作：
 - en: '[PRE13]'
   id: totrans-162
   prefs: []
@@ -1057,16 +1116,19 @@
   id: totrans-163
   prefs: []
   type: TYPE_NORMAL
+  zh: DOT提供了一个类似于授权码管理页面的访问令牌管理界面。管理员可以通过点击管理员控制台欢迎页面上的访问令牌链接或导航到/admin/oauth2_provider/accesstoken/来访问访问令牌页面。管理员使用此页面搜索和手动删除访问令牌。
 - en: From the access tokens page, administrators navigate to the access token detail
     page. Administrators use the access token detail page to view and modify access
     token properties such as expiry.
   id: totrans-164
   prefs: []
   type: TYPE_NORMAL
+  zh: 从访问令牌页面，管理员导航到访问令牌详情页面。管理员使用访问令牌详情页面来查看和修改访问令牌属性，如过期时间。
 - en: Serving protected resources
   id: totrans-165
   prefs: []
   type: TYPE_NORMAL
+  zh: 为受保护的资源提供服务
 - en: Like unprotected resources, protected resources are served by views. Add the
     view definition in listing 11.1 to your resource server. Notice that `EmailView`
     extends `ProtectedResourceView`, shown in bold. This ensures that the email of
@@ -1075,10 +1137,12 @@
   id: totrans-166
   prefs: []
   type: TYPE_NORMAL
+  zh: 与未受保护的资源一样，受保护的资源由视图提供服务。在您的资源服务器中添加清单11.1中的视图定义。注意`EmailView`扩展了粗体显示的`ProtectedResourceView`。这确保了只有持有有效访问令牌的授权OAuth客户端才能访问用户的电子邮件。
 - en: Listing 11.1 Serving protected with ProtectedResourceView
   id: totrans-167
   prefs: []
   type: TYPE_NORMAL
+  zh: 清单11.1 使用ProtectedResourceView为受保护资源提供服务
 - en: '[PRE14]'
   id: totrans-168
   prefs: []
@@ -1088,14 +1152,17 @@
   id: totrans-169
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 需要有效的访问令牌
 - en: ❷ Called by OAuth clients like client.charlie.com
   id: totrans-170
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 被像client.charlie.com这样的OAuth客户端调用
 - en: ❸ Serves protected resources like Bob’s email
   id: totrans-171
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 为Bob的电子邮件等受保护的资源提供服务
 - en: When the OAuth client requests a protected resource, it certainly doesn’t send
     the user’s HTTP session ID. (In chapter 7, you learned that the session ID is
     an important secret between one user and one server.) How, then, does the resource
@@ -1106,11 +1173,13 @@
   id: totrans-172
   prefs: []
   type: TYPE_NORMAL
+  zh: 当OAuth客户端请求受保护的资源时，它肯定不会发送用户的HTTP会话ID。（在第7章，您了解到会话ID是一个用户与一个服务器之间的重要秘密。）那么，资源服务器如何确定请求适用于哪个用户？它必须从访问令牌开始工作。DOT通过`OAuth2TokenMiddleware`透明地执行这一步。这个类从访问令牌推断用户，并将`request.user`设置为如果受保护的资源请求直接来自用户。
 - en: 'Open your settings file and add `OAuth2TokenMiddleware`, shown here in bold,
     to `MIDDLEWARE`. Make sure you place this component after `SecurityMiddleware`:'
   id: totrans-173
   prefs: []
   type: TYPE_NORMAL
+  zh: 打开您的设置文件，并将`OAuth2TokenMiddleware`，如下面的加粗所示，添加到`MIDDLEWARE`中。确保您将此组件放在`SecurityMiddleware`之后：
 - en: '[PRE15]'
   id: totrans-174
   prefs: []
@@ -1123,6 +1192,7 @@
   id: totrans-175
   prefs: []
   type: TYPE_NORMAL
+  zh: '`OAuth2TokenMiddleware`通过`OAuth2Backend`的帮助解析用户，如下面的加粗所示。将此组件添加到`settings`模块中的`AUTHENTICATION_BACKENDS`中。确保内置的`ModelBackend`仍然完好无损；这个组件对终端用户身份验证是必要的：'
 - en: '[PRE16]'
   id: totrans-176
   prefs: []
@@ -1132,20 +1202,24 @@
   id: totrans-177
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 验证用户
 - en: ❷ Authenticates OAuth clients
   id: totrans-178
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 验证OAuth客户端
 - en: Enforcing scope
   id: totrans-179
   prefs: []
   type: TYPE_NORMAL
+  zh: 强制执行范围
 - en: DOT resource servers enforce scope with `ScopedProtectedResourceView`. Views
     inheriting from this class don’t just require a valid access token; they also
     make sure the protected resource is within scope of the access token.
   id: totrans-180
   prefs: []
   type: TYPE_NORMAL
+  zh: DOT资源服务器使用`ScopedProtectedResourceView`强制执行范围。从这个类继承的视图不仅需要一个有效的访问令牌；它们还确保受保护的资源在访问令牌的范围内。
 - en: Listing 11.2 defines `ScopedEmailView`, a child of `ScopedProtectedResourceView`.
     Compared with `EmailView` in listing 11.1, `ScopedEmailView` has only two small
     differences, shown here in bold. First, it descends from `ScopedProtectedResourceView`
@@ -1154,10 +1228,12 @@
   id: totrans-181
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 11.2 定义了`ScopedEmailView`，它是`ScopedProtectedResourceView`的子类。与列表 11.1 中的`EmailView`相比，`ScopedEmailView`只有两个小差别，如下面的加粗所示。首先，它继承自`ScopedProtectedResourceView`而不是`ProtectedResourceView`。其次，`required_scopes`属性定义了要强制执行的范围。
 - en: Listing 11.2 Serving protected with ScopedProtectedResourceView
   id: totrans-182
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 11.2 使用`ScopedProtectedResourceView`提供受保护的资源
 - en: '[PRE17]'
   id: totrans-183
   prefs: []
@@ -1167,10 +1243,12 @@
   id: totrans-184
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 需要有效的访问令牌并强制执行范围
 - en: ❷ Specifies which scopes to enforce
   id: totrans-185
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 指定要强制执行的范围
 - en: 'It is often useful to divide scopes into two categories: read or write. This
     gives resource owners even more fine-grained control. For example, Bob might grant
     Charlie read access to his email and write access to his name. This approach has
@@ -1179,6 +1257,7 @@
   id: totrans-186
   prefs: []
   type: TYPE_NORMAL
+  zh: 将范围分为两类通常很有用：读取或写入。这使资源所有者能够更精细地控制。例如，Bob可能授予Charlie对他的电子邮件的读取访问权限和对他的姓名的写入访问权限。这种方法有一个不幸的副作用：它使范围的数量翻倍。DOT通过本地支持读取和写入范围的概念来避免这个问题。
 - en: DOT resource servers use `ReadWriteScopedResourceView` to enforce read and write
     scope automatically. This class goes one step beyond `ScopedProtectedResourceView`
     by validating the scope of the inbound access token against the method of the
@@ -1187,6 +1266,7 @@
   id: totrans-187
   prefs: []
   type: TYPE_NORMAL
+  zh: DOT资源服务器使用`ReadWriteScopedResourceView`自动强制执行读取和写入范围。这个类比`ScopedProtectedResourceView`进一步验证入站访问令牌的范围与请求的方法是否匹配。例如，如果请求方法是`GET`，则访问令牌必须具有读取范围；如果请求方法是`POST`或`PATCH`，则必须具有写入范围。
 - en: Listing 11.3 defines `ReadWriteEmailView`, a child of `ReadWriteScopedResourceView`.
     `ReadWriteEmailView` allows OAuth clients to read and write a resource owner’s
     email by using a `get` method and a `patch` method, respectively. The inbound
@@ -1196,10 +1276,12 @@
   id: totrans-188
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表11.3定义了`ReadWriteEmailView`，它是`ReadWriteScopedResourceView`的子类。`ReadWriteEmailView`允许OAuth客户端通过使用`get`方法和`patch`方法分别读取和写入资源所有者的电子邮件。传入的访问令牌必须具有读取和邮件范围以使用`get`方法；它必须具有写入和邮件范围以使用`patch`方法。读取和写入范围不会出现在`required_scopes`中；它们是隐式的。
 - en: Listing 11.3 Serving protected with ReadWriteScopedResourceView
   id: totrans-189
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表11.3 使用ReadWriteScopedResourceView提供保护服务
 - en: '[PRE18]'
   id: totrans-190
   prefs: []
@@ -1209,14 +1291,17 @@
   id: totrans-191
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 需要读取和邮件范围
 - en: ❷ Requires write and email scope
   id: totrans-192
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 需要写入和邮件范围
 - en: Function-based views
   id: totrans-193
   prefs: []
   type: TYPE_NORMAL
+  zh: 基于函数的视图
 - en: 'DOT provides function decorators for function-based views. The `@protected_
     resource` decorator, shown here in bold, is functionally analogous to `ProtectedResourceView`
     and `ScopedProtectedResourceView`. By itself, this decorator ensures that the
@@ -1225,6 +1310,7 @@
   id: totrans-194
   prefs: []
   type: TYPE_NORMAL
+  zh: DOT为基于函数的视图提供函数装饰器。这里粗体显示的`@protected_resource`装饰器在功能上类似于`ProtectedResourceView`和`ScopedProtectedResourceView`。单独使用此装饰器确保调用者拥有访问令牌。`scopes`参数确保访问令牌具有足够的范围：
 - en: '[PRE19]'
   id: totrans-195
   prefs: []
@@ -1234,10 +1320,12 @@
   id: totrans-196
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 需要有效的访问令牌
 - en: ❷ Requires a valid access token with email scope
   id: totrans-197
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 需要有效的带有邮件范围的访问令牌
 - en: 'The `rw_protected_resource` `decorator`, shown here in bold, is functionally
     analogous to `ReadWriteScopedResourceView`. A GET request to a view decorated
     with `rw_protected_resource` must carry an access token with read scope. A POST
@@ -1246,6 +1334,7 @@
   id: totrans-198
   prefs: []
   type: TYPE_NORMAL
+  zh: 这里粗体显示的`rw_protected_resource` `decorator`在功能上类似于`ReadWriteScopedResourceView`。对于带有`rw_protected_resource`修饰的视图的GET请求必须携带具有读取范围的访问令牌。对于同一视图的POST请求必须携带具有写入范围的访问令牌。`scopes`参数指定了其他范围：
 - en: '[PRE20]'
   id: totrans-199
   prefs: []
@@ -1255,10 +1344,12 @@
   id: totrans-200
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ GET需要读取范围，POST需要写入范围
 - en: ❷ GET requires read and email scope, POST requires write and email scope
   id: totrans-201
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ GET需要读取和邮件范围，POST需要写入和邮件范围
 - en: Most programmers who work with OAuth primarily do so from the client side. People
     like Charlie are more common than people like Alice; there are naturally more
     OAuth clients than OAuth servers. In the next section, you’ll learn how to implement
@@ -1266,11 +1357,13 @@
   id: totrans-202
   prefs: []
   type: TYPE_NORMAL
+  zh: 大多数主要使用OAuth的程序员是从客户端进行操作的。像查理这样的人比像爱丽丝这样的人更常见；OAuth客户端比OAuth服务器自然要多。在下一节中，您将学习如何使用`requests-oauthlib`实现OAuth客户端。
 - en: 11.4 requests-oauthlib
   id: totrans-203
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 11.4 requests-oauthlib
 - en: '`requests-oauthlib` is a fantastic library for implementing OAuth clients in
     Python. This library glues together two other components: the `requests` package
     and `oauthlib`. From within your virtual environment, run the following command
@@ -1278,6 +1371,7 @@
   id: totrans-204
   prefs: []
   type: TYPE_NORMAL
+  zh: '`requests-oauthlib`是在Python中实现OAuth客户端的出色库。此库将另外两个组件粘合在一起：`requests`包和`oauthlib`。在您的虚拟环境中，运行以下命令来安装`requests_oauthlib`：'
 - en: '[PRE21]'
   id: totrans-205
   prefs: []
@@ -1290,6 +1384,7 @@
   id: totrans-206
   prefs: []
   type: TYPE_NORMAL
+  zh: 在第三方项目中声明一些常量，从客户端注册凭据开始。在本例中，我将客户端密钥存储在Python中。在生产系统中，您的客户端密钥应该安全地存储在密钥管理服务中，而不是您的代码库中：
 - en: '[PRE22]'
   id: totrans-207
   prefs: []
@@ -1300,6 +1395,7 @@
   id: totrans-208
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，定义授权表单、令牌交换端点和受保护资源的URL：
 - en: '[PRE23]'
   id: totrans-209
   prefs: []
@@ -1309,6 +1405,7 @@
   id: totrans-210
   prefs: []
   type: TYPE_NORMAL
+  zh: 域名
 - en: In this chapter, I use domain names such as authorize.alice.com and client.charlie
     .com to avoid confusing you with ambiguous references to localhost. You don’t
     have to do this in your local development environment in order to follow along;
@@ -1316,12 +1413,14 @@
   id: totrans-211
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我使用诸如`authorize.alice.com`和`client.charlie.com`等域名，以避免将您与对localhost的含糊引用混淆。为了跟上内容，您不必在本地开发环境中这样做；使用localhost就可以了。
 - en: 'Just remember to ensure that your third-party server is bound to a different
     port than your authorization server. The port of your server is specified via
     the `bind` argument, shown here in bold:'
   id: totrans-212
   prefs: []
   type: TYPE_NORMAL
+  zh: 只需确保你的第三方服务器绑定到与授权服务器不同的端口即可。服务器的端口由`bind`参数指定，如下所示加粗显示：
 - en: '[PRE24]'
   id: totrans-213
   prefs: []
@@ -1331,42 +1430,50 @@
   id: totrans-214
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 将服务器绑定到 8001 端口
 - en: In the next section, you’ll use these configuration settings to request authorization,
     obtain an access token, and access protected resources.
   id: totrans-215
   prefs: []
   type: TYPE_NORMAL
+  zh: 在下一节中，你将使用这些配置设置来请求授权、获取访问令牌和访问受保护资源。
 - en: 11.4.1 OAuth client responsibilities
   id: totrans-216
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 11.4.1 OAuth 客户端职责
 - en: '`requests-oauthlib` handles OAuth client responsibilities with `OAuth2Session`,
     the Swiss Army knife of Python OAuth clients. This class is designed to automate
     the following:'
   id: totrans-217
   prefs: []
   type: TYPE_NORMAL
+  zh: '`requests-oauthlib` 使用 `OAuth2Session` 处理 OAuth 客户端的职责，它是 Python OAuth 客户端的瑞士军刀。该类旨在自动完成以下操作：'
 - en: Generating the authorization URL
   id: totrans-218
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 生成授权 URL
 - en: Exchanging the authorization code for an access token
   id: totrans-219
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 将授权码交换为访问令牌
 - en: Requesting a protected resource
   id: totrans-220
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 请求受保护资源
 - en: Revoking access tokens
   id: totrans-221
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 撤销访问令牌
 - en: 'Add the view from listing 11.4 to your third-party project. `WelcomeView` looks
     for an access token in the user’s HTTP session. It then requests one of two things:
     authorization from the user, or their email from the resource server. If no access
@@ -1375,10 +1482,13 @@
   id: totrans-222
   prefs: []
   type: TYPE_NORMAL
+  zh: 将列表 11.4 中的视图添加到你的第三方项目中。`WelcomeView` 在用户的 HTTP 会话中查找访问令牌。然后，它请求两者之一：用户的授权或来自资源服务器的电子邮件。如果没有访问令牌可用，则渲染一个带有授权
+    URL 的欢迎页面；如果有访问令牌可用，则渲染一个带有用户电子邮件的欢迎页面。
 - en: Listing 11.4 OAuth client WelcomeView
   id: totrans-223
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 11.4 OAuth 客户端 WelcomeView
 - en: '[PRE25]'
   id: totrans-224
   prefs: []
@@ -1388,10 +1498,12 @@
   id: totrans-225
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 请求授权
 - en: ❷ Accesses a protected resource
   id: totrans-226
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 访问受保护资源
 - en: '`OAuth2Session` is used to generate the authorization URL or retrieve the protected
     resource. Notice that a copy of the state value is stored in the user’s HTTP session;
     the authorization server is expected to echo this value back at a later phase
@@ -1399,12 +1511,14 @@
   id: totrans-227
   prefs: []
   type: TYPE_NORMAL
+  zh: '`OAuth2Session` 用于生成授权 URL 或检索受保护资源。请注意，状态值的副本存储在用户的 HTTP 会话中；期望授权服务器在协议的后续阶段回显此值。'
 - en: 'Next, add the following welcome page template to your third-party project.
     This template renders the user’s email if it is known. If not, an authorization
     link is rendered (shown in bold):'
   id: totrans-228
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，将以下欢迎页面模板添加到你的第三方项目中。如果用户的电子邮件已知，则渲染用户的电子邮件。否则，渲染授权链接（加粗显示）：
 - en: '[PRE26]'
   id: totrans-229
   prefs: []
@@ -1414,16 +1528,19 @@
   id: totrans-230
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 请求授权
 - en: Requesting authorization
   id: totrans-231
   prefs: []
   type: TYPE_NORMAL
+  zh: 请求授权
 - en: There are many ways to request authorization. In this chapter, I do this with
     a link for the sake of simplicity. Alternatively, you can do this with a redirect.
     This redirect can happen in JavaScript, a view, or a custom middleware component.
   id: totrans-232
   prefs: []
   type: TYPE_NORMAL
+  zh: 有许多请求授权的方法。在本章中，我为了简单起见使用链接来完成。或者，你可以通过重定向来完成。此重定向可以在 JavaScript、视图或自定义中间件组件中进行。
 - en: Next, add the view in listing 11.5 to your third-party project. Like `WelcomeView`,
     `OAuthCallbackView` begins by initializing `OAuth2Session` from the session state.
     This view delegates token exchange to `OAuth2Session`, giving it the redirect
@@ -1433,10 +1550,14 @@
   id: totrans-233
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，将列表 11.5 中的视图添加到你的第三方项目中。与 `WelcomeView` 一样，`OAuthCallbackView` 首先通过会话状态初始化
+    `OAuth2Session`。此视图将令牌交换委托给 `OAuth2Session`，并提供重定向 URI 和客户端密钥。然后将访问令牌存储在用户的 HTTP
+    会话中，`WelcomeView` 可以访问它。最后，用户被重定向回欢迎页面。
 - en: Listing 11.5 OAuth client OAuthCallbackView
   id: totrans-234
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 11.5 OAuth 客户端 OAuthCallbackView
 - en: '[PRE27]'
   id: totrans-235
   prefs: []
@@ -1446,10 +1567,12 @@
   id: totrans-236
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 请求授权
 - en: ❷ Redirects the user back to the welcome page
   id: totrans-237
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 将用户重定向回欢迎页面
 - en: The `fetch_token` method performs a lot of work for `OAuthCallbackView`. First,
     this method parses the code and state parameters from the redirect URI. It then
     compares the inbound state parameter against the state pulled from the user’s
@@ -1459,10 +1582,14 @@
   id: totrans-238
   prefs: []
   type: TYPE_NORMAL
+  zh: '`fetch_token` 方法为 `OAuthCallbackView` 执行了大量工作。首先，此方法从重定向 URI 中解析代码和状态参数。然后，它将入站状态参数与从用户的
+    HTTP 会话中提取的状态进行比较。如果两个值不匹配，则引发 `MismatchingStateError`，并且授权码永远不会被使用。如果两个状态值匹配，则
+    `fetch_token` 方法将授权码和客户端密钥发送到令牌交换端点。'
 - en: Revoking tokens
   id: totrans-239
   prefs: []
   type: TYPE_NORMAL
+  zh: 撤销令牌
 - en: When you’re done with an access token, there is generally no reason to hold
     on to it. You don’t need it anymore, and it can be used against you only if it
     falls into the wrong hands. For this reason, it is usually a good idea to revoke
@@ -1471,6 +1598,7 @@
   id: totrans-240
   prefs: []
   type: TYPE_NORMAL
+  zh: 当你完成一个访问令牌后，通常没有理由继续持有它。你不再需要它，而且只有当它落入错误的手中时才会对你造成危害。因此，通常最好在访问令牌完成其目的后撤销每个访问令牌。一旦被撤销，访问令牌就无法用于访问受保护的资源。
 - en: 'DOT accommodates token revocation with a specialized endpoint. This endpoint
     expects an access token and the OAuth client credentials. The following code demonstrates
     how to access token revocation. Notice that the resource server responds to a
@@ -1478,6 +1606,7 @@
   id: totrans-241
   prefs: []
   type: TYPE_NORMAL
+  zh: DOT通过一个专门的端点来处理令牌撤销。这个端点需要一个访问令牌和OAuth客户端凭据。以下代码演示了如何访问令牌撤销。请注意，资源服务器会用403状态码回应后续请求：
 - en: '[PRE28]'
   id: totrans-242
   prefs: []
@@ -1487,10 +1616,12 @@
   id: totrans-243
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 撤销访问令牌
 - en: ❷ Access subsequently denied
   id: totrans-244
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 后续访问被拒绝
 - en: Large OAuth providers often let you manually revoke access tokens issued for
     your personal data. For example, visit [https://myaccount.google.com/permissions](https://myaccount.google.com/permissions)
     to view a list of all valid access tokens issued for your Google account. This
@@ -1500,6 +1631,7 @@
   id: totrans-245
   prefs: []
   type: TYPE_NORMAL
+  zh: 大型OAuth提供商通常允许你手动撤销为你的个人数据发布的访问令牌。例如，访问[https://myaccount.google.com/permissions](https://myaccount.google.com/permissions)查看为你的Google账户发布的所有有效访问令牌的列表。这个用户界面让你查看每个访问令牌的详细信息，并撤销它们。为了保护你的隐私，你应该撤销对任何你不打算很快使用的客户端应用程序的访问权限。
 - en: 'In this chapter, you learned a lot about OAuth. You learned how this protocol
     works from the perspective of all four roles: resource owner, OAuth client, authorization
     server, and resource server. You also got exposure to Django OAuth Toolkit and
@@ -1508,34 +1640,42 @@
   id: totrans-246
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一章中，你学到了很多关于OAuth的知识。你从资源所有者、OAuth客户端、授权服务器和资源服务器的角度了解了这个协议是如何工作的。你还接触到了Django
+    OAuth Toolkit和`requests-oauthlib`。这些工具在它们的工作中表现出色，文档完善，并且彼此之间相互配合良好。
 - en: Summary
   id: totrans-247
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 总结
 - en: You can share your data without sharing your password.
   id: totrans-248
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 你可以在不分享密码的情况下分享你的数据。
 - en: Authorization code flow is by far the most commonly used OAuth grant type.
   id: totrans-249
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 授权码流是目前最常用的OAuth授权类型。
 - en: An authorization code is exchanged for an access token.
   id: totrans-250
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 授权码被交换为访问令牌。
 - en: Reduce risk by limiting access tokens by time and scope.
   id: totrans-251
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 通过限制访问令牌的时间和范围来降低风险。
 - en: Scope is requested by an OAuth client, defined by an authorization server, and
     enforced by a resource server.
   id: totrans-252
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 范围由OAuth客户端请求，由授权服务器定义，并由资源服务器强制执行。

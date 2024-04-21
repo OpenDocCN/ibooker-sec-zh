@@ -3,30 +3,36 @@
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 密钥生成
 - en: This chapter covers
   id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖
 - en: Generating a secure key
   id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 生成安全密钥
 - en: Verifying data authentication with keyed hashing
   id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用键控哈希验证数据身份验证
 - en: Using the `hmac` module for cryptographic hashing
   id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用`hmac`模块进行加密哈希
 - en: Preventing timing attacks
   id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 防止时序攻击
 - en: In the previous chapter, you learned how to ensure data integrity with hash
     functions. In this chapter, you’ll learn how to ensure data authentication with
     keyed hash functions. I’ll show you how to safely generate random numbers and
@@ -36,11 +42,14 @@
   id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 在上一章中，您学习了如何使用哈希函数确保数据的完整性。 在本章中，您将学习如何使用键控哈希函数确保数据的身份验证。 我将向您展示如何安全地生成随机数和口令。
+    在此过程中，您将了解有关`os`、`secrets`、`random`和`hmac`模块的知识。 最后，您将学习如何通过比较长度恒定的时间中的哈希值来抵抗时序攻击。
 - en: 3.1 Data authentication
   id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 数据身份验证
 - en: Let’s revisit Alice’s document management system from the previous chapter.
     The system hashes each new document before storing it. To verify the integrity
     of a document, the system rehashes it and compares the new hash value to the old
@@ -49,6 +58,8 @@
   id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 让我们重新审视上一章中爱丽丝的文件管理系统。 系统在存储每个新文档之前对其进行哈希处理。 要验证文档的完整性，系统会重新对其进行哈希处理，并将新的哈希值与旧的哈希值进行比较。
+    如果哈希值不匹配，则文档被视为损坏。 如果哈希值匹配，则文档被视为完整。
 - en: Alice’s system effectively detects accidental data corruption but is less than
     perfect. Mallory, a malicious attacker, can potentially take advantage of Alice.
     Suppose Mallory gains write access to Alice’s filesystem. From this position,
@@ -60,6 +71,8 @@
   id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 爱丽丝的系统有效地检测到了意外数据损坏，但并不完美。 网络攻击者玛洛瑞可能会利用爱丽丝。 假设玛洛瑞获得了对爱丽丝文件系统的写入访问权限。 在这个位置，她不仅可以更改文档，还可以将其哈希值替换为更改后的文档的哈希值。
+    通过替换哈希值，玛洛瑞阻止了爱丽丝检测到文档已被篡改。 因此，爱丽丝的解决方案只能检测意外消息损坏； 它无法检测到有意的消息修改。
 - en: If Alice wants to resist Mallory, she’ll need to change the system to verify
     the integrity *and the origin* of each document. The system can’t just answer
     the question, “Has the data changed?” The system must also answer, “Who authored
@@ -68,6 +81,8 @@
   id: totrans-10
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果爱丽丝想要抵抗玛洛瑞，她需要改变系统以验证每个文档的完整性*和来源*。 系统不能只回答“数据是否改变？”的问题。 系统还必须回答“谁创作了这个数据？”
+    换句话说，系统需要确保数据的完整性和数据的身份验证。
 - en: '*Data authentication*, sometimes referred to as *message authentication*, ensures
     that a data reader can verify the identity of the data writer. This functionality
     requires two things: a key and a keyed hash function. In the next sections, I
@@ -75,21 +90,26 @@
   id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: '*数据身份验证*，有时也称为*消息身份验证*，确保数据读取者可以验证数据写入者的身份。 此功能需要两个东西：一个密钥和一个键控哈希函数。 在接下来的几节中，我将介绍密钥生成和键控哈希；
+    爱丽丝将这些工具结合起来以抵抗玛洛瑞。'
 - en: 3.1.1 Key generation
   id: totrans-12
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 键控哈希
 - en: 'Every key should be hard to guess if it is to remain a secret. In this section,
     I compare and contrast two types of keys: random numbers and passphrases. You’ll
     learn how to generate both, and when to use one or the other.'
   id: totrans-13
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果要保持秘密，每个密钥都应该难以猜测。 在本节中，我比较和对比了两种类型的密钥：随机数和口令。 您将学习如何生成这两种密钥，以及何时使用其中一种。
 - en: Random numbers
   id: totrans-14
   prefs: []
   type: TYPE_NORMAL
+  zh: 随机数
 - en: 'There is no need to use a third-party library when generating a random number;
     there are plenty of ways to do this from within Python itself. Only some of these
     methods, however, are suitable for security purposes. Python programmers traditionally
@@ -612,10 +632,12 @@
   id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: Alice 的协议实现，下图所示，使用 HMAC-SHA256 对接收到的文档进行哈希处理。如果两个 MAC 值相同，则消息被视为经过身份验证。
 - en: Listing 3.4 Alice uses an HMAC function after receiving Bob’s message
   id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 列表 3.4 Alice 在接收到 Bob 的消息后使用 HMAC 函数。
 - en: '[PRE10]'
   id: totrans-96
   prefs: []
@@ -625,10 +647,12 @@
   id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ Alice 计算自己的哈希值。
 - en: ❷ Alice compares both hash values.
   id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ Alice 比较两个哈希值。
 - en: Mallory, an intermediary, has no way to trick Alice into accepting an altered
     message. With no access to the key shared by Alice and Bob, Mallory cannot produce
     the same hash value as they do for a given message. If Mallory modifies the message
@@ -637,6 +661,8 @@
   id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: 作为一个中间人，Mallory 无法欺骗 Alice 接受已经修改的消息。由于无法获取 Alice 和 Bob 共享的密钥，Mallory 无法为给定消息生成与他们相同的哈希值。如果
+    Mallory 在传输过程中修改了消息或哈希值，Alice 收到的哈希值将与 Alice 计算的哈希值不同。
 - en: Take a look at the last few lines of code in listing 3.4\. Notice that Alice
     uses the `==` operator to compare hash values. This operator, believe it or not,
     leaves Alice vulnerable to Mallory in a whole new way. The next section explains
@@ -644,11 +670,14 @@
   id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: 看一下列表 3.4 中代码的最后几行。注意 Alice 使用 `==` 运算符来比较哈希值。这个运算符，信不信由你，使 Alice 在另一个全新的方式上容易受到
+    Mallory 的攻击。接下来的部分将解释攻击者如何像 Mallory 发动时间攻击。
 - en: 3.3 Timing attacks
   id: totrans-101
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 3.3 时间攻击
 - en: Data integrity and data authentication both boil down to hash value comparison.
     As simple as it may be to compare two strings, there is actually an unsafe way
     to do this. The `==` operator evaluates to False as soon as it finds the first
@@ -661,6 +690,9 @@
   id: totrans-102
   prefs: []
   type: TYPE_NORMAL
+  zh: 数据完整性和数据验证都归结为哈希值比较。虽然比较两个字符串可能看起来很简单，但实际上有一种不安全的方法。`==` 运算符一旦发现两个操作数之间的第一个差异，就会求值为
+    False。平均而言，`==` 必须扫描并比较所有哈希值字符的一半。至少，它可能只需要比较每个哈希值的第一个字符。最多，当两个字符串匹配时，它可能需要比较两个哈希值的所有字符。更重要的是，如果两个哈希值共享一个公共前缀，`==`
+    将花费更长的时间来比较两个哈希值。你能发现这个漏洞吗？
 - en: Mallory begins a new attack by creating a document she wants Alice to accept
     as though it came from Bob. Without the key, Mallory can’t immediately determine
     the hash value Alice will hash the document to, but she knows the hash value is
@@ -669,6 +701,8 @@
   id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: Mallory 通过创建一个她希望 Alice 接受的文档来开始新的攻击，使其看起来像是来自 Bob。没有密钥，Mallory 不能立即确定 Alice
+    将对文档进行哈希的哈希值，但她知道哈希值将是 64 个字符长。她还知道哈希值是十六进制文本，因此每个字符有 16 个可能的值。
 - en: The next step of the attack is to determine, or crack, the first of 64 hash
     value characters. For all 16 possible values this character can be, Mallory fabricates
     a hash value beginning with this value. For each fabricated hash value, Mallory
@@ -681,15 +715,20 @@
   id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 攻击的下一步是确定或破解 64 个哈希值字符中的第一个。对于该字符可以是的所有 16 个可能值，Mallory 制造一个以该值开头的哈希值。对于每个制造的哈希值，Mallory
+    将其与恶意文档一起发送给 Alice。她重复这个过程，测量并记录响应时间。经过大量响应后，Mallory 最终能够通过观察与每个十六进制值相关联的平均响应时间来确定
+    64 个哈希值字符的第一个。匹配的十六进制值的平均响应时间将略高于其他值。图 3.4 描述了 Mallory 如何破解第一个字符。
 - en: '![CH03_F04_Byrne](Images/CH03_F04_Byrne.png)'
   id: totrans-105
   prefs: []
   type: TYPE_IMG
+  zh: '![CH03_F04_Byrne](Images/CH03_F04_Byrne.png)'
 - en: Figure 3.4 Mallory cracks the first character of a hash value after observing
     slightly higher average response times for b.
   id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 3.4 Mallory 在观察到 b 的略高平均响应时间后破解哈希值的第一个字符。
 - en: Mallory finishes the attack by repeating this process for the remaining 63 of
     64 characters, at which point she knows the entire hash value. This is an example
     of a *timing attack*. This attack is executed by deriving unauthorized information

@@ -1,197 +1,289 @@
 - en: 4 Symmetric encryption
+  id: totrans-0
   prefs:
   - PREF_H1
   type: TYPE_NORMAL
+  zh: 4 对称加密
 - en: This chapter covers
+  id: totrans-1
   prefs: []
   type: TYPE_NORMAL
+  zh: 本章涵盖内容
 - en: Ensuring confidentiality with encryption
+  id: totrans-2
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 使用加密确保机密性
 - en: Introducing the cryptography package
+  id: totrans-3
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 介绍cryptography包
 - en: Choosing a symmetric encryption algorithm
+  id: totrans-4
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 选择对称加密算法
 - en: Rotating encryption keys
+  id: totrans-5
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 旋转加密密钥
 - en: In this chapter, I’ll introduce you to the `cryptography` package. You’ll learn
     how to use the encryption API of this package to ensure confidentiality. Keyed
     hashing and data authentication, from previous chapters, will make an appearance.
     Along the way, you’ll learn about key rotation. Finally, I’ll show you how to
     distinguish between safe and unsafe symmetric block ciphers.
+  id: totrans-6
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本章中，我将向你介绍`cryptography`包。你将学习如何使用这个包的加密API来确保机密性。前几章的键授权哈希和数据认证也会出现。在此过程中，你将学习有关密钥旋转的知识。最后，我将向你展示如何区分安全和不安全的对称分组密码。
 - en: 4.1 What is encryption?
+  id: totrans-7
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 4.1 什么是加密？
 - en: Encryption begins with plaintext. *Plaintext* is information that is readily
     comprehensible. The Gettysburg Address, an image of a cat, and a Python package
     are examples of potential plaintext. *Encryption* is the obfuscation of plaintext
     with the purpose of hiding information from unauthorized parties. The obfuscated
     output of encryption is known as *ciphertext*.
+  id: totrans-8
   prefs: []
   type: TYPE_NORMAL
+  zh: 加密始于明文。*明文*是可以轻易理解的信息。《葛底斯堡演说》、一张猫的图片和一个Python包都是潜在的明文示例。*加密*是将明文混淆以隐藏信息不被未经授权的人看到。加密后的输出称为*密文*。
 - en: The inverse of encryption, the transformation of ciphertext back to plaintext,
     is known as *decryption*. An algorithm for encrypting and decrypting data is called
     a *cipher*. Every cipher requires a *key*. A key is intended to be a secret among
     parties who are authorized to access encrypted information (figure 4.1).
+  id: totrans-9
   prefs: []
   type: TYPE_NORMAL
+  zh: 加密的逆过程，将密文转换回明文，称为*解密*。用于加密和解密数据的算法称为*密码*。每个密码都需要一个*密钥*。密钥旨在成为授权访问加密信息的各方之间的秘密（图
+    4.1）。
 - en: '![CH04_F01_Byrne](Images/CH04_F01_Byrne.png)'
+  id: totrans-10
   prefs: []
   type: TYPE_IMG
+  zh: '![CH04_F01_Byrne](Images/CH04_F01_Byrne.png)'
 - en: Figure 4.1 Plaintext is the human-readable input to encryption and the output
     of decryption; ciphertext is the machine-readable output of encryption and the
     input to decryption.
+  id: totrans-11
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4.1 明文是加密的人类可读输入和解密的输出；密文是加密的机器可读输出和解密的输入。
 - en: 'Encryption ensures confidentiality. Confidentiality is an atomic building block
     of secure system design, just like data integrity and data authentication from
     previous chapters. Unlike the other building blocks, *confidentiality* doesn’t
     have a complex definition; it is the guarantee of privacy. In this book, I divide
     confidentiality into two forms of privacy:'
+  id: totrans-12
   prefs: []
   type: TYPE_NORMAL
+  zh: 加密确保机密性。机密性是安全系统设计的一个原子构建块，就像前几章中的数据完整性和数据认证一样。与其他构建块不同，*机密性*没有复杂的定义；它是隐私的保证。在本书中，我将机密性分为两种隐私形式：
 - en: Individual privacy
+  id: totrans-13
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 个人隐私
 - en: Group privacy
+  id: totrans-14
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 群体隐私
 - en: As an example of these forms, suppose Alice wants to write and read sensitive
     data, with no intention of letting anyone else read it. Alice can guarantee individual
     privacy by encrypting what she writes and decrypting what she reads. This form
     of privacy complements the *at rest* of *encryption at rest and in transit*, a
     best practice discussed in chapter 1.
+  id: totrans-15
   prefs: []
   type: TYPE_NORMAL
+  zh: 举个例子，假设爱丽丝想要写和读取敏感数据，并且没有打算让其他人阅读。爱丽丝可以通过加密她写的内容和解密她读的内容来保证个人隐私。这种隐私形式是对第1章讨论的*静态和传输中的加密*的补充。
 - en: Alternatively, suppose Alice wants to exchange sensitive data with Bob. Alice
     and Bob can guarantee group privacy by encrypting what they send and decrypting
     what they receive. This form of privacy complements the *in transit* of *encryption
     at rest and in transit*.
+  id: totrans-16
   prefs: []
   type: TYPE_NORMAL
+  zh: 或者，假设爱丽丝想要与鲍勃交换敏感数据。爱丽丝和鲍勃可以通过加密他们发送的内容和解密他们接收的内容来保证群体隐私。这种隐私形式是对*静态和传输中的加密*的补充。
 - en: In this chapter, you’ll learn how to implement encryption at rest by using Python
     and the `cryptography` package. To install this package, we must first install
     a secure package manager.
+  id: totrans-17
   prefs: []
   type: TYPE_NORMAL
+  zh: 在这一章中，你将学习如何使用Python和`cryptography`包实现静态加密。要安装这个包，我们必须首先安装一个安全的包管理器。
 - en: 4.1.1 Package management
+  id: totrans-18
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.1.1 包管理
 - en: In this book, I use Pipenv for package management. I chose this package manager
     because it is equipped with many security features. Some of these features are
     covered in chapter 13.
+  id: totrans-19
   prefs: []
   type: TYPE_NORMAL
+  zh: 在本书中，我使用Pipenv进行包管理。我选择这个包管理器是因为它配备了许多安全功能。其中一些功能在第13章中介绍。
 - en: Note There are many Python package managers, and you don’t have to use the same
     one as I do to run the examples in this book. You are free to follow along with
     tools such as `pip` and `venv`, but you will not be able to take advantage of
     several security features offered by Pipenv.
+  id: totrans-20
   prefs: []
   type: TYPE_NORMAL
+  zh: 注意 有许多 Python 包管理器，您不必使用与我相同的包管理器来运行本书中的示例。您可以自由选择使用 `pip` 和 `venv` 等工具跟随，但您将无法利用
+    Pipenv 提供的多个安全功能。
 - en: To install Pipenv, choose the shell command from those that follow for your
     operating system. Installing Pipenv with Homebrew (macOS) or LinuxBrew (Linux)
     is discouraged.
+  id: totrans-21
   prefs: []
   type: TYPE_NORMAL
+  zh: 要安装 Pipenv，请根据您的操作系统选择以下命令之一。不建议使用 Homebrew（macOS）或 LinuxBrew（Linux）安装 Pipenv。
 - en: '[PRE0]'
+  id: totrans-22
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE0]'
 - en: ❶ On Debian Buster+
+  id: totrans-23
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 在 Debian Buster+ 上
 - en: ❷ On Fedora
+  id: totrans-24
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 在 Fedora 上
 - en: ❸ On FreeBSD
+  id: totrans-25
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 在 FreeBSD 上
 - en: ❹ On all other operating systems
+  id: totrans-26
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 在所有其他操作系统上
 - en: 'Next, run the following command. This command creates two files in the current
     directory, Pipfile and Pipfile.lock. Pipenv uses these files to manage your project
     dependencies:'
+  id: totrans-27
   prefs: []
   type: TYPE_NORMAL
+  zh: 接下来，运行以下命令。此命令在当前目录中创建两个文件，Pipfile 和 Pipfile.lock。Pipenv 使用这些文件来管理您的项目依赖项：
 - en: '[PRE1]'
+  id: totrans-28
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE1]'
 - en: 'In addition to Pipfiles, the previous command also creates a *virtual environment*.
     This is an isolated, self-contained environment for a Python project. Each virtual
     environment has its own Python interpreter, libraries, and scripts. By giving
     each of your Python projects its own virtual environment, you prevent them from
     interfering with one another. Run the following command to activate your new virtual
     environment:'
+  id: totrans-29
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了 Pipfiles，上一个命令还创建了一个*虚拟环境*。这是一个针对 Python 项目的隔离、自包含的环境。每个虚拟环境都有自己的 Python
+    解释器、库和脚本。通过为每个 Python 项目提供自己的虚拟环境，可以防止它们相互干扰。运行以下命令以激活您的新虚拟环境：
 - en: '[PRE2]'
+  id: totrans-30
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE2]'
 - en: WARNING Do yourself a favor and run each command in this book from within your
     virtual environment shell. This ensures that the code you write is able to find
     the correct dependencies. It also ensures that the dependencies you install do
     not result in conflicts with other local Python projects.
+  id: totrans-31
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 为自己做个好事，并在您的虚拟环境 shell 中运行本书中的每个命令。这确保您编写的代码能够找到正确的依赖关系。它还确保您安装的依赖关系不会与其他本地
+    Python 项目发生冲突。
 - en: As in an ordinary Python project, you should run the commands in this book from
     within your virtual environment. In the next section, you’ll install the first
     of many dependencies into this environment, the `cryptography` package. This package
     is the only encryption library you need as a Python programmer.
+  id: totrans-32
   prefs: []
   type: TYPE_NORMAL
+  zh: 与普通的 Python 项目一样，您应该在虚拟环境中运行本书中的命令。在下一节中，您将在此环境中安装许多依赖项的第一个，即 `cryptography`
+    包。作为 Python 程序员，这个包是您唯一需要的加密库。
 - en: 4.2 The cryptography package
+  id: totrans-33
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 4.2 `cryptography` 包
 - en: Unlike some other programming languages, Python has no native encryption API.
     A handful of open source frameworks occupy this niche. The most popular Python
     encryption packages are `cryptography` and `pycryptodome`. In this book, I use
     the `cryptography` package exclusively. I prefer this package because it has a
     safer API. In this section, I cover the most important parts of this API.
+  id: totrans-34
   prefs: []
   type: TYPE_NORMAL
+  zh: 与其他一些编程语言不同，Python没有原生的加密 API。少数开源框架占据了这一领域。最受欢迎的 Python 加密包是 `cryptography`
+    和 `pycryptodome`。在本书中，我专门使用 `cryptography` 包。我更喜欢这个包，因为它有一个更安全的 API。在本节中，我将介绍这个
+    API 的最重要部分。
 - en: 'Install the `cryptography` package into your virtual environment with the following
     command:'
+  id: totrans-35
   prefs: []
   type: TYPE_NORMAL
+  zh: 使用以下命令将 `cryptography` 包安装到您的虚拟环境中：
 - en: '[PRE3]'
+  id: totrans-36
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE3]'
 - en: The default backend for the `cryptography` package is OpenSSL. This open source
     library contains implementations of network security protocols and general-purpose
     cryptographic functions. This library is primarily written in C. OpenSSL is wrapped
     by many other open source libraries, like the `cryptography` package, in major
     programming languages, like Python.
+  id: totrans-37
   prefs: []
   type: TYPE_NORMAL
+  zh: '`cryptography` 包的默认后端是 OpenSSL。这个开源库包含了网络安全协议和通用加密函数的实现。这个库主要用 C 语言编写。OpenSSL
+    被许多其他开源库所包装，比如主要编程语言中的 `cryptography` 包。'
 - en: 'The `cryptography` package authors divided the API into two levels:'
+  id: totrans-38
   prefs: []
   type: TYPE_NORMAL
+  zh: '`cryptography` 包的作者将 API 分为两个级别：'
 - en: The hazardous materials layer, a complex low-level API
+  id: totrans-39
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 危险材料层，一个复杂的低级 API
 - en: The recipes layer, a simple high-level API
+  id: totrans-40
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 配方层，一个简单的高级 API
 - en: 4.2.1 Hazardous materials layer
+  id: totrans-41
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.2.1 危险材料层
 - en: 'The complex low-level API, living beneath `cryptography.hazmat`, is known as
     the *hazardous materials layer*. Think twice before using this API in a production
     system. The documentation for the hazardous materials layer ([https://cryptography.io/en/latest/hazmat/primitives/](https://cryptography.io/en/latest/hazmat/primitives/))
@@ -199,104 +291,156 @@
     what you’re doing because this module is full of land mines, dragons, and dinosaurs
     with laser guns.” Using this API safely requires an in-depth knowledge of cryptography.
     One subtle mistake can leave a system vulnerable.'
+  id: totrans-42
   prefs: []
   type: TYPE_NORMAL
+  zh: 位于`cryptography.hazmat`之下的复杂低级API被称为*危险材料层*。在生产系统中使用这个API之前三思。危险材料层的文档([https://cryptography.io/en/latest/hazmat/primitives/](https://cryptography.io/en/latest/hazmat/primitives/))中写道：“只有当你百分之百确定自己知道在做什么时才应该使用它，因为这个模块充满了地雷、龙和带激光枪的恐龙。”
+    安全地使用这个API需要对加密学有深入的了解。一个微小的错误可能使系统变得脆弱。
 - en: 'The valid use cases for the hazardous material layer are few and far between.
     For example:'
+  id: totrans-43
   prefs: []
   type: TYPE_NORMAL
+  zh: 危险材料层的有效使用案例寥寥无几。例如：
 - en: You might need this API to encrypt files too big to fit into memory.
+  id: totrans-44
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 你可能需要这个API来加密文件，文件太大无法放入内存。
 - en: You might be forced to process data with a rare encryption algorithm.
+  id: totrans-45
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 你可能被迫使用一种罕见的加密算法处理数据。
 - en: You might be reading a book that uses this API for instructional purposes.
+  id: totrans-46
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 你可能正在阅读一本使用这个API作为教学目的的书。
 - en: 4.2.2 Recipes layer
+  id: totrans-47
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.2.2 Recipes layer
 - en: 'The simple high-level API is known as the *recipes layer*. The documentation
     for the `cryptography` package ([https://cryptography.io/en/latest/](https://cryptography.io/en/latest/))
     reads: “We recommend using the recipes layer whenever possible, and falling back
     to the hazmat layer only when necessary.” This API will satisfy the encryption
     needs of most Python programmers.'
+  id: totrans-48
   prefs: []
   type: TYPE_NORMAL
+  zh: 简单的高级API被称为*recipes layer*。`cryptography`包的文档([https://cryptography.io/en/latest/](https://cryptography.io/en/latest/))中写道：“我们建议尽可能使用recipes
+    layer，并仅在必要时回退到hazmat layer。” 这个API将满足大多数Python程序员的加密需求。
 - en: The recipes layer is an implementation of a symmetric encryption method known
     as *fernet*. This specification defines an encryption protocol designed to resist
     tampering in an interoperable way. This protocol is encapsulated by a class, known
     as `Fernet`, beneath `cryptography.fernet`.
+  id: totrans-49
   prefs: []
   type: TYPE_NORMAL
+  zh: recipes layer是一个称为*fernet*的对称加密方法的实现。这个规范定义了一种旨在以可互操作的方式抵抗篡改的加密协议。这个协议由一个类`Fernet`封装，在`cryptography.fernet`之下。
 - en: 'The `Fernet` class is designed to be your general-purpose tool for encrypting
     data. The `Fernet.generate_key` method generates 32 random bytes. The `Fernet`
     init method accepts this key, as shown by the following code:'
+  id: totrans-50
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Fernet`类被设计为加密数据的通用工具。`Fernet.generate_key`方法生成32个随机字节。`Fernet`的init方法接受这个密钥，如下所示：'
 - en: '[PRE4]'
+  id: totrans-51
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE4]'
 - en: ❶ Beneath cryptography.fernet is the simple high-level API.
+  id: totrans-52
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 在`cryptography.fernet`之下是简单的高级API。
 - en: Under the hood, `Fernet` splits the key argument into two 128-bit keys. One
     half is reserved for encryption, as expected, and the other half is reserved for
     data authentication. (You learned about data authentication in the previous chapter.)
+  id: totrans-53
   prefs: []
   type: TYPE_NORMAL
+  zh: 在内部，`Fernet`将密钥参数分成两个128位密钥。一个用于加密，另一个用于数据认证。（你在上一章学过数据认证。）
 - en: 'The `Fernet.encrypt` method doesn’t just encrypt plaintext. It also hashes
     the ciphertext with HMAC-SHA256\. In other words, the ciphertext becomes a message.
     The ciphertext and hash value are returned together as an object known as a *fernet
     token*, shown here:'
+  id: totrans-54
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Fernet.encrypt`方法不仅加密明文，还使用HMAC-SHA256对密文进行哈希。换句话说，密文变成了一条消息。密文和哈希值一起作为一个*fernet
+    token*对象返回，如下所示：'
 - en: '[PRE5]'
+  id: totrans-55
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE5]'
 - en: ❶ Encrypts plaintext, hashes ciphertext
+  id: totrans-56
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 加密明文，哈希密文
 - en: Figure 4.2 depicts how the ciphertext and hash value are used to construct a
     fernet token. The keys for both encryption and keyed hashing are omitted for the
     sake of simplicity.
+  id: totrans-57
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.2展示了如何使用密文和哈希值构建一个fernet token。为简单起见，加密和有键哈希的密钥被省略。
 - en: '![CH04_F02_Byrne](Images/CH04_F02_Byrne.png)'
+  id: totrans-58
   prefs: []
   type: TYPE_IMG
+  zh: '![CH04_F02_Byrne](Images/CH04_F02_Byrne.png)'
 - en: Figure 4.2 Fernet doesn’t just encrypt the plaintext; it hashes the ciphertext
     as well.
+  id: totrans-59
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.2 Fernet不仅加密明文，还对密文进行了哈希。
 - en: 'The `Fernet.decrypt` method is the inverse of `Fernet.encrypt`. This method
     extracts the ciphertext from the fernet token and authenticates it with HMAC-SHA256\.
     If the new hash value does not match the old hash value in the fernet token, an
     `InvalidToken` exception is raised. If the hash values match, the ciphertext is
     decrypted and returned:'
+  id: totrans-60
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Fernet.decrypt` 方法是 `Fernet.encrypt` 的反方法。该方法从 Fernet 令牌中提取密文并使用 HMAC-SHA256
+    进行身份验证。如果新的哈希值与 Fernet 令牌中的旧哈希值不匹配，则会引发 `InvalidToken` 异常。如果哈希值匹配，则解密并返回密文：'
 - en: '[PRE6]'
+  id: totrans-61
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE6]'
 - en: ❶ Authenticates and decrypts ciphertext
+  id: totrans-62
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 身份验证和解密密文
 - en: Figure 4.3 depicts how the decrypt method deconstructs a fernet token. As with
     the previous figure, the keys for decryption and data authentication are omitted.
+  id: totrans-63
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4.3 描述了解密方法如何解构 Fernet 令牌。与上一图一样，解密和数据认证的密钥被省略了。
 - en: '![CH04_F03_Byrne](Images/CH04_F03_Byrne.png)'
+  id: totrans-64
   prefs: []
   type: TYPE_IMG
+  zh: '![CH04_F03_Byrne](Images/CH04_F03_Byrne.png)'
 - en: Figure 4.3 Fernet authenticates ciphertext in addition to decrypting it.
+  id: totrans-65
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4.3 Fernet 不仅对密文进行解密，还对其进行身份验证。
 - en: You may be wondering why `Fernet` ensures ciphertext authentication rather than
     just confidentiality. The value of confidentiality isn’t fully realized until
     it is combined with data authentication. For example, suppose Alice plans to implement
@@ -305,15 +449,21 @@
     but this alone is no guarantee that she created the ciphertext. By authenticating
     the ciphertext, Alice adds a layer of defense against Mallory, who seeks to modify
     the ciphertext.
+  id: totrans-66
   prefs: []
   type: TYPE_NORMAL
+  zh: 你可能想知道为什么 `Fernet` 确保密文身份验证而不只是保密性。保密性的价值直到与数据认证结合才能完全实现。例如，假设 Alice 打算实现个人隐私。她分别加密和解密她写的和读的内容。通过隐藏她的密钥，Alice
+    知道她是唯一能解密密文的人，但这本身并不能保证她创建了密文。通过对密文进行身份验证，Alice 增加了一层防御，防止 Mallory 修改密文。
 - en: Suppose Alice and Bob want to implement group privacy. Both parties encrypt
     and decrypt what they send and receive, respectively. By hiding the key, Alice
     and Bob know Eve cannot eavesdrop on the conversation, but this alone doesn’t
     guarantee that Alice is actually receiving what Bob is sending, or vice versa.
     Only data authentication can provide Alice and Bob with this guarantee.
+  id: totrans-67
   prefs: []
   type: TYPE_NORMAL
+  zh: 假设 Alice 和 Bob 想要实现群体隐私。双方分别加密和解密他们发送和接收的内容。通过隐藏密钥，Alice 和 Bob 知道 Eve 无法窃听他们的对话，但仅凭这一点不能保证
+    Alice 实际上收到了 Bob 发送的内容，反之亦然。只有数据认证才能为 Alice 和 Bob 提供这一保证。
 - en: Fernet tokens are a safety feature. Each fernet token is an opaque array of
     bytes; there is no formal FernetToken class with properties for the ciphertext
     and hash value. You can extract these values if you really want to, but it’s going
@@ -322,27 +472,38 @@
     or decrypting without authenticating first. This API promotes “Don’t roll your
     own crypto,” a best practice covered in chapter 1\. `Fernet` is intentionally
     easy to use safely and difficult to use unsafely.
+  id: totrans-68
   prefs: []
   type: TYPE_NORMAL
+  zh: Fernet 令牌是一项安全功能。每个 Fernet 令牌都是不透明的字节数组；没有正式的 FernetToken 类来存储密文和哈希值的属性。如果你真的想要，你可以提取这些值，但这会变得混乱。Fernet
+    令牌是这样设计的，以阻止你尝试做任何容易出错的事情，比如使用自定义代码解密或身份验证，或在身份验证之前进行解密。该 API 提倡“不要自己编写加密算法”，这是第
+    1 章介绍的最佳实践。`Fernet` 故意设计成易于安全使用而难于不安全使用。
 - en: A `Fernet` object can decrypt any fernet token created by a `Fernet` object
     with the same key. You can throw away an instance of `Fernet`, but the key must
     be saved and protected. Plaintext is unrecoverable if the key is lost. In the
     next section, you’ll learn how to rotate a key with `MultiFernet`, a companion
     of `Fernet`.
+  id: totrans-69
   prefs: []
   type: TYPE_NORMAL
+  zh: 一个 `Fernet` 对象可以解密由具有相同密钥的 `Fernet` 对象创建的任何 Fernet 令牌。你可以丢弃一个 `Fernet` 实例，但密钥必须被保存和保护。如果密钥丢失，明文将无法恢复。在下一节中，你将学习如何使用
+    `Fernet` 的配套工具 `MultiFernet` 轮换密钥。
 - en: 4.2.3 Key rotation
+  id: totrans-70
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.2.3 密钥轮换
 - en: '*Key* *rotation* is used to retire one key with another. To decommission a
     key, all ciphertext produced with it must be decrypted and re-encrypted with the
     next key. A key may need to be rotated for many reasons. A compromised key must
     be retired immediately. Sometimes a key must be rotated when a person with access
     to it leaves an organization. Regular key rotation limits the damage, but not
     the probability, of a key becoming compromised.'
+  id: totrans-71
   prefs: []
   type: TYPE_NORMAL
+  zh: '*密钥轮换* 用于将一个密钥替换为另一个密钥。为了废弃一个密钥，必须用它生成的所有密文进行解密，并使用下一个密钥重新加密。密钥可能因多种原因而需要进行轮换。一旦密钥受到损害，必须立即废弃。有时候当一个能够访问密钥的人员离开组织时，必须对密钥进行轮换。定期进行密钥轮换可以限制密钥受损的损害，但无法降低密钥受损的概率。'
 - en: '`Fernet` implements key rotation in combination with the `MultiFernet` class.
     Suppose an old key is to be replaced with a new one. Both keys are used to instantiate
     separate instances of `Fernet`. Both `Fernet` instances are used to instantiate
@@ -350,126 +511,190 @@
     everything encrypted with the old key and re-encrypts it with the new key. Once
     every token has been re-encrypted with the new key, it is safe to retire the old
     key. The following listing demonstrates key rotation with `MultiFernet`.'
+  id: totrans-72
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Fernet` 结合 `MultiFernet` 类实现密钥轮换。假设要用新密钥替换旧密钥。使用这两个密钥实例化单独的 `Fernet` 实例。使用这两个
+    `Fernet` 实例实例化单个 `MultiFernet` 实例。`MultiFernet` 的 rotate 方法将使用旧密钥解密所有使用旧密钥加密的内容，并使用新密钥重新加密。一旦所有令牌都使用新密钥重新加密，就可以安全地废弃旧密钥。以下清单演示了使用
+    `MultiFernet` 进行密钥轮换。'
 - en: Listing 4.1 Key rotation with MultiFernet
+  id: totrans-73
   prefs: []
   type: TYPE_NORMAL
+  zh: 清单 4.1 使用 MultiFernet 进行密钥轮换
 - en: '[PRE7]'
+  id: totrans-74
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE7]'
 - en: ❶ Decrypting with the old key, encrypting with the new key
+  id: totrans-75
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 使用旧密钥解密，使用新密钥加密
 - en: ❷ Out with the old key, in with the new key
+  id: totrans-76
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 弃用旧密钥，启用新密钥
 - en: ❸ New key required to decrypt new ciphertexts
+  id: totrans-77
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 需要新密钥才能解密新密文
 - en: The role of the key defines the category an encryption algorithm falls into.
     The next section covers the category `Fernet` falls into.
+  id: totrans-78
   prefs: []
   type: TYPE_NORMAL
+  zh: 密钥的角色决定了加密算法所属的类别。下一节将介绍 `Fernet` 所属的类别。
 - en: 4.3 Symmetric encryption
+  id: totrans-79
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 4.3 对称加密
 - en: 'If an encryption algorithm encrypts and decrypts with the same key, like the
     one wrapped by `Fernet`, we call it *symmetric*. Symmetric encryption algorithms
     are further subdivided into two more categories: block ciphers and stream ciphers.'
+  id: totrans-80
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果一个加密算法使用相同的密钥进行加密和解密，就像 `Fernet` 封装的那种，我们称之为 *对称*。对称加密算法进一步分为两类：分组密码和流密码。
 - en: 4.3.1 Block ciphers
+  id: totrans-81
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.3.1 分组密码
 - en: '*Block* *ciphers* encrypt plaintext as a series of fixed-length blocks. Each
     block of plaintext is encrypted to a block of ciphertext. The block size depends
     on the encryption algorithm. Larger block sizes are generally considered more
     secure. Figure 4.4 illustrates three blocks of plaintext encrypted to three blocks
     of ciphertext.'
+  id: totrans-82
   prefs: []
   type: TYPE_NORMAL
+  zh: '*分组密码* 将明文加密为一系列固定长度的块。每个明文块被加密为一个密文块。块大小取决于加密算法。较大的块大小通常被认为更安全。图 4.4 演示了将三个明文块加密为三个密文块。'
 - en: '![CH04_F04_Byrne](Images/CH04_F04_Byrne.png)'
+  id: totrans-83
   prefs: []
   type: TYPE_IMG
+  zh: '![CH04_F04_Byrne](Images/CH04_F04_Byrne.png)'
 - en: Figure 4.4 A block cipher accepts N blocks of plaintext and yields N blocks
     of ciphertext.
+  id: totrans-84
   prefs: []
   type: TYPE_NORMAL
+  zh: 图 4.4 一个分组密码接受 N 个明文分组，并产生 N 个密文分组。
 - en: 'There are many kinds of symmetric encryption algorithms. It is natural for
     a programmer to feel overwhelmed by the choices. Which algorithms are safe? Which
     algorithms are fast? The answers to these questions are actually pretty simple.
     As you read this section, you’ll see why. The following are all examples of popular
     block ciphers:'
+  id: totrans-85
   prefs: []
   type: TYPE_NORMAL
+  zh: 有许多种对称加密算法。对于程序员来说，面对这些选择可能会感到不知所措。哪些算法是安全的？哪些算法是快速的？这些问题的答案实际上相当简单。当你阅读本节时，你将明白其中的道理。以下是几个常见的分组密码的例子：
 - en: Triple DES
+  id: totrans-86
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 三重 DES
 - en: Blowfish
+  id: totrans-87
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Blowfish
 - en: Twofish
+  id: totrans-88
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: Twofish
 - en: Advanced Encryption Standard
+  id: totrans-89
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 高级加密标准
 - en: Triple DES
+  id: totrans-90
   prefs: []
   type: TYPE_NORMAL
+  zh: 三重 DES
 - en: '*Triple DES* (*3DES*) is an adaptation of the Data Encryption Standard (DES).
     As the name indicates, this algorithm uses DES three times under the hood, earning
     it a reputation for being slow. 3DES uses a 64-bit block size and key size of
     56, 112, or 168 bits.'
+  id: totrans-91
   prefs: []
   type: TYPE_NORMAL
+  zh: '*三重 DES* (*3DES*) 是数据加密标准 (DES) 的一种改进。顾名思义，这个算法在内部使用 DES 进行三次加密，因此被认为速度较慢。3DES
+    使用 64 位块大小和 56、112 或 168 位的密钥大小。'
 - en: WARNING 3DES has been deprecated by NIST and OpenSSL. Don’t use 3DES (for more
     information, visit [http://mng.bz/pJoG](http://mng.bz/pJoG)).
+  id: totrans-92
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 3DES 已被 NIST 和 OpenSSL 废弃。不要使用 3DES（有关更多信息，请访问 [http://mng.bz/pJoG](http://mng.bz/pJoG)）。
 - en: Blowfish
+  id: totrans-93
   prefs: []
   type: TYPE_NORMAL
+  zh: Blowfish
 - en: '*Blowfish* was developed in the early 1990s by Bruce Schneier. This algorithm
     uses a 64-bit block size and a variable key size of 32 to 448 bits. Blowfish gained
     popularity as one of the first major royalty-free encryption algorithms without
     a patent.'
+  id: totrans-94
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Blowfish* 是由 Bruce Schneier 在 1990 年代初开发的。该算法使用 64 位块大小和 32 到 448 位的可变密钥大小。Blowfish
+    作为第一个主要没有专利的免费加密算法而获得了普及。'
 - en: WARNING Blowfish lost acclaim in 2016 when its block size left it vulnerable
     to an attack known as SWEET32\. Don’t use Blowfish. Even the creator of Blowfish
     recommends using Twofish instead.
+  id: totrans-95
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告 Blowfish 在 2016 年失去了声望，因为它的分组大小使其容易受到一种名为 SWEET32 的攻击的影响。不要使用 Blowfish。即使
+    Blowfish 的创造者也建议使用 Twofish 替代。
 - en: Twofish
+  id: totrans-96
   prefs: []
   type: TYPE_NORMAL
+  zh: Twofish
 - en: '*Twofish* was developed in the late 1990s as a successor to Blowfish. This
     algorithm uses a 128-bit block size and a key size of 128, 192, or 256 bits. Twofish
     is respected by cryptographers but hasn’t enjoyed the popularity of its predecessor.
     In 2000, Twofish became a finalist in a three-year competition known as the Advanced
     Encryption Standard process. You can use Twofish safely, but why not do what everyone
     else has done and use the algorithm that won this competition?'
+  id: totrans-97
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Twofish* 在 1990 年代末作为 Blowfish 的后继者开发。该算法使用 128 位块大小和 128、192 或 256 位的密钥大小。Twofish
+    受到密码学家的尊重，但没有享受到其前身的流行。在 2000 年，Twofish 成为了一个为期三年的竞赛，被称为高级加密标准过程的决赛选手。你可以安全地使用
+    Twofish，但为什么不做每个人都做的事情，使用赢得这个比赛的算法呢？'
 - en: Advanced Encryption Standard
+  id: totrans-98
   prefs: []
   type: TYPE_NORMAL
+  zh: 高级加密标准
 - en: '*Rijndael* is an encryption algorithm standardized by NIST in 2001 after it
     beat more than a dozen other ciphers in the Advanced Encryption Standard process.
     You’ve probably never heard of this algorithm even though you use it constantly.
     That’s because Rijndael adopted the name of Advanced Encryption Standard after
     it was selected by the Advanced Encryption Standard process. Advanced Encryption
     Standard isn’t just a name; it is a competition title.'
+  id: totrans-99
   prefs: []
   type: TYPE_NORMAL
+  zh: '*Rijndael* 是一个由 NIST 在 2001 年标准化的加密算法，它在高级加密标准过程中击败了十多种其他密码。你可能从来没有听说过这个算法，尽管你经常使用它。这是因为
+    Rijndael 在被高级加密标准过程选中后采用了高级加密标准的名称。高级加密标准不仅仅是一个名称；它是一个竞赛称号。'
 - en: '*Advanced Encryption Standard* (*AES*) is the only symmetric encryption algorithm
     a typical application programmer has to know about. This algorithm uses a 128-bit
     block size and a key size of 128, 192, or 256 bits. It is the poster child for
@@ -478,24 +703,34 @@
     filesystems, hashing, and virtual private networks (VPNs). How many other encryption
     algorithms have their own hardware instructions? You couldn’t even build a system
     that doesn’t use AES if you tried.'
+  id: totrans-100
   prefs: []
   type: TYPE_NORMAL
+  zh: '*高级加密标准* (*AES*) 是典型应用程序员需要了解的唯一对称加密算法。该算法使用 128 位块大小和 128、192 或 256 位的密钥大小。它是对称加密的典范。AES
+    的安全记录非常强大和广泛。AES 加密的应用包括网络协议如 HTTPS、压缩、文件系统、哈希和虚拟私人网络 (VPN)。还有哪些加密算法有自己的硬件指令？即使你试过，也无法建立一个不使用
+    AES 的系统。'
 - en: If you haven’t guessed by now, `Fernet` uses AES under the hood. AES should
     be a programmer’s first choice for general-purpose encryption. Stay safe, don’t
     try to be clever, and forget the other block ciphers. The next section covers
     stream ciphers.
+  id: totrans-101
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果你到现在还没有猜到，`Fernet` 在底层使用的是 AES。AES 应该是程序员在一般情况下选择的第一个通用加密方法。保持安全，不要试图聪明，忘记其他的分组密码。下一节将介绍流密码。
 - en: 4.3.2 Stream ciphers
+  id: totrans-102
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.3.2 流密码
 - en: '*Stream* *ciphers* do not process plaintext in blocks. Instead, plaintext is
     processed as a stream of individual bytes; one byte in, one byte out. As the name
     implies, stream ciphers are good at encrypting continuous or unknown amounts of
     data. These ciphers are often used by networking protocols.'
+  id: totrans-103
   prefs: []
   type: TYPE_NORMAL
+  zh: '*流* *密码* 不会按块处理明文。相反，明文被处理为一个个独立的字节流；一个字节进，一个字节出。顾名思义，流密码擅长加密连续或未知量的数据。这些密码通常被网络协议使用。'
 - en: Stream ciphers have an advantage over block ciphers when plaintext is very small.
     For example, suppose you’re encrypting data with a block cipher. You want to encrypt
     120 bits of plaintext, but the block cipher encrypts plaintext as 128-bit blocks.
@@ -506,76 +741,108 @@
     of padding. Unfortunately, this means more than 90% of the ciphertext can be attributed
     just to padding. Stream ciphers avoid this problem. They don’t need a padding
     scheme because they don’t process plaintext as blocks.
+  id: totrans-104
   prefs: []
   type: TYPE_NORMAL
+  zh: 当明文非常小的时候，流密码比块密码有优势。例如，假设您正在使用块密码加密数据。您想加密120位的明文，但块密码将明文加密为128位块。块密码将使用填充方案来补偿8位的差异。通过使用8位填充，块密码可以操作，就好像明文位数是块大小的倍数一样。现在考虑当您需要加密仅8位的明文时会发生什么。块密码必须使用120位的填充。不幸的是，这意味着超过90%的密文可以归因于填充。流密码避免了这个问题。它们不需要填充方案，因为它们不将明文处理为块。
 - en: RC4 and ChaCha are both examples of stream ciphers. RC4 was used extensively
     in networking protocols until a half dozen vulnerabilities were discovered. This
     cipher has been abandoned and should never be used. ChaCha, on the other hand,
     is considered secure and is unquestionably fast. You’ll see ChaCha make an appearance
     in chapter 6, where I cover TLS, a secure networking protocol.
+  id: totrans-105
   prefs: []
   type: TYPE_NORMAL
+  zh: RC4和ChaCha都是流密码的示例。RC4在网络协议中广泛使用，直到发现了半打漏洞。这种密码已被放弃，不应再使用。另一方面，ChaCha被认为是安全的，而且无疑是快速的。您将在第6章中看到ChaCha的出现，那里我将介绍TLS，一个安全的网络协议。
 - en: Stream ciphers, despite their speed and efficiency, are in less demand than
     block ciphers. Unfortunately, stream cipher ciphertext is generally more susceptible
     to tampering than block cipher ciphertext. Block ciphers, in certain modes, can
     also emulate stream ciphers. The next section introduces encryption modes.
+  id: totrans-106
   prefs: []
   type: TYPE_NORMAL
+  zh: 尽管流密码速度快且高效，但比块密码需求少。不幸的是，流密码的密文通常比块密码的密文更容易被篡改。在某些模式下，块密码也可以模拟流密码。下一节介绍了加密模式。
 - en: 4.3.3 Encryption modes
+  id: totrans-107
   prefs:
   - PREF_H3
   type: TYPE_NORMAL
+  zh: 4.3.3 加密模式
 - en: Symmetric encryption algorithms run in different modes. Each mode has strengths
     and weaknesses. When application developers choose a symmetric encryption strategy,
     the discussion usually doesn’t revolve around block ciphers versus stream ciphers,
     or which encryption algorithm to use. Instead, the discussion revolves around
     which encryption mode to run AES in.
+  id: totrans-108
   prefs: []
   type: TYPE_NORMAL
+  zh: 对称加密算法在不同模式下运行。每种模式都有优点和缺点。当应用程序开发人员选择对称加密策略时，讨论通常不围绕块密码与流密码，或者使用哪种加密算法展开。相反，讨论围绕在哪种加密模式下运行AES展开。
 - en: Electronic codebook mode
+  id: totrans-109
   prefs: []
   type: TYPE_NORMAL
+  zh: 电子密码本模式
 - en: '*Electronic* *codebook* (*ECB*) *mode* is the simplest mode. The following
     code demonstrates how to encrypt data with AES in ECB mode. Using the low-level
     API of the `cryptography` package, this example creates an encryption cipher with
     a 128-bit key. The plaintext is fed to the encryption cipher via the `update`
     method. For the sake of simplicity, the plaintext is a single block of unpadded
     text:'
+  id: totrans-110
   prefs: []
   type: TYPE_NORMAL
+  zh: '*电子密码本*（*ECB*）*模式*是最简单的模式。以下代码演示了如何在ECB模式下使用AES加密数据。使用`cryptography`包的低级API，此示例创建了一个具有128位密钥的加密密码。明文通过`update`方法输入到加密密码中。为了简单起见，明文是一个未填充的单个文本块：'
 - en: '[PRE8]'
+  id: totrans-111
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE8]'
 - en: ❶ Using AES in ECB mode
+  id: totrans-112
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 使用AES在ECB模式下
 - en: ❷ Using OpenSSL
+  id: totrans-113
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 使用OpenSSL
 - en: ❸ A single block of plaintext
+  id: totrans-114
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 一段纯文本块
 - en: ❹ A single block of ciphertext
+  id: totrans-115
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 一段密文块
 - en: ECB mode is exceptionally weak. Ironically, the weakness of ECB mode makes it
     a strong choice for instruction. ECB mode is insecure because it encrypts identical
     plaintext blocks to identical ciphertext blocks. This means ECB mode is easy to
     understand, but it is also easy for an attacker to infer patterns in plaintext
     from patterns in ciphertext.
+  id: totrans-116
   prefs: []
   type: TYPE_NORMAL
+  zh: ECB模式异常脆弱。具有讽刺意味的是，ECB模式的弱点使其成为教学的强大选择。ECB模式不安全，因为它将相同的明文块加密为相同的密文块。这意味着ECB模式易于理解，但攻击者也很容易从密文中的模式推断出明文中的模式。
 - en: Figure 4.5 illustrates a classic example of this weakness. You are looking at
     an ordinary image on the left and an actual encrypted version of it on the right.[1](#pgfId-1094027)
+  id: totrans-117
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.5展示了这种弱点的一个经典示例。您在左侧看到一张普通的图像，右侧是它的实际加密版本。[1](#pgfId-1094027)
 - en: '![CH04_F05_Byrne](Images/CH04_F05_Byrne.png)'
+  id: totrans-118
   prefs: []
   type: TYPE_IMG
+  zh: '![CH04_F05_Byrne](Images/CH04_F05_Byrne.png)'
 - en: Figure 4.5 Patterns in plaintext produce patterns in ciphertext when encrypting
     with ECB mode.
+  id: totrans-119
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.5 在使用ECB模式加密时，明文中的模式会在密文中产生相应的模式。
 - en: ECB mode doesn’t just reveal patterns *within* plaintext; it reveals patterns
     *between* plaintexts as well. For example, suppose Alice needs to encrypt a set
     of plaintexts. She falsely assumes it is safe to encrypt them in ECB mode because
@@ -584,126 +851,190 @@
     are identical; she then concludes the corresponding plaintexts are also identical.
     Why? Mallory, unlike Alice, knows ECB mode encrypts matching plaintexts to matching
     ciphertexts.
+  id: totrans-120
   prefs: []
   type: TYPE_NORMAL
+  zh: ECB 模式不仅会揭示明文中的模式；它还会揭示明文之间的模式。例如，假设Alice需要加密一组明文。她错误地认为在ECB模式下加密它们是安全的，因为每个明文中都没有模式。然后Mallory未经授权地获得了密文。在分析密文时，Mallory发现有些密文是相同的；然后她得出结论相应的明文也是相同的。为什么？Mallory，不像Alice，知道ECB模式会将匹配的明文加密为匹配的密文。
 - en: WARNING Never encrypt data with ECB mode in a production system. It doesn’t
     matter if you’re using ECB with a secure encryption algorithm like AES. ECB mode
     cannot be used securely.
+  id: totrans-121
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：永远不要在生产系统中使用ECB模式加密数据。即使您使用像AES这样的安全加密算法，也不能安全使用ECB模式。
 - en: If an attacker gains unauthorized access to your ciphertext, they should not
     be able to infer anything about your plaintext. A good encryption mode, such as
     the one described next, obfuscates patterns within and between plaintexts.
+  id: totrans-122
   prefs: []
   type: TYPE_NORMAL
+  zh: 如果攻击者未经授权地获得您的密文，他们不应该能够推断出有关您的明文的任何信息。一个好的加密模式，如下面描述的那样，会混淆明文之间和明文内的模式。
 - en: Cipher block chaining mode
+  id: totrans-123
   prefs: []
   type: TYPE_NORMAL
+  zh: 密码块链接模式
 - en: '*Cipher* *block chaining* (*CBC*) *mode* overcomes some of the weaknesses of
     ECB mode by ensuring that each change in a block affects the ciphertext of all
     subsequent blocks. As illustrated by figure 4.6, input patterns do not result
     in output patterns.[2](#pgfId-1096320)'
+  id: totrans-124
   prefs: []
   type: TYPE_NORMAL
+  zh: '*密码块链接*（*CBC*）*模式*通过确保每个块的更改会影响所有后续块的密文，克服了ECB模式的一些弱点。正如图4.6所示，输入模式不会导致输出模式。[2](#pgfId-1096320)'
 - en: '![CH04_F06_Byrne](Images/CH04_F06_Byrne.png)'
+  id: totrans-125
   prefs: []
   type: TYPE_IMG
+  zh: '![CH04_F06_Byrne](Images/CH04_F06_Byrne.png)'
 - en: Figure 4.6 Patterns in plaintext do not produce patterns in ciphertext when
     encrypting in CBC mode.
+  id: totrans-126
   prefs: []
   type: TYPE_NORMAL
+  zh: 图4.6 在使用CBC模式加密时，明文中的模式不会在密文中产生相应的模式。
 - en: CBC mode also produces different ciphertexts when encrypting identical plaintexts
     with the same key. CBC mode achieves this by individualizing plaintext with an
     *initialization vector* (IV). Like plaintext and the key, an IV is an input to
     the encryption cipher. AES in CBC mode requires each IV to be a nonrepeatable
     random 128-bit number.
+  id: totrans-127
   prefs: []
   type: TYPE_NORMAL
+  zh: CBC模式在使用相同密钥加密相同明文时也会产生不同的密文。CBC模式通过使用*初始化向量*（IV）对明文进行个性化。与明文和密钥一样，IV是加密密码的输入之一。AES在CBC模式下要求每个IV都是不可重复的随机128位数字。
 - en: 'The following code encrypts two identical plaintexts with AES in CBC mode.
     Both plaintexts are composed of two identical blocks and paired with a unique
     IV. Notice how both ciphertexts are unique and neither contains patterns:'
+  id: totrans-128
   prefs: []
   type: TYPE_NORMAL
+  zh: 以下代码使用CBC模式的AES加密了两个相同的明文块。两个明文块都由两个相同的块组成，并与唯一的IV配对。请注意，两个密文都是唯一的，且都不包含模式：
 - en: '[PRE9]'
+  id: totrans-129
   prefs: []
   type: TYPE_PRE
+  zh: '[PRE9]'
 - en: ❶ Generates 16 random bytes
+  id: totrans-130
   prefs: []
   type: TYPE_NORMAL
+  zh: ❶ 生成16个随机字节
 - en: ❷ Uses AES in CBC mode
+  id: totrans-131
   prefs: []
   type: TYPE_NORMAL
+  zh: ❷ 使用AES在CBC模式下。
 - en: ❸ Two identical blocks of plaintext
+  id: totrans-132
   prefs: []
   type: TYPE_NORMAL
+  zh: ❸ 两个相同的明文块
 - en: ❹ Encrypts identical plaintexts
+  id: totrans-133
   prefs: []
   type: TYPE_NORMAL
+  zh: ❹ 加密相同的明文
 - en: ❺ No patterns within ciphertext
+  id: totrans-134
   prefs: []
   type: TYPE_NORMAL
+  zh: ❺ 密文中没有模式
 - en: ❻ No patterns between ciphertexts
+  id: totrans-135
   prefs: []
   type: TYPE_NORMAL
+  zh: ❻ 密文之间没有模式
 - en: The IV is needed for encryption and decryption. Like ciphertext and the key,
     the IV is an input to the decryption cipher and must be saved. Plaintext is unrecoverable
     if it is lost.
+  id: totrans-136
   prefs: []
   type: TYPE_NORMAL
+  zh: IV 在加密和解密时是必需的。与密文和密钥一样，IV 是解密密码的输入之一，必须保存。如果明文丢失，则无法恢复。
 - en: '`Fernet` encrypts data with AES in CBC mode. By using `Fernet`, you don’t have
     to bother generating or saving the IV. `Fernet` automatically generates a suitable
     IV for each plaintext. The IV is embedded in the fernet token right next to the
     ciphertext and hash value. `Fernet` also extracts the IV from the token just before
     ciphertext is decrypted.'
+  id: totrans-137
   prefs: []
   type: TYPE_NORMAL
+  zh: '`Fernet` 使用CBC模式的AES加密数据。通过使用`Fernet`，您不必担心生成或保存IV。`Fernet`会为每个明文自动生成一个合适的IV。IV嵌入在fernet令牌中，紧邻密文和哈希值。`Fernet`还会在解密密文之前从令牌中提取IV。'
 - en: WARNING Some programmers unfortunately want to hide the IV as if it were a key.
     Remember, IVs must be saved but are not keys. A key is used to encrypt one or
     more messages; an IV is used to encrypt one and only one message. A key is secret;
     an IV is typically kept alongside the ciphertext with no obfuscation. If an attacker
     gains unauthorized access to the ciphertext, assume they have the IV. Without
     the key, the attacker effectively still has nothing.
+  id: totrans-138
   prefs: []
   type: TYPE_NORMAL
+  zh: 警告：一些程序员不幸地想要隐藏 IV，就像它是一个密钥一样。请记住，IV 必须保存但不是密钥。密钥用于加密一个或多个消息；IV 用于加密一个且仅一个消息。密钥是保密的；IV
+    通常与密文一起保存，没有混淆。如果攻击者未经授权地访问了密文，请假设他们拥有 IV。没有密钥，攻击者实际上仍然一无所获。
 - en: AES runs in many other modes in addition to ECB and CBC. One of these modes,
     Galois/counter mode (GCM), allows a block cipher like AES to emulate a stream
     cipher. You’ll see GCM reappear in chapter 6.
+  id: totrans-139
   prefs: []
   type: TYPE_NORMAL
+  zh: 除了 ECB 和 CBC 外，AES 还以许多其他模式运行。其中一种模式，Galois/counter mode（GCM），允许像 AES 这样的块密码模拟流密码。你将在第六章再次见到
+    GCM。
 - en: Summary
+  id: totrans-140
   prefs:
   - PREF_H2
   type: TYPE_NORMAL
+  zh: 摘要
 - en: Encryption ensures confidentiality.
+  id: totrans-141
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 加密确保机密性。
 - en: '`Fernet` is a safe and easy way to symmetrically encrypt and authenticate data.'
+  id: totrans-142
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`Fernet` 是对称加密和认证数据的安全简便方法。'
 - en: '`MultiFernet` makes key rotation less difficult.'
+  id: totrans-143
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: '`MultiFernet` 使密钥轮换变得不那么困难。'
 - en: Symmetric encryption algorithms use the same key for encryption and decryption.
+  id: totrans-144
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: 对称加密算法使用相同的密钥进行加密和解密。
 - en: AES is your first and probably last choice for symmetric encryption.
+  id: totrans-145
   prefs:
   - PREF_UL
   type: TYPE_NORMAL
+  zh: AES 是对称加密的首选，可能也是最后的选择。
 - en: '* * *'
+  id: totrans-146
   prefs: []
   type: TYPE_NORMAL
+  zh: '* * *'
 - en: 1. The image on the left was obtained from [https://en.wikipedia.org/wiki/ile:Tux.jpg](https://en.wikipedia.org/wiki/File:Tux.jpg).
     It is attributed to Larry Ewing, [lewing@isc.tamu.edu](mailto:lewing@isc.tamu.edu),
     and the GIMP. The image on the right was obtained from [https://en.wikipe dia.org/wiki/File:Tux_ecb.jpg](https://en.wikipedia.org/wiki/File:Tux_ecb.jpg).
+  id: totrans-147
   prefs: []
   type: TYPE_NORMAL
+  zh: 1. 左侧的图像来自 [https://en.wikipedia.org/wiki/ile:Tux.jpg](https://en.wikipedia.org/wiki/File:Tux.jpg)。该图像归功于
+    Larry Ewing，[lewing@isc.tamu.edu](mailto:lewing@isc.tamu.edu)，以及 GIMP。右侧的图像来自
+    [https://en.wikipe dia.org/wiki/File:Tux_ecb.jpg](https://en.wikipedia.org/wiki/File:Tux_ecb.jpg)。
 - en: 2. The image on the left was obtained from [https://en.wikipedia.org/wiki/File:Tux.jpg](https://en.wikipedia.org/wiki/File:Tux.jpg).
     It is attributed to Larry Ewing, [lewing@isc.tamu.edu](mailto:lewing@isc.tamu.edu),
     and the GIMP. The image on the right was obtained from [https://en.wikipe dia.org/wiki/File:Tux_ecb.jpg](https://en.wikipedia.org/wiki/File:Tux_ecb.jpg).
+  id: totrans-148
   prefs: []
   type: TYPE_NORMAL
+  zh: 2. 左侧的图像来自 [https://en.wikipedia.org/wiki/File:Tux.jpg](https://en.wikipedia.org/wiki/File:Tux.jpg)。该图像归功于
+    Larry Ewing，[lewing@isc.tamu.edu](mailto:lewing@isc.tamu.edu)，以及 GIMP。右侧的图像来自
+    [https://en.wikipe dia.org/wiki/File:Tux_ecb.jpg](https://en.wikipedia.org/wiki/File:Tux_ecb.jpg)。

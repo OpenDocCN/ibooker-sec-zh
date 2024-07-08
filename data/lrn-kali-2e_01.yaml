@@ -1,0 +1,2353 @@
+- en: Chapter 1\. Foundations of Kali Linux
+  id: totrans-0
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 第一章 基础的 Kali Linux
+- en: Kali Linux is a specialized distribution of the Linux operating system based
+    on Ubuntu Linux, which in turn is based on Debian Linux. Kali is targeted at people
+    who want to engage in security work. This may be security testing, it may be exploit
+    development or reverse engineering, or it may be digital forensics. The thing
+    about Linux distributions is that they aren’t the same. Linux is really just the
+    kernel—​the actual operating system and the core of the distribution. Each distribution
+    layers additional software on top of that core, making it unique. In the case
+    of Kali, what gets layered on are not only the essential utilities, but also hundreds
+    of software packages that are specific to security work.
+  id: totrans-1
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Kali Linux 是基于 Ubuntu Linux（又基于 Debian Linux）的 Linux 操作系统的专业分布。Kali 面向希望从事安全工作的人群。这可能涉及安全测试、漏洞开发或逆向工程，或者是数字取证。关于
+    Linux 发行版的事情在于它们并不相同。Linux 实际上只是内核——实际的操作系统和分布的核心。每个发行版在这个核心上加入了额外的软件，使其变得独特。在
+    Kali 的情况下，添加的不仅仅是基本实用程序，还包括数百个专门用于安全工作的软件包。
+- en: One of the really nice things about Linux, especially as compared to other operating
+    systems, is that it is almost completely customizable. This includes selecting
+    the shell you run programs from, which includes the terminal environment where
+    you type commands as well as the graphical desktop you use. Even beyond that,
+    you can change the look of each of those things once you have selected the environment.
+    Using Linux allows you to make the system operate the way you want it to to benefit
+    your working style, rather than having the system force the way you function because
+    of how it works, looks, and feels.
+  id: totrans-2
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Linux 的一个非常棒的特点，尤其是与其他操作系统相比，就是它几乎可以完全定制化。这包括选择你运行程序的 shell，包括你输入命令的终端环境，以及你使用的图形桌面。甚至更进一步，一旦你选择了环境，你还可以改变这些东西的外观。使用
+    Linux 允许你让系统按照你希望的方式运行，以符合你的工作风格，而不是让系统因为它的工作方式、外观和感觉而强制你按照它的方式运行。
+- en: Linux actually has a long history, if you trace it back to its beginnings. Understanding
+    this history will help provide some context for why Linux is the way it is—​especially
+    the seemingly arcane commands that are used to manage the system, manipulate files,
+    and just get work done.
+  id: totrans-3
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Linux 实际上有着悠久的历史，如果你追溯其起源的话。理解这段历史将有助于解释为什么 Linux 是现在这个样子——特别是那些看似晦涩的命令，用来管理系统、操作文件，以及完成工作。
+- en: Heritage of Linux
+  id: totrans-4
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: Linux 的遗产
+- en: Once upon a time, back in the days of the dinosaur, there existed an operating
+    system called Multics. The goal of *Multics* was to support multiple users and
+    offer compartmentalization of processes and files on a per user basis. After all,
+    this was an era when the computer hardware necessary to run operating systems
+    like Multics ran into the millions of dollars. At a minimum, computer hardware
+    was hundreds of thousands of dollars. As a point of comparison, a $7 million system
+    then would cost about $62 million as of April 2023\. Having a system that could
+    support only a single user at a time was just not cost-effective—thus the development
+    of Multics by MIT, Bell Labs, and GE was a way of making computers more cost-effective.
+  id: totrans-5
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 很久以前，在恐龙时代，存在着一个叫做 Multics 的操作系统。*Multics* 的目标是支持多用户，并在每个用户基础上提供进程和文件的隔离。当时，计算机硬件足以运行像
+    Multics 这样的操作系统的成本高达数百万美元。至少，计算机硬件成本也在数十万美元以上。作为对比，2023 年 4 月，一台价值 700 万美元的系统现在将花费约
+    6200 万美元。拥有只能支持一位用户的系统显然是不划算的——因此，MIT、贝尔实验室和 GE 共同开发了 Multics，这是使计算机更具成本效益的一种方式。
+- en: Inevitably, the project slowly fell apart, though the operating system was eventually
+    released. One of the programmers assigned to the project from Bell Labs returned
+    to his regular job and eventually decided to write his own version of an operating
+    system in order to play a game he had originally written for Multics but wanted
+    to play on a PDP-7 that was available at Bell Labs. The game was called Space
+    Trave and the programmer, Ken Thompson, needed a decent environment to redevelop
+    the game for the PDP-7\. In those days, systems were largely incompatible. They
+    had entirely different hardware instructions (operation codes), and they sometimes
+    had different memory word sizes, which we often refer to today as bus size. As
+    a result, programs written for one environment, particularly if very low-level
+    languages were used, would not work in another environment. The resulting environment
+    was named Unics. Eventually, other Bell Labs programmers joined the project, and
+    it was eventually renamed Unix.
+  id: totrans-6
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 不可避免地，尽管操作系统最终发布了，项目却慢慢崩溃了。贝尔实验室派驻该项目的一位程序员最终回到了他的正常工作，并最终决定自己编写一个操作系统的版本，以便在贝尔实验室提供的
+    PDP-7 上玩他最初为 Multics 编写的游戏。这款游戏叫做 Space Travel，而这位程序员 Ken Thompson 需要一个良好的环境来重新开发这款游戏，使其适用于
+    PDP-7。那个时候，系统在很大程度上是不兼容的。它们有完全不同的硬件指令（操作码），有时还有不同的内存字大小，今天我们常称之为总线大小。因此，为一个环境编写的程序，特别是使用了非常低级别的语言，可能在另一个环境中无法工作。最终形成的环境被命名为
+    Unics。最终，其他贝尔实验室的程序员加入了这个项目，并最终将其重新命名为 Unix。
+- en: Unix had a simple design. Because it was developed as a programming environment
+    for a single user at a time, it ended up getting used, first within Bell Labs
+    and then outside, by other programmers. One of the biggest advantages to Unix
+    over other operating systems was that the kernel was rewritten in the C programming
+    language in 1972\. Using a higher-level language than assembly, which was more
+    common then, made it portable across multiple hardware systems. Rather than being
+    limited to the PDP-7, Unix could run on any system that had a C compiler in order
+    to compile the source code needed to build Unix. This allowed for a standard operating
+    system across numerous hardware platforms.
+  id: totrans-7
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Unix 有一个简单的设计。由于最初是为单个用户开发的编程环境，因此它最终被贝尔实验室内外的其他程序员使用。与其他操作系统相比，Unix 的最大优势之一是内核在
+    1972 年被重写为 C 编程语言。使用比当时更常见的汇编语言更高级的语言使得 Unix 可以在多个硬件系统上移植。不再局限于 PDP-7，Unix 可以在任何具有
+    C 编译器的系统上运行，以编译构建 Unix 所需的源代码。这样就可以在多种硬件平台上实现标准操作系统。
+- en: Note
+  id: totrans-8
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: Assembly language, if you are not familiar, is as close as you can get to writing
+    in something directly understood by the machine without resorting to binary. Assembly
+    language is comprised of mnemonics, which are how humans can refer to the operations
+    the processor understands. The mnemonic is usually a very short word that describes
+    the operation. CMP, for example, is compare. MOV is move, where you move data
+    from one location to another. Assembly language gives you complete control over
+    how the program works since it’s translated directly to machine language — the
+    binary values of processor operations and memory addresses.
+  id: totrans-9
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你对汇编语言不熟悉，汇编语言是接近直接为计算机写入二进制代码而不是十进制代码的一种编程语言。汇编语言由助记符组成，这些助记符是人类用来引用处理器理解的操作的方式。助记符通常是描述操作的非常简短的单词。例如，CMP
+    是比较（compare），MOV 是移动（move），用于在内存中移动数据。汇编语言使你完全控制程序的工作方式，因为它直接被翻译成机器语言——处理器操作和内存地址的二进制值。
+- en: 'In addition to having a simple design, Unix had the advantage of being distributed
+    with the source code. This allowed researchers not only to read the source code
+    in order to understand it better, but also to extend and improve the source. Assembly
+    language, which was used previously, can be very challenging to read without a
+    lot of time and experience. Higher level languages like C make reading the source
+    code significantly easier. Unix has spawned many child operating systems that
+    all behaved just as Unix did, with the same functionality. In some cases, these
+    other operating system distributions started with the Unix source that was provided
+    by AT&T. In other cases, Unix was essentially reverse engineered based on documented
+    functionality and was the starting point for two popular Unix-like operating systems:
+    BSD and Linux.'
+  id: totrans-10
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 除了具有简单的设计外，Unix 还有一个优势，即随附源代码分发。这使得研究人员不仅可以阅读源代码以更好地理解它，还可以扩展和改进源代码。之前使用的汇编语言，如果没有大量时间和经验，阅读起来可能非常具有挑战性。像
+    C 这样的高级语言大大简化了阅读源代码的过程。Unix 衍生出许多子操作系统，它们的行为与 Unix 相同，并具有相同的功能。在某些情况下，这些其他操作系统发行版始于由
+    AT&T 提供的 Unix 源代码。在其他情况下，Unix 本质上是基于记录功能反向工程，是两个流行的类 Unix 操作系统的起点：BSD 和 Linux。
+- en: Note
+  id: totrans-11
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: As you will see later, one of the advantages of the Unix design—​using small,
+    simple programs that do one thing, but allow you to feed the output of one into
+    the input of another—​is the power that comes with chaining. One common use of
+    this function is to get a process list by using one utility and feed the output
+    into another utility that will then process that output, either searching specifically
+    for one entry or manipulating the output to strip away some of it to make it easier
+    to understand.
+  id: totrans-12
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 正如您将在后面看到的，Unix 设计的一个优点是使用小型、简单的程序，每个程序只做一件事情，但允许您将一个程序的输出作为另一个程序的输入，这样就可以进行链式操作。这个功能的一个常见用途是通过一个实用程序获取进程列表，然后将输出馈送到另一个实用程序进行处理，无论是专门搜索一个条目还是处理输出以去除其中的一些内容以便更容易理解。
+- en: About Linux
+  id: totrans-13
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 关于 Linux
+- en: 'As Unix spread, the simplicity of its design and its focus on being a programming
+    environment, though primarily the availability of source code led to it being
+    taught in computer science programs around the world. A number of books about
+    operating system design were written in the 1980s based on the design of Unix.
+    While using the original source code would violate copyright, the extensive documentation
+    and simplicity of design allowed clones to be developed. One of these implementations
+    was written by Andrew Tannenbaum for his book *Operating Systems: Design and Implementation*
+    (Prentice Hall, 1987). This implementation, called *Minix*, was the basis for
+    Linus Torvalds’ development of Linux. What Torvalds developed was the Linux kernel,
+    which some consider the operating system. The kernel allows hardware to be managed,
+    including the processor, which allows processes to be run through the central
+    processing unit (CPU). It did not provide a facility for users to interact with
+    the operating system, meaning execute programs.'
+  id: totrans-14
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 随着 Unix 的传播，其设计的简单性和专注于成为一个编程环境，尽管主要是源代码的可用性，使得它成为全球计算机科学课程的教材。20世纪80年代写了许多关于操作系统设计的书籍，基于
+    Unix 的设计。虽然使用原始源代码会侵犯版权，但其广泛的文档和简单的设计使得可以开发克隆版本。其中一个实现是由 Andrew Tannenbaum 为他的书《操作系统：设计与实现》（Prentice
+    Hall，1987年）编写的 *Minix*。这个实现成为 Linus Torvalds 开发 Linux 的基础。Torvalds 开发的是 Linux
+    内核，有些人认为它就是操作系统。内核允许管理硬件，包括处理器，从而允许通过中央处理单元（CPU）运行进程。它没有提供用户与操作系统交互的设施，意味着执行程序。
+- en: The GNU Project, started in the late 1970s by Richard Stallman, had a collection
+    of programs that either were duplicates of the standard Unix utilities or were
+    functionally the same with different names. The GNU Project wrote programs primarily
+    in C, which meant they could be ported easily. As a result, Torvalds, and later
+    other developers, bundled the GNU Project’s utilities with his kernel to create
+    a complete distribution of software that anyone could develop and install to their
+    computer system. The collection of GNU utilities is sometimes (or at least historically
+    was) called userland. The userland utilities are how users interact with the system.
+  id: totrans-15
+  prefs: []
+  type: TYPE_NORMAL
+  zh: GNU 项目始于 1970 年代末，由**理查德·斯托曼**创建，其包含一系列程序，这些程序要么是标准 Unix 实用工具的副本，要么在功能上与其相同但名称不同。GNU
+    项目主要使用 C 语言编写程序，这意味着它们可以轻松移植。因此，Torvalds 及其后来的其他开发者将 GNU 项目的实用工具与其内核捆绑在一起，创建了一套完整的软件发行版，任何人都可以开发并安装到其计算机系统中。GNU
+    实用工具的集合有时（或至少在历史上曾经）被称为用户空间（userland）。用户空间实用工具是用户与系统进行交互的方式。
+- en: Linux inherited the majority of Unix design ideals, primarily because it was
+    begun as something functionally identical to the standard Unix that had been developed
+    by AT&T and was reimplemented by a small group at the University of California
+    at Berkeley as the Berkeley Systems Distribution (BSD). This meant that anyone
+    familiar with how Unix or even BSD worked could start using Linux and be immediately
+    productive. Over the decades since Torvalds first released Linux, many projects
+    have started up to increase the functionality and user-friendliness of Linux.
+    This includes several desktop environments, all of which sit on top of the X/Windows
+    system, which was first developed by MIT (which, again, was involved in the development
+    of Multics).
+  id: totrans-16
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Linux 在设计理念上继承了 Unix 的大部分理念，主要是因为它最初是作为标准 Unix 的功能相同版本开始开发的，后来由加州大学伯克利分校的一个小组重新实现为伯克利系统发行版（BSD）。这意味着任何熟悉
+    Unix 或甚至 BSD 工作原理的人都可以开始使用 Linux，并立即提高生产效率。自 Torvalds 首次发布 Linux 以来的几十年里，许多项目已启动，以增加
+    Linux 的功能和用户友好性。其中包括几个桌面环境，这些环境都建立在 X/Windows 系统之上，该系统最初由 MIT 开发（而 MIT 再次参与了 Multics
+    的开发）。
+- en: The development of Linux itself, meaning the kernel, has changed the way developers
+    work. As an example, Torvalds was dissatisfied with the capabilities of software
+    repository systems that allowed concurrent developers to work on the same files
+    at the same time. As a result, Torvalds led the development of *git*, a version-control
+    system that has largely supplanted other version-control systems for open source
+    development. If you want to grab the current version of source code from most
+    open source projects these days, you will likely be offered access via git. Additionally,
+    there are now public repositories for projects to store their code that support
+    the use of git, a source code manager, to access the code. Even outside of open
+    source projects, many if not most enterprises have moved their version control
+    systems to git because of its modern, decentralized approach to managing source
+    code.
+  id: totrans-17
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Linux 内核本身的发展改变了开发者的工作方式。举例来说，Torvalds 对允许并发开发者同时在同一文件上工作的软件仓库系统的能力感到不满意。因此，Torvalds
+    领导开发了*git*，一个版本控制系统，它在开源开发中已大幅取代了其他版本控制系统。如今，如果您想从大多数开源项目获取当前版本的源代码，您可能会通过 git
+    获得访问。此外，现在有公共代码库允许项目存储其代码，并支持使用 git，一种源代码管理器，来访问代码。即使在开源项目之外，许多（如果不是大多数）企业也已将其版本控制系统迁移到
+    git，因为其现代化的分布式管理源代码的方法。
+- en: Linux is available, generally free of charge, in distributions. A Linux *distribution*
+    is a collection of software packages that have been selected by the distribution
+    maintainers. Also, the software packages have been built in a particular way,
+    with features determined by the package maintainer. These software packages are
+    acquired as source code, and many packages can have multiple options—​whether
+    to include database support, which type of database, whether to enable encryption—​that
+    have to be enabled when the package is being configured and built. The package
+    maintainer for one distribution may make different choices for options than the
+    package maintainer for another distribution.
+  id: totrans-18
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Linux 通常免费提供发行版。Linux 的 *发行版* 是由发行版维护者选择的软件包集合。此外，这些软件包已经以特定方式构建，具有由软件包维护者确定的特性。这些软件包是作为源代码获取的，并且许多软件包可以有多个选项——如是否包括数据库支持，使用哪种类型的数据库，是否启用加密——这些选项在配置和构建软件包时必须启用。一个发行版的软件包维护者可能会对选项作出与另一个发行版的软件包维护者不同的选择。
+- en: Different distributions will also have different package formats. As an example,
+    RedHat and its associated distributions, like RedHat Enterprise Linux (RHEL) and
+    Fedora Core, use the RedHat Package Manager (RPM) format. In addition, RedHat
+    uses both the RPM utility as well as the Yellowdog Updater Modified (yum) to manage
+    packages on the system. Other distributions may use the different package management
+    utilities used by Debian. Debian uses the Advanced Package Tool (APT) to manage
+    packages in the Debian package format. Regardless of the distribution or the package
+    format, the object of the packages is to collect all the files necessary for the
+    software to function and make those files easy to put into place to make the software
+    functional. Since ultimately, Kali Linux inherits from Debian, by way of Ubuntu,
+    Kali also uses APT for package management, both from the perspective of the package
+    format it supports as well as the tools that are used to manage the packages.
+  id: totrans-19
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 不同的发行版还会有不同的软件包格式。例如，RedHat 及其关联的发行版，如 RedHat Enterprise Linux（RHEL）和 Fedora
+    Core，使用 RedHat Package Manager（RPM）格式。此外，RedHat 使用 RPM 实用程序以及 Yellowdog Updater
+    Modified（yum）来管理系统上的软件包。其他发行版可能使用 Debian 使用的不同软件包管理工具。Debian 使用 Advanced Package
+    Tool（APT）来管理 Debian 软件包格式的软件包。无论发行版或软件包格式如何，软件包的目的都是收集使软件正常运行所需的所有文件，并使这些文件易于放置到位以使软件功能正常。由于最终
+    Kali Linux 继承自 Ubuntu，再由 Debian 继承，Kali 也使用 APT 来进行软件包管理，无论是从支持的软件包格式的角度还是从管理软件包的工具的角度来看。
+- en: Over the years, another difference between distributions has come with the desktop
+    environment that is provided by default by the distribution. In recent years,
+    distributions have created their own custom views on existing desktop environments.
+    Whether it’s the GNU Object Model Environment (GNOME), the K Desktop Environment
+    (KDE), or Xfce, they can all be customized with different themes and wallpapers
+    and organization of menus and panels. Distributions will often provide their own
+    spin on a different desktop environment. Some distributions, like ElementaryOS,
+    have even provided their own desktop environment, called Pantheon.
+  id: totrans-20
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 多年来，发行版之间的另一个区别是默认由发行版提供的桌面环境。近年来，发行版已经为现有的桌面环境创建了他们自己的定制视图。无论是 GNU 对象模型环境（GNOME）、K
+    桌面环境（KDE）还是 Xfce，它们都可以通过不同的主题、壁纸以及菜单和面板的组织来进行定制。发行版通常会为不同的桌面环境提供他们自己的看法。一些发行版，如
+    ElementaryOS，甚至提供了自己的桌面环境，称为 Pantheon。
+- en: While in the end the result of package managers is the same, sometimes the choice
+    of package manager or even desktop environment can make a difference to users.
+    Additionally, the depth of the package repository can make a difference to some
+    users. They may want to ensure they have a lot of choices in software they can
+    install through the repository rather than trying to build the software by hand
+    and install it. Different distributions may have smaller repositories, even if
+    they are based on the same package management utilities and formats as other distributions.
+    Because of dependencies of software that need to be installed before the software
+    you are looking for will work, packages are not always mix-and-match between even
+    related distributions.
+  id: totrans-21
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 尽管包管理器的最终结果相同，但有时候包管理器或者甚至桌面环境的选择可能会对用户产生影响。此外，软件包存储库的深度对某些用户也可能有影响。他们可能希望通过存储库安装大量软件选择，而不是试图手动构建并安装软件。即使基于相同的包管理工具和格式，不同的发行版可能有较小的软件包存储库。由于需要在查找所需软件之前安装的软件依赖关系，即使是相关的发行版之间，软件包也并非总是可以混合使用。
+- en: Sometimes, different distributions will focus on specific groups of users, rather
+    than being general-purpose distributions for anyone who wants a desktop. Beyond
+    that, distributions like Ubuntu will even have separate installation distributions
+    per release, such as one for a server installation and one for a desktop installation.
+    A desktop installation generally includes a graphical user interface (GUI), whereas
+    a server installation won’t, and as a result will install far fewer packages.
+    The fewer packages, the less exposure to attack, and servers are often where sensitive
+    information is stored in addition to being systems that may be more likely to
+    be exposed to unauthorized users because they provide network services that aren’t
+    commonly found on desktop systems.
+  id: totrans-22
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有时，不同的发行版将专注于特定的用户群体，而不是为任何希望使用桌面的人提供通用目的的发行版。除此之外，像Ubuntu这样的发行版甚至会针对每个版本发布单独的安装发行版，例如服务器安装和桌面安装。桌面安装通常包括图形用户界面（GUI），而服务器安装则不包括，并且因此安装的软件包要少得多。软件包越少，受攻击的风险就越小，服务器通常存储敏感信息，可能更容易暴露给未经授权的用户，因为它们提供网络服务，这些服务在桌面系统上通常找不到。
+- en: Kali Linux is a distribution that is specifically tailored to a particular type
+    of user—​those who are interested in information security and the range of capabilities
+    that fall under that incredibly broad umbressa. Kali Linux, as a distribution
+    focused on security functions, falls into the desktop category, and there is no
+    intention to limit the number of packages that are installed to make Kali harder
+    to attack. Someone focused on security testing will probably need a wide variety
+    of software packages, and Kali loads their distribution out of the gate. This
+    may seem mildly ironic, considering distributions that focus on keeping their
+    systems safe from attack (sometimes mistakenly called *secure*) tend to limit
+    the packages through a process called hardening. Kali, though, is focused on testing,
+    rather than keeping the distribution safe from attack.
+  id: totrans-23
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Kali Linux是专门针对特定类型用户的发行版——那些对信息安全和其广泛功能感兴趣的用户。作为一个专注于安全功能的发行版，Kali Linux属于桌面类别，没有意图通过限制安装的软件包数量来增加攻击难度。专注于安全测试的人可能需要各种各样的软件包，而Kali则在初始加载时就提供了这些。这可能看起来有点讽刺，考虑到那些专注于保护系统免受攻击的发行版（有时被错误称为“安全”的）通常通过一种称为硬化的过程来限制软件包。然而，Kali专注于测试，而不是为了防止分发受到攻击而限制软件包。
+- en: Acquiring and Installing Kali Linux
+  id: totrans-24
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 获取和安装Kali Linux
+- en: The easiest way to acquire Kali Linux is to visit its [website](http://www.kali.org).
+    From there, you can gather additional information about the software, such as
+    lists of packages that are installed. You will be downloading an ISO image that
+    can be used as is if you are installing into a virtual machine (VM), or it can
+    be burned to a DVD to install to a physical machine.
+  id: totrans-25
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 获取Kali Linux的最简单方法是访问其[网站](http://www.kali.org)。从那里，您可以收集关于软件的其他信息，例如已安装软件包的列表。您将下载一个ISO映像，如果您安装到虚拟机（VM）中，可以直接使用，或者可以刻录到DVD以安装到物理机器上。
+- en: Kali Linux is based on Debian. This was not always the case. There was a time
+    when Kali was named *BackTrack Linux*. BackTrack was based on Knoppix Linux, which
+    is primarily a live distribution, meaning that it was designed to boot from CD,
+    DVD, or USB stick and run from the source media rather than being installed to
+    a destination hard drive. Knoppix, in turn, inherits from Debian. BackTrack was,
+    just as Kali Linux is, a distribution focused on penetration testing and digital
+    forensics. The last version of BackTrack was released in 2012, before the Offensive
+    Security team took the idea of BackTrack and rebuilt it to be based on Debian
+    Linux. One of the features that Kali retains that was available in BackTrack is
+    the ability to live boot. When you get boot media for Kali, you can choose to
+    either install or boot live. In [Figure 1-1](#boot_screen_for_kali_linux), you
+    can see the boot options.
+  id: totrans-26
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Kali Linux基于Debian。这并不是一直如此。曾经Kali被称为*BackTrack Linux*。BackTrack基于Knoppix Linux，这是一个主要用于现场启动的发行版，意味着它设计为从CD、DVD或USB驱动器启动并从源介质运行，而不是安装到目的地硬盘驱动器。Knoppix又继承自Debian。BackTrack和Kali
+    Linux一样，都是专注于渗透测试和数字取证的发行版。BackTrack的最后一个版本发布于2012年，之后Offensive Security团队借鉴BackTrack的思想并重建了基于Debian
+    Linux的Kali Linux。Kali保留了BackTrack中可用的一个功能，即可以进行现场启动。当您获取Kali的启动介质时，您可以选择安装或者现场启动。在[图1-1](#boot_screen_for_kali_linux)中，您可以看到启动选项。
+- en: '![Kali Linux Boot Screen](assets/lklx_0101.png)'
+  id: totrans-27
+  prefs: []
+  type: TYPE_IMG
+  zh: '![Kali Linux启动屏幕](assets/lklx_0101.png)'
+- en: Figure 1-1\. Boot screen for Kali Linux
+  id: totrans-28
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图1-1\. Kali Linux启动屏幕
+- en: Whether you run from the DVD or install to a hard drive is entirely up to you.
+    If you boot to DVD and don’t have a home directory stored on some writable media,
+    you won’t be able to maintain anything from one boot to another. If you don’t
+    have writable media to store information to, you will be starting entirely from
+    scratch every time you boot. There are advantages to this if you don’t want to
+    leave any trace of what you did while the operating system was running. If you
+    customize or want to maintain SSH keys or other stored credentials, you’ll need
+    to install to local media.
+  id: totrans-29
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 是否从DVD启动还是安装到硬盘完全取决于您。如果您从DVD启动并且没有将主目录存储在某些可写介质上，您将无法在一次启动和另一次启动之间维护任何信息。如果没有可写介质存储信息，您每次启动时都将从头开始。如果您不希望在操作系统运行时留下任何痕迹，这样做有其优势。如果您要定制或者维护SSH密钥或其他存储的凭据，您需要安装到本地介质。
+- en: Installation of Kali is straightforward. You don’t have the options that other
+    distributions have. You won’t select package categories. Kali has a defined set
+    of packages that gets installed. You can add more later or even take some away,
+    but you start with a fairly comprehensive set of tools for security testing or
+    forensics. What you need to configure is selecting a disk to install to and getting
+    it partitioned and formatted. You also need to configure the network, including
+    hostname and whether you are using a static address rather than DHCP. Once you
+    have configured that and set your time zone as well as some other foundational
+    configuration settings, the packages will get updated and you will be ready to
+    boot to Linux.
+  id: totrans-30
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 安装Kali很简单。您不会像其他发行版那样有多种选择。您不会选择软件包类别。Kali有一个定义好的软件包集合用于安装。您可以稍后添加更多软件包，甚至删除一些，但您将从一个相当全面的安全测试或取证工具集开始。您需要配置的是选择要安装到的磁盘，并进行分区和格式化。您还需要配置网络，包括主机名和是否使用静态地址而不是DHCP。一旦您配置好这些并设置了时区以及其他一些基础配置设置，软件包将得到更新，您就可以准备启动到Linux了。
+- en: Virtual Machines
+  id: totrans-31
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 虚拟机
+- en: The approach described can work very nicely on a dedicated machine. Dedicated
+    machines can be expensive. Even low cost machines cost something, then there is
+    the space and power that is required for the machine to operate. In some cases,
+    you may need cooling, depending on the hardware you have in place.
+  id: totrans-32
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 描述的方法在专用机器上可以运行得很好。专用机器可能很昂贵。即使是低成本的机器也是有成本的，还有机器运行所需的空间和电力。在某些情况下，您可能需要冷却，这取决于您所使用的硬件。
+- en: Fortunately, Kali doesn’t require its own hardware. It runs nicely inside a
+    VM. If you intend to play around with security testing, and most especially penetration
+    testing, getting a virtual lab started isn’t a bad idea. I’ve found that Kali
+    runs quite nicely in 4 GB of memory with about 20 GB of disk space. If you want
+    to store a lot of artifacts from your testing, you may want additional disk space.
+    You should be able to get by with 2 GB of memory, but obviously, the more memory
+    you can spare, the better the performance will be.
+  id: totrans-33
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 幸运的是，Kali不需要自己的硬件。它可以在VM内良好运行。如果您打算进行安全测试，特别是渗透测试，启动一个虚拟实验室并不是一个坏主意。我发现Kali在4GB内存和大约20GB的磁盘空间下运行得非常好。如果您想存储大量测试产生的工件，可能需要额外的磁盘空间。您应该能够通过2GB内存，但显然，您可以节省的内存越多，性能就会更好。
+- en: There are many hypervisors you can choose from, depending on your host operating
+    system. VMware has hypervisors for both Mac and PC. Parallels will run on Macs.
+    [VirtualBox](https://www.virtualbox.org/), on the other hand, will run on PCs,
+    Macs, Linux systems, and even Solaris. VirtualBox has been around since 2007,
+    but was acquired by Sun Microsystems in 2008\. As Sun was acquired by Oracle,
+    VirtualBox is currently maintained by Oracle. Regardless of who maintains it,
+    VirtualBox is free to download and use. If you are just getting started in the
+    world of VMs, this may be a place for you to start. Each works in a slightly different
+    way in terms of how it interacts with users. Different keys to break out of the
+    VM. Different levels of interaction with the operating system. Different support
+    for guest operating systems, since the hypervisor has to provide the drivers for
+    the guest. In the end, it comes down to how much you want to spend and which of
+    them you feel comfortable using.
+  id: totrans-34
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有许多虚拟机监视器可供选择，具体取决于您的主机操作系统。VMware为Mac和PC均提供虚拟机监视器。Parallels可在Mac上运行。[VirtualBox](https://www.virtualbox.org/)则可以在PC、Mac、Linux系统甚至Solaris上运行。VirtualBox自2007年起便存在，但在2008年被Sun
+    Microsystems收购。随着Sun被Oracle收购，VirtualBox目前由Oracle维护。不管是谁在维护，VirtualBox都可以免费下载和使用。如果您刚开始涉足虚拟机领域，这可能是一个适合您的地方。每种虚拟机监视器与用户的互动方式略有不同。打破VM的不同键。与操作系统的互动水平不同。不同的客户操作系统支持，因为虚拟机监视器必须为客户提供驱动程序。最终，这取决于您愿意花多少钱以及您感觉舒适使用哪种。
+- en: Note
+  id: totrans-35
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: As a point of possible interest, or at least connection, one of the primary
+    developers on BSD was Bill Joy, who was a graduate student at the University of
+    California at Berkeley. Joy was responsible for the first implementation in Berkeley
+    Unix of TCP/IP. He became a cofounder of Sun Microsystems in 1982 and while there
+    wrote a paper about a better programming language than C++, which served as the
+    inspiration for the creation of Java.
+  id: totrans-36
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 作为可能感兴趣的一点，或至少是联系的一点，BSD的主要开发人员之一是比尔·乔伊（Bill Joy），他曾是加州大学伯克利分校的研究生。乔伊负责在伯克利Unix中首次实现TCP/IP。他于1982年成为Sun
+    Microsystems的联合创始人，在那里撰写了一篇关于比C++更好的编程语言的论文，这也为Java的创作提供了灵感。
+- en: One consideration is the tools provided by the hypervisor. The tools are drivers
+    that get installed into the kernel to better integrate with the host operating
+    system. This may include print drivers, drivers to share the filesystem from the
+    host into the guest, and better video support. VMware can use the VMware tools
+    that are open source and available within the Kali Linux repository. You can also
+    get the VirtualBox tools from the Kali repository. Parallels, on the other hand,
+    provides its own tools. One advantage to using VMware is there are open-source
+    drivers available in most if not all Linux distributions. I have had some issues
+    in the past with installing Parallels Tools in some versions of Linux, though
+    I generally like Parallels. If you don’t want to scale the display automatically
+    in the Kali VM or share documents, you may not care about any of the VM tools.
+  id: totrans-37
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一个考虑因素是虚拟机监视器提供的工具。这些工具是安装到内核中以更好地与主机操作系统集成的驱动程序。这可能包括打印驱动程序、将主机文件系统共享到客户机中的驱动程序以及更好的视频支持。VMware可以使用开源的VMware工具，并在Kali
+    Linux存储库中提供。您还可以从Kali存储库获取VirtualBox工具。另一方面，Parallels提供自己的工具。使用VMware的一个优点是大多数Linux发行版都提供开源驱动程序。我过去在某些Linux版本中安装Parallels工具时遇到了一些问题，尽管我通常很喜欢Parallels。如果您不希望在Kali
+    VM中自动缩放显示或共享文档，您可能不会关心任何VM工具。
+- en: Low Cost Computing
+  id: totrans-38
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 低成本计算
+- en: If you’d prefer not to do an install from scratch but are interested in using
+    a VM, you can download either a VMware or VirtualBox image. Kali provides support
+    for not only virtual environments but also ARM-based devices like the Raspberry
+    Pi and the BeagleBone. The advantage to using the VM images is that it gets you
+    up and running faster. You don’t have to take the time to do the installation.
+    Instead, you download the image, load it into your chosen hypervisor, and you’re
+    up and running. If you choose to go the route of using a preconfigured VM, you
+    can find the images at the [*https://www.kali.org/get-kali/#kali-virtual-machines*](https://www.kali.org/get-kali/#kali-virtual-machines)
+    on Kali’s site for downloading one of these custom images.
+  id: totrans-39
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你不想从头开始安装但又有兴趣使用虚拟机，你可以下载VMware或VirtualBox镜像。Kali不仅支持虚拟环境，还支持像Raspberry Pi和BeagleBone这样的基于ARM的设备。使用VM镜像的优势在于它能让你更快地启动和运行。你不必花时间进行安装。相反，你只需下载镜像，加载到你选择的虚拟化程序中，然后就可以运行了。如果你选择使用预配置的虚拟机路线，你可以在Kali网站的[*https://www.kali.org/get-kali/#kali-virtual-machines*](https://www.kali.org/get-kali/#kali-virtual-machines)上找到这些自定义镜像的下载链接。
+- en: Another low-cost option for running Kali Linux is a Raspberry Pi. The Pi is
+    a very low-cost and small-footprint computer. You can, though, download an image
+    specific for the Pi. The Pi doesn’t use an Intel or AMD processor as you would
+    see on most desktop systems. Instead, it uses an Advanced RISC Machine (ARM) processor.
+    These processors use a smaller instruction set and take less power than the processors
+    you would usually see in desktop computers. The Pi comes as just a very small
+    board that fits in the palm of your hand. You can get multiple cases to insert
+    the board into and then outfit it with any peripherals you may want, such as a
+    keyboard, mouse, and monitor.
+  id: totrans-40
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 另一个运行Kali Linux的低成本选择是Raspberry Pi。Pi是一台非常低成本且占用空间极小的计算机。你可以下载专门为Pi设计的镜像。Pi不像大多数桌面系统那样使用Intel或AMD处理器。相反，它使用先进的RISC机器（ARM）处理器。这些处理器使用更小的指令集，消耗比通常在桌面计算机上看到的处理器更少的电力。Pi只是一个非常小的板子，可以放在手掌上。你可以购买多种外壳将板子安装在其中，然后配备键盘、鼠标和显示器等任何外设。
+- en: One of the advantages of the Pi is that it can be used in physical attacks,
+    considering its small size. You can install Kali onto the Pi and leave it at a
+    location you are testing but it does require power and some sort of network connection.
+    The Pi has an Ethernet connection built in, but there are also USB ports for WiFi
+    adapters. Once you have Kali in place, you can perform even local attacks remotely
+    by accessing your Pi from inside the network. We’ll get into some of that later.
+  id: totrans-41
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Pi的一个优点是可以用于物理攻击，考虑到其小尺寸。你可以安装Kali到Pi上，并将其留在你测试的位置，但这需要电源和某种网络连接。Pi内置了以太网连接，但也有用于WiFi适配器的USB端口。一旦你安装好Kali，你可以通过从网络内部访问你的Pi来远程执行甚至本地攻击。我们稍后会详细讨论这些内容。
+- en: Windows Subsystem for Linux (WSL)
+  id: totrans-42
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: Windows子系统Linux（WSL）
+- en: Many people use Windows as their primary operating system and rightly so considering
+    its utility for most desktop tasks. While virtual machines are one way of getting
+    Linux on any system, Windows has a more direct way of installing Linux. In 2016,
+    Windows released a feature called Windows Subsystem for Linux (WSL). This was
+    a way of running Executable and Linkable Format (ELF) binaries that are the default
+    executable format for Linux directly on Windows. There have been two versions
+    of WSL. The first was a way of implementing Linux system calls directly in the
+    Windows kernel. Since the hardware architecture is not in play, because both Windows
+    and the Linux executables are based on the Intel processor architecture, the largest
+    consideration is the way the Linux kernel manages hardware. This is done through
+    system calls. The system calls in Windows are different from those in Linux. Implementing
+    the system calls of Linux in Windows is a major step to allowing Linux executables
+    to run nearly natively on Windows.
+  id: totrans-43
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 许多人将Windows作为他们的主要操作系统，这在考虑到其对大多数桌面任务的实用性时是正当的。虚拟机是在任何系统上安装Linux的一种方式，而Windows则有更直接的安装Linux的方法。2016年，Windows推出了一个名为Windows子系统Linux（WSL）的功能。这是一种在Windows上直接运行Linux默认可执行格式（ELF）二进制文件的方式。WSL有两个版本。第一个版本是在Windows内核中直接实现Linux系统调用的一种方式。由于硬件架构不在考虑范围内，因为Windows和Linux可执行文件都基于Intel处理器架构，最大的考虑因素是Linux内核管理硬件的方式。这是通过系统调用来完成的。Windows中的系统调用与Linux中的不同。在Windows中实现Linux的系统调用是允许Linux可执行文件几乎原生地在Windows上运行的一大步。
+- en: More recently, Microsoft changed the implementation. Desktop versions of Windows
+    now include a lightweight hypervisor, which is an implementation of Hyper-V, previously
+    available as a native hypervisor on Windows servers. WSL is now implemented using
+    a Linux kernel running in a Hyper-V machine. The Linux applications make direct
+    calls to the Linux kernel rather than calling into the Windows kernel. One reason
+    for this is some of the Linux system calls ended up being difficult to implement
+    in Windows. Implementing WSL in a virtualized environment provides isolation so
+    Linux applications can’t impact Windows applications because they are executing
+    in separate memory spaces.
+  id: totrans-44
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最近，Microsoft 改变了实现方式。Windows 的桌面版本现在包含一个轻量级的虚拟化管理程序，这是 Hyper-V 的一个实现，在之前仅作为
+    Windows 服务器上的本机虚拟化管理程序。WSL 现在使用在 Hyper-V 虚拟机中运行的 Linux 内核来实现。Linux 应用程序直接调用 Linux
+    内核而不是调用 Windows 内核。其中一个原因是一些 Linux 系统调用在 Windows 中难以实现。在虚拟化环境中实现 WSL 提供了隔离，因此
+    Linux 应用程序无法影响 Windows 应用程序，因为它们在单独的内存空间中执行。
+- en: Installing WSL is very easy. Using the command line, whether it’s PowerShell
+    or the older Command Processor, you run *wsl --install*. You can see in [Figure 1-2](#wsl_installation)
+    that Windows will install a version of the Ubuntu kernel by default. If you have
+    an older version of WSL installed already, it can be converted to WSL2 using *wsl
+    --upgrade*. Once the environment has been installed, you can launch it from the
+    Windows menu. The default Ubuntu environment will be named Ubuntu in the menu.
+  id: totrans-45
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 安装 WSL 非常简单。使用命令行，无论是 PowerShell 还是旧版命令处理器，您都可以运行*wsl --install*。您可以在[图 1-2](#wsl_installation)中看到，默认情况下
+    Windows 将安装 Ubuntu 内核的一个版本。如果您已经安装了较旧版本的 WSL，可以使用*wsl --upgrade*将其转换为 WSL2。安装环境后，您可以从
+    Windows 菜单启动它。菜单中默认的 Ubuntu 环境将命名为 Ubuntu。
+- en: '![Installing WSL in Windows PowerShell](assets/wsl-installation.png)'
+  id: totrans-46
+  prefs: []
+  type: TYPE_IMG
+  zh: '![在 Windows PowerShell 中安装 WSL](assets/wsl-installation.png)'
+- en: Figure 1-2\. Installing WSL in PowerShell
+  id: totrans-47
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图 1-2\. 在 PowerShell 中安装 WSL
+- en: We don’t want Ubuntu, though. We want Kali. You can find Kali in the Microsoft
+    Store app. If you search for Kali, you will see it just as in [Figure 1-3](#marketplace_kali_linux).
+    Installing it doesn’t actually install the entire distribution, though. It installs
+    the capability to run Kali Linux. Opening Kali Linux for the first time in Windows
+    will install the image along with the user configuration you will be prompted
+    for. You will get asked for a username and a password for that username. When
+    you subsequently run Kali Linux, you will get automatically logged into a command
+    line shell.
+  id: totrans-48
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们不想要 Ubuntu，我们想要 Kali。您可以在 Microsoft Store 应用程序中找到 Kali。如果您搜索 Kali，您将看到它就像[图 1-3](#marketplace_kali_linux)中所示。然而，安装它实际上并不会安装整个发行版。它只安装运行
+    Kali Linux 的能力。在 Windows 中第一次打开 Kali Linux 时，将安装镜像以及您将要求的用户配置。您将被要求输入一个用户名和该用户名的密码。随后运行
+    Kali Linux 时，您将自动登录到命令行 shell。
+- en: '![Kali Linux in Microsoft Store](assets/KaliLinuxMarketplace.png)'
+  id: totrans-49
+  prefs: []
+  type: TYPE_IMG
+  zh: '![Microsoft Store 中的 Kali Linux](assets/KaliLinuxMarketplace.png)'
+- en: Figure 1-3\. Kali Linux in Microsoft Store
+  id: totrans-50
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图 1-3\. Microsoft Store 中的 Kali Linux
+- en: The base image of Kali in WSL is very small. There isn’t much installed. One
+    big advantage of using WSL2 is the ability to run graphical applications directly
+    in Windows. This didn’t used to be the case. You could run command line programs
+    in Windows but running graphical programs required another piece of software to
+    host those graphical programs. Today, Windows includes the functionality to host
+    those graphical programs. Because of that, you will probably want to install some
+    metapackages to get some additional programs. To start with, you may want kali-linux-default.
+    It will install hundreds of additional packages which will get you started. You
+    won’t have a complete graphical desktop, but you can run graphical programs directly
+    on Windows. You can see this in [Figure 1-4](#ettercap_in_windows) where Ettercap
+    is running as a graphical program out of Linux on the Windows desktop.
+  id: totrans-51
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在 WSL 中的 Kali 基础映像非常小。没有安装很多内容。使用 WSL2 的一个重大优势是能够直接在 Windows 中运行图形应用程序。这以前是不可能的。您可以在
+    Windows 中运行命令行程序，但是运行图形程序需要另一个软件来托管这些图形程序。如今，Windows 包括托管这些图形程序的功能。因此，您可能希望安装一些元包以获取一些额外的程序。首先，您可能想要安装
+    kali-linux-default。它将安装数百个额外的软件包，帮助您入门。您不会有完整的图形桌面，但可以直接在 Windows 上运行图形程序。您可以在[图 1-4](#ettercap_in_windows)中看到这一点，Ettercap
+    作为一个图形程序在 Windows 桌面上运行。
+- en: '![Ettercap Running on Windows Desktop](assets/ettercaponwindows.png)'
+  id: totrans-52
+  prefs: []
+  type: TYPE_IMG
+  zh: '![在 Windows 桌面上运行的 Ettercap](assets/ettercaponwindows.png)'
+- en: Figure 1-4\. Ettercap Running on Windows Desktop
+  id: totrans-53
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图 1-4\. 在 Windows 桌面上运行的 Ettercap
+- en: With so many options to get yourself started, it should be easy to get an installation
+    up quickly. Once you have the installation up and running, you’ll want to get
+    familiar with the desktop environment, if you are using an option that has a desktop
+    environment, so you can start to become productive.
+  id: totrans-54
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有了这么多选项来开始你的工作，很容易快速安装起来。一旦安装完成并运行起来，如果你使用的是带有桌面环境的选项，你需要熟悉桌面环境，这样你才能开始提高工作效率。
+- en: Desktops
+  id: totrans-55
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 桌面
+- en: You’re going to be spending a lot of time interacting with the desktop environment,
+    so you may as well get something that you’ll feel comfortable with. Unlike proprietary
+    operating systems like Windows and macOS, Linux has multiple desktop environments.
+    Kali supports the popular ones from their repository without needing to add any
+    additional repositories. If the desktop environment that is installed by default
+    doesn’t suit you, replacing it is easy. Because you’ll likely be spending a lot
+    of time in the environment, you really want to be not only comfortable but also
+    productive. This means finding the right environment and toolsets for you.
+  id: totrans-56
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 您将花费大量时间与桌面环境进行交互，所以最好选择一些你感觉舒适的东西。与 Windows 和 macOS 等专有操作系统不同，Linux 有多个桌面环境可供选择。Kali
+    支持从其存储库中获取的流行桌面环境，无需添加任何额外的存储库。如果默认安装的桌面环境不适合您，更换它也很容易。因为您可能会在环境中花费大量时间，所以您确实希望不仅舒适，而且高效。这意味着找到适合您的正确环境和工具集。
+- en: Xfce Desktop
+  id: totrans-57
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: Xfce 桌面
+- en: The default desktop environment on Kali at this time in mid-2023 is Xfce. It
+    is often a popular alternative desktop environment, though not often a default
+    one. One of the reasons it has been popular is that it was designed to be fairly
+    lightweight for a full desktop environment and, as a result, more responsive.
+    Many hardcore Linux users I have known over the years have gravitated to Xfce
+    as their preferred environment, if they needed a desktop environment. Again, the
+    reason is that it has a simple design that is highly configurable. In [Figure 1-5](#xfce_desktop_showing_applications_menu),
+    you can see a basic setup of Xfce. The panel on the bottom of the desktop is entirely
+    configurable. You can change where it’s located and how it behaves, and add or
+    remove items as you see fit, based on how you prefer to work. This panel includes
+    an applications menu that includes all the same folders/categories that are in
+    the GNOME menu.
+  id: totrans-58
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 到 2023 年中期，Kali 的默认桌面环境是 Xfce。尽管它不常作为默认选择，但它通常是一种受欢迎的替代桌面环境。它之所以受欢迎的原因之一是，它被设计成一种相对轻量级的完整桌面环境，因此更加响应迅速。多年来，我认识的许多
+    Linux 硬核用户倾向于选择 Xfce 作为他们的首选环境，如果他们需要桌面环境的话。再次强调的原因是它具有简单且高度可配置的设计。在 [图 1-5](#xfce_desktop_showing_applications_menu)
+    中，你可以看到 Xfce 的基本设置。桌面底部的面板完全可配置。您可以更改其位置和行为方式，并根据自己的喜好添加或删除项目，以适应您的工作方式。此面板包含一个应用程序菜单，其中包含与
+    GNOME 菜单相同的所有文件夹/类别。
+- en: '![Xfce Desktop Showing Applications Menu](assets/lklx_0105.png)'
+  id: totrans-59
+  prefs: []
+  type: TYPE_IMG
+  zh: '![Xfce 桌面显示应用程序菜单](assets/lklx_0105.png)'
+- en: Figure 1-5\. Xfce desktop showing applications menu
+  id: totrans-60
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图 1-5\. Xfce 桌面显示应用程序菜单
+- en: While Xfce is based on the GNOME Toolkit (GTK), it is not a fork of GNOME. It
+    was developed on top of an older version of GTK. The intention was to create something
+    that was simpler than the direction GNOME was going in. It was intended to be
+    lighter weight and, as a result, have better performance. The feeling was that
+    the desktop shouldn’t get in the way of the real work users want to do.
+  id: totrans-61
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 尽管 Xfce 基于 GNOME 工具包（GTK），但它不是 GNOME 的分支。它是在旧版本的 GTK 之上开发的。其目的是创建比 GNOME 更简单的东西。它旨在更轻量级，因此性能更好。人们的感觉是桌面环境不应妨碍用户想要做的真正工作。
+- en: 'Just as with Windows, if that’s what you are mostly familiar with, you get
+    an application menu with shortcuts to the programs that have been installed. Rather
+    than being broken into groups by software vendor or program name, Kali presents
+    the programs in groups based on functionality. The categories presented, and ones
+    covered over the course of this book, are as follows:'
+  id: totrans-62
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 就像在 Windows 上一样，如果你对此比较熟悉，你会得到一个应用程序菜单，里面列出了已安装的程序的快捷方式。不同于按软件供应商或程序名称分组，Kali
+    根据功能将程序分组展示。本书介绍的类别如下：
+- en: Information Gathering
+  id: totrans-63
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 信息收集
+- en: Vulnerability Analysis
+  id: totrans-64
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 漏洞分析
+- en: Web Application Analysis
+  id: totrans-65
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 网络应用程序分析
+- en: Database Assessment
+  id: totrans-66
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 数据库评估
+- en: Password Attacks
+  id: totrans-67
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 密码攻击
+- en: Wireless Attacks
+  id: totrans-68
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 无线攻击
+- en: Reverse Engineering
+  id: totrans-69
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 逆向工程
+- en: Exploitation Tools
+  id: totrans-70
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 利用工具
+- en: Sniffing & Spoofing
+  id: totrans-71
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 嗅探与欺骗
+- en: Post Exploitation
+  id: totrans-72
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 后利用
+- en: Forensics
+  id: totrans-73
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 反取证
+- en: Reporting Tools
+  id: totrans-74
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 报告工具
+- en: Social Engineering Tools
+  id: totrans-75
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 社会工程工具
+- en: System Services
+  id: totrans-76
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 系统服务
+- en: Alongside the menu are a set of launchers, much like the quick launchers you
+    can find in Windows on the menu bar. Xfce also sets up four virtual desktops by
+    default. You can see those as numbered boxes on the menu bar. Each of these virtual
+    desktops can be spaces where you can hold running applications. It’s a way of
+    having separate places to keep your desktop less cluttered.
+  id: totrans-77
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 菜单栏旁边有一组启动器，类似于 Windows 菜单栏上可以找到的快速启动器。Xfce 默认设置了四个虚拟桌面。你可以在菜单栏上看到这些虚拟桌面，它们被编号为框。每个虚拟桌面可以是你运行应用程序的空间。这样可以使你的桌面更整洁。
+- en: GNOME Desktop
+  id: totrans-78
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: GNOME 桌面
+- en: GNOME has been a default desktop environment on a lot of different Linux distributions.
+    It is available as an option on Kali Linux. This desktop environment was part
+    of the GNU (GNU’s Not Unix, which is referred to as a recursive acronym) Project.
+    RedHat has been a primary corporate contributor and uses the GNOME desktop as
+    its primary interface for the distributions it controls, as does Ubuntu and several
+    other distributions. In [Figure 1-6](#gnome_desktop_for_kali_linux), you can see
+    the desktop environment with the main menu expanded.
+  id: totrans-79
+  prefs: []
+  type: TYPE_NORMAL
+  zh: GNOME 已经成为许多不同 Linux 发行版的默认桌面环境。它在 Kali Linux 上也可以选择。这个桌面环境是 GNU（GNU's Not Unix，被称为递归首字母缩写）项目的一部分。RedHat
+    是主要的企业贡献者，并将 GNOME 桌面用作其控制的发行版的主要界面，Ubuntu 和其他几个发行版也是如此。在[图 1-6](#gnome_desktop_for_kali_linux)中，你可以看到展开了主菜单的桌面环境。
+- en: '![GNOME Desktop](assets/lklx_0102.png)'
+  id: totrans-80
+  prefs: []
+  type: TYPE_IMG
+  zh: '![GNOME 桌面](assets/lklx_0102.png)'
+- en: Figure 1-6\. GNOME desktop for Kali Linux
+  id: totrans-81
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图 1-6\. 用于 Kali Linux 的 GNOME 桌面
+- en: The main menu is accessed from the Applications menu in the top bar. This is
+    minimally configurable using the Tweaks program, mostly related to the clock and
+    calendar. Additionally, there is a Places menu that will allow you to open a file
+    explorer that shows contents from the locations in the places menu. For example,
+    Home and Documents are two places. If you select either of them, you will get
+    a file explorer open to your home directory or the Documents directory inside
+    your home directory. On the left side of the top panel, you can open up the virtual
+    desktop manager.
+  id: totrans-82
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 主菜单可以从顶部菜单栏的“应用程序”菜单中访问。可以使用 Tweaks 程序对其进行最小配置，主要与时钟和日历相关。此外，还有一个“位置”菜单，允许你打开一个文件浏览器，显示“位置”菜单中位置的内容。例如，“主目录”和“文档”是两个位置。如果选择其中任何一个，将打开一个文件浏览器，显示你的主目录或主目录内的“文档”目录。在顶部面板的左侧，你可以打开虚拟桌面管理器。
+- en: Along with the menu in the top panel, there is a dock along the bottom, much
+    like macOS. The dock includes commonly used applications like the Terminal, Firefox,
+    Metasploit, WireShark, Burp Suite, and Files. Clicking one of the icons once launches
+    the application. You can add launchers to this dock by dragging them out of the
+    list of applications. This can be shown by clicking on the tile with nine squares
+    on the right side of the dock. It brings up the applications installed on the
+    system, shown in alphabetical order, as you can see in [Figure 1-7](#gnome_application_list).
+    The applications in the dock to start with also show up as favorites in the Applications
+    menu accessible from the top panel. Where the Windows taskbar stretches the width
+    of the screen, the dock in GNOME and macOS is only as wide as it needs to be to
+    store the icons that have been set to persist there, plus the ones for running
+    applications.
+  id: totrans-83
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 除了顶部面板上的菜单外，还有一个类似 macOS 的底部坞。坞包括常用应用程序，如终端、Firefox、Metasploit、WireShark、Burp
+    Suite 和 Files。单击其中一个图标一次即可启动该应用程序。你可以通过将它们从应用程序列表中拖出来将启动器添加到此坞。点击坞右侧的九方格图块可以显示这个，这将显示系统上安装的应用程序，按字母顺序显示，就像你在[图
+    1-7](#gnome_application_list)中看到的那样。坞中的应用程序也会显示为“应用程序”菜单中的收藏夹。在 Windows 任务栏横跨屏幕宽度的情况下，GNOME
+    和 macOS 中的坞仅宽到足以容纳已设置为持久存在的图标，以及运行中应用程序的图标。
+- en: '![GNOME Application List](assets/lklx_0103.png)'
+  id: totrans-84
+  prefs: []
+  type: TYPE_IMG
+  zh: '![GNOME 应用列表](assets/lklx_0103.png)'
+- en: Figure 1-7\. GNOME application list
+  id: totrans-85
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图 1-7\. GNOME 应用列表
+- en: Note
+  id: totrans-86
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: The dock in macOS comes from the interface in the NeXTSTEP operating system,
+    which was designed for the NeXT Computer. This is the computer Steve Jobs formed
+    a company to design and build after he was forced out of Apple in the 1980s. Many
+    of the elements of the NeXTSTEP user interface (UI) were incorporated into the
+    macOS UI when Apple bought NeXT. Incidentally, NeXTSTEP was built over the top
+    of a BSD operating system, which is why macOS has Unix under the hood if you open
+    a terminal window.
+  id: totrans-87
+  prefs: []
+  type: TYPE_NORMAL
+  zh: macOS 中的 dock 源自 NeXTSTEP 操作系统的界面，后者是专为 NeXT 计算机设计的。这是史蒂夫·乔布斯在被迫离开苹果后成立公司设计和建造的计算机。当苹果收购
+    NeXT 时，许多 NeXTSTEP 用户界面（UI）的元素被整合到 macOS UI 中。顺便说一句，NeXTSTEP 是建立在 BSD 操作系统之上的，这就是为什么
+    macOS 在打开终端窗口时有 Unix 内核的原因。
+- en: Logging In Through the Desktop Manager
+  id: totrans-88
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 通过桌面管理器登录
+- en: Although GNOME is the default desktop environment, others are available without
+    much effort. If you have multiple desktop environments installed, you will be
+    able to select one in the display manager when you log in. First, you need to
+    enter your username so the system can identify the default environment you have
+    configured. This may be the last one you logged into. [Figure 1-8](#desktop_selection_at_login)
+    shows environments that I can select from on one of my Kali Linux systems.
+  id: totrans-89
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 虽然 GNOME 是默认的桌面环境，但其他环境也可以轻松获得。如果安装了多个桌面环境，你可以在登录时的显示管理器中选择其中之一。首先，你需要输入用户名，以便系统识别你配置的默认环境。这可能是你最后登录的环境。[图 1-8](#desktop_selection_at_login)
+    展示了我在一台我的 Kali Linux 系统上可以选择的环境。
+- en: '![Desktop Selection in LightDM](assets/lklx_0104.png)'
+  id: totrans-90
+  prefs: []
+  type: TYPE_IMG
+  zh: '![LightDM 桌面选择](assets/lklx_0104.png)'
+- en: Figure 1-8\. Desktop selection at login
+  id: totrans-91
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图 1-8\. 登录时的桌面选择
+- en: There have been numerous display managers over the years. Initially, the login
+    screen was something the X window manager provided, but other display managers
+    have been developed, expanding the capabilities. One of the advantages of LightDM
+    is that it’s considered lightweight. This may be especially relevant if you are
+    working on a system with fewer resources such as memory and processor.
+  id: totrans-92
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 多年来，显示管理器层出不穷。最初，登录屏幕是 X 窗口管理器提供的功能，但随着其他显示管理器的开发，其功能得到了扩展。LightDM 的一个优势在于它被认为是轻量级的。如果你在资源较少（如内存和处理器）的系统上工作，这可能尤为重要。
+- en: Cinnamon and MATE
+  id: totrans-93
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: Cinnamon 和 MATE
+- en: Two other desktops, Cinnamon and MATE, owe their origins to GNOME as well. The
+    Linux distribution, Linux Mint, wasn’t sure about GNOME 3 and its GNOME shell,
+    the desktop interface that came with it. As a result, it developed *Cinnamon*,
+    which was initially just a shell sitting on top of GNOME. With the second version
+    of Cinnamon, it became a desktop environment in its own right. One of the advantages
+    to Cinnamon is that it bears a strong resemblance to Windows in terms of where
+    things are located and how you get around. You can see that there is a Menu button
+    at the bottom left, much like the Windows button, as well as a clock and other
+    system widgets at the right of the menu bar or panel. You can see the panel as
+    well as the menu in [Figure 1-9](#cinnamon_desktop_with_menu). Again, the menu
+    is just like the one you see in GNOME and Xfce.
+  id: totrans-94
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Cinnamon 和 MATE 这两个桌面环境也起源于 GNOME。Linux 发行版 Linux Mint 对 GNOME 3 及其附带的 GNOME
+    shell（桌面界面）持保留态度。因此，它开发了 *Cinnamon*，最初只是位于 GNOME 之上的一个 shell。随着第二个版本的推出，Cinnamon
+    成为了一种独立的桌面环境。Cinnamon 的一个优势在于，它在位置和操作方式上与 Windows 非常相似。你可以看到底部左侧有一个类似 Windows
+    按钮的菜单按钮，以及菜单栏或面板右侧的时钟和其他系统小部件。你可以在 [图 1-9](#cinnamon_desktop_with_menu) 中看到面板和菜单。再次强调，该菜单与
+    GNOME 和 Xfce 中看到的菜单完全相同。
+- en: '![Cinnamon Desktop with Menu](assets/lklx_0106.png)'
+  id: totrans-95
+  prefs: []
+  type: TYPE_IMG
+  zh: '![带菜单的 Cinnamon 桌面](assets/lklx_0106.png)'
+- en: Figure 1-9\. Cinnamon desktop with menu
+  id: totrans-96
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图 1-9\. Cinnamon 桌面与菜单
+- en: As I’ve suggested, there were concerns about GNOME 3 and the change in the look
+    and behavior of the desktop. Some might say this was an understatement, and the
+    reversion of some distributions to other looks might be considered proof of that.
+    This includes the latest implementation of GNOME in Kali Linux. Regardless, Cinnamon
+    was one response to GNOME 3 by creating a shell that sat on top of the underlying
+    GNOME 3 architecture. *MATE*, on the other hand, is an outright fork of GNOME
+    2\. For anyone familiar with GNOME 2, MATE will seem familiar. It’s an implementation
+    of the classic look of GNOME 2\. You can see this running on Kali in [Figure 1-10](#mate_desktop_with_menu).
+    Again, the menu is shown so you can see that you will get the same easy access
+    to applications in all of the environments. While Xfce, Cinnamon, GNOME and other
+    desktop environments have evolved their look over time, MATE continues to look
+    pretty much the same in its Kali implementation as it did when it was first released.
+  id: totrans-97
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 正如我所暗示的，对于GNOME 3的变化和桌面外观及行为的改变存在一些担忧。有人可能会说这是一种轻描淡写，而一些发行版回到其他外观可能被认为是这一观点的证明。这包括Kali
+    Linux中的最新GNOME实现。无论如何，Cinnamon是对GNOME 3的一种响应，它通过在底层GNOME 3架构之上创建一个外壳来解决这个问题。另一方面，*MATE*则是对GNOME
+    2的直接分支。对于熟悉GNOME 2的人来说，MATE会显得很熟悉。它实现了GNOME 2经典外观。您可以在[Kali中看到它的运行效果](#mate_desktop_with_menu)，见[图 1-10](#mate_desktop_with_menu)。同样，显示菜单以便您可以看到在所有环境中都能轻松访问应用程序。虽然Xfce、Cinnamon、GNOME和其他桌面环境随着时间的推移逐步改进它们的外观，但在Kali中实现的MATE与其首次发布时看起来几乎没有什么不同。
+- en: '![MATE Desktop with Menu](assets/lklx_0107.png)'
+  id: totrans-98
+  prefs: []
+  type: TYPE_IMG
+  zh: '![MATE桌面与菜单](assets/lklx_0107.png)'
+- en: Figure 1-10\. MATE desktop with menu
+  id: totrans-99
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图 1-10. MATE桌面与菜单
+- en: The choice of desktop environment is entirely personal. One desktop that I have
+    left off here but that is still very much an option is the K Desktop Environment
+    (KDE). There are two reasons for this. The first is that I have always found KDE
+    to be fairly heavyweight, although this has evened out some with GNOME 3 and the
+    many packages it brings along with it. KDE never felt as quick as GNOME and certainly
+    Xfce. However, a lot of people like it. More particularly, one reason for omitting
+    an image of it is that it looks like some versions of Windows and also some of
+    the alternative Linux desktops. One of the objectives behind KDE always seemed
+    to be to clone the look and feel of Windows so users coming from that platform
+    would feel comfortable.
+  id: totrans-100
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 桌面环境的选择完全是个人的。我这里没有提到但仍然是一个很好的选择的一个桌面环境是[K桌面环境 (KDE)](https://zh.wikipedia.org/wiki/KDE)。有两个原因。第一个是我总是觉得KDE相对比较沉重，尽管随着GNOME
+    3和它带来的许多软件包，这种差距已经有所缩小。KDE从来没有像GNOME或者Xfce那样感觉那么快。但是，很多人喜欢它。更具体地说，没有插入它的一个图像的一个原因是它看起来像某些版本的Windows，还有一些替代的Linux桌面。KDE背后的一个目标似乎总是克隆Windows的外观和感觉，以便从该平台过渡过来的用户感到舒适。
+- en: If you are serious about really getting started with Kali and working with it,
+    you may want to spend some time playing with the different desktop environments.
+    It’s important that you are comfortable and can get around the interface efficiently.
+    If you have a desktop environment that gets in your way or is hard to navigate,
+    you probably don’t have a good fit for you. You may try another one. It’s easy
+    enough to install additional environments. When we get to package management a
+    little later, you’ll learn how to install additional packages and, as a result,
+    desktop environments. You may even discover some that aren’t included in this
+    discussion.
+  id: totrans-101
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果您真的想要开始使用Kali并与其一起工作，您可能需要花些时间尝试不同的桌面环境。重要的是，您要感到舒适并能够高效地使用界面。如果您的桌面环境阻碍了您或者难以导航，那么您可能并不适合它。您可以尝试另一个。安装其他环境非常容易。稍后我们将介绍软件包管理时，您将学会如何安装额外的软件包，因此也可以安装桌面环境。您甚至可能会发现一些未在本讨论中包含的内容。
+- en: Using the Command Line
+  id: totrans-102
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 使用命令行
+- en: You will find over the course of this book that I have a great fondness for
+    the command line. There are a lot of reasons for this. For one, I started in computing
+    when terminals didn’t have what we call *full screens*. And we certainly didn’t
+    have desktop environments. In complete honesty, my first access to a computer
+    was on a teletype with no screen at all. What we had in cases where there was
+    a screen was primarily command lines. As a result, I got used to typing. When
+    I started on Unix systems, all I had was a command line so I needed to get used
+    to the command set available there. The other reason for getting comfortable with
+    the command line is that you can’t always get a UI. You may be working remotely
+    and connecting over a network. This may get you only command-line programs without
+    additional work. So, making friends with the command line is useful.
+  id: totrans-103
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在本书的过程中，你会发现我对命令行有很大的喜好。有很多原因支持这一点。首先，我是在终端没有我们所谓的*全屏幕*时开始计算机工作的。当然，我们当时肯定没有桌面环境。坦率地说，我第一次接触计算机是在一个完全没有屏幕的电传打印机上。在有屏幕的情况下，我们主要使用命令行。因此，我习惯了打字。当我开始使用Unix系统时，我只有一个命令行，因此我需要熟悉那里提供的命令集。习惯使用命令行的另一个原因是，你并不总能得到一个UI。你可能在远程工作并通过网络连接。这可能只能让你使用命令行程序而不需要额外工作。所以，和命令行打好关系是很有用的。
+- en: Another reason for getting used to the command line and the locations of program
+    elements is that GUI programs may have failures or may leave out details that
+    could be helpful. This may be especially true of some security or forensics tools.
+    As one example, I much prefer to use The Sleuth Kit (TSK), a collection of command-line
+    programs, over the web-based interface, Autopsy, which is more visual. Since Autopsy
+    sits on top of TSK, it’s just a different way of looking at the information TSK
+    is capable of generating. The difference is that with Autopsy, you don’t get all
+    of the details, especially ones that are fairly low level. If you are just learning
+    how to do things, understanding what is going on may be far more beneficial than
+    learning a GUI. Your skills and knowledge will be far more transferable to other
+    situations and tools. So, there’s that too.
+  id: totrans-104
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 习惯使用命令行和程序元素位置的另一个原因是，GUI程序可能会出现故障或忽略可能有帮助的细节。这在某些安全或取证工具中尤其如此。举个例子，我更喜欢使用The
+    Sleuth Kit（TSK），这是一套命令行程序，而不是更视觉化的基于Web的界面Autopsy。由于Autopsy建立在TSK之上，它只是一种不同的查看TSK信息的方式。区别在于，使用Autopsy时，你得不到所有的细节，尤其是一些较低层次的细节。如果你正在学习如何操作，理解发生了什么可能比学习GUI更有益。你的技能和知识将更易于应用到其他情境和工具中。所以，这也是一个原因。
+- en: A UI is often called a *shell*. This is true whether you are referring to the
+    program that manages the desktop or the program that takes commands that you type
+    into a terminal window. The default shell in Linux has been the *Bourne Again
+    Shell* (bash). This is a play on the Bourne Shell, which was an early and long-standing
+    shell. However, the Bourne Shell had limitations and missing features. As a result,
+    in 1989, the Bourne Again Shell was released. It has since become the common shell
+    in Linux distributions. There are two types of commands you will run on the command
+    line. One is called a *built-in*. This is a function of the shell itself and it
+    doesn’t call out to any other program—​the shell handles it. The other command
+    you will run is a program that sits in a directory. The shell has a listing of
+    directories where programs are kept that is provided (and configurable) through
+    an environment variable.
+  id: totrans-105
+  prefs: []
+  type: TYPE_NORMAL
+  zh: UI通常被称为*shell*。无论你是指管理桌面的程序还是接收你在终端窗口中键入的命令的程序，这个说法都是正确的。Linux中的默认shell一直是*Bourne
+    Again Shell*（bash）。这是对早期和长期存在的Bourne Shell的一种演变。然而，Bourne Shell存在限制和缺失的功能。因此，1989年推出了Bourne
+    Again Shell。自那以后，它已成为Linux发行版中常见的shell。在命令行上你会运行两种类型的命令。一种是*内建命令*。这是shell本身的功能，不需要调用其他程序—shell自己处理它。另一种命令是位于目录中的程序。shell有一个目录列表，其中包含程序所在的目录，通过环境变量提供（并可配置）。
+- en: Currently, the default shell in Kali Linux is the *Z shell* (zsh). This is a
+    shell that is based on bash but includes many enhancements. For the most part,
+    you won’t notice a lot of difference and certainly when it comes to running commands,
+    there is no difference. zsh includes a lot of customization options, specifically
+    when it comes to command line completion, as well as how the prompt is represented.
+    The default prompt in Kali using zsh is shown in [Figure 1-11](#zsh_prompt).
+  id: totrans-106
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 目前，在Kali Linux中，默认的Shell是*Z shell*（zsh）。这是一个基于bash但包含许多增强功能的Shell。在大多数情况下，您不会注意到太多差异，特别是在运行命令时没有差异。zsh包括许多定制选项，特别是在命令行完成和提示表示方式方面。在Kali中使用zsh的默认提示如图[1-11](#zsh_prompt)所示。
+- en: '![zsh Prompt in Kali](assets/kali_prompt.png)'
+  id: totrans-107
+  prefs: []
+  type: TYPE_IMG
+  zh: '![Kali中的zsh提示](assets/kali_prompt.png)'
+- en: Figure 1-11\. zsh prompt
+  id: totrans-108
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图 1-11\. zsh提示
+- en: Note
+  id: totrans-109
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: Keep in mind that Unix was developed by programmers for programmers. The point
+    was to create an environment that was both comfortable and useful for the programmers
+    using it. As a result, the shell is, as much as anything else, a programming language
+    and environment. Each shell has different syntax for the control statements that
+    it uses, but you can create a program right on the command line because, as a
+    programming language, the shell will be able to execute all of the statements.
+  id: totrans-110
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 请记住，Unix是由程序员为程序员开发的。重点是创建一个对使用它的程序员既舒适又有用的环境。因此，Shell本质上是一种编程语言和环境。每个Shell对其使用的控制语句有不同的语法，但是您可以在命令行上创建一个程序，因为Shell作为一种编程语言能够执行所有语句。
+- en: In short, we’re going to spend some time with the command line because it’s
+    where Unix started and it’s also powerful. To start with, you’ll want to get around
+    the filesystem and get listings of files, including details like permissions.
+    Other commands that are useful are ones that manage processes and general utilities.
+  id: totrans-111
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 简而言之，我们将花一些时间在命令行上，因为这是Unix起源的地方，而且也非常强大。首先，您会想要在文件系统中移动并获取文件列表，包括权限等详细信息。其他有用的命令包括管理进程和一般实用程序。
+- en: File and Directory Management
+  id: totrans-112
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 文件和目录管理
+- en: 'To start, let’s talk about getting the shell to tell you the directory you
+    are currently in. This is called the *working directory*. To get the working directory,
+    the one we are currently situated in from the perspective of the shell, we use
+    the command *pwd*, which is shorthand for *print working directory*. In [Example 1-1](#EX_1_1),
+    you can see the prompt, which ends in #, indicating that the effective user who
+    is currently logged in is a superuser. The # ends the prompt, which is followed
+    by the command that is being entered and run. This is followed on the next line
+    by the results, or output, of the command.'
+  id: totrans-113
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 首先，让我们讨论如何让Shell告诉您当前所在的目录。这称为*工作目录*。要获取工作目录，也就是从Shell的角度看我们当前所在的目录，我们使用*pwd*命令，这是*打印工作目录*的简称。在[示例
+    1-1](#EX_1_1)中，您可以看到提示符以#结尾，表示当前登录的有效用户是超级用户。#结束提示符，随后是输入和执行的命令。下一行是命令的结果或输出。
+- en: Example 1-1\. Printing your working directory
+  id: totrans-114
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 1-1\. 打印您的工作目录
+- en: '[PRE0]'
+  id: totrans-115
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE0]'
+- en: Note
+  id: totrans-116
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: When you get to the point where you have multiple machines, either physical
+    or virtual, you may find it interesting to have a theme for the names of your
+    different systems. I’ve known people who named their systems for *The Hitchhiker’s
+    Guide to the Galaxy* characters, for instance. I’ve also seen coins, planets,
+    and various other themes. For ages now, my systems have been named after *Bloom
+    County* characters. The Kali system here is named for Rosebud the Basselope.
+  id: totrans-117
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当您拥有多台机器（物理或虚拟）时，您可能会发现为不同系统命名主题很有趣。例如，有人以《银河系漫游指南》中的角色命名他们的系统。我也见过以硬币、行星和其他各种主题命名的系统。很长一段时间以来，我的系统以《布卢姆县》中的角色命名。这里的Kali系统是以Basselope的Rosebud命名的。
+- en: Once we know where in the filesystem we are, which always starts at the root
+    directory (/) and when shown visually, looks like the roots of a tree, we can
+    get a listing of the files and directories. You will find that with Unix/Linux
+    commands, the minimum number of characters is often used. In the case of getting
+    file listings, the command is *ls*. While *ls* is useful, it only lists the file
+    and directory names. You may want additional details about the files, including
+    times and dates as well as permissions. You can see those results by using the
+    command *ls -la*. The *l* (ell) specifies *long* listing, including details. The
+    *a* specifies that *ls* should show *all* the files, including files that are
+    otherwise hidden. You can see the output in [Example 1-2](#EX_1_2).
+  id: totrans-118
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一旦我们知道在文件系统中的位置，它总是从根目录（/）开始，并在视觉上看起来像树的根部，我们可以获取文件和目录的列表。您会发现，在 Unix/Linux
+    命令中，通常使用最少数量的字符。在获取文件列表的情况下，命令是 *ls*。虽然 *ls* 很有用，但它只列出文件和目录的名称。您可能希望获取有关文件的其他详细信息，包括时间和日期以及权限。您可以通过使用命令
+    *ls -la* 来查看这些结果。*l*（ell）指定了*long*列表，包括详细信息。*a* 指定了 *ls* 应显示*所有*文件，包括通常隐藏的文件。您可以在
+    [示例 1-2](#EX_1_2) 中看到输出。
+- en: Example 1-2\. Getting a long listing
+  id: totrans-119
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 1-2\. 获取长列表
+- en: '[PRE1]'
+  id: totrans-120
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE1]'
+- en: Starting in the left column, you can see the permissions. Unix has a simple
+    set of permissions. Each file or directory has a set of permissions that are associated
+    with the user owner, then a set of permissions associated with the group that
+    owns the file, and finally a set of permissions that belong to everyone else,
+    referred to as the *world*. Directories are indicated with a *d* in the very first
+    position. The other permissions available are read, write, and execute. On Unix-like
+    operating systems, a program gets the execute bit set to determine whether it’s
+    executable. This is different from Windows, where a file extension may make that
+    determination. The executable bit determines not only whether a file is executable,
+    but also who can execute it, depending on which category the execute bit is set
+    in (user, group, world).
+  id: totrans-121
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 从左列开始，您可以看到权限。Unix 拥有一组简单的权限。每个文件或目录都有一组与用户所有者相关联的权限，然后是与拥有该文件的组相关联的权限集，最后是属于其他所有人的权限集，称为
+    *world*。目录在第一个位置用 *d* 表示。其他可用的权限包括读取、写入和执行。在类 Unix 操作系统上，程序获得执行位设置以确定它是否可执行。这与
+    Windows 不同，Windows 中文件扩展名可能决定文件是否可执行。可执行位不仅确定文件是否可执行，还根据执行位所属的类别（用户、组、全局）确定谁可以执行它。
+- en: You can also see the owner (user) and group, both of which are root in these
+    cases. This is followed by the file size, the last time the file or directory
+    was modified, and then the name of the file or directory. You may notice at the
+    top that there are files that start with a dot, or period. The dot files and directories
+    store user-specific settings and logs. Because they are managed by the applications
+    that create them, as a general rule, they are hidden from regular directory listings.
+  id: totrans-122
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在这些情况下，您还可以查看所有者（用户）和组，两者都是 root。接下来是文件大小，文件或目录上次修改的时间，然后是文件或目录的名称。您可能会注意到顶部有以点或句号开头的文件。这些点文件和目录存储用户特定的设置和日志。通常情况下，它们由创建它们的应用程序管理，因此在常规目录列表中它们是隐藏的。
+- en: The program *touch* can be used to update the modified date and time to the
+    moment that touch is run. If the file doesn’t exist, touch will create an empty
+    file that has the modified and created timestamp set to the moment touch was executed.
+  id: totrans-123
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*touch* 程序可用于将修改日期和时间更新到 touch 运行的时刻。如果文件不存在，touch 将创建一个空文件，并将修改和创建的时间戳设置为执行
+    touch 的时刻。'
+- en: Other file- and directory-related commands that will be really useful are ones
+    related to setting permissions and owners. Every file and directory gets a set
+    of permissions, as indicated previously, as well as having an owner and a group.
+    To set permissions on a file or directory, you use the *chmod* command, which
+    can take a numerical value for each of the possible permissions. Three bits are
+    used, each either on or off for whether the permission is set or not. You can
+    think about the order of permissions as being the least privilege to the most
+    privilege, read, write, execute. However, since the most significant bit is first,
+    read has the highest value out of the three bits used. The most significant bit
+    has a value of 2², or 4\. Write has the value of 2¹, or 2\. Finally, execute has
+    the value of 2⁰, or 1\. As an example, if you want to set both read and write
+    permissions on a file, you would use 4 + 2, or 6\. The bit pattern would be 110,
+    if it’s easier to see it that way.
+  id: totrans-124
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 其他与文件和目录相关的命令中，与设置权限和所有者相关的命令将非常有用。每个文件和目录都有一组权限，如前所述，以及一个所有者和一个组。要设置文件或目录的权限，您可以使用*chmod*命令，该命令可以为每个可能的权限值取一个数字值。使用三位，每位要么打开要么关闭，表示权限是否设置。您可以考虑权限顺序为从最低特权到最高特权，即读取、写入、执行。然而，由于最重要的位是第一位，读取具有三个位中的最高值。最重要的位的值为2²，即4。写入的值为2¹，即2。最后，执行的值为2⁰，即1。例如，如果您想在文件上设置读取和写入权限，您将使用4
+    + 2，即6。如果您更容易看到它，比特模式将是110。
+- en: 'There are three sets of permissions: owner, group, and world (everyone). When
+    you are setting permissions, you specify a numeric value for each, meaning you
+    have a three-digit value. As an example, in order to set read, write, and execute
+    for the owner but just read for the group and everyone, you use *chmod 744 filename*,
+    where *filename* is the name of the file you are setting permissions for. You
+    could also just specify the bit you want either set or unset, if that’s easier.
+    For example, you could use *chmod u+x filename* to add the executable bit for
+    the owner.'
+  id: totrans-125
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有三组权限：所有者、组和全局（每个人）。在设置权限时，您为每个权限指定一个数字值，这意味着您有一个三位数值。例如，为了为所有者设置读取、写入和执行权限，但仅为组和每个人设置读取权限，您可以使用*chmod
+    744 filename*，其中*filename*是您要设置权限的文件名。如果更容易，您也可以只指定您想要设置或取消设置的位。例如，您可以使用*chmod
+    u+x filename*为所有者添加可执行位。
+- en: The Linux filesystem is generally well-structured, so you can be sure of where
+    to look for files. However, in some cases, you may need to search for files. On
+    Windows or macOS, you may understand how to look for files, as the necessary tools
+    are embedded in the file managers. If you are working from the command line, you
+    need to know the means you can use to locate files. The first is *locate*, which
+    relies on a system database. The program *updatedb* will update that database,
+    and when you use *locate*, the system will query the database to find the location
+    of the file.
+  id: totrans-126
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Linux文件系统通常结构良好，因此您可以确保在哪里查找文件。然而，在某些情况下，您可能需要搜索文件。在Windows或macOS上，您可能知道如何查找文件，因为文件管理器中嵌入了必要的工具。如果您正在从命令行工作，您需要了解可以用来定位文件的方法。第一个是*locate*，它依赖于系统数据库。程序*updatedb*将更新该数据库，当您使用*locate*时，系统将查询数据库以查找文件的位置。
+- en: If you are looking for a program, you can use another utility. The program *which*
+    will tell you where the program is located. This may be useful if you have various
+    locations where executables are kept. The thing to note here is that *which* uses
+    the PATH variable in the user’s environment to search for the program. If the
+    executable is found in the PATH, the full path to the executable is displayed.
+  id: totrans-127
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果您正在寻找一个程序，您可以使用另一个实用程序。程序*which*将告诉您程序的位置。如果您有多个位置存储可执行文件，这可能很有用。这里需要注意的是*which*使用用户环境中的PATH变量来搜索程序。如果在PATH中找到可执行文件，将显示可执行文件的完整路径。
+- en: A more multipurpose program for location is *find*. While *find* has a lot of
+    capabilities, a simple approach is to use something like *find / -name foo -print*.
+    You don’t have to provide the *-print* parameter, since printing the results is
+    the default behavior; it’s just how I learned how to run the command and it’s
+    stayed with me. Using *find*, you specify the path to search in. *find* performs
+    a recursive search, meaning it starts at the directory specified and searches
+    all directories under the specified directory. In the preceding example, we are
+    looking for the file named *foo*. You can use regular expressions, including wildcards,
+    in your search. If you want to find a file that begins with the letters *foo*,
+    you use *find / -name “foo*” -print*. In [Example 1-3](#EX_1_3), you can see the
+    use of find to locate a file in the /etc directory. You will see errors indicating
+    permission denied. This results from searching through directories that are owned
+    by another user and don’t have read permissions set for other users. If you are
+    using search patterns, you need to put the string and pattern inside double quotes.
+    While *find* has a lot of capabilities, this will get you started.
+  id: totrans-128
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一个更通用的位置定位程序是*find*。虽然*find*具有多种功能，但简单的方法是使用类似*find / -name foo -print*这样的形式。你不必提供*
+    -print*参数，因为打印结果是默认行为；这只是我学会运行该命令的方式，并一直保持至今。使用*find*时，你指定要搜索的路径。*find*执行递归搜索，这意味着它从指定目录开始搜索该目录下的所有目录。在前面的示例中，我们正在寻找名为*foo*的文件。你可以在搜索中使用包括通配符在内的正则表达式。如果要查找以字母*foo*开头的文件，可以使用*find
+    / -name “foo*” -print*。在[示例 1-3](#EX_1_3)中，你可以看到使用find在/etc目录中定位文件的示例。你将看到由于搜索受到另一个用户拥有且没有为其他用户设置读取权限的目录，而导致的权限被拒绝错误。如果使用搜索模式，需要将字符串和模式放在双引号内。虽然*find*具有许多功能，但这将帮助你入门。
+- en: Example 1-3\. Using find
+  id: totrans-129
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 1-3\. 使用find
+- en: '[PRE2]'
+  id: totrans-130
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE2]'
+- en: Process Management
+  id: totrans-131
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 进程管理
+- en: When you run a program, you initiate a process. You can think of a *process*
+    as a dynamic, running instance of a program, which is static as it sits on a storage
+    medium. Every running Linux system has dozens or hundreds of processes running
+    at any given time. In most cases, you can expect the operating system to manage
+    the processes in the best way. However, at times you may want to get yourself
+    involved. As an example, you may want to check whether a process is running, since
+    not all processes are running in the foreground. A *foreground process* is one
+    that currently has the potential for the user to see and interact with, as compared
+    with a *background process*, which a user wouldn’t be able to interact with unless
+    it was brought to the foreground and designed for user interaction. For example,
+    just checking the number of processes running on an otherwise idle Kali Linux
+    system, I discovered 141 processes. Out of that 141, only one was in the foreground.
+    All others were services of some sort.
+  id: totrans-132
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当你运行一个程序时，你启动了一个进程。你可以将*进程*视为程序的动态运行实例，而程序则是静态的，位于存储介质上。每个正在运行的Linux系统在任何时候都有几十个或几百个进程在运行。在大多数情况下，你可以期望操作系统以最佳方式管理这些进程。但是，有时你可能希望自己参与其中。例如，你可能想检查进程是否在运行，因为并非所有进程都在前台运行。*前台进程*是指当前用户有可能看到并与之交互的进程，与*后台进程*相比，后者用户无法与之交互，除非将其调至前台并设计为用户交互。例如，仅仅是检查在其余空闲的Kali
+    Linux系统上运行的进程数量，我发现有141个进程。在这141个进程中，只有一个是在前台运行的。其他全部是某种类型的服务。
+- en: To get a list of processes, you can use the *ps* command. The command all by
+    itself doesn’t get you much more than the list of processes that belong to the
+    user running the program. Every process, just like files, has an owner and a group.
+    The reason is that processes need to interact with the filesystem and other objects,
+    and having an owner and a group is the way the operating system determines whether
+    the process should be allowed access. In [Example 1-4](#EX_1_4), you can see what
+    just running *ps* looks like.
+  id: totrans-133
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 要获取进程列表，可以使用*ps*命令。这个命令本身不会给你更多，只会列出属于运行程序用户的进程列表。每个进程都像文件一样，有一个所有者和一个组。原因是进程需要与文件系统和其他对象交互，而拥有所有者和组就是操作系统确定是否允许进程访问的方式。在[示例 1-4](#EX_1_4)中，你可以看到运行*ps*命令的结果。
+- en: Example 1-4\. Getting a process list
+  id: totrans-134
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 1-4\. 获取进程列表
+- en: '[PRE3]'
+  id: totrans-135
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE3]'
+- en: What you see in [Example 1-4](#EX_1_4) is the identification number of the process,
+    commonly known as the *process ID*, or *PID*, followed by the teletypewriter port
+    the command was issued on, the amount of time spent in the processor, and finally
+    the command. Most of the commands you will see have parameters you can append
+    to the command line, and these will change the behavior of the program.
+  id: totrans-136
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在[示例 1-4](#EX_1_4)中看到的是进程的识别号码，通常称为*进程ID*或*PID*，后跟命令发出的电传打字机端口、在处理器上花费的时间，最后是命令。你会看到的大多数命令都有可以附加到命令行的参数，这些参数将改变程序的行为。
+- en: Interestingly, AT&T Unix diverged a bit from BSD Unix. This has resulted in
+    some command-line parameter variations, depending on which Unix derivation you
+    may have begun with. For more detailed process listings, including all of the
+    processes belonging to all users (since without specifying, you get only processes
+    belonging to your user), you might use either *ps -ea* or *ps aux*. Either will
+    provide the complete list, though there will be differences in the details provided.
+  id: totrans-137
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有趣的是，AT&T Unix与BSD Unix有些不同。这导致了一些命令行参数的变化，取决于你从哪个Unix派生开始。要获取更详细的进程列表，包括所有用户的所有进程（因为未指定时，只获取属于你的进程），你可以使用*ps
+    -ea*或*ps aux*。任何一个都将提供完整的列表，尽管提供的详细信息可能有所不同。
+- en: 'The thing about using *ps* is that it’s static: you run it once and get the
+    list of processes. Another program can be used to watch the process list change
+    in near-real time. While it’s possible to also get statistics like memory and
+    processor usage from *ps*, with *top*, you don’t have to ask for it. Running *top*
+    will give you the list of processes, refreshed at regular intervals. You can see
+    sample output in [Example 1-5](#EX_1_5t).'
+  id: totrans-138
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用*ps*的情况是静态的：你运行一次，获取进程列表。另一个程序可用于实时监视进程列表的变化。虽然也可以从*ps*获取内存和处理器使用情况的统计信息，但使用*top*时，你无需再询问。运行*top*将提供刷新间隔的进程列表。你可以在[示例 1-5](#EX_1_5t)中看到示例输出。
+- en: Example 1-5\. Using top for process listings
+  id: totrans-139
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 1-5\. 使用top进行进程列表
+- en: '[PRE4]'
+  id: totrans-140
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE4]'
+- en: In addition to providing a list of processes, the amount of memory they are
+    using, the percentage of CPU being used, as well as other specifics, *top* shows
+    details about the running system, which you will see at the top. Each time the
+    display refreshes, the process list will rearrange, indicating which processes
+    are consuming the most resources at the top. As you will note, *top* itself consumes
+    some amount of resources, and you will often see it near the top of the process
+    list. One of the important fields that you will see not only in *top* but also
+    in *ps* is the PID. In addition to providing a way of clearly identifying one
+    process from another, particularly when the name of the process is the same, it
+    also provides a way of sending messages to the process.
+  id: totrans-141
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 除了提供进程列表、它们正在使用的内存量、正在使用的CPU百分比以及其他具体信息外，*top*还显示有关运行系统的详细信息，这些信息将显示在顶部。每次显示刷新时，进程列表将重新排列，指示哪些进程消耗了最多资源位于顶部。正如你所见，*top*本身也会消耗一定量的资源，通常会在进程列表的顶部看到它。你将在*top*以及*ps*中看到的一个重要字段是PID。除了提供一种清晰地区分一个进程与另一个进程（特别是当进程名称相同时）的方法外，它还提供了一种向进程发送消息的方式。
+- en: 'You will find two commands invaluable when you are managing processes. They
+    are closely related, performing the same function, though offering slightly different
+    capabilities. The first command is *kill*, which, perhaps unsurprisingly, can
+    kill a running process. More specifically, it sends a signal to the process. The
+    operating system will interact with processes by sending signals to them. Signals
+    are one means of interprocess communication (IPC). The default signal for *kill*
+    is the TERM signal (SIGTERM), which means *terminate*, but if you specify a different
+    signal, *kill* will send that signal instead. To send a different signal, you
+    issue *kill -# pid*, where # indicates the number that equates to the signal you
+    intend to send, and *pid* is the process identification number that you can find
+    from using either *ps* or *top*.'
+  id: totrans-142
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在管理进程时，你会发现两个命令非常宝贵。它们密切相关，执行相同的功能，尽管提供了略有不同的功能。第一个命令是*kill*，或许不出所料，可以终止正在运行的进程。更具体地说，它向进程发送一个信号。操作系统通过向进程发送信号来与进程进行交互。信号是进程间通信（IPC）的一种方式。*kill*的默认信号是TERM信号（SIGTERM），意思是*终止*，但如果指定不同的信号，*kill*将发送该信号。要发送不同的信号，你可以发出*kill
+    -# pid*，其中#表示你打算发送的信号的编号，*pid*是你可以从*ps*或*top*中获取的进程标识号码。
+- en: The second program that you should become acquainted with is *killall*. The
+    difference between *kill* and *killall* is that with *killall* you don’t necessarily
+    need the PID. Instead, you use the name of the process. This can be useful, especially
+    when a parent may have spawned several child processes. If you want to kill all
+    of them at the same time, you can use *killall*, and it will do the work of looking
+    up the PIDs from the process table and issuing the appropriate signal to the process.
+    Just as in the case of *kill*, *killall* will take a signal number to send to
+    the process. If you need to forcefully kill all instances of the process named
+    *firefox*, for instance, you would use *killall -9 firefox*.
+  id: totrans-143
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 第二个您应该熟悉的程序是 *killall*。*kill* 和 *killall* 的区别在于，使用 *killall* 时，您不一定需要 PID。相反，您使用进程的名称。这可能非常有用，特别是当父进程可能已经生成了几个子进程时。如果您想同时终止所有这些进程，可以使用
+    *killall*，它将查找进程表中的 PID，并向进程发送适当的信号。与 *kill* 一样，*killall* 也会接收信号编号以发送给进程。例如，如果您需要强制关闭所有名为
+    *firefox* 的进程实例，您将使用 *killall -9 firefox*。
+- en: Other Utilities
+  id: totrans-144
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 其他实用程序
+- en: 'Obviously, we aren’t going to go over the entire list of commands available
+    on the Linux command line. However, some additional ones are useful to get your
+    head around. Keep in mind that Unix was designed to have simple utilities that
+    could be chained together. It does this by having three standard input/output
+    streams: STDIN, STDOUT, and STDERR. Each process inherits these three streams
+    when it starts. Input comes in using STDIN, output goes to STDOUT, and errors
+    are sent to STDERR, though perhaps that all goes without saying. The advantage
+    to this is if you don’t want to see errors, for example, you can send the STDERR
+    stream somewhere so you don’t have your normal output cluttered.'
+  id: totrans-145
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 很显然，我们不会详细讨论 Linux 命令行上可用的所有命令。然而，某些其他命令对于理解会很有用。请记住，Unix 设计为具有可以链式连接的简单实用程序。它通过具有三个标准输入/输出流来实现这一点：STDIN、STDOUT
+    和 STDERR。每个进程在启动时都会继承这三个流。输入使用 STDIN 进入，输出则发送到 STDOUT，错误则发送到 STDERR，尽管这可能是显而易见的。这样做的好处是，例如，如果您不想看到错误信息，您可以将
+    STDERR 流发送到其他位置，以避免常规输出混乱。
+- en: Each of these streams can be redirected. Normally, STDOUT and STDERR go to the
+    same place (typically, the console). STDIN originates from the console. If you
+    want your output to go somewhere else, you can use the *>* operator. If, for instance,
+    I wanted to send the output of *ps* to a file, I might use *ps auxw > ps.out*.
+    This sends the output of the *ps* command to the file named ps.out. When you redirect
+    the output, you don’t see it on the console anymore. In this example, if there
+    were an error, you would see that, but not anything going to STDOUT. If you wanted
+    to redirect input, you would go the other way. Rather than *>*, you would use
+    *<*, indicating the direction you want the information to flow.
+  id: totrans-146
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 每个这些流都可以重定向。通常情况下，STDOUT 和 STDERR 发送到同一个位置（通常是控制台）。STDIN 源自控制台。如果您希望将输出发送到其他位置，可以使用
+    *>* 操作符。例如，如果我想将 *ps* 命令的输出发送到一个文件中，我可能会使用 *ps auxw > ps.out*。这将 *ps* 命令的输出发送到名为
+    ps.out 的文件中。当您重定向输出时，就不再在控制台上看到它了。在此示例中，如果有错误发生，您将会看到它，但看不到任何输出到 STDOUT 的内容。如果您希望重定向输入，您将会反向操作。而不是使用
+    *>*，您将使用 *<*，指示您希望信息流动的方向。
+- en: Understanding the different I/O streams and redirection will help you down the
+    path of understanding the *|* (pipe) operator. When you use *|*, you are saying,
+    “Take the output from what’s on the left side and send it to the input for what’s
+    on the right side.” You are effectively putting a coupler in place between two
+    applications, sending STDOUT to STDIN, without having to go through any intermediary
+    devices.
+  id: totrans-147
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 理解不同的 I/O 流和重定向将帮助您理解 *|*（管道）操作符的使用。当您使用 *|* 时，您是在说：“取左侧的输出并发送到右侧的输入。”您实际上是在两个应用程序之间放置一个连接器，将
+    STDOUT 发送到 STDIN，而无需经过任何中间设备。
+- en: One of the most useful uses of command chaining or piping is for searching or
+    filtering. As an example, if you have a long list of processes from the *ps* command,
+    you might use the pipe operator to send the output of *ps* to another program,
+    *grep*, which can be used to search for strings. As an example, if you want to
+    find all the instances of the program named *httpd*, you use *ps auxw | grep httpd*.
+    *grep* is used to search an input stream for a search string. While it’s useful
+    for filtering information, you can also search the contents of files with *grep*.
+    As an example, if you want to search for the string *wubble* in all the files
+    in a directory, you can use *grep wubble **. If you want to make sure that the
+    search follows all the directories, you tell *grep* to use a recursive search
+    with *grep -R wubble **.
+  id: totrans-148
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 命令链或管道的最有用的用途之一是用于搜索或过滤。例如，如果你有一个长列表的进程，来自*ps*命令，你可以使用管道操作符将*ps*的输出发送到另一个程序*grep*，用于搜索字符串。例如，如果你想要找到所有名为*httpd*的程序的实例，你可以使用*ps
+    auxw | grep httpd*。*grep*用于在输入流中搜索搜索字符串。虽然它对于过滤信息很有用，你也可以用*grep*搜索文件的内容。例如，如果你想在目录中所有文件中搜索字符串*wubble*，你可以使用*grep
+    wubble **。如果你想确保搜索遍历所有目录，你可以告诉*grep*使用递归搜索，命令是*grep -R wubble **。
+- en: User Management
+  id: totrans-149
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 用户管理
+- en: Where Kali used to have you login as root by default, that hasn’t been true
+    in several versions. You will be asked, just like other Linux distributions, to
+    create the user you will be using. This user is granted the ability to gain superuser
+    permissions temporarily using the *sudo* utility. Your user will be added to the
+    *sudo* group. This is necessary because much of what you will be doing in Kali
+    will require administrative privileges.
+  id: totrans-150
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在过去，Kali默认要求以root身份登录，但在几个版本中这已经不再是真的了。你将被要求像其他Linux发行版一样创建将要使用的用户。这个用户被授予使用*sudo*实用程序临时获得超级用户权限的能力。你的用户将被添加到*sudo*组。这是必要的，因为在Kali中你将要做的许多事情都需要管理员权限。
+- en: You may want to add additional users in Kali as well as manage users in Kali,
+    just as it is with other distributions. If you want to create a user, you can
+    just use the *useradd* command. You might also use *adduser*. Both accomplish
+    the same goal. When you are creating users, it’s useful to understand some of
+    the characteristics of users. Each user should have a home directory, a shell,
+    a username, and a group at a minimum. If I want to add my common username, for
+    instance, I would use *useradd -d /home/kilroy -s /bin/bash -g users -m kilroy*.
+    The parameters given specify the home directory, the shell the user should execute
+    when logging in interactively, and the default group. The *-m* specified indicates
+    that *useradd* should create the home directory. This will also populate the home
+    directory with the skeleton files needed for interactive logins.
+  id: totrans-151
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 你可能还想在Kali中添加额外的用户以及管理Kali中的用户，就像其他发行版一样。如果你想创建一个用户，你可以使用*useradd*命令。你也可以使用*adduser*。两者都可以达到相同的目标。在创建用户时，了解一些用户的特性是很有用的。每个用户至少应该有一个主目录，一个shell，一个用户名和一个组。例如，如果我想要添加我的常用用户名，我会使用*useradd
+    -d /home/kilroy -s /bin/bash -g users -m kilroy*。给定的参数指定了主目录，用户登录时应执行的shell以及默认组。指定的*-m*表示*useradd*应该创建主目录。这还将用于交互登录所需的骨架文件填充主目录。
+- en: In the case of the group ID specified, *useradd* requires that the group exist.
+    If you want your user to have its own group, you can use *groupadd* to create
+    a new group and then use *useradd* to create the user that belongs to the new
+    group. If you want to add your user to multiple groups, you can edit the */etc/group*
+    file and add your user to the end of each group line you want your user to be
+    a member of. To pick up any permissions associated with those groups’ access to
+    files, for example, you need to log out and log back in again. That will pick
+    up the changes to your user, including the new groups.
+  id: totrans-152
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在指定组ID的情况下，*useradd*要求该组存在。如果你想让你的用户拥有自己的组，你可以使用*groupadd*创建一个新组，然后使用*useradd*创建属于新组的用户。如果你想将你的用户添加到多个组中，你可以编辑*/etc/group*文件，并将你的用户添加到你想让用户成为成员的每个组行的末尾。为了获得与这些组对文件访问权限相关联的任何权限，例如，你需要注销并重新登录。这将获取到你的用户的更改，包括新组。
+- en: Once you have created the user, you should set a password. That’s done using
+    the *passwd* command. If you are root and want to change another user’s password,
+    you use *passwd kilroy* in the case of the user created in the preceding example.
+    If you just use *passwd* without a username, you are going to change your own
+    password.
+  id: totrans-153
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 创建用户后，您应该设置密码。这可以使用*passwd*命令完成。如果您是root用户并希望更改其他用户的密码，则在前面的示例中，可以使用*passwd
+    kilroy*。如果您只是使用*passwd*而没有指定用户名，则将更改您自己的密码。
+- en: Shells
+  id: totrans-154
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: Shell
+- en: The common default shell used is the Z shell (zsh), which replaces the Bourne
+    Again Shell (bash) as the default. However, other shells can be used. If you are
+    feeling adventurous, you could look at other shells like bash, fish, csh, or ksh.
+    The bash shell will behave a lot like the zsh that you will be started off with.
+    Others offer other possibilities that may be of interest, especially if you like
+    to experiment. If you want to permanently change your shell, you can either edit
+    */etc/passwd* or just use *chsh* and have your shell changed for you.
+  id: totrans-155
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 常用的默认shell是Z shell（zsh），它取代了Bourne Again Shell（bash）成为默认选项。但是，也可以使用其他shell。如果您想尝试其他shell，如bash、fish、csh或ksh，可以冒险一试。bash
+    shell的行为与您将开始使用的zsh非常相似。其他shell提供了其他可能性，可能会引起兴趣，特别是如果您喜欢进行实验。如果您想永久更改shell，可以编辑*/etc/passwd*文件，或者只需使用*chsh*命令，让系统为您更改shell。
+- en: Service Management
+  id: totrans-156
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 服务管理
+- en: 'For a long time, there were two styles of service management: the BSD way and
+    the AT&T way. This is no longer true. There are now three ways of managing services.
+    Before we get into service management, we should first define a service. A *service*
+    in this context is a program that runs without any user intervention. The operating
+    environment starts it up automatically and it runs in the background. Unless you
+    got a list of processes, you may never know it was running. Most systems have
+    a decent number of these services running at any point. They are called *services*
+    because they provide a service either to the system, to the users, or sometimes
+    to remote users.'
+  id: totrans-157
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 长期以来，有两种服务管理方式：BSD方式和AT&T方式。这不再正确。现在有三种管理服务的方式。在深入探讨服务管理之前，我们首先应该定义什么是服务。在这个背景下，*服务*是指一个可以在没有用户干预的情况下运行的程序。操作环境会自动启动它，并且它在后台运行。除非你获取进程列表，否则你可能永远不知道它在运行。大多数系统在任何时候都会运行相当数量的这些服务。它们被称为*服务*，因为它们为系统、用户或有时是远程用户提供服务。
+- en: Since there is no direct user interaction, generally, in terms of the startup
+    and termination of these services, there needs to be another way to start and
+    stop the services that can be called automatically during startup and shutdown
+    of the system. With the facility to manage the services in place, users can also
+    use the same facility to start, stop, restart, and get the status of these services.
+  id: totrans-158
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由于这些服务通常没有直接的用户交互，因此在启动和停止这些服务时，需要另一种方法，可以在系统启动和关闭时自动调用。有了管理服务的功能，用户也可以使用同样的功能来启动、停止、重新启动和获取这些服务的状态。
+- en: Administrative Privileges for Services
+  id: totrans-159
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 管理服务的权限
+- en: Services are system-level. Managing them requires administrative privileges.
+    Either you need to be root or you need to use *sudo* to gain temporary root privileges
+    in order to perform the service management functions.
+  id: totrans-160
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 服务是系统级别的。管理它们需要管理员权限。您需要是root用户，或者需要使用*sudo*来获取临时的root权限，以执行服务管理功能。
+- en: Often, Linux distributions used the AT&T *init* startup process. This meant
+    that services were run with a set of scripts that took standard parameters. The
+    *init* startup system used runlevels to determine which services started. Single-user
+    mode would start up a different set of services than multiuser mode. Even more
+    services would be started up when a display manager is being used, to provide
+    GUIs to users. The scripts were stored in */etc/init.d/* and could be managed
+    by providing parameters such as *start*, *stop*, *restart*, and *status*. As an
+    example, if you wanted to start the SSH service, you might use the command */etc/init.d/ssh
+    start*. The problem with the *init* system, though, was that it was generally
+    serial in nature. This caused performance issues on system startup because every
+    service would be started in sequence rather than multiple services starting at
+    the same time. The other problem with the *init* system was that it didn’t support
+    dependencies well. Often, one service may rely on other services that had to be
+    started first.
+  id: totrans-161
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 通常，Linux发行版使用AT&T的*init*启动进程。这意味着服务是通过一组接受标准参数的脚本运行的。*init*启动系统使用运行级别来确定启动哪些服务。单用户模式将启动不同的服务集合，而多用户模式将启动更多服务。使用显示管理器时，还将启动更多服务，以为用户提供GUI。这些脚本存储在*/etc/init.d/*中，并可以通过提供参数（如*start*、*stop*、*restart*和*status*）来管理。例如，如果要启动SSH服务，可能会使用命令*/etc/init.d/ssh
+    start*。但*init*系统的问题是其一般是串行的。这导致系统启动时的性能问题，因为每个服务都会按顺序启动，而不是多个服务同时启动。*init*系统的另一个问题是它不太支持依赖关系。通常，一个服务可能依赖于其他必须首先启动的服务。
+- en: Along comes *systemd*, which was developed by software developers at RedHat.
+    The goal of *systemd* was to improve the efficiency of the *init* system and overcome
+    some of its shortcomings. Services can declare dependencies, and services can
+    start in parallel. There is no longer a need to write bash scripts to start up
+    the services. Instead, there are configuration files, and all service management
+    is handled with the program *systemctl*. To manage a service using *systemctl*,
+    you would use *systemctl verb service*, where *verb* is the command you are passing
+    and *service* is the name of the service. As an example, if you wanted to enable
+    the SSH service and then start it, you would issue the commands in [Example 1-6](#EX_1_6).
+  id: totrans-162
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 随着*systemd* 的出现，这是由RedHat的软件开发人员开发的。*systemd* 的目标是改善*init*系统的效率并克服其一些缺点。服务可以声明依赖关系，并且服务可以并行启动。不再需要编写bash脚本来启动服务。相反，有配置文件，并且所有服务管理都由程序*systemctl*
+    处理。要使用*systemctl* 管理服务，你将使用*systemctl verb service*，其中*verb* 是你传递的命令，*service*
+    是服务的名称。例如，如果你想启用SSH服务然后启动它，你会在[示例 1-6](#EX_1_6)中发出这些命令。
+- en: Example 1-6\. Enabling and starting SSH service
+  id: totrans-163
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 1-6\. 启用和启动SSH服务
+- en: '[PRE5]'
+  id: totrans-164
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE5]'
+- en: 'The first thing we do is enable the service: you are telling your system that
+    when you boot, you want this service to start. The different system startup modes
+    that the service will start in are configured in the configuration file associated
+    with the service. Every service has a configuration file. Instead of runlevels,
+    as the old *init* system used, *systemd* uses targets. A *target* is essentially
+    the same as a runlevel, in that it indicates a particular mode of operation of
+    your system. In [Example 1-7](#EX_1_7), you can see an example of one of these
+    scripts from the *smartd* service, which is used to manage storage devices.'
+  id: totrans-165
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们首先要做的是启用服务：告诉你的系统在启动时要启动此服务。服务将在与其关联的配置文件中配置为不同的系统启动模式。每个服务都有一个配置文件。*systemd*
+    使用目标而不是旧的*init*系统中的运行级别。*target* 本质上与运行级别相同，表示系统操作的特定模式。在[示例 1-7](#EX_1_7)中，你可以看到一个来自*smartd*服务的脚本示例，该服务用于管理存储设备。
+- en: Example 1-7\. Configuring service for systemd
+  id: totrans-166
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 1-7\. 配置*systemd*服务
+- en: '[PRE6]'
+  id: totrans-167
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE6]'
+- en: The *Unit* section indicates requirements and the description as well as documentation.
+    The *Service* section indicates how the service is to be started and managed.
+    The *Install* service indicates the target that is to be used. In this case, *syslog*
+    is in the multi-user target.
+  id: totrans-168
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*Unit* 部分指示要求、描述以及文档。*Service* 部分指示了如何启动和管理服务。*Install* 服务指示要使用的目标。在本例中，*syslog*
+    在多用户目标中。'
+- en: Kali is using a *systemd*-based system for initialization and service management,
+    so you will primarily use *systemctl* to manage your services. In rare cases,
+    a service that has been installed doesn’t support installing to *systemd*. In
+    that case, you will install a service script to */etc/init.d/* and you will have
+    to call the script there to start and stop the service. For the most part, these
+    are rare occurrences, though.
+  id: totrans-169
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Kali 使用基于 *systemd* 的系统进行初始化和服务管理，因此您主要会使用 *systemctl* 来管理您的服务。在极少数情况下，已安装的服务不支持安装到
+    *systemd*。在这种情况下，您将安装一个服务脚本到 */etc/init.d/*，然后在那里调用该脚本来启动和停止服务。尽管如此，这类情况很少见。
+- en: Package Management
+  id: totrans-170
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 软件包管理
+- en: While Kali comes with an extensive set of packages, not everything Kali is capable
+    of installing is in the default installation. In some cases, you may want to install
+    packages. You are also going to want to update your set of packages. To manage
+    packages, regardless of what you are trying to do, you can use the Advanced Package
+    Tool (*apt*) to perform package management functions. There are also other ways
+    of managing packages. You can use frontends, but in the end, they are all just
+    programs that sit on top of *apt*. You can use whatever frontend you like, but
+    *apt* is so easy to use, it’s useful to know how to use it. While it’s command
+    line, it’s still a great program. In fact, it’s quite a bit easier to use than
+    some of the frontends I’ve seen on top of *apt* over the years.
+  id: totrans-171
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 虽然 Kali 自带大量软件包，但并非所有可以安装的软件包都包含在默认安装中。在某些情况下，您可能希望安装软件包。您还将需要更新您的软件包集。无论您要做什么，您都可以使用高级软件包工具
+    (*apt*) 来执行软件包管理功能。还有其他管理软件包的方法。您可以使用前端工具，但归根结底它们都只是在 *apt* 之上运行的程序。您可以使用任何您喜欢的前端工具，但是了解如何使用
+    *apt* 是很有用的，因为它非常易于使用。尽管它是命令行程序，但实际上比我多年来见过的某些前端工具要容易使用得多。
+- en: The first task you may want to perform is updating all the metadata in your
+    local package database. These are the details about the packages that the remote
+    repositories have, including version numbers. The version information is needed
+    to determine whether the software you have is out-of-date and in need of upgrading.
+    To update your local package database, you tell *apt* you want to update, as you
+    can see in [Example 1-8](#EX_1_8).
+  id: totrans-172
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 您可能希望执行的第一个任务是更新本地软件包数据库中的所有元数据。这些是有关远程存储库中软件包的详细信息，包括版本号。版本信息用于确定您当前安装的软件是否已过时并需要升级。要更新您的本地软件包数据库，您告诉
+    *apt* 您要更新，正如您可以在 [示例 1-8](#EX_1_8) 中看到的那样。
+- en: Example 1-8\. Updating package database using apt
+  id: totrans-173
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 1-8\. 使用 apt 更新软件包数据库
+- en: '[PRE7]'
+  id: totrans-174
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE7]'
+- en: Once your local package database has been updated, *apt* will tell you whether
+    you have updates to what you have installed. In this case, 142 packages are in
+    need of updating. To update all the software on your system, you can use *apt
+    upgrade*. Just using *apt upgrade* will update all the packages. If you need to
+    update just a single package, you can use *apt upgrade packagename*, where *packagename*
+    is the name of the package you want to update. The packaging format used by Debian
+    and, by extension, Kali, tells *apt* what the required packages are. This list
+    of dependencies tells Kali what needs to be installed for a particular package
+    to work. In the case of upgrading software, it helps to determine the order in
+    which packages should be upgraded.
+  id: totrans-175
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一旦您的本地软件包数据库已更新，*apt* 会告诉您是否有需要更新的已安装软件。在这种情况下，有 142 个软件包需要更新。要更新系统上的所有软件，您可以使用
+    *apt upgrade* 命令。只需使用 *apt upgrade* 将更新所有软件包。如果您只需要更新单个软件包，可以使用 *apt upgrade packagename*
+    命令，其中 *packagename* 是您要更新的软件包的名称。Debian 及其衍生系统 Kali 使用的打包格式告诉 *apt* 所需的软件包是什么。这些依赖关系列表告诉
+    Kali 为使特定软件包正常工作需要安装什么。在升级软件的情况下，它有助于确定软件包应升级的顺序。
+- en: If you need to install software, it’s as easy as typing *apt install packagename*.
+    Again, the dependencies are important here. *apt* will determine what software
+    needs to be installed ahead of the package you are asking for. As a result, when
+    you are asking for a piece of software to be installed, *apt* will tell you that
+    other software is needed. You will get a list of all the necessary software and
+    be asked whether you want to install all of it. You may also get a list of optional
+    software packages. Packages may have a list of related software that can be used
+    with the packages you are installing. If you want to install them, you will have
+    to tell *apt* separately that you want to install them. The optional packages
+    are not required at all.
+  id: totrans-176
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果需要安装软件，只需键入 *apt install packagename* 即可。依赖关系在这里是重要的。*apt* 会确定在请求的软件包之前需要安装哪些软件。因此，当你要求安装某个软件时，*apt*
+    会告诉你需要其他软件。你会得到所有必需软件的列表，并被问及是否要全部安装。你可能还会得到一个可选软件包的列表。软件包可能会有一系列相关软件，可以与你正在安装的软件包一起使用。如果你想安装它们，你需要单独告诉
+    *apt* 你要安装它们。可选软件包并不是必需的。
+- en: Removing packages uses *apt remove packagename*. One of the issues with removing
+    software is that although there are dependencies for installation, the same software
+    may not necessarily get removed—​simply because once it’s installed, it may be
+    used by other software packages. *apt* will, though, determine whether software
+    packages are no longer in use. When you perform a function using *apt*, it may
+    tell you that there are packages that could be removed. To remove packages that
+    are no longer needed, you use *apt autoremove*.
+  id: totrans-177
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 移除软件包使用 *apt remove packagename*。删除软件的一个问题是，虽然安装时有依赖关系，但同样的软件可能不会被移除，因为一旦安装后，可能被其他软件包使用。但
+    *apt* 会确定哪些软件包不再使用。当你使用 *apt* 执行某个功能时，它可能会告诉你有些软件包可以被移除。要删除不再需要的软件包，使用 *apt autoremove*。
+- en: All of this assumes that you know what you are looking for. You may not be entirely
+    sure of a package name. In that case, you can use *apt-cache* to search for packages.
+    You can use search terms that may be partial names of packages, since sometimes
+    packages may not be named quite what you expect. Different Linux distributions
+    may name a package with a different name. As an example, as you can see in [Example 1-9](#EX_1_9),
+    I have searched for *sshd* because the package name may be *sshd*, *ssh*, or something
+    else altogether. You can see the results.
+  id: totrans-178
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 所有这些都假设你知道你在寻找什么。你可能不完全确定软件包的名称。在这种情况下，你可以使用 *apt-cache* 搜索软件包。你可以使用部分名称搜索术语，因为有时软件包的名称可能不是你所期望的。不同的
+    Linux 发行版可能会用不同的名称命名一个软件包。例如，正如你在 [示例 1-9](#EX_1_9) 中看到的那样，我搜索了 *sshd*，因为软件包的名称可能是
+    *sshd*、*ssh*，或者完全不同的其他名称。你可以看到搜索结果。
+- en: Example 1-9\. Searching for packages using apt-cache
+  id: totrans-179
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 1-9\. 使用 apt-cache 搜索软件包
+- en: '[PRE8]'
+  id: totrans-180
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE8]'
+- en: What you can see is that the SSH server on Kali appears to be named *openssh-server*.
+    If that package weren’t installed but you wanted it, you would use the package
+    name *openssh-server* to install it. This sort of assumes that you know what packages
+    are installed on your system. With thousands of software packages installed, it’s
+    unlikely you would know everything that’s already in place. If you want to know
+    what software is installed, you can use the program *dpkg*, which can also be
+    used to install software that isn’t in the remote repository but you have located
+    a *.deb* file, which is a Debian package file. To get the list of all the software
+    packages installed, you use *dpkg --list*. This is the same as using *dpkg -l*.
+    Both will give you a list of all the software installed.
+  id: totrans-181
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 你可以看到，Kali 上的 SSH 服务器似乎被命名为 *openssh-server*。如果该软件包未安装但你需要安装它，你可以使用软件包名 *openssh-server*
+    进行安装。这种情况假设你知道系统上已安装了哪些软件包。由于安装了成千上万个软件包，你很可能不会知道已有的所有软件。如果你想知道系统上安装了哪些软件，可以使用程序
+    *dpkg*，它还可以用来安装不在远程仓库中但你已经找到的 *.deb* 文件，即 Debian 软件包文件。要获取已安装的所有软件包的列表，可以使用 *dpkg
+    --list*。这与使用 *dpkg -l* 是一样的。两者都会给出已安装软件的列表。
+- en: The list you get back will provide the package name as well as a description
+    of the package and the version number that’s installed. You will also get the
+    CPU architecture that the package was built to. If you have a 64-bit CPU and have
+    installed the 64-bit version of Kali, you will likely see that most packages have
+    the architecture set as *amd64*, though you may also see some flagged as *all*,
+    which may just mean that no executables are in the package. Any documentation
+    package would be for all architectures, as an example.
+  id: totrans-182
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 返回的列表将提供软件包的名称以及软件包的描述和安装的版本号。您还将获得软件包构建的CPU架构。如果您有64位CPU并安装了64位版本的Kali，您可能会看到大多数软件包的架构设置为*amd64*，尽管您可能还会看到一些标记为*all*，这可能只是表示软件包中没有可执行文件。任何文档软件包都将适用于所有架构，作为一个例子。
+- en: Another place you can use *dpkg* is installing software you find that isn’t
+    in the Kali repository. If you find a *.deb* file, you can download it and then
+    use *dpkg -i <packagename>* to install it. You may also want to remove a package
+    that has been installed. While you can use *apt* for that, you can also use *dpkg*,
+    especially if the package was installed that way. To remove a package by using
+    dpkg, you use *dpkg -r <packagename>*. If you are unsure of the package name,
+    you can get it from the list of packages installed you can use *dpkg* to obtain.
+  id: totrans-183
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 您可以使用*dpkg*安装在Kali存储库中找不到的软件。如果找到一个*.deb*文件，您可以下载它，然后使用*dpkg -i <packagename>*来安装它。您可能还想删除已安装的软件包。虽然您可以使用*apt*来完成这个操作，但您也可以使用*dpkg*，特别是如果软件包是以这种方式安装的。要使用dpkg删除软件包，您可以使用*dpkg
+    -r <packagename>*。如果您不确定软件包的名称，您可以从已安装软件包的列表中获取，您可以使用*dpkg*来获取。
+- en: Each software package may include a collection of files including executables,
+    documentation, default configuration files, and libraries as needed for the package.
+    If you want to view the contents of a package, you can use *dpkg -c <filename>*,
+    where the filename is the full name of the *.deb* file. In [Example 1-10](#EX_1_10),
+    you can see the partial contents of a log management package, *nxlog*. This package
+    is not provided as part of the Kali repository but is provided as a free download
+    for the community edition. The contents of this package include not only the files,
+    but also permissions, including the owner and group. You can also see the date
+    and time associated with the file from the package.
+  id: totrans-184
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 每个软件包可能包括一系列文件，包括可执行文件、文档、默认配置文件和所需的库。如果您想查看软件包的内容，可以使用*dpkg -c <filename>*，其中文件名是*.deb*文件的完整名称。在[示例
+    1-10](#EX_1_10)中，您可以看到日志管理软件包*nxlog*的部分内容。这个软件包不是作为Kali存储库的一部分提供的，而是作为社区版的免费下载提供的。这个软件包的内容不仅包括文件，还包括权限，包括所有者和组。您还可以从软件包中看到与文件相关联的日期和时间。
+- en: Example 1-10\. Partial contents of nxlog package
+  id: totrans-185
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 1-10。nxlog软件包的部分内容
+- en: '[PRE9]'
+  id: totrans-186
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE9]'
+- en: One thing to take into account is that packages that you get in *.deb* files
+    are generally created for a particular distribution. This occurs because there
+    are usually dependencies that the person or group creating the package knows the
+    distribution can supply. Other distributions may not have the right versions to
+    satisfy the requirements for the software package. If that’s the case, the software
+    may not run correctly. *dpkg* will error if the dependencies aren’t satisfied.
+    You can force the install by using *--force-install* as a command-line parameter
+    in addition to *-i*, but although the software will install, there is no guarantee
+    that it will function correctly.
+  id: totrans-187
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 需要考虑的一件事是，您在*.deb*文件中获得的软件包通常是为特定发行版创建的。这是因为通常有依赖关系，创建软件包的人或团体知道发行版可以提供这些依赖关系。其他发行版可能没有正确的版本来满足软件包的要求。如果是这种情况，软件可能无法正确运行。如果依赖关系未满足，*dpkg*会报错。您可以使用*--force-install*作为命令行参数来强制安装，但尽管软件会安装，但不能保证它会正确运行。
+- en: '*dpkg* has other capabilities that enable you to look into software packages,
+    query installed software, and more. The options listed previously will more than
+    get you started. With the extensive number of packages available in the Kali repository,
+    it would be unusual, though not impossible, that you would need to do any external
+    installations. It’s still useful to know about *dpkg* and its capabilities, however.'
+  id: totrans-188
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*dpkg*还具有其他功能，使您能够查看软件包、查询已安装的软件等。前面列出的选项将足以让您入门。在Kali存储库中提供的大量软件包中，您可能不太可能需要进行任何外部安装，尽管这并非不可能。然而，了解*dpkg*及其功能仍然是有用的。'
+- en: Log Management
+  id: totrans-189
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 日志管理
+- en: For the most part, if you are doing security testing, you may never really need
+    to look at the logs on your system. However, over a lot of years, I have found
+    logs to be utterly invaluable. As solid a distribution as Kali is, there is always
+    the possibility that something will go wrong and you will need to investigate.
+    Even when everything is going well, you may still want to see what an application
+    is logging. Because of that, you need to understand the logging system in Linux.
+    To do that, you need to know what you are using. Unix has long used *syslog* as
+    the system logger, though it began its life as a logging facility for the sendmail
+    mail server.
+  id: totrans-190
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 大多数情况下，如果你正在进行安全测试，你可能永远不需要查看系统上的日志。然而，多年来，我发现日志是非常宝贵的。尽管 Kali 是一个非常稳定的发行版，但仍然存在某些可能会出现问题需要调查的情况。即使一切正常，你可能仍然想查看应用程序记录了什么。因此，你需要了解
+    Linux 中的日志系统。要做到这一点，你需要知道你正在使用什么。Unix 长期以来一直使用 *syslog* 作为系统日志记录器，尽管它起初是 sendmail
+    邮件服务器的日志记录设施。
+- en: Over the years, *syslog* has had many implementations. Kali Linux does not come
+    with a common syslog implementation installed, though you can install a typical
+    system loger like *rsyslog*. It is a fairly straightforward implementation, and
+    it’s easy to determine the locations for the files you will need to look in for
+    log information. In general, all logs go to */var/log*. However, there are specific
+    files you will need to look in for log entries in different categories of information.
+    On Kali, you would check the */etc/rsyslog.conf* file. In addition to a lot of
+    other configuration settings, you will see the entries shown in [Example 1-11](#EX_1_11).
+  id: totrans-191
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 多年来，*syslog* 已经有了许多实现方式。Kali Linux 并没有安装常见的 syslog 实现，但你可以安装像 *rsyslog* 这样的典型系统日志记录器。这是一个相当简单的实现，很容易确定需要查看的日志信息文件的位置。通常，所有日志都存放在
+    */var/log* 中。但是，你需要查看不同信息类别的特定文件以获取日志条目。在 Kali 中，你需要检查 */etc/rsyslog.conf* 文件。除了许多其他配置设置外，你将看到
+    [Example 1-11](#EX_1_11) 中显示的条目。
+- en: Example 1-11\. Log configuration for rsyslog
+  id: totrans-192
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: Example 1-11\. rsyslog 的日志配置
+- en: '[PRE10]'
+  id: totrans-193
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE10]'
+- en: What you see on the left side is a combination of facility and severity level.
+    The word before the dot is the facility. The facility is based on the different
+    subsystems that are logging using *syslog*. You may note that *syslog* goes back
+    a long way, so there are still facilities identified for subsystems and services
+    that you are unlikely to see much of these days. In [Table 1-1](#syslog_facilities),
+    you will see the list of facilities as defined for use in *syslog*. The Description
+    column indicates what the facility is used for in case the facility itself doesn’t
+    give that information to you.
+  id: totrans-194
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 你在左侧看到的是设施和严重级别的组合。点号前的单词是设施。设施基于使用 *syslog* 记录日志的不同子系统。你可能会注意到，*syslog* 已经存在很长时间了，因此仍然为你可能很少见到的子系统和服务识别出了设施。在
+    [Table 1-1](#syslog_facilities) 中，你将看到 *syslog* 中定义的设施列表。描述栏指示设施在不提供信息的情况下用于什么目的。
+- en: Table 1-1\. Syslog facilities
+  id: totrans-195
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Table 1-1\. Syslog 设施
+- en: '| Facility number | Facility | Description |'
+  id: totrans-196
+  prefs: []
+  type: TYPE_TB
+  zh: '| 设施编号 | 设施 | 描述 |'
+- en: '| --- | --- | --- |'
+  id: totrans-197
+  prefs: []
+  type: TYPE_TB
+  zh: '| --- | --- | --- |'
+- en: '| 0 | kern | Kernel messages |'
+  id: totrans-198
+  prefs: []
+  type: TYPE_TB
+  zh: '| 0 | kern | 内核消息 |'
+- en: '| 1 | user | User-level messages |'
+  id: totrans-199
+  prefs: []
+  type: TYPE_TB
+  zh: '| 1 | user | 用户级消息 |'
+- en: '| 2 | mail | Mail system |'
+  id: totrans-200
+  prefs: []
+  type: TYPE_TB
+  zh: '| 2 | mail | 邮件系统 |'
+- en: '| 3 | daemon | System daemons |'
+  id: totrans-201
+  prefs: []
+  type: TYPE_TB
+  zh: '| 3 | daemon | 系统守护程序 |'
+- en: '| 4 | auth | Security/authorization messages |'
+  id: totrans-202
+  prefs: []
+  type: TYPE_TB
+  zh: '| 4 | auth | 安全/授权消息 |'
+- en: '| 5 | syslog | Messages generated internally by syslogd |'
+  id: totrans-203
+  prefs: []
+  type: TYPE_TB
+  zh: '| 5 | syslog | 内部由 syslogd 生成的消息 |'
+- en: '| 6 | lpr | Line printer subsystem |'
+  id: totrans-204
+  prefs: []
+  type: TYPE_TB
+  zh: '| 6 | lpr | 行打印子系统 |'
+- en: '| 7 | news | Network news subsystem |'
+  id: totrans-205
+  prefs: []
+  type: TYPE_TB
+  zh: '| 7 | news | 网络新闻子系统 |'
+- en: '| 8 | uucp | UUCP subsystem |'
+  id: totrans-206
+  prefs: []
+  type: TYPE_TB
+  zh: '| 8 | uucp | UUCP 子系统 |'
+- en: '| 9 |  | Clock daemon |'
+  id: totrans-207
+  prefs: []
+  type: TYPE_TB
+  zh: '| 9 |  | 时钟守护程序 |'
+- en: '| 10 | authpriv | Security/authorization messages |'
+  id: totrans-208
+  prefs: []
+  type: TYPE_TB
+  zh: '| 10 | authpriv | 安全/授权消息 |'
+- en: '| 11 | ftp | FTP daemon |'
+  id: totrans-209
+  prefs: []
+  type: TYPE_TB
+  zh: '| 11 | ftp | FTP 守护程序 |'
+- en: '| 12 | - | NTP subsystem |'
+  id: totrans-210
+  prefs: []
+  type: TYPE_TB
+  zh: '| 12 | - | NTP 子系统 |'
+- en: '| 13 | - | Log audit |'
+  id: totrans-211
+  prefs: []
+  type: TYPE_TB
+  zh: '| 13 | - | 日志审计 |'
+- en: '| 14 | - | Log alert |'
+  id: totrans-212
+  prefs: []
+  type: TYPE_TB
+  zh: '| 14 | - | 日志警告 |'
+- en: '| 15 | cron | Scheduling daemon |'
+  id: totrans-213
+  prefs: []
+  type: TYPE_TB
+  zh: '| 15 | cron | 调度守护程序 |'
+- en: '| 16 | local0 | Local use 0 (local0) |'
+  id: totrans-214
+  prefs: []
+  type: TYPE_TB
+  zh: '| 16 | local0 | 本地使用 0 (local0) |'
+- en: '| 17 | local1 | Local use 1 (local1) |'
+  id: totrans-215
+  prefs: []
+  type: TYPE_TB
+  zh: '| 17 | local1 | 本地使用 1 (local1) |'
+- en: '| 18 | local2 | Local use 2 (local2) |'
+  id: totrans-216
+  prefs: []
+  type: TYPE_TB
+  zh: '| 18 | local2 | 本地使用 2 (local2) |'
+- en: '| 19 | local3 | Local use 3 (local3) |'
+  id: totrans-217
+  prefs: []
+  type: TYPE_TB
+  zh: '| 19 | local3 | 本地使用 3 (local3) |'
+- en: '| 20 | local4 | Local use 4 (local4) |'
+  id: totrans-218
+  prefs: []
+  type: TYPE_TB
+  zh: '| 20 | local4 | 本地使用 4 (local4) |'
+- en: '| 21 | local5 | Local use 5 (local5) |'
+  id: totrans-219
+  prefs: []
+  type: TYPE_TB
+  zh: '| 21 | local5 | 本地使用 5 (local5) |'
+- en: '| 22 | local6 | Local use 6 (local6) |'
+  id: totrans-220
+  prefs: []
+  type: TYPE_TB
+  zh: '| 22 | local6 | 本地使用 6 (local6) |'
+- en: '| 23 | local7 | Local use 7 (local7) |'
+  id: totrans-221
+  prefs: []
+  type: TYPE_TB
+  zh: '| 23 | local7 | 本地使用 7 (local7) |'
+- en: Along with the facility is the severity. The severity has potential values of
+    Emergency, Alert, Critical, Error, Warning, Notice, Informational, and Debug.
+    These severities are listed in descending order, with the most severe listed first.
+    You may determine that Emergency logs should be sent somewhere different from
+    other severity levels. In [Example 1-8](#EX_1_8), all of the severities are being
+    sent to the log associated with each facility. The “*” after the facility name
+    indicates all facilities. If you wanted to, for instance, send errors from the
+    auth facility to a specific log file, you would use *auth.error* and indicate
+    the file you want to use.
+  id: totrans-222
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 伴随设施的是严重性。严重性可能的值包括 Emergency、Alert、Critical、Error、Warning、Notice、Informational
+    和 Debug。这些严重性按降序列出，最严重的在前面。你可能会确定 Emergency 日志应该发送到与每个设施相关的日志。在 [示例 1-8](#EX_1_8)
+    中，所有严重性都被发送到与每个设施相关联的日志。设施名称后的 “*” 表示所有设施。例如，如果你想将 auth 设施的错误发送到特定的日志文件，你将使用 *auth.error*
+    并指定你想使用的文件。
+- en: Once you know where the logs are kept, you need to be able to read them. Fortunately,
+    syslog log entries are easy enough to parse. If you look at [Example 1-12](#EX_1_12),
+    you will see a collection of log entries from the *auth.log* on a Kali system.
+    Starting on the left of the entry, you will see the date and time that the log
+    entry was written. This is followed by the hostname. Since *syslog* has the capability
+    to send log messages to remote hosts, like a central log host, the hostname is
+    important to be able to separate one entry from another if you are writing logs
+    from multiple hosts into the same log file. After the hostname is the process
+    name and PID. Most of these entries are from the process named *realmd* that has
+    a PID 803.
+  id: totrans-223
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一旦你知道日志存放在哪里，你需要能够阅读它们。幸运的是，syslog 的日志条目足够容易解析。如果你查看 [示例 1-12](#EX_1_12)，你会看到来自
+    Kali 系统上 *auth.log* 的一组日志条目。在条目的左侧开始，你会看到写入日志条目的日期和时间。然后是主机名。由于 *syslog* 具有将日志消息发送到远程主机（如中央日志主机）的能力，主机名对于能够在同一日志文件中写入多个主机的日志条目进行区分非常重要。主机名之后是进程名称和
+    PID。这些条目大多数来自名为 *realmd* 的进程，PID 为 803。
+- en: Example 1-12\. Partial auth.log contents
+  id: totrans-224
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 1-12\. 部分 auth.log 内容
+- en: '[PRE11]'
+  id: totrans-225
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE11]'
+- en: The challenging part of the log isn’t the preamble, which is created and written
+    by the *syslog* service, but the application entries. What we are looking at here
+    is in English so is possible to understand if you read English once you understand
+    what you are looking at. However, the contents of the log entries are created
+    by the application itself, which means the programmer has to call functions that
+    generate and write out the log entries. Some programmers may be better about generating
+    useful and understandable log entries than others. Once you have gotten used to
+    reading logs, you’ll start to understand what they are saying. If you run across
+    a log entry that you really need but you don’t understand, internet search engines
+    can always help find someone who has a better understanding of that log entry.
+    Alternately, you can reach out to the software development team for help.
+  id: totrans-226
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 日志的挑战部分并非前言，这部分由 *syslog* 服务创建和编写，而是应用程序条目。只要你理解自己在查看什么，读英文就可以理解这里的内容。然而，日志条目的内容是由应用程序自身创建的，这意味着程序员必须调用生成和写入日志条目的函数。有些程序员可能更善于生成有用和易于理解的日志条目。一旦你习惯于阅读日志，你就会开始理解它们在说什么。如果你遇到一个真正需要但你不理解的日志条目，互联网搜索引擎总是可以帮助找到更理解该日志条目的人。或者，你可以联系软件开发团队寻求帮助。
+- en: Not all logs run through *syslog*, but all system-related logs do. Even when
+    *syslog* doesn’t manage the logs for an application, as in the case of the Apache
+    web server, the logs are still likely to be in */var/log/*. In some cases, you
+    may have to go searching for the logs. This may be the case with some third-party
+    software that installs to */opt*.
+  id: totrans-227
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 并非所有日志都通过 *syslog* 运行，但所有与系统相关的日志都是如此。即使 *syslog* 不管理应用程序的日志，例如 Apache web 服务器，日志仍然可能位于
+    */var/log/*。在某些情况下，你可能需要搜索日志。这可能是一些安装到 */opt* 的第三方软件的情况。
+- en: Summary
+  id: totrans-228
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 摘要
+- en: 'Linux has a long history behind it, going back to the days when resources were
+    very constrained. This has led to some arcane commands whose purpose was to allow
+    users (primarily programmers) to be efficient. It’s important to find an environment
+    that works well for you so you too can be efficient in your work. Here are some
+    key points to take away from this chapter:'
+  id: totrans-229
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Linux有着悠久的历史，可以追溯到资源非常受限制的时代。这导致了一些目的是让用户（主要是程序员）高效的深奥命令。找到一个适合你的环境非常重要，这样你也可以在工作中高效率。以下是本章节的一些要点：
+- en: Unix is an environment created by programmers for programmers using the command
+    line.
+  id: totrans-230
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Unix是由程序员为程序员使用命令行创建的环境。
+- en: Unix was created with simple, single-purpose tools that can be combined for
+    more complex tasks.
+  id: totrans-231
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Unix是用简单、单一用途的工具创建的，这些工具可以组合成更复杂的任务。
+- en: Kali Linux has several potential GUIs that can be installed and utilized; it’s
+    important to find one that you’re most comfortable with.
+  id: totrans-232
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Kali Linux有几种潜在的GUI可以安装和使用；找到一个你最舒适的很重要。
+- en: Each desktop environment has a lot of customization options.
+  id: totrans-233
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 每个桌面环境都有大量的自定义选项。
+- en: Kali is based on *systemd*, so service management uses *systemctl*.
+  id: totrans-234
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Kali基于*systemd*，因此服务管理使用*systemctl*。
+- en: Processes can be managed using signals, including interrupt and kill.
+  id: totrans-235
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 进程可以使用信号管理，包括中断和杀死。
+- en: Logs will be your friends and help you troubleshoot errors. Logs are typically
+    stored in */var/log*.
+  id: totrans-236
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 日志将是你的朋友，并帮助你排除错误。日志通常存储在*/var/log*中。
+- en: Configuration files are typically stored in */etc*, though individual configuration
+    files are stored in the home directory.
+  id: totrans-237
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 配置文件通常存储在*/etc*中，尽管个别配置文件存储在用户主目录中。
+- en: Quiz Questions
+  id: totrans-238
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 测验问题
+- en: 1) What Linux command would you use to get a directory listing? a) dir b) fl
+    c) ls d) list
+  id: totrans-239
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 1) 你会用什么Linux命令来获取目录列表？a) dir b) fl c) ls d) list
+- en: 2) What operating system is Linux derived from? a) Windows b) Unix c) Multics
+    d) macOS
+  id: totrans-240
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 2) Linux派生自哪个操作系统？a) Windows b) Unix c) Multics d) macOS
+- en: 3) Which desktop environment is the default in Kali Linux? a) Xfce b) GNOME
+    c) KDE d) Ratpoison
+  id: totrans-241
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 3) 在Kali Linux中，默认的桌面环境是哪个？a) Xfce b) GNOME c) KDE d) Ratpoison
+- en: 4) What package management utility is used to manage packages by default in
+    Kali Linux? a) yum b) rpm c) slackpkg d) apt
+  id: totrans-242
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 4) 在Kali Linux中，默认用来管理软件包的软件包管理实用程序是哪个？a) yum b) rpm c) slackpkg d) apt
+- en: 5) If you wanted to get a listing of processes and associated utilizations that
+    was periodically updated automatically, what utility would you use? a) ps b) top
+    c) free d) grep
+  id: totrans-243
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 5) 如果你想要获取定期自动更新的进程列表及相关利用情况，你会用什么工具？a) ps b) top c) free d) grep
+- en: 6) What are the names of the two streams in Linux used for I/O? a) IN,OUT b)
+    SIN,SOUT c) STDIN,STDOUT d) INPUT,OUTPUT
+  id: totrans-244
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 6) Linux中用于I/O的两个流的名称是什么？a) IN,OUT b) SIN,SOUT c) STDIN,STDOUT d) INPUT,OUTPUT
+- en: 7) Which of these Linux utilities is not used for locating files? a) which b)
+    locate c) find d) search
+  id: totrans-245
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 7) 下列哪个Linux实用程序不用于定位文件？a) which b) locate c) find d) search
+- en: 8) If you wanted to find help information related to a command you know, what
+    would you use? a) apropos b) like c) regards d) similar
+  id: totrans-246
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 8) 如果你想找到与你已知命令相关的帮助信息，你会用什么？a) apropos b) like c) regards d) similar
+- en: 9) If you were to use ps aux | grep top, what would you be doing? a) Putting
+    the process listing into top b) Using top to find processes that match the term
+    aux c) Searching for the process named top in a process listing d) Formatting
+    a process listing
+  id: totrans-247
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 9) 如果你使用ps aux | grep top，你在做什么？a) 将进程列表放入top b) 使用top查找匹配项为aux的进程 c) 在进程列表中搜索名为top的进程
+    d) 格式化进程列表
+- en: 10) What would you use to manage system services like daemons that execute at
+    system startup on Kali Linux? a) init b) update-rc c) inetd d) systemctl
+  id: totrans-248
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 10) 在Kali Linux上，你会用什么来管理像守护进程那样在系统启动时执行的系统服务？a) init b) update-rc c) inetd
+    d) systemctl
+- en: Useful Resources
+  id: totrans-249
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 有用资源
+- en: '[*Linux in a Nutshell*, 6e](http://bit.ly/linux-in-a-nutshell), by Ellen Siever,
+    Stephen Figgins, Robert Love, and Arnold Robbins (O’Reilly, 2009)'
+  id: totrans-250
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[*Linux in a Nutshell*, 6e](http://bit.ly/linux-in-a-nutshell)，由Ellen Siever,
+    Stephen Figgins, Robert Love和Arnold Robbins（O’Reilly，2009）'
+- en: '[*https://learning.oreilly.com/library/view/practical-linux-system/9781098109028/*](https://learning.oreilly.com/library/view/practical-linux-system/9781098109028/)
+    [*Practical Linux System Administration*], by Kenneth Hess (O’Reilly, 2023)'
+  id: totrans-251
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[*https://learning.oreilly.com/library/view/practical-linux-system/9781098109028/*](https://learning.oreilly.com/library/view/practical-linux-system/9781098109028/)
+    [*Practical Linux System Administration*]，由Kenneth Hess（O’Reilly，2023）'
+- en: '[*https://learning.oreilly.com/library/view/efficient-linux-at/9781098113391/*](https://learning.oreilly.com/library/view/efficient-linux-at/9781098113391/)
+    [*Efficient Linux at the Command Line*], by Daniel J. Barrettt'
+  id: totrans-252
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[*https://learning.oreilly.com/library/view/efficient-linux-at/9781098113391/*](https://learning.oreilly.com/library/view/efficient-linux-at/9781098113391/)
+    由 Daniel J. Barrettt 撰写的 [*高效 Linux 命令行*]'
+- en: The Kali Linux [website](https://www.kali.org/)
+  id: totrans-253
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Kali Linux [网站](https://www.kali.org/)
+- en: '[“Linux System Administration Basics”](http://bit.ly/linode-linux) by Linode'
+  id: totrans-254
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[“Linux 系统管理基础”](http://bit.ly/linode-linux) 由 Linode 提供'

@@ -1,0 +1,2483 @@
+- en: Chapter 2\. Network Security Testing Basics
+  id: totrans-0
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 第二章 网络安全测试基础
+- en: '*Security testing* is a broad term that means a lot of different things. Often,
+    penetration testing is done remotely, over the network. Not all security testing
+    is penetration testing, though. Sometimes, development teams may want applications
+    tested, including web applications. These web applications may include a number
+    of network services. Sometimes, you may be testing not only networked applications
+    but devices. Both the application and the device may need to be stress-tested
+    to ensure it can handle types of traffic or even large volumes of traffic.'
+  id: totrans-1
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*安全测试*是一个广义的术语，意味着很多不同的事物。通常，渗透测试是通过网络远程进行的。然而，并不是所有的安全测试都是渗透测试。有时，开发团队可能希望测试应用程序，包括Web应用程序。这些Web应用程序可能包括多个网络服务。有时，您可能不仅测试网络应用程序，还会测试设备。需要对应用程序和设备进行压力测试，以确保其能够处理各种类型的流量，甚至大量的流量。'
+- en: Understanding how network protocol stacks are defined is essential if you want
+    to perform any sort of network-based security testing. One way of defining protocols
+    and, more specifically, their interactions, is using the Open Systems Interconnection
+    (OSI) model. Using the OSI model, we can break the communications into different
+    functional elements and see clearly where different pieces of information are
+    added to the network packets as they are being created. Additionally, you can
+    see the interaction from system to system across the functional elements.
+  id: totrans-2
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果您想执行任何基于网络的安全测试，理解网络协议栈的定义是至关重要的。定义协议以及更具体地说它们的互动，可以使用开放系统互联模型（OSI模型）。使用OSI模型，我们可以将通信分解为不同的功能元素，并清楚地看到在创建网络数据包时不同信息块的添加。此外，还可以看到在功能元素之间从系统到系统的交互作用。
+- en: Stress testing is not only about generating a lot of traffic and sending it
+    at an application or device. In some cases, you may stress an application or device
+    by sending it data that isn’t expected. Applications, even applications running
+    on limited-use devices (think Internet of Things like thermostats, locks, light
+    switches), have an expectation about the type and structure of data that would
+    be received. Sending something other than what was expected may cause an application
+    failure. This is something useful to know. This is another type of stress testing,
+    since you are stressing the logic of the application.
+  id: totrans-3
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 压力测试不仅仅是生成大量流量并发送到应用程序或设备。在某些情况下，您可能会通过发送未预期的数据来对应用程序或设备进行压力测试。即使是运行在限制使用设备上的应用程序（比如物联网设备，如恒温器、锁、灯开关），也对接收到的数据类型和结构有预期。发送意料之外的内容可能会导致应用程序失败。这是一个有用的信息。这是另一种压力测试类型，因为您正在测试应用程序的逻辑。
+- en: This is part of the reason why understanding how communications protocols are
+    constructed. Performing network security testing requires understsanding how the
+    different layers of the communications model come together. Once you have done
+    that, you can think about how you want to approach security testing. Of course,
+    it’s also helpful to understand what security testing is, so let’s start there
+    then we can get into how the communications stacks work.
+  id: totrans-4
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这部分原因之一是理解通信协议如何构建。执行网络安全测试需要理解通信模型的不同层如何结合。一旦理解了这一点，就可以考虑如何进行安全测试。当然，了解安全测试的定义也是有帮助的，所以让我们从这里开始，然后我们可以深入了解通信堆栈如何工作。
+- en: Security Testing
+  id: totrans-5
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 安全测试
+- en: When many people hear the term *security testing*, they may think of penetration
+    testing where the goal is to get into systems and acquire the highest privileges
+    possible. Security testing isn’t entirely about popping boxes. In fact, you might
+    suggest that the majority of security testing isn’t penetration testing. There
+    are just so many areas of protecting systems and software that aren’t related
+    to what would commonly be thought of as penetration testing. Before we start talking
+    about what we can do with Kali Linux when it comes to network security testing,
+    we should go over what security is so you can better understand what testing means
+    in this context.
+  id: totrans-6
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当很多人听到*安全测试*这个术语时，他们可能会想到渗透测试，其目标是进入系统并获取尽可能高的权限。安全测试并不完全是关于弹出框。事实上，你可能会认为大多数安全测试并不是渗透测试。保护系统和软件的领域远不止于通常被认为是渗透测试的范畴。在我们开始讨论使用Kali
+    Linux进行网络安全测试时，我们应该先了解一下安全是什么，这样你可以更好地理解这种情境下测试的含义。
+- en: 'When professionals, and certainly certification organizations, talk about security,
+    they make reference to what is commonly known as the *triad*. Some will add elements,
+    but at the core of information security are three fundamentals: confidentiality,
+    integrity, and availability. Anything that may impact one of these aspects of
+    systems or software impacts the security of that software or system. Security
+    testing will or should take all of those aspects into consideration and not the
+    limited view that a penetration test may provide insight into.'
+  id: totrans-7
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当专业人士，尤其是认证机构讨论安全时，他们常常提到所谓的*三位一体*。有些人可能会添加其他要素，但信息安全的核心是三个基本原则：保密性、完整性和可用性。任何可能影响系统或软件这些方面的事物，都会影响该软件或系统的安全性。安全测试应该全面考虑所有这些方面，而不仅仅是渗透测试可能提供的有限视角。
+- en: As you may know, the triad is can be represented as an equilateral triangle.
+    The triangle is equilateral because all three elements are considered to have
+    equal weight. Additionally, if any of the elements are lost, you no longer have
+    a triangle. You can see a common representation in [Figure 2-1](#the_cia_triad),
+    where all three sides are the same length. Every one of these elements is considered
+    crucial for information to be considered reliable and trustworthy. These days,
+    because businesses and people rely so heavily on information that is stored digitally,
+    it’s essential that information be available, be confidential when necessary,
+    and have integrity.
+  id: totrans-8
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如你所知，三位一体可以被表示为等边三角形。这个三角形是等边的，因为所有三个要素被认为具有相同的重要性。此外，如果任何一个要素丢失，你就不再有三角形。你可以在[图 2-1](#the_cia_triad)中看到一个常见的表示，其中所有三边长度相同。这些要素被认为是信息可靠和可信的关键因素。如今，由于企业和个人如此依赖存储在数字形式的信息，因此信息的可用性、在必要时的保密性和完整性至关重要。
+- en: '![images/Ch2Fig1.png](assets/lklx_0201.png)'
+  id: totrans-9
+  prefs: []
+  type: TYPE_IMG
+  zh: '![images/Ch2Fig1.png](assets/lklx_0201.png)'
+- en: Figure 2-1\. The CIA triad
+  id: totrans-10
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图 2-1\. 三位一体（CIA triad）
+- en: 'Most businesses run on secrets. People also have secrets: their social security
+    number, passwords they use, tax information, medical information, and a variety
+    of other pieces of data. Businesses need to protect their intellectual property,
+    for one thing. They may have many trade secrets that could have negative impacts
+    on the business if the information were to get out of the organization. Keeping
+    this information secret, regardless of what it is, is *confidentiality*. Anytime
+    information can be retrieved by anyone who doesn’t have permission to retrieve
+    it, confidentiality has been breached. This is the primary element that has been
+    impacted in countless thefts of data, from Target, to the Office of Personnel
+    Management, to Equifax and Sony. When consumer information is stolen, the confidentiality
+    of that information has been compromised. Modern ransomware attacks also impact
+    confidentiality. Attackers will steal data with the threat of releasing it publicly.'
+  id: totrans-11
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 大多数企业都运作在秘密之上。人们也有秘密：他们的社会安全号码、使用的密码、税务信息、医疗信息以及各种其他数据。企业需要保护他们的知识产权，这是一方面。他们可能有许多商业秘密，如果这些信息泄露出去将对企业造成负面影响。无论是什么信息，保持其机密性都是*保密性*的核心。任何时候，只要未经许可的人员可以检索信息，机密性就会受到侵犯。这是无数数据盗窃事件中受到影响的主要因素，从Target、国家人事管理局到Equifax和索尼。当消费者信息被窃取时，该信息的保密性就会受到损害。现代勒索软件攻击也会影响保密性。攻击者会威胁公开窃取的数据。
+- en: Generally, we expect that when we store something, it will be the same when
+    we go to retrieve it. Corrupted or altered data may be caused by various factors,
+    which may not necessarily be malicious in nature. Just because we talk about security
+    doesn’t always mean we are talking about malicious behavior. Certainly, the cases
+    I mentioned previously were malicious. However, bad or failing memory can cause
+    data corruption on a disk. I say this from personal experience. Similarly, failing
+    hard drives or other storage media can cause data corruption. Of course, in some
+    cases malicious and deliberate actions will lead to corrupted or incorrect data.
+    When that information has been corrupted, no matter the cause, it’s a failure
+    or breach of integrity. *Integrity* is entirely about something being in a state
+    you reasonably expect it to be in. Consider ransomware again. When data has been
+    encrypted by an attacker, it has lost its integrity since it’s not in the state
+    it was when the user last accessed it.
+  id: totrans-12
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 通常，我们期望当我们存储某些内容时，在检索时它保持不变。数据损坏或更改可能是由各种因素引起的，这些因素未必是恶意的。即使我们谈论安全性，并不总是意味着我们在谈论恶意行为。当然，我之前提到的案例是恶意的。然而，坏掉或失效的内存可能会导致磁盘上的数据损坏。我从个人经验中说这句话。类似地，失效的硬盘驱动器或其他存储介质可能会导致数据损坏。当然，在某些情况下，恶意和故意的行为会导致数据损坏或错误。当信息被损坏时，无论原因如何，这都是完整性的失败或违反。*完整性*完全是关于某物处于你合理期望的状态。再考虑一下勒索软件。当数据被攻击者加密时，由于它不再处于用户最后访问时的状态，它已经失去了完整性。
+- en: Finally, let’s consider *availability*. If I kick the plug to your computer
+    out of the wall, likely falling to the floor and maybe hitting my head in the
+    process, your computer will become unavailable (as long as we are talking about
+    a desktop system and not a system with a battery). Similarly, if you have a network
+    cable and the clip has come off such that the connector won’t stay in the wall
+    jack or in the network interface card, your system will be unavailable on the
+    network. This may impact you, of course, and your ability to do your job, but
+    it may also impact others if they need anything that’s on your computer. Anytime
+    there is a server failure, that’s an impact to availability. If an attacker can
+    cause a service or entire operating system to fail, even temporarily, that’s an
+    impact to availability, which can have serious ramifications to the business.
+    It may mean consumers can’t get to advertised services. It may mean a lot of expenditure
+    in manpower and other resources to keep the services running and available, as
+    in the case of the banks that were hit with enormous, sustained, and lengthy denial-of-service
+    attacks. While the attempt at an availability failure wasn’t successful, there
+    was an impact to the business in fighting it. One more visit to the house of ransomware
+    to say that encrypted data when you don’t have the decryption key is an availability
+    problem. If it’s not readable, it’s not available, at least in a usable form.
+  id: totrans-13
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，让我们考虑*可用性*。如果我把插头从墙上踢下来，可能会摔到地上，甚至可能碰到头，你的电脑就会变得不可用（当然，我们说的是台式系统，而不是带电池的系统）。同样地，如果你的网络电缆夹子脱落，导致连接器无法留在墙插或网络接口卡中，你的系统将在网络上不可用。当然，这可能会影响你和你完成工作的能力，但如果其他人需要你电脑上的任何内容，这也可能会影响他们。每当服务器故障时，这就是可用性的影响。如果攻击者能够导致服务或整个操作系统暂时失败，这也会影响可用性，对业务可能造成严重后果。这可能意味着消费者无法访问宣传的服务。这可能意味着大量的人力和其他资源投入到维持服务的运行和可用性中，就像银行遭受了大规模、持续且长时间的拒绝服务攻击的情况。尽管可用性失败的企图并不成功，但在打击中业务受到了影响。再来谈谈勒索软件的问题，当你没有解密密钥时，加密数据就成了一个可用性问题。如果数据无法读取，那么至少在可用的形式上就是不可用的。
+- en: This raises the issue of the limitations of the CIA triad. Donn Parker proposed
+    three additional properties of information security to add to the three properties
+    of the CIA triad. According to Parker, security also extends to Control, Authenticity,
+    and Utility. Control is about possession. If I have posssession of a resource,
+    I am in control of it. Authenticity is about verification. Is the item in question
+    what it is supposed to be? This includes the source of material, including emails.
+    Digital signatures are ways of verifying authenticity. Finally, utility is whether
+    something is useful. This is perhaps a better term for when data has been encrypted
+    by a ransomware threat actor. Technically, the files are available, they just
+    aren’t very useful in the form they are in.
+  id: totrans-14
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这引发了对CIA三元模型局限性的讨论。唐·帕克提议向CIA三元模型的三个属性添加三个信息安全属性。根据帕克的观点，安全性还涉及控制、真实性和实用性。控制是关于所有权的问题。如果我拥有某个资源，我就控制着它。真实性是关于验证的问题。被质疑的物品是否符合预期？这包括材料的来源，包括电子邮件。数字签名是验证真实性的方法。最后，实用性是指某物是否有用。当数据被勒索软件威胁行为者加密时，这可能是一个更好的术语。从技术上讲，文件是可用的，只是它们在目前的形式下并不十分有用。
+- en: Testing anything related to these elements is security testing, no matter what
+    form that testing may take. When it comes to network security testing, we may
+    be testing service fragility, encryption strength, and other factors. What we
+    will be looking at when we talk about network testing is a set of stress-testing
+    tools to start with. We will also look at other tools that are sometimes known
+    to cause network failures. While a lot of bugs in the network stacks of operating
+    systems were likely fixed years ago, you may sometimes run into lighter weight,
+    fragile devices that may be attached to the network. These devices may be more
+    susceptible to these sorts of attacks. These devices may include printers, Voice
+    over IP phones, thermostats, refrigerators, and nearly countless other devices
+    that are being connected, more and more, to networks these days.
+  id: totrans-15
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 与这些要素相关的任何测试都是安全测试，无论测试的形式如何。在网络安全测试方面，我们可能会测试服务的脆弱性、加密强度和其他因素。当我们谈论网络测试时，我们将首先看一组压力测试工具。我们还将研究其他有时会导致网络故障的工具。尽管操作系统的网络堆栈中的许多错误可能已经在多年前修复，但有时你可能会遇到更轻便、更脆弱的设备，这些设备可能连接到网络上。这些设备可能包括打印机、IP电话、恒温器、冰箱以及近来越来越多地连接到网络的几乎无数其他设备。
+- en: Network Security Testing
+  id: totrans-16
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 网络安全测试
+- en: We live by the network; we die by the network. How much of your personal information
+    is currently either stored outright or at least available by way of the internet,
+    whether your information is stored on a device on your local network, the enterprise
+    network of your employer or somewhere else on the internet, a place commonly called
+    *the cloud*? When we live our lives expecting everything to be available and accessible
+    by way of the network, it’s essential that we assure that our devices are capable
+    of sustaining attack.
+  id: totrans-17
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们依靠网络生活；我们因网络而死。你的个人信息目前有多少是直接存储或者至少可以通过互联网访问的？无论你的信息存储在本地网络设备、雇主的企业网络或者互联网上的其他地方（通常称为*云*），当我们生活在期望一切都可以通过网络获得和访问的时候，确保我们的设备能够抵御攻击是至关重要的。
+- en: Monitoring
+  id: totrans-18
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 监控
+- en: Before we do any testing at all, we need to talk about the importance of monitoring.
+    If you are doing any of the testing we are talking about for your company or a
+    customer, ideally you aren’t taking anything down deliberately unless you have
+    been asked to. However, no matter how careful you are, there is always the possibility
+    that something bad may happen and services or systems may get knocked over. This
+    is why it’s essential to communicate with the people who own the systems so they
+    can keep an eye on their systems and services. Businesses are not going to want
+    to impact their customers, so they will often want staff to be available to restart
+    services or systems if that’s necessary.
+  id: totrans-19
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在我们进行任何测试之前，我们需要谈论监控的重要性。如果你为公司或客户进行我们正在讨论的任何测试，理想情况下，除非有人要求，你不会故意关闭任何服务。然而，无论你多么小心，总有可能发生意外，服务或系统可能会崩溃。这就是为什么与拥有系统的人沟通至关重要，这样他们就可以监控他们的系统和服务。企业不会希望影响他们的客户，因此他们通常希望员工能够在必要时重新启动服务或系统。
+- en: Note
+  id: totrans-20
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: Some companies may want to test their operations staff, meaning they expect
+    you to do what you can to infiltrate and knock over systems and services, without
+    doing any long-term or permanent damage. This is commonly called red teaming.
+    In this case, you wouldn’t communicate with anyone but the management who hired
+    you. In most cases, though, companies are going to want to make sure they keep
+    their production environment operational. If part of the operations staff or its
+    management is in on it, trying to see whether they are able to detect the infiltration,
+    the testing is called purple teaming. The operations staff is the blue team, the
+    attack team is the red team. You put the two together, you get a purple team.
+  id: totrans-21
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一些公司可能希望测试其运营人员，这意味着他们期望你尽力渗透和击垮系统和服务，但不造成任何长期或永久性损害。这通常被称为红队测试。在这种情况下，你不会与任何人沟通，只与雇佣你的管理层联系。然而，在大多数情况下，公司会希望确保他们的生产环境正常运行。如果运营人员或其管理层的一部分参与其中，试图看看他们是否能够检测到渗透，这种测试被称为紫队测试。运营人员是蓝队，攻击团队是红队。将这两者结合起来，就得到了紫队。
+- en: If the operations staff is involved, they will want to have some sort of monitoring
+    in place. This could be watching logs, which is generally advisable. However,
+    logs are not always reliable. After all, if you are able to crash a service, the
+    service may not have long enough to write anything useful to the logs before failing.
+    This does not mean, though, that you should discount logs. Keep in mind that the
+    purpose of security testing is to help improve the security posture of the company
+    you are working for. The logs may be essential to get hints as to what is happening
+    with the process before it fails. Services may not fail in the sense that the
+    process stops, but sometimes the service may not behave as expected. This is where
+    logs can be important, to get a sense of what the application was trying to do.
+  id: totrans-22
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果运营人员参与其中，他们将希望有一些监控措施。这可能包括观察日志，这通常是明智的。然而，日志并不总是可靠的。毕竟，如果您能够崩溃一个服务，服务在失败之前可能没有足够的时间写入有用的内容到日志中。然而，这并不意味着您应该忽视日志。请记住，安全测试的目的是帮助提高您所工作的公司的安全姿态。在进程失败之前，日志可能是获取有关进程状态的重要线索。服务可能不会以进程停止的方式失败，但有时服务可能不像预期的那样运行。这就是日志的重要性所在，以了解应用程序尝试执行的操作。
+- en: There may be a watchdog in place. Watchdogs are sometimes used to ensure that
+    a process stays up. Should the process fail, the PID would no longer appear in
+    the process table, and the watchdog would know to restart that process. This same
+    sort of watchdog capability can be used to determine whether the process has failed.
+    Even if you don’t want the process restarted, just keeping an eye on the process
+    table to see whether the process has failed will be an indicator if something
+    has happened to the process.
+  id: totrans-23
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 可能会有一个看门狗在运行。看门狗有时用于确保进程保持运行。如果进程失败，PID 将不再出现在进程表中，看门狗将知道重新启动该进程。同样的看门狗功能可以用来确定进程是否失败。即使您不希望进程重新启动，只需监视进程表以查看进程是否失败，就可以作为进程是否发生故障的指标。
+- en: With the older init system initialization, you could use the /etc/inittab file
+    to specify processes that should be restarted on crashing. With the modern system
+    initialization software systemd, you can configure services to automatically restart
+    if they crash. This is done in the configuration file with the setting *Restart=*.
+    You could set this parameter to *always* or maybe *on-failure*. Not all applications,
+    though, are services. You could turn anything into a service by creating a systemd
+    configuration file and starting/stopping the service using *systemctl*. You may
+    not want to go through that process, though. You could use something like a Python
+    script to automatically restart a process when it crashes. The script here generates
+    a message when the process fails, then starts it up again. You just need to provide
+    the executable name on the command line when you run the script.
+  id: totrans-24
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在旧的初始化系统中，您可以使用 /etc/inittab 文件指定在崩溃时应重新启动的进程。通过现代系统初始化软件systemd，您可以配置服务在崩溃时自动重新启动。这是在配置文件中通过设置
+    *Restart=* 完成的。您可以将此参数设置为 *always* 或者 *on-failure*。不过，并非所有应用都是服务。您可以通过创建一个systemd配置文件并使用
+    *systemctl* 启动/停止服务，将任何内容转换为服务。不过，您可能不希望经历这个过程。您可以使用类似Python脚本的工具，在进程崩溃时自动重启一个进程。此处的脚本在进程失败时生成一条消息，然后再次启动它。您只需在运行脚本时在命令行上提供可执行文件名称。
+- en: +import sys from datetime import datetime import subprocess
+  id: totrans-25
+  prefs: []
+  type: TYPE_NORMAL
+  zh: +import sys from datetime import datetime import subprocess
+- en: 'cmd = sys.argv[1] retcode = 1 while retcode != 0: prog = subprocess.run(cmd)
+    retcode = prog.returncode if retcode != 0: print(“Program failed at “, datetime.now())'
+  id: totrans-26
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 'cmd = sys.argv[1] retcode = 1 当 retcode != 0: prog = subprocess.run(cmd) retcode
+    = prog.returncode if retcode != 0: print(“程序在“, datetime.now(),“失败”)'
+- en: Runaway processes can start chewing up processor resources. As a result, looking
+    at processor utilization and memory utilization is essential. This can be done
+    using open source monitoring utilities. You can also use commercial software or,
+    in the case of Windows or macOS, built-in operating system utilities for the monitoring.
+    One popular monitoring program is Nagios Core. On one of my \ systems, I have
+    Nagios Core installed. There is a commercial version of Nagios, which has long
+    been an open source monitoring solution, but Nagios Core is still free and is
+    available in many distribution repositories, including Ubuntu and Kali. In [Figure 2-2](#monitoring_resources),
+    you can see the Services page, which shows the status of services on the host
+    Nagios Core is running on. Without any additional configuration, Nagios monitors
+    the number of processes, processor utilization, and service state of both the
+    SSH and HTTP servers.
+  id: totrans-27
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 逃逸进程可能会开始消耗处理器资源。因此，查看处理器利用率和内存利用率至关重要。这可以通过使用开源监控工具来完成。您还可以使用商业软件或者在Windows或macOS中使用内置操作系统工具进行监控。一个流行的监控程序是Nagios
+    Core。在我的一个系统上，我安装了Nagios Core。Nagios有一个商业版本，长期以来一直是开源监控解决方案，但Nagios Core仍然是免费的，并且可以在许多发行版仓库中找到，包括Ubuntu和Kali。在[图2-2](#monitoring_resources)中，您可以看到服务页面，显示了Nagios
+    Core所在主机上服务的状态。在没有任何额外配置的情况下，Nagios监视进程数量、处理器利用率以及SSH和HTTP服务器的服务状态。
+- en: '![images/Ch2Fig2.png](assets/lklx_0203.png)'
+  id: totrans-28
+  prefs: []
+  type: TYPE_IMG
+  zh: '![images/Ch2Fig2.png](assets/lklx_0203.png)'
+- en: Figure 2-2\. Monitoring resources
+  id: totrans-29
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图2-2\. 监控资源
+- en: If you aren’t getting the cooperation, for whatever reason, of the operations
+    staff, and you don’t have direct access to the systems under test, you may need
+    to be able to track at least the service state remotely. When you are using some
+    of the network test tools that we’ll be talking about here, they may stop getting
+    responses from the service being tested. This may or may not be a result of the
+    service failing. It could be a problem with the monitoring or it could be some
+    security mechanism in place to shut down network abuses. Manually verifying the
+    service to ensure it is down is important.
+  id: totrans-30
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果由于某种原因，您无法得到运维人员的合作，并且无法直接访问测试系统，您可能需要能够远程跟踪至少服务的状态。当您使用我们将在这里讨论的一些网络测试工具时，它们可能会停止从正在测试的服务获取响应。这可能是服务失败的结果，也可能是监控的问题，或者可能是一些安全机制防止网络滥用而关闭了服务。手动验证服务是否停止非常重要。
+- en: Essential to Reporting
+  id: totrans-31
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 重要的报告
+- en: When you are testing and you notice that a service has failed, make sure you
+    have noted, to the best of your ability, where the failure occurred. Telling a
+    customer or your employer that a service failed isn’t very helpful because they
+    won’t know how to fix it. Keeping detailed notes will help you when you get to
+    reporting so you can tell them exactly what you were doing when the service failed
+    if they need to be able to recreate it in order to resolve the problem. Specific
+    times may allow them to find details in the logs, which can help them pinpoint
+    the underlying issue.
+  id: totrans-32
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当你在测试时注意到某项服务失败时，请尽力记录失败发生的位置。告诉顾客或雇主某项服务失败并不是很有帮助，因为他们不知道如何修复它。保持详细的记录将有助于你进行报告，这样你可以告诉他们服务失败时你正在做什么，如果需要重新创建以解决问题，具体的时间可能允许他们在日志中找到详细信息，这可以帮助他们找出潜在的问题。
+- en: Manual testing can be done using a tool like *netcat* or even the *telnet* client.
+    When you connect to a service port by using one of these tools, you will get an
+    indication as to whether the service is responsive. This, of course, relies on
+    you testing a network service rather than a local application. Doing this manual
+    verification, especially if it’s done from a separate system to rule out being
+    blocked or blacklisted, can help to rule out false positives. Ultimately, a lot
+    of security testing can come down to ruling out false positives that result from
+    the different tools that we use. Monitoring and validation are essential to make
+    sure that what you are presenting to your employer or customer is valid as well
+    as actionable. Remember, you are trying to help them improve their security posture,
+    not just point out where things are broken.
+  id: totrans-33
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 手动测试可以使用像*netcat*或者*telnet*客户端这样的工具来完成。当你使用这些工具连接到服务端口时，你会得到服务是否响应的指示。当然，这取决于你测试的是网络服务而不是本地应用程序。进行这种手动验证，特别是如果是从一个独立系统进行，以排除被阻止或黑名单的可能性，有助于排除误报。最终，很多安全测试的目的在于排除由我们使用的不同工具引起的误报。监控和验证是必不可少的，以确保你向雇主或客户展示的内容既有效又可操作。记住，你要帮助他们改善他们的安全姿态，而不仅仅是指出问题所在。
+- en: Layers
+  id: totrans-34
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 层次结构
+- en: As Donkey in the movie *Shrek* suggests, layers are important. Actually, Shrek
+    says that ogres have layers, and Donkey says cakes have layers, but Shrek likens
+    ogres to onions, and cake is better than onions. Plus, I still hear Eddie Murphy
+    as Donkey saying cakes have layers. None of which is really the point, of course.
+    Except for cake. Cake may be the point—because when we talk about networks and
+    communications between systems, we usually talk about layers. If you think about
+    a seven-layer cake, with thin layers of cake, you may be able to envision the
+    way we think about networks. Plus, in order to envision the best process, you’d
+    need to envision two slices of cake. Two slices of cake have to be better than
+    one slice of cake, right?
+  id: totrans-35
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 根据电影*史莱克*中的小驴建议，层次结构非常重要。实际上，史莱克说过食人魔有层次，而小驴说蛋糕也有层次，但史莱克把食人魔比作洋葱，而蛋糕比洋葱好。而我仍然能听到艾迪·墨菲（Eddie
+    Murphy）扮演的小驴说蛋糕有层次。当然，这些都不是重点。除了蛋糕。也许蛋糕才是重点——因为当我们谈论网络和系统之间的通信时，通常我们会提到层次。如果你想象一下七层蛋糕，每层都是薄薄的蛋糕，你也许能够理解我们思考网络的方式。另外，为了设想最佳流程，你需要设想两片蛋糕。两片蛋糕肯定比一片蛋糕好，对吧？
+- en: '[Figure 2-3](#osi_model_showing_system_to_system_communication) shows a simple
+    representation of the seven layers of the OSI model and how each layer communicates
+    with the same layer on remote systems. You can imagine that the lines between
+    each of the layers is really icing and maybe jam, just to make it more interesting.
+    Plus, the jam will help the layers adhere to one another since it’s sticky. Each
+    layer on every system you are communicating with is exactly the same, so when
+    you are sending a message from one slice of cake to the other slice of cake, it’s
+    the matching layer from the sending cake to the receiving cake.'
+  id: totrans-36
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[图2-3](#osi_model_showing_system_to_system_communication)展示了OSI模型的七个层次的简单表示，以及每个层次如何与远程系统上的同一层次通信。你可以想象每个层次之间的连线实际上是糖霜，也许还有果酱，这样会更有趣。另外，果酱会帮助层次之间粘合，因为它是粘性的。你与每个系统通信的每一层次都完全相同，所以当你从一个蛋糕片发送消息到另一个蛋糕片时，发送蛋糕与接收蛋糕的匹配层次是相同的。'
+- en: '![images/Ch2Fig3.png](assets/lklx_0202.png)'
+  id: totrans-37
+  prefs: []
+  type: TYPE_IMG
+  zh: '![images/Ch2Fig3.png](assets/lklx_0202.png)'
+- en: Figure 2-3\. OSI model showing system-to-system communication
+  id: totrans-38
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图2-3\. OSI模型展示了系统间通信
+- en: Let’s think about it this way. Our first layer at the very bottom is the *physical
+    layer*, so we can think of that as pistachio. Our pistachio (physical) layer is
+    where we connect to the network or, in this case, the plate that the cake sits
+    on. As with cake, nothing is between the physical layer of the system and the
+    network. You take your network interface and plug a cable into it, connecting
+    it on the other end into a jack. That’s all the physical layer. In our cake, the
+    pistachio sits directly on the plate, with nothing between.
+  id: totrans-39
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 让我们这样来思考。我们底部的第一层是*物理层*，所以我们可以把它想象成开心果。我们的开心果（物理）层是我们连接到网络的地方，或者在这种情况下，是蛋糕放置在的盘子。就像蛋糕一样，系统的物理层与网络之间没有任何东西。你拿起你的网络接口，插上一根电缆，将另一端连接到插孔。这就是物理层。在我们的蛋糕中，开心果直接放在盘子上，之间没有任何东西。
+- en: Our next layer, which has to pass through icing and jam so the operating system
+    can distinguish between one layer and another, is dulce de leche (think caramel
+    made from milk). This is our *data layer*. The addressing of this layer is done
+    using the media access control (MAC) address. This address includes 3 bytes that
+    belong to the vendor (sometimes referred to as the *organizationally unique identifier*,
+    or OUI). The other 3 bytes, since the entire MAC address is 6 bytes long, are
+    the unique identifier for your network interface. The two components together
+    are the MAC address. Any communication on your local network has to happen at
+    this layer. If I want to talk to you from my dulce de leche to your dulce de leche
+    (because who else would understand dulce de leche but another dulce de leche),
+    I would need to use the MAC address because it’s the only address that your network
+    interface and my network interface understand. The address is physically wired
+    into the interface itself, which is why it’s sometimes called the physical address.
+    In [Example 2-1](#EX_2_1), you can see a MAC address in the second column from
+    the output of the program *ifconfig*.
+  id: totrans-40
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们的下一层，必须穿过糖霜和果酱，以便操作系统可以区分一层和另一层，是奶糖（用牛奶制成的焦糖）。这是我们的*数据层*。这一层的寻址是使用媒体访问控制（MAC）地址完成的。这个地址包括3字节属于供应商（有时称为*组织唯一标识符*或OUI）。另外的3字节，由于整个MAC地址长度为6字节，是您网络接口的唯一标识符。这两个组件加在一起就是MAC地址。您本地网络上的任何通信都必须在这一层进行。如果我想从我的奶糖与您的奶糖交流（因为除了另一个奶糖谁还能理解奶糖呢），我需要使用MAC地址，因为这是您的网络接口和我的网络接口唯一理解的地址。该地址物理上被固定在接口本身上，这就是为什么有时它被称为物理地址。在[示例 2-1](#EX_2_1)中，您可以从程序*ifconfig*的输出的第二列看到MAC地址。
+- en: Example 2-1\. MAC address
+  id: totrans-41
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-1\. MAC地址
+- en: '[PRE0]'
+  id: totrans-42
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE0]'
+- en: The next layer we come across, again crossing through our icing and jam to clearly
+    distinguish one from the other, is Nilla wafer (vanilla), and our *network layer*.
+    At the Nilla wafer layer (network), we address using IP addresses. This is also
+    the address that enables us to pass outside our local network. The MAC address
+    never passes outside the local network. The IP address does, though. Since we
+    can communicate with different bakeries, all having cakes designed exactly like
+    ours, using IP addresses, this is the layer that enables routing. It’s the routing
+    address that allows us to get directions from one bakery to another by using the
+    IP address. [Example 2-2](#EX_2_2) shows an IP address, which is comprised of
+    4 bytes, sometimes known as *octets* because they are each 8 bits long. This is
+    a version 4 IP address. Version 6 IP addresses are 16 bytes (128 bits) long, represented
+    as hexadecimal values. As with the earlier example, this is from the output of
+    *ifconfig*. You can see both IPv4 and IPv6 addresses here.
+  id: totrans-43
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 下一层我们遇到的，再次穿过我们的糖霜和果酱以清楚区分彼此的是尼拉薄饼（香草），以及我们的*网络层*。在尼拉薄饼层（网络）上，我们使用IP地址进行寻址。这也是使我们能够通过本地网络传递到外部的地址。MAC地址从不传递到本地网络之外。而IP地址却可以。因为我们可以使用IP地址与不同的面包店进行通信，这些面包店的蛋糕设计完全与我们的相同，这一层实现了路由。正是路由地址允许我们通过使用IP地址从一个面包店到另一个面包店获取方向。[示例 2-2](#EX_2_2)展示了一个IP地址，由4个字节组成，有时被称为*八位组*，因为它们每个都是8位长。这是一个版本4的IP地址。版本6的IP地址长达16字节（128位），用十六进制值表示。与前面的示例一样，这来自*ifconfig*的输出。您可以在这里看到IPv4和IPv6地址。
+- en: Example 2-2\. IP address
+  id: totrans-44
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-2\. IP地址
+- en: '[PRE1]'
+  id: totrans-45
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE1]'
+- en: The fourth layer in our cake is the teaberry layer (*transport*). Yes, it’s
+    going to be a strangely flavored cake, but stay with me. Plus, if you don’t know
+    what teaberry is, you should find it. Teaberry gum is very good. So, the teaberry
+    layer gives us ports. This is another form of addressing. Think about it this
+    way. Once you get to the bakery, you need to know which shelf you are looking
+    for. This is the same sort of thing with ports. Once you have found your bakery
+    with the IP address, you then need to find the shelf in the bakery, which is your
+    port. The port will connect you to a service (program) that is running and has
+    attached itself to that shelf (port). There are well-known ports that particular
+    services run on. These are registered, and while the services (e.g., web server)
+    can bind to a different port and listen on that, the well-known port is common
+    because it’s what everyone knows to look for.
+  id: totrans-46
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们蛋糕的第四层是茶莓层（*传输*）。是的，这将是一个味道奇特的蛋糕，但请跟着我。而且，如果你不知道什么是茶莓，你应该找到它。茶莓口香糖非常好吃。所以，茶莓层为我们提供了端口。这是另一种寻址方式。想象一下。一旦你到达面包店，你需要知道你要找哪个架子。端口也是同样的道理。一旦你找到了带有IP地址的面包店，你接下来需要找到架子，也就是你的端口。端口将连接你到一个运行中并附加到那个架子（端口）上的服务（程序）。有一些众所周知的端口，特定的服务（例如，Web服务器）可以绑定到不同的端口并监听，但是众所周知的端口是常见的，因为大家都知道要找这个。
+- en: At layer five, it becomes challenging, simply because this layer is not always
+    well understood. The fifth layer is strawberry, because we need some fruit in
+    our cake, even if it’s just fruit flavoring. This is the *session layer*. The
+    session layer is all about coordinating long-standing communications to make sure
+    everything is synchronized. You can think about it as the session layer making
+    sure that when you and I are eating our slices of cake at the same time (communicating),
+    we are going at the same pace, so we start and finish at the same time. If we
+    need to stop and take a drink of water, the session layer will make sure we do
+    that at the same time. If we want to drink milk rather than water, the session
+    layer will make sure that we are completely in sync so that we can start and finish
+    at the same time and essentially look the same while we are eating. Because it’s
+    all about how it looks.
+  id: totrans-47
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 到了第五层，事情变得具有挑战性，因为这一层并不总是被很好地理解。第五层是草莓层，因为我们的蛋糕需要一些水果，即使只是水果味道的。这是*会话层*。会话层的作用是协调长期的通信，确保一切同步。你可以把它看作是会话层确保我们同时吃蛋糕（进行通信），以相同的速度前进，所以我们同时开始和结束。如果我们需要停下来喝水，会话层将确保我们同时做到这一点。如果我们想喝牛奶而不是水，会话层将确保我们完全同步，这样我们在吃东西时看起来一样。因为这一切都关乎外观。
+- en: Which brings us to the peanut butter layer, because what’s a cake without peanut
+    butter? Especially if we have jam in our cake. This is the *presentation layer*.
+    The presentation layer takes care of making everything look okay and correct.
+    The presentation layer will make sure that there aren’t crumbs all over the place,
+    for instance, making sure that what you are putting in your mouth actually looks
+    like cake.
+  id: totrans-48
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这将我们带到花生酱层，因为没有花生酱的蛋糕算什么？特别是我们的蛋糕里还有果酱。这是*表达层*。表达层负责确保一切看起来正常和正确。比如，它会确保没有碎屑到处都是，确保你放入口中的东西实际上看起来像蛋糕。
+- en: Finally, we have the amaretto layer. This is the *application layer*. Ultimately,
+    this is the layer that sits closest to the eater (user). This takes what comes
+    out of the presentation layer and gets it to the user in a way that it can be
+    consumed as the user expects it to be consumed. One element of the cake analogy
+    here that’s important is that when you use your fork to get a mouthful, you cut
+    through the layers from amaretto down to pistachio. That’s how you load it onto
+    the fork. When it’s consumed, however, it goes into your mouth pistachio end first.
+    This is the same way we send and receive data messages. They are constructed from
+    the application layer down and sent along. When they are received, they are *consumed*
+    from the physical layer up, pulling off the headers at each layer to expose the
+    next layer.
+  id: totrans-49
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，我们有杏仁酒层。这是*应用层*。最终，这一层距离食用者（用户）最近。它将呈现层输出的内容以用户期望的方式传递给用户，以便用户可以消费它。这里关于蛋糕类比的一个重要元素是，当您用叉子舀取一口时，您会从杏仁酒一直切到开心果。这是您将其装载到叉子上的方式。然而，当它被消费时，它会从开心果端进入您的口中。这与我们发送和接收数据消息的方式相同。它们是从应用层向下构建并发送的。当它们被接收时，它们会从物理层向上“消费”，逐层拆除头部以显示下一层。
+- en: As we are working on network testing, we may be working at different layers
+    of our cake. This is why it’s important to understand what each layer is. You
+    need to understand the expectations of each layer so you can determine whether
+    the behavior you are seeing is correct. We will be dealing with testing across
+    multiple layers as we go forward, but generally each tool we will look at will
+    target a specific layer. Network communication is about consuming the entire cake,
+    but sometimes we need to focus our efforts (taste buds) on a specific layer to
+    make sure that it tastes correctly all by itself, outside the context of the rest
+    of the cake, even if we have to consume the entire cake to get that layer.
+  id: totrans-50
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 因为我们正在进行网络测试，可能会在我们的“蛋糕”不同层次上进行工作。这就是为什么理解每一层是重要的。您需要了解每一层的期望，以便确定您看到的行为是否正确。随着我们继续前进，我们将处理跨多个层的测试，但通常，我们将看到的每个工具都会针对特定的层。网络通信是关于消费整个“蛋糕”的，但有时我们需要将我们的努力（味蕾）集中在特定的层上，以确保它单独消费时尝起来正确，即使我们不得不消费整个“蛋糕”来获得该层。
+- en: Stress Testing
+  id: totrans-51
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: '**压力测试**'
+- en: Some software, and even hardware, has a hard time handling enormous loads. There
+    are many reasons for this. In the case of hardware, such as devices that are purpose
+    built or devices that fall into the category of Internet of Things (IoT), there
+    may be several reasons that it can’t survive a lot of traffic. The processor that’s
+    built into the network interface could be underpowered because the design of the
+    overall device never expected to see a lot of traffic. The application could be
+    written poorly, and even if it is built into the hardware, a poorly designed application
+    can still cause problems. As a result, it’s important for security testers to
+    ensure that the infrastructure systems they are responsible for will not simply
+    fall over when something bad happens.
+  id: totrans-52
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一些软件，甚至硬件，难以处理巨大的负载。这有许多原因。对于硬件而言，比如专门设计的设备或属于物联网（IoT）范畴的设备，可能有几个原因导致它无法承受大量流量。嵌入到网络接口的处理器可能性能不足，因为整体设备的设计从未预料到会看到大量流量。应用程序可能编写得很差，即使它内置在硬件中，一个设计不良的应用程序仍然可能会引发问题。因此，安全测试人员确保他们负责的基础设施系统在遇到问题时不会轻易崩溃非常重要。
+- en: It may be easy to think of stress testing as flooding attacks. However, there
+    are other ways to stress applications. One way is to send the application unexpected
+    data that it may not know how to handle. There are techniques to handle this sort
+    of attack, so we’re going to focus primarily on overwhelming systems here and
+    deal with fuzzing attacks, where we deliberately generate bogus data, later. Having
+    said that, though, in some cases network stacks in embedded devices may not be
+    able to handle traffic that doesn’t look like it’s supposed to.
+  id: totrans-53
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 将压力测试看作是洪水攻击可能很容易。然而，有其他方式可以对应用程序进行压力测试。其中一种方法是向应用程序发送它可能不知道如何处理的意外数据。有处理这种攻击的技术，因此我们将主要关注系统的过载，并稍后处理模糊攻击，即故意生成伪造数据。话虽如此，在某些情况下，嵌入式设备中的网络堆栈可能无法处理看起来不像它们应该的流量。
+- en: Ethics Warning
+  id: totrans-54
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: '**伦理警告**'
+- en: You need to ensure that the systems you are working on—especially when there
+    could be damage or disruption, and just about everything we will be talking about
+    has that potential—are either yours or systems you have permission to be testing.
+    It’s unethical at a minimum and likely even illegal to be testing any system you
+    don’t own or have permission to be testing. Testing, no matter how simple it may
+    seem to be, always has the potential to cause damage. Get your permission in writing,
+    always!
+  id: totrans-55
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 你需要确保你正在工作的系统——特别是可能造成损害或中断的系统，我们讨论的几乎所有内容都具备这种潜力——要么是你自己的，要么是你已经获得测试权限的系统。测试任何你不拥有或没有权限测试的系统，最起码是不道德的，很可能是非法的。无论看起来多么简单，测试总有可能造成损害。务必书面获得许可！
+- en: Ultimately, any failure resulting from a stress test is a problem with availability.
+    If the system crashes, no one can get to anything. If the application fails, the
+    service isn’t available to users. What you are performing is a denial-of-service
+    attack. As a result, it’s important to be careful when performing these sorts
+    of attacks. There are definitely ethical implications, as noted earlier, but there
+    are also very real possibilities to cause damage, including significant outage
+    to customer-facing services. More on that in a moment. A simple way to do stress
+    testing is to use a tool like *hping3*. This fabulous tool can be used to craft
+    packets on the command line. Essentially, you tell *hping3* what you want different
+    fields to be set to, and it will create the packet the way you want.
+  id: totrans-56
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最终，任何由压力测试导致的失败都是可用性问题。如果系统崩溃，任何人都无法访问任何内容。如果应用程序失败，用户无法访问服务。你正在进行的是一种拒绝服务攻击。因此，在执行这些攻击时要小心。正如前面提到的，这确实存在道德问题，但也有可能造成实质性的损害，包括对客户服务的显著中断。稍后我们会详细讨论这一点。进行压力测试的简单方法是使用像*hping3*这样的工具。这个神奇的工具可以在命令行上用来制作数据包。基本上，你告诉*hping3*你希望设置不同字段为什么值，它就会按照你的要求创建数据包。
+- en: This is not to say that you need to always specify all of the fields. You can
+    specify what you want, and *hping3* will fill the rest of the fields in the IP
+    and transport headers as normal. *hping3* is capable of flooding by not bothering
+    to wait for any responses or even bothering to use any waiting periods. The tool
+    will send out as much traffic as it can, as fast as it can. You can see the output
+    from the tool in [Example 2-3](#EX_2_3).
+  id: totrans-57
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这并不意味着你必须始终指定所有字段。你可以指定你想要的内容，*hping3*会像通常填充IP和传输头字段的其余部分。*hping3*能够通过不等待任何响应甚至不使用任何等待时间来进行洪泛攻击。该工具会尽可能快地发送尽可能多的流量。你可以在[示例 2-3](#EX_2_3)中看到工具的输出。
+- en: Example 2-3\. Using hping3 for flooding
+  id: totrans-58
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-3\. 使用hping3进行洪泛攻击
+- en: '[PRE2]'
+  id: totrans-59
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE2]'
+- en: Using sudo
+  id: totrans-60
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 使用sudo
+- en: In previous versions of Kali and back to BackTrack before it, you logged in
+    as the root user. There was no separate user account created during installation.
+    This meant everything ran as the root user by default, which is a serious security
+    no-no. Currently, Kali has you create a regular user account. Just as with other
+    Linux distributions, to perform tasks that require administrative privileges,
+    like packet crafting as *hping3* does, you need to use the *sudo* command.
+  id: totrans-61
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在之前的Kali版本以及它之前的BackTrack中，你作为root用户登录。安装过程中没有创建单独的用户帐户。这意味着所有内容都默认以root用户身份运行，这是一个严重的安全漏洞。目前，Kali要求你创建一个常规用户帐户。与其他Linux发行版一样，像*hping3*一样需要执行需要管理员权限的任务时，你需要使用*sudo*命令。
+- en: When I ran this, I was connected to my Kali system remotely. As soon as I started
+    it up, I tried to kill it because I had the output I was looking for. However,
+    the system was cramming packets down the wire (and getting responses) as fast
+    as it could. This made it hard to get the Ctrl-C I was trying to send to my Kali
+    system, meaning *hping3* wasn’t dying—it was just merrily sending a lot of packets
+    out into the network (fortunately, I used my local network to test on, rather
+    than trying to test someone else’s system). The operating system and network were
+    otherwise engaged, so there was no response for a long period of time. In [Example 2-5](#EX_2_5),
+    I am using *hping3* to send SYN messages to port 80\. This is a SYN flood. In
+    this example, I’m not only testing the ability of the system to handle the flood
+    at the network stack (operating system) with just the capability of the hardware
+    and operating system to respond to the traffic, but also testing the transport
+    layer.
+  id: totrans-62
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当我运行这个时，我远程连接到我的Kali系统。我一启动它，我就试图结束它，因为我已经得到了我想要的输出。然而，系统正努力将数据包塞入网络（并获得响应），以最快的速度。这使得我难以发送到我的Kali系统的Ctrl-C，意味着*hping3*并没有退出，它只是愉快地将大量数据包发送到网络中（幸运的是，我在本地网络上进行了测试，而不是尝试测试别人的系统）。操作系统和网络正忙于其他事务，因此很长一段时间内没有响应。在[示例 2-5](#EX_2_5)中，我正在使用*hping3*向80端口发送SYN消息。这是一种SYN洪水攻击。在这个示例中，我不仅在网络堆栈（操作系统）上测试系统处理洪水的能力，而且还在测试传输层。
+- en: The operating system has to hold out a small chunk of memory with Transport
+    Control Protocol (TCP) connections. Years ago, the number of slots available for
+    these initial messages, called *half-open connections*, wasn’t very large. The
+    expectation was that the connecting system was well-behaved and it would complete
+    the connection, at which point it was up to the application to manage. Once the
+    number of slots available to take half-open connections is exhausted, no new connections,
+    including connections from legitimate clients, will be accepted. These days, most
+    systems are far more capable of handling SYN floods. The operating system will
+    just handle these inbound, half-open connections and dispose of them using a variety
+    of techniques, including reducing the timeout period during which the connection
+    is allowed to be half-open.
+  id: totrans-63
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 操作系统必须保留一小块内存与传输控制协议（TCP）连接。多年前，用于这些初始消息的插槽数目，称为*半开放连接*，并不是很大。预期连接系统是表现良好的，它将完成连接，此时应用程序负责管理。一旦用于接受半开放连接的插槽数量耗尽，包括来自合法客户端的连接在内，将不再接受新的连接。如今，大多数系统都能够处理SYN洪水。操作系统将只处理这些入站的半开放连接，并使用多种技术处理它们，包括缩短允许连接半开放的超时期间。
+- en: This test uses SYN messages (*-S*) to port 80 (*-p 80*). The idea is that we
+    should get a SYN/ACK message back as the second stage of the three-way handshake.
+    I don’t have to specify a protocol because that’s accomplished by just saying
+    that I want to send a SYN message. TCP is the only protocol that has the SYN message.
+    Finally, I tell *hping3* that I want it to use flood mode (*--flood*). Other command-line
+    flags will do the same thing by specifying the interleave rate (the amount of
+    time to wait before sending the next message). This way is easier to remember
+    and also pretty explicit.
+  id: totrans-64
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这个测试使用SYN消息（*-S*）到80端口（*-p 80*）。其想法是我们应该在三次握手的第二阶段收到一个SYN/ACK消息。我不必指定一个协议，因为只需说我要发送一个SYN消息即可完成。TCP是唯一具有SYN消息的协议。最后，我告诉*hping3*我希望它使用洪水模式（*--flood*）。通过指定交错率（发送下一条消息前等待的时间量），其他命令行标志也会执行相同的操作。这种方式更容易记住，也非常明确。
+- en: hping and hping3
+  id: totrans-65
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: hping和hping3
+- en: The program *hping* has been through a few versions, as you can likely guess
+    from the use of the 3 at the end. This tool is commonly available across multiple
+    Linux distributions. You may call the program by *hping* on some systems, while
+    on others, you may need to specify the version number—*hping2* or *hping3*, for
+    instance.
+  id: totrans-66
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*hping*程序经历了几个版本，你很可能可以从末尾的数字3看出来。这个工具在多个Linux发行版中都是常见的。在某些系统上，你可以称之为*hping*，而在其他系统上，你可能需要指定版本号—比如*hping2*或*hping3*。'
+- en: '*hping3* is also useful for packet crafting testing, where you create packets
+    that just shouldn’t exist in the real world to see whether the target system can
+    handle it. Almost any kind of packet mangling attack you can think of is possible
+    with this tool. As an example, there has been a denial of service attack called
+    a LAND attack, which is short for local area network denial of service. In this
+    attack, you send a SYN message to a device with the source address the same as
+    the destination. If the network stack on the receiving end is unable to recognize
+    this, the system will send a SYN/ACK back to the destination, which is itself.
+    This could result in an endless loop of messages on the network interface. In
+    the late 1990s, many operating systems were vulnerable to this and it could result
+    in operating system crashes. While it was largely fixed in operating systems,
+    there have been services that have been discovered to be vulnerable. Additionally,
+    a lot of organizations have legacy operating systems that may still be susceptible
+    and sometimes devices may be vulnerable, depending on the embedded OS. Mostly,
+    though, demonstrating the LAND attack, as seen in [Example 2-4](#EX_2_4), shows
+    some of what *hping3* can do. You will also see the packet capture showing some
+    of the messages that were generated to show the source and destination addresses
+    are the same. The tool itself generates no output because no responses are ever
+    received. The -a flag you see here will spoof a source address.'
+  id: totrans-67
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*hping3* 也非常适用于数据包构建测试，您可以创建在现实世界中不应存在的数据包，以查看目标系统是否能够处理。几乎任何类型的数据包篡改攻击都可以通过这个工具实现。例如，曾经有一个称为
+    LAND 攻击的拒绝服务攻击，它是局域网拒绝服务的简称。在这种攻击中，您向一个设备发送一个源地址与目标地址相同的 SYN 消息。如果接收端的网络堆栈无法识别这一点，系统将向目标地址发送一个
+    SYN/ACK，这个地址就是它自己。这可能导致网络接口上的消息无限循环。在 1990 年代末，许多操作系统都对此存在漏洞，这可能导致操作系统崩溃。虽然操作系统中大部分已经修复了这个问题，但仍然有发现存在漏洞的服务。此外，许多组织使用的旧操作系统可能仍然容易受到攻击，有时设备也可能会受到攻击，这取决于嵌入式操作系统。总体上来说，展示
+    LAND 攻击，就像在 [示例 2-4](#EX_2_4) 中看到的那样，展示了 *hping3* 可以做什么。您还将看到数据包捕获显示了一些生成的消息，显示源地址和目标地址是相同的。工具本身不会生成任何输出，因为从未接收到任何响应。在这里看到的
+    -a 标志将伪造一个源地址。'
+- en: Example 2-4\. Using hping3 for a LAND attack
+  id: totrans-68
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-4\. 使用 hping3 进行 LAND 攻击
+- en: '[PRE3]'
+  id: totrans-69
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE3]'
+- en: All of the TCP flags are available to be altered in anyway you would like. However,
+    you are not limited to simple things like TCP SYN messages. You can also send
+    UDP messages. [Example 2-5](#EX_2_5) shows an example of a UDP message. In this
+    example, the source port is set to 0, which would not be a port that should be
+    used. It would be unusual to see it in normal traffic. You can also see we have
+    set the source address to be random. This is something you should be very careful
+    of, however. Keep in mind that when you send out messages with a random source
+    address, the responses to whatever you send will be sent to that random source
+    address. If you are watching the network traffic, you will see the responses coming
+    from the hosts on the internet that the responses to your messages were sent to.
+    Confused yet? Just be careful about the network traffic you are sending because
+    if you are connected in anyway to the internet, that traffic will get out and
+    it may cause issues.
+  id: totrans-70
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 所有的 TCP 标志都可以按照您的意愿进行修改。但是，您不仅限于简单的 TCP SYN 消息。您也可以发送 UDP 消息。[示例 2-5](#EX_2_5)
+    展示了一个 UDP 消息的示例。在这个例子中，源端口设置为 0，这不应该是一个正常使用的端口。在正常的流量中很少见到这种情况。您还可以看到我们设置了源地址为随机的情况。不过，这是一件需要非常小心的事情。请记住，当您使用随机的源地址发送消息时，对您发送的任何消息的响应都将发送到该随机源地址。如果您观察网络流量，您将看到响应来自于互联网上的主机，这些响应是对您发送的消息的响应。现在感到困惑了吗？只需小心发送的网络流量，因为如果您以任何方式连接到互联网，该流量将被发送出去，并可能引起问题。
+- en: Example 2-5\. Using hping3 for UDP messages
+  id: totrans-71
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-5\. 使用 hping3 发送 UDP 消息
+- en: '[PRE4]'
+  id: totrans-72
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE4]'
+- en: Testing at the lower layers of the network stack using tools like *hping3* can
+    lead to turning up issues on systems, especially on more fragile devices. Looking
+    higher up in the network stack, though, Kali Linux has numerous tools that will
+    tackle different services. When you think about the internet, what service springs
+    to mind first? Spotify? Facebook? Twitter? Instagram? All of these are offered
+    over HTTP, so you’re interacting, often, with a web server. Not surprisingly,
+    we can take on testing web servers. This is different from the application running
+    on the web server, which is a different thing altogether and something we’ll take
+    on much later. In the meantime, we want to make sure that web servers themselves
+    will stay up.
+  id: totrans-73
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用*hping3*等工具在网络堆栈的较低层进行测试可能会引发系统问题，特别是在更脆弱的设备上。然而，当我们在网络堆栈的较高层进行检查时，Kali Linux有许多工具可以处理不同的服务。当您想到互联网时，首先想到的是什么服务？Spotify？Facebook？Twitter？Instagram？所有这些服务都是通过HTTP提供的，因此您经常与Web服务器进行交互。毫不奇怪，我们可以进行Web服务器的测试。这与运行在Web服务器上的应用程序不同，后者是完全不同的事情，我们稍后再讨论。与此同时，我们要确保Web服务器本身能够持续运行。
+- en: Although Kali comes with tests for other protocols including the Session Initiation
+    Protocol (SIP) and the Real-time Transport Protocol (RTP), both used for Voice
+    over IP (VoIP). SIP uses a set of HTTP-like protocol commands to interact between
+    servers and endpoints. When an endpoint wants to initiate a call, it sends an
+    INVITE request. In order to get the INVITE to the recipient, it will need to be
+    sent through multiple servers or proxies. Since VoIP is a mission-critical application
+    in enterprises that use it, it can be essential to determine whether the devices
+    in the network are capable of withstanding a large number of requests.
+  id: totrans-74
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 虽然Kali自带用于测试其他协议的工具，包括会话初始化协议（SIP）和实时传输协议（RTP），两者均用于互联网电话（VoIP）。SIP使用一组类似HTTP的协议命令在服务器和终端之间进行交互。当终端想要发起通话时，它会发送一个INVITE请求。为了让INVITE到达接收方，它需要通过多个服务器或代理发送。由于VoIP在企业中是一种关键的应用程序，确定网络中的设备能否承受大量请求至关重要。
+- en: SIP can use either TCP or User Datagram Protocol (UDP) as a transport, though
+    earlier versions of the protocol favored UDP as the transport protocol. As a result,
+    some tools, particularly if they are older, will lean toward using UDP. Modern
+    implementations not only support TCP but also support Transport Layer Security
+    (TLS) to ensure the headers can’t be read. Keep in mind that SIP is based on HTTP,
+    which means all the headers and other information are text-based, unlike H.323,
+    another VoIP protocol, which is binary and can’t generally be read visually without
+    something to do a protocol decode. The tool *inviteflood* uses UDP as the transport
+    protocol, without the ability to switch to TCP. This does, though, have the benefit
+    of allowing the flood to happen faster because there is no time waiting for the
+    connection to be established. In [Example 2-6](#EX_2_6), you can see a run of
+    *inviteflood*. This is not installed by default on Kali Linux, so you would need
+    to install it before you can use it. You’ll note the old date referenced with
+    the version. This is the still the most recent version.
+  id: totrans-75
+  prefs: []
+  type: TYPE_NORMAL
+  zh: SIP可以使用TCP或用户数据报协议（UDP）作为传输方式，尽管该协议的早期版本更倾向于使用UDP作为传输协议。因此，一些工具，特别是较旧的工具，会倾向于使用UDP。现代实现不仅支持TCP，还支持传输层安全性（TLS），以确保头部不被读取。请记住，SIP基于HTTP，这意味着所有头部和其他信息都是基于文本的，不像另一种VoIP协议H.323是二进制的，通常无法直观地进行协议解码。工具*inviteflood*使用UDP作为传输协议，无法切换到TCP。尽管如此，这样做有一个好处，即允许洪水攻击发生得更快，因为无需等待建立连接。在[示例 2-6](#EX_2_6)中，您可以看到*inviteflood*的运行。这在Kali
+    Linux上默认未安装，因此您需要在使用之前先安装它。您会注意到版本中引用的旧日期。这仍然是最新版本。
+- en: Example 2-6\. SIP invite flood
+  id: totrans-76
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-6\. SIP邀请洪水
+- en: '[PRE5]'
+  id: totrans-77
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE5]'
+- en: We can break down what is happening on the command line. First, we specify the
+    interface that *inviteflood* is supposed to use to send the messages out. Next,
+    is the username. Since SIP is a VoIP protocol, it’s possible that this may be
+    a number, like a phone number. In this case, I am targeting a SIP server that
+    was configured with usernames. Following the username is the domain for the username.
+    This may be an IP address, depending on how the target server is configured. If
+    you don’t know the domain for the users, you could try using the IP address of
+    the target system. In that case, you’d have the same value twice, since the target
+    is the next value on the command line. At the end is the number of requests to
+    send. That 150,000 requests took seconds to send off, meaning that the server
+    was capable of supporting a large volume of requests per second.
+  id: totrans-78
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们可以分解命令行上发生的事情。首先，我们指定了*inviteflood*用于发送消息的接口。接下来是用户名。由于SIP是一种VoIP协议，可能会是一个数字，比如电话号码。在这种情况下，我正在针对配置了用户名的SIP服务器。用户名后面是用户名的域。这可能是一个IP地址，这取决于目标服务器的配置。如果你不知道用户的域，可以尝试使用目标系统的IP地址。在这种情况下，命令行上的下一个值将是相同的值。最后是要发送的请求数量。这150,000个请求只花了几秒钟就发送出去了，这意味着服务器能够支持每秒大量请求。
+- en: Before moving on to other matters, we need to talk about IPv6\. While it isn’t
+    necessarily used as a transport protocol from your network to any other network,
+    it can be used. If you were to connect to Google, for instance, it would still
+    be done over IPv4 from your network more than likely. I mention Google in particular
+    because Google publishes an IPv6 address through its Domain Name System (DNS)
+    servers. It is far from the only one, but it was definitely one of the early companies
+    that did. Beyond being able to send IPv6 through the internet, though, you may
+    very well be using IPv6 on local networks. Even though IPv6 is approaching 30
+    years old as of this writing, it has not had the same run-in time that IPv4 has
+    had—and it took decades to chase some of the most egregious bugs out of various
+    IPv4 implementations. This is all to say that in spite of the time that operating
+    system vendors like Microsoft and the Linux team have put into development and
+    testing, it’s possible that some devices may have issues with IPv6 implementations.
+  id: totrans-79
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在继续讨论其他事项之前，我们需要谈谈IPv6。虽然它不一定会被用作从您的网络到任何其他网络的传输协议，但它确实可以使用。例如，如果您要连接到Google，很可能仍然会通过IPv4从您的网络进行连接。我特别提到Google，因为Google通过其域名系统（DNS）服务器发布了IPv6地址。它远非唯一一个这样做的公司，但它确实是最早做到这一点的公司之一。尽管在撰写本文时IPv6已经接近30年，但它的运行时间并不比IPv4长，而且需要几十年的时间来解决各种IPv4实现中最严重的错误。这一切都是为了表明，尽管像Microsoft和Linux团队这样的操作系统供应商已经投入了大量时间进行开发和测试，但一些设备可能仍然存在IPv6实现的问题。
+- en: Kali includes IPv6 testing tool suites. There are two of them, and each suite
+    has a good-sized collection of tools because in the end, IPv6 includes more than
+    just changes to addressing. A complete implementation of IPv6 includes addressing,
+    host configuration, security, multicasting, large datagrams, router processing,
+    and a few other differences. Since these are different functional areas, multiple
+    scripts are necessary to handle those areas.
+  id: totrans-80
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Kali包含IPv6测试工具套件。其中有两个套件，每个套件都有一个相当大的工具集，因为IPv6的实现不仅仅涉及到地址变更。IPv6的完整实现包括地址分配、主机配置、安全性、多播、大数据报、路由器处理以及一些其他区别。由于这些是不同的功能区域，因此需要多个脚本来处理这些区域。
+- en: The way IPv6 behaves on the local network has changed. Instead of the Address
+    Resolution Protocol (ARP) being used to identify neighbors on the local network,
+    IPv6 replaces and enhances that functionality through new Internet Control Message
+    Protocol (ICMP) messages. Coming with IPv6 is the Neighbor Discovery Protocol,
+    which is used to help a system connecting to the network by providing details
+    about the local network. ICMPv6 has been enhanced with the Router Solicitation
+    and Router Advertisement messages as well as the Neighbor Solicitation and Neighbor
+    Advertisement messages. These four messages help a system to get situated on a
+    network with all the relevant information needed, including the local gateway
+    and domain name servers used on that network.
+  id: totrans-81
+  prefs: []
+  type: TYPE_NORMAL
+  zh: IPv6在本地网络上的行为方式已经改变。IPv6不再使用地址解析协议（ARP）来识别本地网络上的邻居，而是通过新的互联网控制消息协议（ICMP）消息来替代和增强该功能。伴随IPv6而来的是邻居发现协议，它用于通过提供有关本地网络的详细信息来帮助系统连接到网络。ICMPv6已通过路由器请求和路由器通告消息以及邻居请求和邻居通告消息进行增强。这四条消息帮助系统获取网络上的所有必要信息，包括本地网关和该网络上使用的域名服务器。
+- en: We will be able to test some of these features to determine how a system might
+    perform under load but also by manipulating the messages in ways that may cause
+    the target system to misbehave. The tools *na6*, *ns6*, *ra6*, and *rs6* all focus
+    on sending arbitrary messages to the network by using the different ICMPv6 messages
+    indicated previously. Whereas most systems will provide reasonable information
+    to the network, to the best of their knowledge and configuration, these tools
+    allow us to inject potentially broken messages out to the network to see how systems
+    behave with such messages. In addition to those programs, the suite provides *tcp6*,
+    which can be used to send arbitrary TCP messages out to the network, allowing
+    the possibility of TCP-based attacks.
+  id: totrans-82
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们将能够测试一些这些功能，以确定系统在负载下的表现，还可以通过操纵消息的方式来测试目标系统可能出现异常行为的情况。工具*na6*、*ns6*、*ra6*和*rs6*专注于使用先前指定的不同ICMPv6消息向网络发送任意消息。虽然大多数系统将根据其知识和配置向网络提供合理的信息，但是这些工具允许我们向网络注入潜在的错误消息，以查看系统如何处理这些消息。除了这些程序之外，该套件还提供*tcp6*，可以用于向网络发送任意TCP消息，从而可能实施基于TCP的攻击。
+- en: hping and hping3
+  id: totrans-83
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: hping和hping3
+- en: The tools referenced here are available in the package *ipv6toolkit*. This is
+    not installed in the default installation of Kali Linux, however.
+  id: totrans-84
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这里提到的工具包含在*ipv6toolkit*中。但是，默认安装的Kali Linux中没有安装这个工具包。
+- en: Another tool that can be used for stress testing in Kali Linux is *t50*. This
+    supports multiple protocols, including TCP, UDP, RIP, IGMP, OSPF, and several
+    others. In addition to being able to send protocol-specific messages, *t50* supports
+    flooding mode, though not all protocols support flooding. [Example 2-7](#EX_2_7)
+    shows not only a list of protocols supported by *t50* but also the use of *t50*
+    to flood IGMP version 1 messages.
+  id: totrans-85
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在Kali Linux中用于压力测试的另一个工具是*t50*。它支持多种协议，包括TCP、UDP、RIP、IGMP、OSPF等。除了能够发送特定协议的消息外，*t50*还支持洪泛模式，尽管并非所有协议都支持洪泛。[示例 2-7](#EX_2_7)不仅显示了*t50*支持的协议列表，还展示了使用*t50*来洪泛IGMP版本1消息的情况。
+- en: Example 2-7\. Using t50 to flood IGMP messages
+  id: totrans-86
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-7\. 使用t50来洪泛IGMP消息
+- en: '[PRE6]'
+  id: totrans-87
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE6]'
+- en: No matter what sort of stress testing you are doing, it’s important to keep
+    as many notes as possible so you can provide detailed information as to what was
+    going on when a failure occurred. Monitoring and logging are important here.
+  id: totrans-88
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 无论进行何种类型的压力测试，都很重要尽可能多地记录笔记，以便在故障发生时提供详细信息。在这里，监控和日志记录非常重要。
+- en: Denial-of-Service Tools
+  id: totrans-89
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 拒绝服务工具
+- en: Denial of service is not the same as stress testing. The objective may be different
+    when it comes to the two sets of tools being used. Stress testing is commonly
+    done by development tools to be able to provide performance metrics. It is used
+    to determine the functionality of a program or system under stress—​whether it’s
+    the stress of volume or the stress of malformed messages. There is a fine line,
+    though. In some cases, stress testing will cause a failure of the application
+    or the operating system. This will result in a denial-of-service attack. However,
+    stress testing may also just lead to CPU or memory spikes. These are also valuable
+    findings, since this would be an opportunity to improve the programming. CPU or
+    memory spikes are bugs, and bugs should be eradicated. What we are looking at
+    in this section will be programs that are specifically developed for the purpose
+    of knocking over services.
+  id: totrans-90
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 拒绝服务攻击与压力测试并不相同。两组工具使用时的目标可能不同。压力测试通常由开发工具执行，以提供性能指标。它用于确定程序或系统在压力下的功能性——无论是体积的压力还是畸形消息的压力。然而，这之间有一条细微的界限。在某些情况下，压力测试会导致应用程序或操作系统的失败。这将导致拒绝服务攻击。然而，压力测试也可能只是导致CPU或内存飙升。这些也是宝贵的发现，因为这是改进编程的机会。CPU或内存飙升是bug，而bug应该被消除。在本节中，我们将重点关注专门用于推翻服务的程序。
+- en: Slowloris attack
+  id: totrans-91
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 慢速攻击
+- en: Much like the SYN flood that intends to fill up the partial connection queue,
+    there are attacks that will do similar things to a web server. Applications don’t
+    necessarily have unlimited resources at their disposal. Often there are caps on
+    the connections the application server will take on. This depends on how the application
+    is designed, and not all web servers are susceptible to these attacks. One thing
+    to note here is that embedded devices often have limited resources when it comes
+    to their memory and processor. Think about any device that has a web server for
+    remote management—​your wireless access point, your cable modem/router, a printer.
+    These devices have web servers to make management easier, but the primary purpose
+    of these devices isn’t to provide web services; it’s to act as a wireless access
+    point, a cable modem/router, or a printer. The resources for these devices will
+    be primarily applied to the device’s intended function.
+  id: totrans-92
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 就像SYN洪水旨在填满部分连接队列一样，有些攻击也会对Web服务器进行类似的操作。应用程序并不一定拥有无限的资源。通常情况下，应用服务器接受连接的数量是有限的。这取决于应用程序的设计，而不是所有的Web服务器都容易受到这些攻击的影响。这里需要注意的一点是，嵌入式设备在内存和处理器资源方面通常是有限的。想想任何具有远程管理Web服务器的设备——你的无线访问点、你的电缆调制解调器/路由器、打印机等。这些设备拥有Web服务器是为了简化管理，但这些设备的主要目的不是提供Web服务，而是充当无线访问点、电缆调制解调器/路由器或打印机。这些设备的资源主要用于设备的预期功能。
+- en: These devices are one place to use this sort of testing, because they simply
+    won’t expect a lot of connections. This means that an attack such as Slowloris
+    may be able to take these servers offline, denying service to anyone else who
+    may try to connect. The Slowloris attack is designed to hold a lot of connections
+    open to a web server. The difference between this attack and a flooding attack
+    is this is a slow play attack. It’s not a flood. Instead, the attack tool holds
+    the connection open by sending small amounts of data over a long period of time.
+    The server will maintain these connections as long as the attack tool continues
+    to send even small amounts of data partial requests that never quite get completed.
+  id: totrans-93
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这些设备是使用这种类型测试的一个地方，因为它们通常不会预期大量连接。这意味着像Slowloris这样的攻击可能会使这些服务器离线，从而拒绝为其他任何试图连接的人提供服务。Slowloris攻击旨在保持对Web服务器的大量连接打开。这种攻击与洪水攻击的区别在于这是一种缓慢的攻击。它不是一场洪水。相反，攻击工具通过长时间发送少量数据来保持连接开放。只要攻击工具继续发送甚至少量数据的部分请求，服务器就会保持这些连接，这些请求从未完全完成。
+- en: Slowloris is not the only type of attack that goes after web servers, though.
+    In recent years, there have been a few vulnerabilities that go after web servers.
+    Another one is Apache Killer, which sends bytes in chunks that overlap. The web
+    server, in trying to put the chunks together, eventually runs out of memory trying
+    to make it work correctly. This was a vulnerability found in both the 1.x and
+    2.x versions of Apache.
+  id: totrans-94
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 尽管Slowloris并不是唯一针对Web服务器的攻击类型。近年来，还有一些针对Web服务器的漏洞。另一个是Apache Killer，它发送重叠的分块字节。Web服务器在试图正确组装这些分块时最终会耗尽内存。这是在Apache的1.x和2.x版本中发现的漏洞。
+- en: One program that Kali has available is *slowhttptest*. Using *slowhttptest*,
+    you can launch one of four HTTP attacks at your target. The first is a slow headers
+    attack, otherwise known as Slowloris (as noted previously). The second is a slow
+    body attack, otherwise known as R-U-Dead-Yet. The range attack, known as Apache
+    Killer, is also available, as is a slow read attack. All of these are essentially
+    the reverse of the flooding attacks discussed earlier in that they accomplish
+    the denial of service with a limited number of network messages. In [Example 2-8](#EX_2_7b),
+    the default slow headers attack (Slowloris) was run against Apache on my Kali
+    box. No traffic has left my system, and you can see that after the 26th second,
+    the test ended with no connections left available. Of course, this was a simply
+    configured web server with very few threads configured. A web application with
+    multiple web servers available to manage load would survive considerably longer,
+    if they were available at all.
+  id: totrans-95
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Kali可用的一个程序是*slowhttptest*。使用*slowhttptest*，你可以对目标发起四种HTTP攻击之一。第一种是慢头攻击，也称为Slowloris（如前所述）。第二种是慢体攻击，也称为R-U-Dead-Yet。还有一种范围攻击，称为Apache
+    Killer，以及慢读攻击。所有这些攻击本质上与前面讨论的洪水攻击相反，它们通过有限数量的网络消息实现了拒绝服务。在[示例 2-8](#EX_2_7b)中，对我的Kali盒子上的Apache运行了默认的慢头攻击（Slowloris）。没有流量离开我的系统，你可以看到在第26秒之后，测试结束时没有可用的连接。当然，这只是一个简单配置的Web服务器，配置了很少的线程。如果有多个Web服务器用于管理负载，那么Web应用程序可能会更长时间存活，如果它们存在的话。
+- en: Example 2-8\. slowhttp output
+  id: totrans-96
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-8\. 慢HTTP输出
+- en: '[PRE7]'
+  id: totrans-97
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE7]'
+- en: 'The Apache server targeted here uses multiple child processes and multiple
+    threads to handle requests. Caps are set in the Apache configuration: the default
+    here is 2 servers, a thread limit of 64, 25 threads per child, and a maximum of
+    150 request workers. As soon as the number of connections available was maxed
+    out by *slowhttptest*, the number of Apache processes was 54 on this system. That
+    would be 53 child processes and a master or parent process. To handle the number
+    of connections required for the requests being made, Apache spawned multiple children
+    and would have had multiple threads per child. That’s a lot of processes that
+    have been started up. Considering that the Apache server that was running was
+    completely up-to-date at the time of this writing, it seems clear that these types
+    of attacks can be successful, in spite of how many years they have been around.
+    Of course, as noted earlier, that entirely depends on the architecture of the
+    site under test.'
+  id: totrans-98
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这里目标是使用多个子进程和多个线程来处理请求的Apache服务器。Apache配置中设置了限制：默认情况下有2个服务器，每个线程限制为64，每个子进程25个线程，最多150个请求工作进程。一旦*slowhttptest*的连接数达到上限，系统上的Apache进程数量就是54个。这包括53个子进程和一个主或父进程。为了处理请求所需的连接数，Apache生成了多个子进程，并且每个子进程可能有多个线程。这是许多已启动的进程。考虑到此时正在运行的Apache服务器是完全更新的，看起来这些类型的攻击可能会成功，尽管它们已经存在多年。当然，正如前面提到的，这完全取决于被测试站点的架构。
+- en: SSL-based stress testing
+  id: totrans-99
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 基于SSL的压力测试
+- en: Another resource-based attack that isn’t about bandwidth, but instead is about
+    processor utilization, targets the processing requirements for encryption. For
+    a long time, e-commerce sites have used Secure Sockets Layer (SSL) or Transport
+    Layer Security (TLS) to maintain encryption between the client and the server
+    in order to ensure the privacy of all communication. While it’s often still referred
+    to as SSL/TLS, SSL has been deprecated since 2015\. TLS has been in use for longer
+    than SSL was. As a result, you’ll see it referred to as TLS here, since that’s
+    what we’re using. These days, many servers use TLS as a matter of course. If you
+    attempt to search at Google, you will see that it is encrypted by default. Similarly,
+    many other large sites, such as Microsoft and Apple, encrypt all traffic by default.
+    If you try to visit the site by using an unencrypted uniform resource locator
+    (URL) by specifying *http://* instead of *https://*, you would find that the server
+    converts the connection automatically to *https* for you.
+  id: totrans-100
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 另一种不是关于带宽而是关于处理器利用率的基于资源的攻击是针对加密的处理需求。长期以来，电子商务网站使用安全套接字层（SSL）或传输层安全性（TLS）在客户端和服务器之间保持加密，以确保所有通信的隐私。虽然通常仍然被称为
+    SSL/TLS，但自 2015 年以来 SSL 已被弃用。TLS 的使用时间比 SSL 更长。因此，在这里我们将它称为 TLS，因为这是我们正在使用的。如今，许多服务器默认使用
+    TLS。如果您尝试在 Google 进行搜索，您会看到它默认是加密的。类似地，像微软和苹果这样的许多其他大型网站默认加密所有流量。如果您尝试使用未加密的统一资源定位器（URL）访问网站，例如指定
+    *http://* 而不是 *https://*，您会发现服务器会自动将连接转换为 *https*。
+- en: The thing about TLS, though, is that encryption requires processing power. Modern
+    processors are more than capable of keeping up with normal encryption loads, especially
+    as modern encryption algorithms are generally efficient with processor utilization.
+    However, any server that uses TLS incurs some processing overhead. First, the
+    messages that are sent from the server are generally larger, which means that
+    it takes more processing to encrypt those larger messages than the comparably
+    small messages originating from a client. Additionally, the client system is probably
+    sending only a few messages at a time whereas the server is expected to be encrypting
+    messages to a number of concurrent clients, which may all have multiple concurrent
+    connections going to the server. The load primarily comes from the creation of
+    the keys that are needed to encrypt the session.
+  id: totrans-101
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 但是 TLS 的问题在于加密需要处理能力。现代处理器完全能够跟上正常的加密负载，尤其是现代加密算法通常能有效利用处理器。但是，使用 TLS 的任何服务器都会产生一些处理开销。首先，从服务器发送的消息通常更大，这意味着需要更多的处理来加密这些较大的消息，而相对较小的消息源自客户端。此外，客户端系统可能一次只发送少量消息，而服务器则预计要为许多并发客户端加密消息，这些客户端可能都与服务器有多个并发连接。负载主要来自于创建用于加密会话的密钥。
+- en: Capabilities exist in Kali to target outdated services and capabilities. The
+    problem is that some of these long superseded programs still remain in service
+    in a lot of places. As a result, it’s still important to be able to test them.
+    One of those services is the SSL encryption. The final denial-of-service testing
+    program we’ll look at here targets servers that use SSL. SSL should no longer
+    be in use, having been supplanted by technology that doesn’t have the vulnerabilities
+    that SSL had, but that’s not to say that you won’t run across one. The program
+    *thc-ssl-dos* targets servers based on the idea that encryption is computationally
+    expensive, especially on the server side.
+  id: totrans-102
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Kali 中存在用于攻击过时服务和功能的能力。问题在于，一些早已过时的程序仍然在许多地方使用。因此，能够测试它们仍然非常重要。其中一个服务是 SSL 加密。在这里我们将要看的最后一个拒绝服务测试程序针对使用
+    SSL 的服务器。SSL 不应再使用，因为已被不具有 SSL 漏洞的技术取代，但这并不意味着您不会遇到它。*thc-ssl-dos* 程序针对使用 SSL
+    的服务器，其理念是加密在服务器端是计算密集的。
+- en: '[Example 2-9](#EX_2_8) shows a run of *thc-ssl-dos* against a server that has
+    been configured to use SSL. However, the issues with SSL have been known for so
+    long that the underlying libraries often have SSL disabled. In spite of running
+    against an older installation, you can see that the program was unable to achieve
+    a complete SSL handshake. However, if you were to find a server that did have
+    SSL configured, you would be able to test whether it was vulnerable to a denial
+    of service.'
+  id: totrans-103
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '[示例 2-9](#EX_2_8)展示了针对配置了SSL的服务器运行*thc-ssl-dos*的情况。然而，SSL存在的问题已为人所知，底层库通常会禁用SSL。尽管针对旧版安装进行测试，你可以看到该程序无法完成SSL握手。然而，如果你找到一个配置了SSL的服务器，你将能够测试其是否易受拒绝服务攻击的影响。'
+- en: Example 2-9\. SSL DoS using thc-ssl-dos utility
+  id: totrans-104
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-9\. 使用thc-ssl-dos实用程序进行SSL DoS攻击
+- en: '[PRE8]'
+  id: totrans-105
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE8]'
+- en: 'This *failure* highlights one of the challenges of doing security testing:
+    finding vulnerabilities can be hard. Exploiting known vulnerabilities can also
+    be hard. This is one reason that modern attacks commonly use social engineering
+    to make use of humans and their tendency toward trust and behaviors that can lead
+    to exploitation—often technical vulnerabilities are harder to exploit than manipulating
+    people. This does not mean that these nonhuman issues are not possible given the
+    number of vulnerabilities discovered and announced on a regular basis. See [Bugtraq](http://seclists.org/bugtraq/)
+    and the [Common Vulnerabilities and Exposures project](http://cve.mitre.org/)
+    for evidence of this.'
+  id: totrans-106
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这种*失败*突显了安全测试的挑战之一：发现漏洞可能很困难。利用已知漏洞也可能很难。这也是现代攻击通常利用社会工程学利用人类和他们对信任和可能导致利用的行为倾向的一个原因——通常技术漏洞比利用人们更难。这并不意味着这些非人类问题不可能存在，鉴于每天都会发现和公布的漏洞数量。请参见[Bugtraq](http://seclists.org/bugtraq/)和[通用漏洞和暴露项目](http://cve.mitre.org/)以获取相关证据。
+- en: DHCP attacks
+  id: totrans-107
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: DHCP攻击
+- en: The Dynamic Host Configuration Protocol (DHCP) has a test program called *DHCPig*,
+    which is another consumption attack, designed to exhaust resources available in
+    a DHCP server. This is sometimes called a DHCP starvation attack, since the goal
+    is to make it impossible for other consumers to “eat” from the DHCP server. Since
+    the DHCP server hands out IP addresses and other IP configuration, it would be
+    a problem for enterprises if their workers weren’t able to obtain addresses. While
+    it’s not uncommon for the DHCP server to hand out addresses with long leases (the
+    period of time a client can use the address without having to renew it) a lot
+    of DHCP servers have short lease times. A short lease time is important when everyone
+    is mobile. As users come on and off the network regularly, sometimes staying for
+    short periods of time, having clients hang onto leases can also consume those
+    resources. What this means, though, is that when clients have short leases, a
+    tool like *DHCPig* can grab expiring leases before the client can get them, leaving
+    the clients out in the cold without an address and unable to do anything on the
+    network. Running *DHCPig* is as simple as running the Python script *dhcpig* and
+    specifying the interface that is on the network you want to test against.
+  id: totrans-108
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 动态主机配置协议（DHCP）有一个名为*DHCPig*的测试程序，是另一种消耗攻击，旨在耗尽DHCP服务器中的资源。有时也称为DHCP饥饿攻击，因为其目标是使其他使用者无法从DHCP服务器中获取IP地址。由于DHCP服务器分配IP地址和其他IP配置，如果企业的员工无法获取地址，将会成为一个问题。虽然DHCP服务器通常会分配长租约的IP地址（客户端可以在无需更新的情况下使用地址的时间段），但许多DHCP服务器具有短租约时间。当用户经常进出网络，有时停留时间较短时，短租约时间非常重要。当客户端抓住即将到期的租约时，这意味着像*DHCPig*这样的工具可以在客户端获取租约之前获取租约，使客户端无法在网络上做任何事情。运行*DHCPig*就像运行Python脚本*dhcpig*并指定要测试的网络上的接口一样简单。
+- en: In practical terms, a DHCP starvation attack can be used by an attacker to help
+    get control of network traffic. The attacker launches a DHCP starvation attack,
+    consuming all the available IP addresses. At the same time, the attacker starts
+    up their own DHCP server that maybe points systems to a DNS server controlled
+    by the attacker. Maybe it points the default router to a system controlled by
+    the attacker so all network traffic going off-net will pass through the attacker’s
+    system. In [Example 2-10](#EX_2_9), you can see the use of *dhcpig* to consume
+    all the available leases from the local DHCP server.
+  id: totrans-109
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在实际应用中，DHCP饥饿攻击可以被攻击者用来帮助控制网络流量。攻击者发动DHCP饥饿攻击，消耗所有可用的IP地址。同时，攻击者启动他们自己的DHCP服务器，可能将系统指向攻击者控制的DNS服务器。也可能将默认路由器指向攻击者控制的系统，以便所有去往外网的网络流量都经过攻击者的系统。在[Example 2-10](https://example.org/EX_2_9)中，你可以看到使用*dhcpig*消耗所有本地DHCP服务器可用租约的情况。
+- en: Example 2-10\. Using dhcpig
+  id: totrans-110
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-10\. 使用dhcpig
+- en: '[PRE9]'
+  id: totrans-111
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE9]'
+- en: Using Scapy to Build Packets
+  id: totrans-112
+  prefs:
+  - PREF_H3
+  type: TYPE_NORMAL
+  zh: 使用Scapy构建数据包
+- en: If you are looking for complete programmatic access to network packet creation,
+    you can use the tool Scapy. Scapy is a library that provides access to network
+    protocols so you can create a packet to look anyway you would like it to. While
+    you can use Scapy to write Python scripts, you can also use the command line interface
+    with the *scapy* tool. You can write Python in the *scapy* tool in real-time,
+    meaning it executes as you are writing it. [Example 2-11](#EX_2_10) shows the
+    use of *scapy* to build a TCP segment on top of an IP packet since *scapy* allows
+    you to layer the creation of the messages. Once the packet has been defined, you
+    can send it, but there are several ways to send it. You’ll see three of them in
+    [Example 2-11](#EX_2_10).
+  id: totrans-113
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你正在寻找完全的程序化访问来创建网络数据包，你可以使用工具Scapy。Scapy是一个提供访问网络协议的库，因此你可以创建一个你想要的样子的数据包。虽然你可以使用Scapy编写Python脚本，但你也可以使用*scapy*工具的命令行界面。你可以在*scapy*工具中实时编写Python代码，这意味着它在你写代码的同时就执行了。[Example 2-11](https://example.org/EX_2_10)展示了使用*scapy*在IP数据包上构建TCP段的用法，因为*scapy*允许你层次化地创建消息。一旦定义了数据包，你可以发送它，但有几种发送方式。在[Example 2-11](https://example.org/EX_2_10)中你会看到其中三种方式。
+- en: Example 2-11\. Using scapy
+  id: totrans-114
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-11\. 使用scapy
+- en: '[PRE10]'
+  id: totrans-115
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE10]'
+- en: Because we are using a programmatic interface, we are not restricted to just
+    using numeric values for different fields. Instead, we can generate random values.
+    This example uses random values on the TCP source and destination ports, which
+    is probably not a valuable packet to create and send, but it demonstrates the
+    use of generating random values. We have the ability to generate full integers
+    or we can generate short integers, which would be required if we had a field size
+    of 16 bits, such as that for the port value. As indicated, we have control over
+    all the fields in the protocols. This doesn’t show the Ethernet layer, but we
+    could add that in if we wanted to. You could, for instance, set the media access
+    control (MAC) address to the system you want to set it to but change the IP address
+    to see how the system handles it.
+  id: totrans-116
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 因为我们使用的是程序接口，所以我们不仅仅限于为不同字段使用数值。相反，我们可以生成随机值。这个示例使用了TCP源端口和目的端口的随机值，这可能不是一个有价值的要创建和发送的数据包，但它演示了生成随机值的用法。我们可以生成完整的整数，也可以生成短整数，如果我们有一个16位的字段大小，比如端口值就会需要。正如所示，我们可以控制协议中的所有字段。这里没有显示以太网层，但如果我们想的话可以添加进去。例如，你可以将媒体访问控制（MAC）地址设置为你想要设置的系统，但更改IP地址以查看系统如何处理它。
+- en: When it comes to sending and receiving, we can just send it, as you can see
+    in the first send example. You can also use sr(), which is send and receive, but
+    you don’t get the details from the response. Finally, shown is sr1(), which is
+    the function used if you want to see the full packet details from the received
+    message after the send. This assumes that you will actually get a response, depending
+    on what sort of packet you have created. With send(), you can also add a loop
+    parameter to tell *scapy* you want the packet to be sent until you type a Ctrl-C
+    character to stop it. For our packet, p, you can send it with a loop with *send(p,
+    loop=1)*.
+  id: totrans-117
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当涉及到发送和接收时，我们可以只发送它，就像你在第一个发送示例中看到的那样。你也可以使用`sr()`，这是发送和接收的意思，但你不会从响应中获得细节。最后，显示的是`sr1()`，这是在发送后想要查看接收到的消息的完整数据包细节的函数。这假设你实际上会得到一个响应，这取决于你创建了什么样的数据包。使用`send()`，你还可以添加一个循环参数，告诉*scapy*你希望该数据包发送直到你键入
+    Ctrl-C 字符来停止它。对于我们的数据包 `p`，你可以使用循环发送 *send(p, loop=1)*。
+- en: Because we have full control over the packet and its parameters, we can also
+    manipulate both the source and destination IP address, as shown in [Example 2-12](#EX_2_11),
+    where we recreate the LAND attack referenced earlier. In this case, we don’t get
+    a response, as you can see. That’s because the source IP address is not our address
+    and the network stack on the receiving system is sending it back to the system
+    that has that IP address.
+  id: totrans-118
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 因为我们完全控制数据包及其参数，我们也可以操纵源和目的地 IP 地址，正如[示例 2-12](#EX_2_11) 中所示，我们重新创建了先前提到的 LAND
+    攻击。在这种情况下，我们没有得到响应，正如你所见。这是因为源 IP 地址不是我们的地址，而接收系统上的网络堆栈将其发送回具有该 IP 地址的系统。
+- en: Example 2-12\. Using scapy for LAND attack
+  id: totrans-119
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-12\. 使用 *scapy* 进行 LAND 攻击
+- en: '[PRE11]'
+  id: totrans-120
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE11]'
+- en: You can, of course, also use *scapy* to send legitimate messages and it handles
+    a lot of different protocols. Because a common protocol is HTTP, we can use *scapy*
+    to create a web request and send it. There are two approaches shown in [Example 2-13](#EX_2_12).
+    The first is to use a socket directly with the HTTP text to be sent. It gets added
+    to the packet creation syntax you’ve seen before. In other words, the text just
+    gets added as payload. The second approach is to load the *http* layer so we can
+    use HTTP methods. We’ll create a request using *HTTP()/HTTPRequest()*, which creates
+    all the necessary data we need. We haven’t added any parameters to HTTPRequest,
+    though we could use Method, which defaults to GET, as well as Path, to specify
+    which resource we want to retrieve from the server.
+  id: totrans-121
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当然，你也可以使用 *scapy* 发送合法的消息，它处理许多不同的协议。因为 HTTP 是一个常见的协议，我们可以使用 *scapy* 创建 Web
+    请求并发送它。在 [示例 2-13](#EX_2_12) 中展示了两种方法。第一种是直接使用套接字和要发送的 HTTP 文本。它被添加到你之前看到的数据包创建语法中作为有效负载。第二种方法是加载
+    *http* 层，这样我们就可以使用 HTTP 方法。我们将使用 *HTTP()/HTTPRequest()* 创建一个请求，该请求会生成我们需要的所有必要数据。虽然我们没有向
+    HTTPRequest 添加任何参数，但我们可以使用默认为 GET 的 Method，以及 Path 来指定要从服务器检索的资源。
+- en: Example 2-13\. Using scapy for HTTP messages
+  id: totrans-122
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-13\. 使用 *scapy* 进行 HTTP 消息
+- en: '[PRE12]'
+  id: totrans-123
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE12]'
+- en: This barely scrapes the surface of what is possible with *scapy*. As said already,
+    this provides us easy ways to programmatically script network messages, getting
+    full control over the different elements of the protocols. You could easily send
+    broken messages using *scapy*. For example, you don’t have to use a standard request
+    known by HTTP servers. You can create your own request verb, just to see how the
+    server responds to it. When it comes to binary-based protocols like IP or TCP,
+    where it’s clearly blocked out byte sequences, you are going to be limited in
+    what you can send. You wouldn’t be able to send *AAAAAAAAAAA* in the destination
+    address. First, the destination address for IPv4 is only 4 bytes. We are trying
+    to send 11 bytes, which will fill up the destination address with 41414141\. This
+    translates to 65.65.65.65\. We don’t get a lot out of that. Each byte is only
+    going to support values of 0-255, so you need to get a little creative if you
+    want to play with these binary-based protocols.
+  id: totrans-124
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这只是对 *scapy* 可能性的浅显探讨。正如前面所说，这为我们提供了编写网络消息的简便方法，可以完全控制协议的不同元素。你可以轻松地使用 *scapy*
+    发送损坏的消息。例如，你不必使用 HTTP 服务器已知的标准请求。你可以创建自己的请求动词，只是为了查看服务器对其的响应。当涉及到像 IP 或 TCP 这样的二进制协议时，其中明确阻塞了字节序列，你将会受到发送内容的限制。你不能在目的地地址中发送
+    *AAAAAAAAAAA*。首先，IPv4 的目的地地址只有 4 字节。我们试图发送 11 字节，这将用 41414141 填充目的地地址。这相当于 65.65.65.65。我们从中得不到多少信息。每个字节只支持
+    0 到 255 的值，因此如果你想要玩弄这些基于二进制的协议，你需要有点创意。
+- en: Encryption Testing
+  id: totrans-125
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 加密测试
+- en: We’ve had the ability to encrypt traffic over internet connections for over
+    20 years now. Encryption, like so much else that’s information security related,
+    is a moving target. When the first version of SSL was released by Netscape in
+    1995, one version had already been discarded because of identified problems with
+    it. The second version didn’t last long before identified problems with it forced
+    a third version, released the following year in 1996\. Both SSLv2 and SSLv3 were
+    both determined to be prohibited as a result of the problems with the way they
+    handle encryption.
+  id: totrans-126
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 20 多年来，我们一直可以加密互联网连接的流量。加密，就像信息安全相关的许多其他事物一样，是一个不断发展的目标。1995 年，Netscape 发布了第一个版本的
+    SSL，其中一版本因其存在的问题被丢弃。第二个版本也没能持久，因为其存在的问题被迫发布了第三个版本，即在 1996 年发布的版本。由于它们在处理加密方面的问题，SSLv2
+    和 SSLv3 都被认定为禁止使用。
+- en: Network traffic that is encrypted follows a process that is not as simple as
+    just taking a message, encrypting it, and sending it along, though that’s a part
+    of the overall process. Encryption relies on keys. The most sensitive part of
+    any encryption process is always the key. A message that is encrypted is valuable
+    only if it can be decrypted, of course. If I were to send you an encrypted message,
+    you would need the key to be able to decrypt it. This is where the challenge starts
+    to come in.
+  id: totrans-127
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 加密的网络流量遵循的过程并不像简单地将消息加密然后发送那么简单，尽管这是整个过程的一部分。加密依赖于密钥。任何加密过程中最敏感的部分始终是密钥。当然，加密的消息只有在能够解密时才有价值。如果我给你发送了一条加密消息，你需要密钥才能解密。这就是挑战开始的地方。
+- en: There are two means of handling keys. The first is *asymmetric encryption*.
+    This is where there are two keys, one for encryption and one for decryption. You
+    may also hear this referred to as *public key encryption*. The idea is that everyone
+    has two keys—​a public key and a private key. The public key is something everyone
+    can have. In fact, it works only if everyone has the ability to access everyone
+    else’s public key. Encrypting a message using a public key means that the message
+    can be decrypted only by using the private key. The two keys are mathematically
+    related and based on calculations using large numbers. This all seems like a reasonable
+    approach, right? The problem with asymmetric encryption is that it is computationally
+    hard.
+  id: totrans-128
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 处理密钥有两种方法。第一种是*非对称加密*。这是指有两个密钥，一个用于加密，一个用于解密。你可能也听说过这被称为*公钥加密*。其核心理念是每个人都有两个密钥——一个公钥和一个私钥。公钥是所有人都可以拥有的。事实上，只有当每个人都能访问到每个其他人的公钥时，它才有效。使用公钥加密消息意味着只能通过私钥解密该消息。这两个密钥在数学上是相关联的，基于大数计算。这看起来是一个合理的方法，对吧？非对称加密的问题在于计算上的复杂性。
+- en: This leads us to *symmetric encryption*. With symmetric encryption, as you may
+    have guessed, we have a single key. The same key encrypts and decrypts. Symmetric
+    key encryption is computationally easier. However, symmetric key encryption has
+    two problems. The first is that the longer a symmetric key is used, the more vulnerable
+    to attack it is. This is because an attacker can gather a large volume of ciphertext
+    (the result of feeding plain text into an encryption algorithm) and start performing
+    analysis on it in the hopes of deriving the key. Once the key has been identified,
+    any traffic encrypted with that key can be easily decrypted.
+  id: totrans-129
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这就引出了*对称加密*。顾名思义，对称加密使用单一密钥来加密和解密。对称密钥加密在计算上更简单。然而，对称密钥加密有两个问题。首先是使用对称密钥的时间越长，它就越容易受到攻击。这是因为攻击者可以收集大量密文（将明文输入加密算法的结果）并开始分析，希望推导出密钥。一旦密钥被识别出来，使用该密钥加密的任何流量都可以轻松解密。
+- en: 'The second and more important problem is that after we have a key, how do we
+    both get it? This works, after all, only if both of us have the key. So, how do
+    we both have the key if we are not physically proximate? And if we are physically
+    proximate, do we need to encrypt messages between us? We could have met at some
+    point and shared the key, but that means that we are stuck using the key until
+    we meet again and can create a new key so we both have it. The longer we use the
+    same key without meeting again brings us to problem #1 noted previously.'
+  id: totrans-130
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 第二个更重要的问题是，当我们有了密钥之后，我们双方如何都拥有它？毕竟，只有当我们双方都有密钥时它才有效。那么，如果我们不在物理上靠近，我们如何同时拥有密钥？如果我们物理上靠近，我们是否需要加密我们之间的消息？我们可能在某个时候见过面并共享了密钥，但这意味着我们被困在使用同一密钥的过程中，直到我们再次见面并能创建一个新密钥，以便我们双方都拥有它。我们在没有再次见面的情况下使用同一密钥的时间越长，就会导致前面提到的问题＃1。
+- en: As it turns out, two mathematicians solved this problem, though they were not
+    the first. They were just the first who could publish their work. Those whose
+    work came first worked for government agencies who were not allowed to share the
+    work they were doing with anyone. Whitfield Diffie and Martin Hellman came up
+    with the idea of having both sides independently derive the key. Essentially,
+    we both start with a value that is shared. This can be safely shared unencrypted
+    because it’s what happens to it after that matters. We both take this initial
+    value and apply a secret value using a mathematical formula that we both know.
+    Again, it doesn’t matter whether this is public because it’s the secret value
+    that matters. We share each other’s result from our individual computations and
+    then reapply our secret values to the other’s result. In this way, we will have
+    both gone through the same mathematical process from a single starting point,
+    so we will both have the same key in the end.
+  id: totrans-131
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 事实证明，有两位数学家解决了这个问题，尽管他们不是第一个解决的人。他们只是第一个可以发布他们的工作的人。那些先前工作的人为政府机构工作，不被允许与任何人分享他们正在进行的工作。惠特菲尔德·迪菲和马丁·赫尔曼提出了让双方独立派生密钥的想法。基本上，我们都从一个共享的值开始。这可以安全地未加密共享，因为之后的处理才是重点。我们都使用一个我们都知道的数学公式对这个初始值应用一个秘密值。再次强调，这是否公开并不重要，重要的是秘密值。我们分享彼此计算的结果，然后重新应用对方结果的秘密值。通过这种方式，我们将从单一起点经历相同的数学过程，最终我们都会得到相同的密钥。
+- en: The reason for going through all of this is that in practice, all of these mechanisms
+    are used. The Diffie-Hellman key exchanged is used along with public-key cryptography
+    to derive a session key, which is a symmetric key. This means that the session
+    uses a less computationally intensive key and algorithm to do the heavy lifting
+    of encrypting and decrypting the bulk of the communication between the server
+    and the client.
+  id: totrans-132
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 之所以要经历所有这些过程，是因为在实践中，所有这些机制都在使用中。Diffie-Hellman 密钥交换与公钥加密一起用于生成会话密钥，这是对称密钥。这意味着会话使用更少计算密集的密钥和算法来处理服务器和客户端之间大部分通信的加密和解密工作。
+- en: As noted earlier, SSL is no longer used as the cryptographic protocol. Instead,
+    TLS is the current protocol used. It has been through a few versions itself, again
+    demonstrating the challenges of encryption. The current version is 1.2, while
+    1.3 is in draft stage at the moment. Each version introduces fixes and updates
+    based on continuing research in breaking the protocol.
+  id: totrans-133
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如前所述，SSL 已不再用作加密协议。相反，TLS 是当前使用的协议。它本身经历了几个版本，再次展示了加密面临的挑战。当前版本是1.2，而1.3目前处于草案阶段。每个版本都引入了修复和更新，基于对协议破解的持续研究。
+- en: One way to determine whether a server you are testing is using outdated protocols
+    is to use a tool like *sslscan*. This program probes the server to identify what
+    encryption algorithms are in use. This is easy to determine, because as part of
+    the handshake with the server, it will provide a list of ciphers that are supported
+    for the client to select from. So, all *sslscan* needs to do is initiate an encrypted
+    session with the server to get all the information needed. [Example 2-14](#EX_2_13)
+    shows the results of testing an Apache server with encryption configured.
+  id: totrans-134
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 用于确定你正在测试的服务器是否使用过时协议的一种方法是使用类似 *sslscan* 的工具。该程序会探测服务器以识别正在使用的加密算法。这很容易确定，因为在与服务器握手的过程中，它将提供一个供客户端选择的密码列表。因此，*sslscan*
+    需要做的就是与服务器建立加密会话，以获取所需的所有信息。[示例 2-14](#EX_2_13) 显示了使用配置了加密的 Apache 服务器进行测试的结果。
+- en: Example 2-14\. Running sslscan against local system
+  id: totrans-135
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-14\. 运行 sslscan 对本地系统进行扫描
+- en: '[PRE13]'
+  id: totrans-136
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE13]'
+- en: '*sslscan* will determine whether the server is vulnerable to Heartbleed, a
+    vulnerability that was identified and that targeted server/client encryption,
+    leading to the exposure of keys to malicious users. Most important, though, *sslscan*
+    will give us the list of ciphers supported. In the list, labeled “Supported Server
+    Cipher(s)”, which has been edited for length, you will see multiple columns with
+    information that may not mean a lot to you. The first column is easily readable.
+    It indicates whether the protocol and cipher suite are accepted and whether they
+    are preferred. The first preferred cipher suite is for TLS version 1.3 with a
+    256-bit AES key. You will note that each of the versions of TLS has its own preferred
+    cipher suite. There are only two versions of TLS which are in use, so there are
+    only two preferred ciphers. The second column is the protocol and version. SSL
+    is not enabled on this server at all, as a result of support for SSL having been
+    removed from the underlying libraries. The next column is the key strength.'
+  id: totrans-137
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*sslscan* 将确定服务器是否容易受到Heartbleed的攻击，这是一种已识别并针对服务器/客户端加密的漏洞，导致密钥暴露给恶意用户。然而，*sslscan*
+    最重要的是会给出支持的密码列表。在编辑过长度的列表中，标有“Supported Server Cipher(s)”的，你将看到多列信息，可能对你意义不大。第一列很容易阅读。它指示协议和密码套件是否被接受以及它们是否首选。首选的密码套件是TLS版本1.3，带有256位AES密钥。你会注意到每个TLS版本都有自己首选的密码套件。目前仅有两个版本的TLS在使用，因此只有两种首选密码套件。第二列是协议和版本。由于底层库已经移除对SSL的支持，此服务器上根本没有启用SSL。下一列是密钥强度。'
+- en: Note
+  id: totrans-138
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: Key sizes can’t be compared except within the same algorithm. Rivest-Shamir-Adleman
+    (RSA) is an asymmetric encryption algorithm and has key sizes that are multiples
+    of 1,024\. AES is a symmetric encryption algorithm and has key sizes of 128 and
+    256\. That doesn’t mean that RSA is orders of magnitude stronger than AES, because
+    they use the key in different ways. Even comparing algorithms that are the same
+    type (asymmetric versus symmetric) is misleading because the algorithms will use
+    the keys in entirely different ways.
+  id: totrans-139
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 密钥大小只能在同一算法内部进行比较。里维斯特-沙米尔-阿德尔曼（RSA）是一种非对称加密算法，其密钥大小是1024的倍数。AES是一种对称加密算法，其密钥大小为128和256位。这并不意味着RSA比AES强出许多，因为它们以不同的方式使用密钥。即使是比较相同类型的算法（非对称与对称），也是具有误导性的，因为这些算法会以完全不同的方式使用密钥。
+- en: 'The next column is the cipher suite. You will note that it’s called a *cipher
+    suite* because it takes into account multiple algorithms that have different purposes.
+    Let’s take this listing as an example: DHE-RSA-AES256-GCM-SHA384\. The first part,
+    DHE, indicates that we are using Ephemeral Diffie-Hellman for key exchange. The
+    second part is RSA, which stands for Rivest-Shamir-Adleman, the three men who
+    developed the algorithm. RSA is an asymmetric-key algorithm. This is used to authenticate
+    the parties, since the keys are stored in certificates that also include identification
+    information about the server. If the client also has a certificate, there can
+    be mutual authentication. Otherwise, the client can authenticate the server based
+    on the hostname the client intended to go to and the hostname that is listed in
+    the certificate. Asymmetric encryption is also used to encrypt keys that are being
+    sent between the client and the server.'
+  id: totrans-140
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 下一列是密码套件。你会注意到它被称为*密码套件*，因为它考虑了多种具有不同目的的算法。让我们以这个列表为例：DHE-RSA-AES256-GCM-SHA384。第一部分DHE表示我们使用临时迪菲-赫尔曼进行密钥交换。第二部分是RSA，代表着开发该算法的里维斯特-沙米尔-阿德尔曼三人。RSA是一种非对称加密算法。这被用来认证各方，因为密钥存储在包含服务器身份信息的证书中。如果客户端也有证书，则可以进行双向认证。否则，客户端可以根据其意图访问的主机名和证书中列出的主机名认证服务器。非对称加密也用于加密在客户端和服务器之间传输的密钥。
+- en: Note
+  id: totrans-141
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 注意
+- en: I am using the words *client* and *server* a lot through this discussion, and
+    it’s useful for you to understand what these words mean. In any conversation over
+    a network, there is always a client and a server. This does not mean that the
+    server is an actual server sitting in a data center. What it means is that there
+    is a service that is being consumed. The client is always the side originating
+    the conversation, and the server is always the one responding. That makes it easy
+    to “see” the two parties—​who originated and who responded to the origination.
+  id: totrans-142
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在这个讨论中，我经常使用 *客户端* 和 *服务器* 这两个词，对你来说理解这些词的含义是很有用的。在任何网络会话中，总会有一个客户端和一个服务器。这并不意味着服务器是实际位于数据中心的服务器。它意味着有一个正在被消费的服务。客户端始终是发起对话的一方，服务器始终是响应的一方。这使得很容易“看到”这两个参与方——谁发起了会话，谁对发起的会话做出了响应。
+- en: The next part is the symmetric encryption algorithm. This suggests that the
+    Advanced Encryption Standard (AES) is being offered with a key size of 256 bits.
+    It’s worth noting here that AES is not an algorithm itself but a standard. The
+    algorithm has its own name. For decades, the standard in use was the Data Encryption
+    Standard, based on the Lucifer cipher developed at IBM by Horst Feistel and his
+    colleagues. In the 1990s it was determined that DES was a bit long in the tooth
+    and would soon be breakable. A search for a new algorithm was undertaken, resulting
+    in the algorithm Rijndael being selected as the foundation for the Advanced Encryption
+    Standard. Initially, AES used a key size of 128 bits. It’s only been relatively
+    recently that the key strength is commonly increased to 256.
+  id: totrans-143
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 下一个部分是对称加密算法。这表明提供了具有 256 位密钥长度的高级加密标准（AES）。这里值得注意的是，AES 本身并不是算法，而是一个标准。该算法有自己的名称。几十年来，一直在使用的标准是基于
+    IBM 的 Horst Feistel 及其同事开发的 Lucifer 密码的数据加密标准（DES）。上世纪九十年代确定 DES 已经老旧且很快会被破解。于是开始寻找新的算法，最终选择了
+    Rijndael 算法作为高级加密标准的基础。最初，AES 使用 128 位密钥长度。直到最近，密钥强度普遍增加到 256 位。
+- en: AES is the algorithm used for encrypting the session. This means a 256-bit key
+    is used for the session key. It is the key that was derived and shared at the
+    beginning of the session. If the session were to last long enough, the session
+    key may be regenerated to protect against key derivation attacks. As noted before,
+    the key is used by both sides of the conversation for encryption and decryption.
+  id: totrans-144
+  prefs: []
+  type: TYPE_NORMAL
+  zh: AES 是用于加密会话的算法。这意味着会话密钥使用了 256 位密钥。这是在会话开始时派生和共享的密钥。如果会话持续时间足够长，会话密钥可能会重新生成，以防止密钥派生攻击。如前所述，该密钥被对话的双方用于加密和解密。
+- en: The GCM part is Galois/Counter Mode, which is a way block ciphers operate to
+    provide data integrity and confidentiality. Encrypted data is associated with
+    a tag that is generated at the time the data is encrypted. This tag is used to
+    verify that neither the data nor the tag have been tampered with at all.
+  id: totrans-145
+  prefs: []
+  type: TYPE_NORMAL
+  zh: GCM 部分是 Galois/Counter Mode，这是块密码操作的一种方式，用于提供数据的完整性和保密性。加密数据与在加密数据时生成的标签相关联。此标签用于验证数据和标签是否被篡改。
+- en: Finally, you’ll notice the algorithm SHA384\. This is the Secure Hash Algorithm
+    using 384 bits for the length of the hash value. SHA is a cryptographic algorithm
+    that is used to verify that no data has changed. You may be familiar with the
+    Message Digest 5 (MD5) algorithm that does the same thing. The difference is the
+    length of the output. With MD5, the length of the output is always 32 characters,
+    which is 128 bits (only 4 bits out of every byte are used). This has been generally
+    replaced with SHA1 or higher. SHA1 generates 40 characters, or 160 bits (again,
+    only 4 bits out of every byte are used). In our case, we are using SHA384, which
+    generates 96 hexadecimal characters, since it would be 48 bytes with each byte
+    being represented by two hexadecimal characters. No matter the length of the data,
+    the output length is always the same. This value is sent from one side to the
+    other as a way of determining whether the data has changed. If even a single bit
+    is different, the value of the hash—​the word used for the output of the SHA or
+    MD5 algorithm—​will be different.
+  id: totrans-146
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 最后，您会注意到SHA384算法。这是使用384位长度的安全哈希算法。SHA是一种用于验证数据是否发生更改的加密算法。您可能熟悉具有相同功能的MD5算法。不同之处在于输出长度。对于MD5，输出长度始终为32个字符，即128位（每字节仅使用4位）。这通常被SHA1或更高版本所替代。SHA1生成40个字符，即160位（同样，每字节仅使用4位）。在我们的情况下，我们使用SHA384，它生成96个十六进制字符，因为每个字节由两个十六进制字符表示，这将是48个字节。无论数据的长度如何，输出长度始终相同。此值从一方发送到另一方，以确定数据是否发生更改。即使一个位不同，哈希值——SHA或MD5算法输出的术语——也将不同。
+- en: All of these algorithms work together to make up the protocol of TLS (and previously
+    SSL). To accomplish effective encryption that is protected against compromise,
+    all of these algorithms are necessary. We need to be able to derive a session
+    key. We need to be able to authenticate the parties and share information using
+    encryption before we have generated our session key. We need to have a session
+    key and an algorithm to encrypt and then decrypt our session data. Finally, we
+    need to make sure that nothing has been tampered with. What you see in the example
+    is a collection of strong encryption suites.
+  id: totrans-147
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 所有这些算法共同构成了TLS协议（之前是SSL）。为了实现有效的加密并且抵御妥协，所有这些算法都是必需的。我们需要能够推导出会话密钥。我们需要能够对参与方进行身份验证并使用加密共享信息，而在生成会话密钥之前。我们需要有一个会话密钥和一个算法来加密和解密我们的会话数据。最后，我们需要确保没有被篡改过任何内容。在示例中看到的是一组强加密套件。
+- en: If you were to see something like 3DES in the output, you would have an example
+    of a server that was susceptible to attacks against the session key. This could
+    result in the key being compromised, which would result in the ciphertext being
+    decrypted into plain text in the hands of someone for whom it was not meant. Additionally,
+    though it was breezed over earlier, a tool like *sslscan* can verify that the
+    protocols used are not vulnerable to attack using known exploits.
+  id: totrans-148
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果您在输出中看到类似于3DES，那么您将看到一个服务器的示例，该服务器容易受到对会话密钥的攻击。这可能导致密钥被破坏，进而导致密文在未授权的人手中解密为明文。此外，尽管早些时候忽略了这一点，但像*sslscan*这样的工具可以验证所使用的协议是否不易受已知漏洞的攻击。
+- en: You may on rare occasions see NULL in the place where we have seen AES384\.
+    This means that the request is that no encryption is used. There are reasons for
+    this. You may not care so much about protecting the contents of the transmissions,
+    but you may care very much that you know who you are talking to and that the data
+    hasn’t been modified in transit. So, you ask for no encryption so as not to incur
+    any overhead from the encryption, but you get the benefit of the other parts of
+    the cipher suite selected.
+  id: totrans-149
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在罕见的情况下，您可能会看到在我们看到AES384的地方出现NULL。这意味着请求不使用加密。这其中有原因。您可能并不太在意保护传输内容，但您可能非常关心确保您与之交流的对象以及数据在传输过程中未被修改。因此，您请求不使用加密以避免因加密而产生任何开销，但您可以从所选密码套件的其他部分中获益。
+- en: The war over encryption never ends. Even now research is being done to identify
+    vulnerabilities that can be exploited in the encryption algorithms and protocols
+    in use. You will see differences in the suites listed in your testing output over
+    time as stronger keys begin to be used and new algorithms are developed.
+  id: totrans-150
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 加密战斗永不休止。即使现在也在进行研究，以识别可以利用现有加密算法和协议中的漏洞。随着开始使用更强的密钥和开发新算法，您将会在您的测试输出中看到套件列表中的差异。
+- en: Packet Captures
+  id: totrans-151
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 数据包捕获
+- en: As you are performing network testing, you will find it useful to be able to
+    see what is being transmitted over the network. To see what is sent, we need to
+    use a program that captures packets. In fairness, though, what we are doing is
+    capturing frames. The reason I say that is each layer of the network stack has
+    a different term for the bundle of data that includes that layer. Keep in mind
+    that headers are tacked on as we move down the network stack, so the last set
+    of headers added is the layer 2 headers. The protocol data unit (PDU) at that
+    layer is the frame. When we get up to layer 3, we are talking about a packet.
+    Layer 4 has datagrams or segments, depending on the protocol used there.
+  id: totrans-152
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在进行网络测试时，能够查看在网络上传输的内容是非常有用的。要查看发送的内容，我们需要使用一个捕获数据包的程序。不过公平地说，我们所做的是捕获帧。我之所以这么说是因为网络堆栈的每一层对包含该层的数据包有不同的术语。请记住，随着我们向下移动网络堆栈，头部信息会添加上去，所以最后添加的头部是第二层头部。在那一层的协议数据单元（PDU）是帧。当我们到达第三层时，我们谈论的是一个数据包。第四层有数据报或者段，这取决于那里使用的协议。
+- en: Years ago, capturing packets was an expensive proposition, because it required
+    a special network interface that could be put into promiscuous mode. The reason
+    it’s called that is because by default, network interfaces look at the MAC address.
+    The network interface knows its own address because it is attached to the hardware.
+    If the address of an inbound frame matches the MAC address, the frame is forwarded
+    up to the operating system. Similarly, if the MAC address is the broadcast address,
+    the frame is forwarded up. In promiscuous mode, all comers are welcome. This means
+    that all frames, whether they are addressed for this particular system or not,
+    are forwarded up to the operating system. Being able to look at only frames addressed
+    to that interface is nice and valuable, but it’s far more valuable to be able
+    to see all frames that come across a network interface.
+  id: totrans-153
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 多年前，捕获数据包是一个昂贵的操作，因为它需要一个特殊的网络接口，可以进入混杂模式。它之所以被称为混杂模式，是因为默认情况下，网络接口查看MAC地址。网络接口知道自己的地址，因为它连接到硬件上。如果入站帧的地址与MAC地址匹配，则将该帧转发到操作系统上。同样，如果MAC地址是广播地址，则将帧转发。在混杂模式下，所有的帧都会被接受。这意味着所有帧，无论它们是否针对这个特定系统，都会被转发到操作系统上。能够查看仅针对该接口的帧是非常好和有价值的，但能够看到经过网络接口的所有帧更为有价值。
+- en: Modern network interfaces typically support not only things like full duplex
+    and auto-negotiation but also promiscuous mode. This means we don’t need protocol
+    analyzers anymore (as the hardware that could do this work was often called) because
+    every system is capable of being a protocol analyzer. All we need is to know how
+    to grab the frames and then peer into them to see what is going on.
+  id: totrans-154
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 现代网络接口通常不仅支持全双工和自动协商，还支持混杂模式。这意味着我们不再需要协议分析器（通常是指能够完成此工作的硬件），因为每个系统都能够成为协议分析器。我们只需要知道如何捕获数据帧，然后查看其中发生的情况。
+- en: Using tcpdump
+  id: totrans-155
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 使用tcpdump
+- en: While other operating systems have had other packet capture programs, like Solaris
+    had *snoop*, the de facto packet capture program these days, especially on Linux
+    systems, is *tcpdump* if all you have is access to a command line. We will take
+    a look at a GUI a little later, but there is a lot of value in learning about
+    *tcpdump*. You won’t always have access to a full desktop with a GUI. In many
+    cases, you will have only a console or just an SSH session that you can use to
+    run command-line programs. As a result, *tcpdump* will become a good friend. As
+    an example, I used it earlier to verify that the protocol being used by our SIP
+    testing program was really just using UDP and not using TCP. It has a lot of value
+    in understanding what is going on with a program that isn’t otherwise telling
+    you.
+  id: totrans-156
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 尽管其他操作系统有其他的数据包捕获程序，比如Solaris有*snoop*，但目前事实上在Linux系统中，尤其是在只能使用命令行的情况下，*tcpdump*是主流的数据包捕获程序。稍后我们将看一下图形用户界面，但学习*tcpdump*是非常有价值的。你并不总是能够使用完整的带有图形用户界面的桌面。在很多情况下，你只能使用控制台或者SSH会话来运行命令行程序。因此，*tcpdump*将成为一个好朋友。比如，我之前使用它来验证我们的SIP测试程序所使用的协议确实只是在使用UDP而不是TCP。它在理解一个程序的运行情况方面有很大的价值，这是其他方式无法告诉你的。
+- en: Before we start looking at options, let’s take a look at the output from *tcpdump*.
+    Being able to read what is happening by looking at the output takes some getting
+    used to. When we run *tcpdump* without any options, we get a short summary of
+    the packets that are passing through. [Example 2-15](#EX_2_14) is a sample of
+    *tcpdump* output.
+  id: totrans-157
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在我们开始查看选项之前，让我们先看看 *tcpdump* 的输出。通过查看输出来理解发生了什么需要一些时间。当我们没有任何选项地运行 *tcpdump*
+    时，我们会得到传输的数据包的简短摘要。[示例 2-15](#EX_2_14) 是 *tcpdump* 输出的一个示例。
+- en: Example 2-15\. tcpdump output
+  id: totrans-158
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-15\. tcpdump 输出
+- en: '[PRE14]'
+  id: totrans-159
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE14]'
+- en: The first column in the output in [Example 2-15](#EX_2_14) is the timestamp.
+    This is not anything that has been determined from the packet itself, since time
+    is not transmitted as part of any of the headers. What we get is the time as the
+    hours, minutes, seconds, and fractions of seconds after midnight. In other words,
+    it’s the time of day down to a fraction of a second. The second field is the transport
+    protocol. We don’t get the layer 2 protocol because it’s determined by the network
+    interface, so it goes without saying. In order to know the layer 2 protocol, you
+    need to know something about your network interface. Commonly, the layer 2 protocol
+    will be Ethernet.
+  id: totrans-160
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 输出中的第一列是时间戳。这不是从数据包本身确定的任何东西，因为时间不作为任何标头的一部分传输。我们得到的是从午夜开始的小时、分钟、秒和秒的分数。换句话说，它是一天中到秒的时间。第二个字段是传输协议。我们不会得到层
+    2 协议，因为它由网络接口确定，所以不言而喻。要了解层 2 协议，你需要了解你的网络接口的一些信息。通常情况下，层 2 协议将是以太网。
+- en: The next set of data is the two endpoints of the conversation. This includes
+    not only the IP addresses but also the port information. So, *binkley.lan* is
+    the source of the first packet, and *testwifi.here* is the destination. Without
+    telling it not to, *tcpdump* will convert IP addresses to hostnames. To disable
+    that function, you would need to provide an *-n* on the command line. This would
+    speed up your capture and lower the number of packets captured, since your system
+    won’t be doing a DNS lookup for every frame that comes by.
+  id: totrans-161
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 下一组数据是会话的两个端点。这不仅包括 IP 地址，还包括端口信息。因此，*binkley.lan* 是第一个数据包的源，*testwifi.here*
+    是目的地。如果没有禁止它，*tcpdump* 将会将 IP 地址转换成主机名。要禁用该功能，你需要在命令行中提供 *-n*。这将加快捕获速度并减少捕获的数据包数量，因为系统不会为每个传输帧执行
+    DNS 查询。
+- en: You will notice that along with each IP address is another value. From our source
+    address, *binkley.lan.57137*, the 57137 is a port number. This is the source port,
+    and on the receiving side, you can see *testwifi.here.domain*. This means that
+    *testwifi.here* is receiving a message on the port used by domain name servers.
+    Again, just as in the hostname versus IP address, if you don’t want *tcpdump*
+    to do a lookup on the port number, based on well-known port numbers, you can add
+    *-n* to the command line, and *tcpdump* will just present you numeric information.
+    In this case *.domain* translates to *.53*, which is the numeric value. We know
+    that this is a UDP message because it tells us after the destination information.
+  id: totrans-162
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 每个 IP 地址旁边都有一个附加值。从我们的源地址 *binkley.lan.57137* 来看，57137 是一个端口号。这是源端口，在接收端，你可以看到
+    *testwifi.here.domain*。这意味着 *testwifi.here* 正在使用域名服务器的端口接收消息。再次强调，就像主机名与 IP 地址之间的区别一样，如果你不希望
+    *tcpdump* 根据众所周知的端口号进行查找，你可以在命令行中添加 *-n*，*tcpdump* 将只呈现给你数字信息。在这种情况下，*.domain*
+    转换成 *.53*，这就是其数值。我们知道这是一个 UDP 消息，因为它在目标信息后告诉了我们。
+- en: Primarily, what you see in [Example 2-15](#EX_2_14) are DNS requests and responses.
+    This is a result of having *tcpdump* doing reverse DNS lookups to determine the
+    hostname associated with the IP address. The remainder of each line from *tcpdump*
+    output is a description of the packet. In the case of a TCP message, you may see
+    the flags that are set in the TCP header or you may see sequence number information.
+  id: totrans-163
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 主要看到的是 [示例 2-15](#EX_2_14) 中的 DNS 请求和响应。这是由于 *tcpdump* 进行反向 DNS 查询以确定与 IP 地址关联的主机名。每行
+    *tcpdump* 输出的其余部分是对数据包的描述。在 TCP 消息的情况下，你可能会看到 TCP 头中设置的标志，或者你可能会看到序列号信息。
+- en: This time, we’ll take a look at more verbose output by using the *-v* flag.
+    *tcpdump* supports multiple *-v* flags, depending on the level of verbosity you
+    are looking for. We’ll also take a look at using the *-n* flag to see what it
+    looks like without any address lookup. [Example 2-16](#EX_2_15) shows the more
+    verbose output.
+  id: totrans-164
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 这次，我们将通过使用*-v*标志查看更详细的输出。*tcpdump*支持多个*-v*标志，具体取决于你需要的详细程度。我们还将使用*-n*标志，查看不带任何地址查找的输出。[示例 2-16](#EX_2_15)展示了更详细的输出。
+- en: Example 2-16\. Verbose output for tcpdump
+  id: totrans-165
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-16. tcpdump的详细输出
+- en: '[PRE15]'
+  id: totrans-166
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE15]'
+- en: The output looks largely the same except that this is all numbers with no hostnames
+    or port names. This is a result of using the *-n* flag when running *tcpdump*.
+    You will still see the two endpoints of each conversation identified by IP address
+    and port number. What you get with *-v* is more details from the headers. You
+    will see that checksums are verified as correct (or incorrect). You will also
+    see other fields including the time-to-live value and the IP identification value.
+  id: totrans-167
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 输出看起来基本相同，只是这些都是数字，没有主机名或端口名。这是在运行*tcpdump*时使用*-n*标志的结果。你仍然会看到每次对话的两个端点由IP地址和端口号标识。使用*-v*标志可以得到更多来自报头的细节。你将看到校验和被验证为正确（或不正确）。你还将看到其他字段，包括生存时间值和IP标识值。
+- en: Even if we switch to *-vvv* for the most verbosity, you aren’t going to get
+    a complete packet decode for analysis. We can, though, use *tcpdump* to capture
+    packets and write them out to a file. What we need to talk about is the *snap
+    length*. This is the snapshot length, or the amount of each packet that is captured
+    in bytes. By default, tcpdump grabs 262144 bytes. You may be able to set that
+    value lower. Setting the value to 0 says that *tcpdump* should grab the maximum
+    size. In effect, this tells *tcpdump* to set the snap length to the default value
+    of 262144\. To write the packet capture out, we need to use the *-w* flag and
+    specify a file. Once we’ve done that, we have a packet capture (pcap) file that
+    we can import into any tool that will read these files. We’ll take a look at one
+    of those tools a little later.
+  id: totrans-168
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 即使我们切换到*-vvv*以获得最详细的输出，你也不会得到完整的数据包解码以供分析。但我们可以使用*tcpdump*来捕获数据包并将其写入文件。我们需要讨论的是*快照长度*。这是每个数据包在捕获时的长度，以字节计算。默认情况下，tcpdump捕获262144字节。你可以尝试将该值设置得更低。将该值设置为0表示*tcpdump*应该捕获最大长度的数据包。实际上，这告诉*tcpdump*将快照长度设置为默认值262144。要将数据包捕获写入文件，我们需要使用*-w*标志并指定一个文件名。完成后，我们就会得到一个可以导入到任何读取此类文件的工具中的数据包捕获（pcap）文件。稍后我们将详细介绍其中的一个工具。
+- en: Berkeley Packet Filters
+  id: totrans-169
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: 伯克利数据包过滤器
+- en: Another important feature of *tcpdump*, which will serve us well shortly, is
+    the Berkeley Packet Filter (BPF). This set of fields and parameters allows us
+    to limit the packets that we are grabbing. On a busy network, grabbing packets
+    can result in a lot of data on your disk in a short period of time. If you have
+    an idea of what you are looking for ahead of time, you can create a filter to
+    capture only what you are going to be looking at. This can also make it quite
+    a bit easier to visually parse through what you have captured, saving you a lot
+    of time.
+  id: totrans-170
+  prefs: []
+  type: TYPE_NORMAL
+  zh: '*tcpdump*的另一个重要特性是伯克利数据包过滤器（BPF），这将在不久后对我们非常有用。这一组字段和参数允许我们限制我们捕获的数据包。在繁忙的网络中，捕获数据包可能会导致短时间内大量的数据存储在硬盘上。如果你事先知道你要查找的内容，可以创建一个过滤器，仅捕获你感兴趣的内容。这也可以使你更轻松地视觉解析你所捕获的内容，节省大量时间。'
+- en: A basic filter is to specify which protocol you want to capture. As an example,
+    I could choose to capture only TCP or UDP packets. I might also say I want to
+    capture only IP or other protocols. In [Example 2-17](#EX_2_16), you can see a
+    capture of ICMP-only packets. You will notice that in order to apply a filter,
+    I just put it on the end of the command line. What results is the display of only
+    ICMP packets. Everything still comes into the interface and is sent up to *tcpdump*,
+    but it then determines what to display or write out to a file, if that’s what
+    you are doing.
+  id: totrans-171
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一个基本的过滤器是指定你想捕获的协议。例如，我可以选择只捕获TCP或UDP数据包。我还可以指定只捕获IP或其他协议的数据包。在[示例 2-17](#EX_2_16)中，你可以看到仅捕获ICMP数据包的情况。请注意，为了应用过滤器，我只需将其放在命令行的末尾。结果将显示仅有的ICMP数据包。所有数据依然会通过接口传输并被*tcpdump*接收，但*tcpdump*决定显示或写入文件（如果需要）的内容。
+- en: Example 2-17\. tcpdump using BPF
+  id: totrans-172
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例 2-17. 使用BPF的tcpdump
+- en: '[PRE16]'
+  id: totrans-173
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE16]'
+- en: 'One thing I can do with these filters is use Boolean logic; I can use logic
+    operators to be able to develop complex filters. Let’s say, for instance, that
+    I want to capture web traffic. One way I could do that would be to say *tcp and
+    port 80*: I am grabbing all TCP packets that have the port as 80\. You’ll notice
+    that I don’t mention source or destination with respect to the port number. I
+    certainly can. I could use src port 80 or dst port 80\. However, if I don’t specify
+    source or destination, I get both ends of the conversation. When a message goes
+    out with port 80 as its destination, when the receiving system replies, the port
+    numbers get swapped. Port 80 on the response becomes the source port. If I were
+    to capture only src port 80, I wouldn’t get any of the messages in the other direction.
+    This may be exactly what you are looking for, of course, but it’s something to
+    keep in mind. You may find that you need to indicate a range of ports to be grabbed.
+    You could use the port-range primitive to capture a range of ports, like 80–88,
+    for example.'
+  id: totrans-174
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我可以使用这些过滤器之一来进行布尔逻辑运算；我可以使用逻辑运算符来开发复杂的过滤器。比如说，我想捕获网页流量。我可以这样做 *tcp and port
+    80*：我正在抓取所有端口为 80 的 TCP 数据包。您会注意到，我没有提到端口号与源或目的地。我当然可以。我可以使用 src port 80 或 dst
+    port 80\. 但是，如果我不指定源或目的地，我会得到对话的两端。当消息以端口 80 作为目的地发送时，当接收系统回复时，端口号会交换。响应中的端口 80
+    变为源端口。如果我仅捕获 src port 80，我将不会得到反方向的任何消息。当然，这可能正是您要寻找的，但这也是需要记住的事情。您可能发现需要指定要抓取的一系列端口。例如，您可以使用端口范围原语来捕获一系列端口，比如
+    80–88。
+- en: The language used for BPF provides a lot of capability. If you need really complex
+    filters, you can certainly look up the syntax for BPF and examples that may provide
+    you something specific that you are looking for. What I have often found is that
+    specifying the port is valuable. Also, I often know the host I want to capture
+    traffic from. In that case, I would use *host 192.168.86.35* to grab only traffic
+    with that IP address. Again, I have not specified either source or destination
+    for the address. I could by specifying src host or dst host. If I don’t indicate,
+    I get both directions of the conversation.
+  id: totrans-175
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 用于 BPF 的语言提供了很多功能。如果您需要非常复杂的过滤器，您当然可以查找 BPF 的语法和可能为您提供的示例。我经常发现指定端口非常有价值。此外，我经常知道我想要捕获流量的主机。在这种情况下，我将使用
+    *host 192.168.86.35* 来仅抓取具有该 IP 地址的流量。同样，我没有指定地址的源或目的地。我可以通过指定 src host 或 dst
+    host 来做到。如果我不指示，我会得到对话的两个方向。
+- en: Developing even a simple understanding of BPF will help you focus what you are
+    looking at down to data that is relevant. When we start looking at packet captures,
+    you will see how complex a job it can be to do packet analysis because there are
+    just so many frames that contain a lot of detail to look over.
+  id: totrans-176
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 即使是简单了解 BPF 也将帮助您将注意力集中到相关的数据上。当我们开始查看数据包捕获时，您将看到进行数据包分析可以是多么复杂，因为有很多帧包含大量细节需要查看。
+- en: Wireshark
+  id: totrans-177
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: Wireshark
+- en: When you have your packet capture file, you will probably want to do some analysis.
+    One of the best tools for that is Wireshark. Of course, Wireshark can also capture
+    packets itself and generate pcap files if you want to store the capture for later
+    analysis or for analysis by someone else. The major advantage to Wireshark, though,
+    is providing a way to really dig deep into the contents of the packet. Rather
+    than spending time walking through what Wireshark looks like or how we can use
+    Wireshark for capturing packets, let’s jump into breaking apart a packet using
+    Wireshark. [Figure 2-4](#header-fields-in-wireshark) shows the IP and TCP headers
+    from an HTTP packet.
+  id: totrans-178
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 当您有了数据包捕获文件后，您可能希望进行一些分析。其中一个最好的工具就是 Wireshark。当然，Wireshark 也可以自行捕获数据包并生成 pcap
+    文件，以便稍后分析或由他人分析。然而，Wireshark 的主要优势在于提供了一种深入查看数据包内容的方式。而不是花时间浏览 Wireshark 的外观或如何使用
+    Wireshark 来捕获数据包，让我们直接进入使用 Wireshark 拆解数据包。[图 2-4](#header-fields-in-wireshark)
+    显示了 HTTP 数据包的 IP 和 TCP 标头。
+- en: '![images/Ch2Fig4.png](assets/lklx_02in01.png)'
+  id: totrans-179
+  prefs: []
+  type: TYPE_IMG
+  zh: '![images/Ch2Fig4.png](assets/lklx_02in01.png)'
+- en: Figure 2-4\. Header fields in Wireshark
+  id: totrans-180
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图 2-4\. Wireshark 中的标头字段
+- en: You can see from just this image that Wireshark provides far more details than
+    we were getting from *tcpdump*. This is one area where GUIs have a significant
+    advantage. There is just more room here and a better way to present the amount
+    of data in each of these headers. Each field in the header is presented on its
+    own line so it’s clear what is happening. You’ll also see here that some of the
+    fields can be broken out even more. The flags field, for example, can be broken
+    open to see the details. This is because the flags field is really a series of
+    bits, so if you want, you can open that field by clicking the arrow (or triangle)
+    and you will be able to see the value of each of the bits. Of course, you can
+    also see what is set just by looking at the line we have presented by Wireshark
+    because it has done the work for us. For this frame, the Don’t Fragment bit is
+    set.
+  id: totrans-181
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 您可以从这幅图像中看出，Wireshark提供的细节远远超过我们从*tcpdump*中获取的信息。这是GUI在这方面具有显著优势的一个领域。这里有更多的空间和更好的方法来呈现每个头部中的数据量。头部中的每个字段都会单独呈现在一行中，因此清楚地表明正在发生的情况。在这里还可以看到一些字段可以进一步分解。例如，标志字段可以展开以查看详细信息。这是因为标志字段实际上是一系列位，因此如果您愿意，您可以通过单击箭头（或三角形）打开该字段，从而能够查看每个位的值。当然，您也可以通过查看Wireshark为我们提供的行来看出设置了哪些位。对于这个帧，不分段位已设置。
+- en: Another advantage to using a tool like Wireshark is that we can more easily
+    get to the contents of the packet. By finding a frame that we are interested in
+    because it’s part of a conversation that we think has some value, we just need
+    to select Follow TCP Stream. What we will get, in addition to only the frames
+    that are part of that conversation, is a window showing the ASCII decode of the
+    payloads from all of the frames. You can see this in [Figure 2-5](#follow-tcp-stream-output).
+    Wireshark also color-codes the output. Red is the client messages, and blue is
+    the server messages. You will also get a brief summary at the bottom of the window
+    indicating how much of the conversation was the client’s and how much was the
+    server’s.
+  id: totrans-182
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 使用Wireshark这样的工具的另一个优点是，我们可以更轻松地获取数据包的内容。通过找到我们感兴趣的帧，因为它是我们认为具有一定价值的对话的一部分，我们只需选择“跟随TCP流”。除了仅显示那些对话部分的帧之外，我们还会得到一个窗口，显示所有帧的负载的ASCII解码。您可以在[图2-5](#follow-tcp-stream-output)中看到这一点。Wireshark还会对输出进行颜色编码。红色是客户端消息，蓝色是服务器消息。您还将在窗口底部得到一个简要的摘要，指示对话中客户端和服务器的比例。
+- en: '![images/Ch2Fig5.png](assets/lklx_02in02.png)'
+  id: totrans-183
+  prefs: []
+  type: TYPE_IMG
+  zh: '![images/Ch2Fig5.png](assets/lklx_02in02.png)'
+- en: Figure 2-5\. Follow TCP stream output
+  id: totrans-184
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图2-5. 跟随TCP流输出
+- en: Wireshark has the same filtering capabilities that we had with *tcpdump*. In
+    the case of Wireshark, we can apply the filter as a capture filter, meaning we
+    will capture only packets that match the filter, or we can apply the filter as
+    a display filter to be applied to packets already captured. Wireshark will provide
+    a lot of help when it comes to filtering. When you start typing in the filter
+    box at the top of the screen, Wireshark will start trying to autocomplete. It
+    will also indicate whether you have a valid filter by color-coding the box red
+    when you have an invalid filter, and green when it’s valid. Wireshark has the
+    ability to get to about every field or property of the protocols it knows about.
+    As an example, we could filter on the type of HTTP response code that was seen.
+    This may be valuable if you generated an error and you want to look at the conversation
+    that led to the error.
+  id: totrans-185
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Wireshark具有与*tcpdump*相同的过滤能力。在Wireshark的情况下，我们可以将过滤器应用为捕获过滤器，这意味着我们只捕获与过滤器匹配的数据包，或者将过滤器应用为显示过滤器，以应用于已捕获的数据包。在过滤方面，Wireshark将提供大量帮助。当您在屏幕顶部的过滤框中开始输入时，Wireshark将开始尝试自动完成。它还会通过将框标记为红色（无效过滤器）或绿色（有效过滤器）来指示您是否有有效的过滤器。Wireshark能够获取它了解的协议的每个字段或属性。例如，我们可以过滤所看到的HTTP响应代码的类型。如果您生成了错误并希望查看导致错误的对话，则此操作可能很有价值。
+- en: Wireshark will also do a lot of analysis for us. As an example, when we were
+    fragmenting packets earlier using *fragroute*, Wireshark would have colored frames
+    that weren’t right. If a packet’s checksum didn’t match, for instance, the frames
+    belonging to that packet would have been colored black. Any error in the protocol
+    where the packet is malformed would result in a frame that was colored red. Similarly,
+    TCP resets will get a frame colored red. A warning would be colored yellow and
+    may result from an application generating an unusual error code. You may also
+    see yellow if there are connection problems. If you want to save a little time,
+    you can use the Analyze menu and select Expert Info to see the entire list of
+    frames that have been flagged. You can see a sample of this view in [Figure 2-6](#expert-information-output).
+  id: totrans-186
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Wireshark还将为我们进行大量分析。例如，在我们之前使用*fragroute*分片数据包时，Wireshark会为颜色不正确的帧着色。例如，如果数据包的校验和不匹配，属于该数据包的帧将被着黑色。任何协议中的错误，如数据包格式不正确，都将导致帧被着红色。类似地，TCP重置将使帧被着红色。警告将被着黄色，可能是应用程序生成的异常错误代码引起的。如果存在连接问题，也可能会看到黄色。如果您想节省一点时间，可以使用分析菜单并选择专家信息，以查看被标记的所有帧的完整列表。您可以在[图 2-6](#expert-information-output)中看到此视图的样本。
+- en: '![images/Ch2Fig6.png](assets/lklx_02in03.png)'
+  id: totrans-187
+  prefs: []
+  type: TYPE_IMG
+  zh: '![images/Ch2Fig6.png](assets/lklx_02in03.png)'
+- en: Figure 2-6\. Expert information output
+  id: totrans-188
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图 2-6. 专家信息输出
+- en: Wireshark has so many capabilities; we aren’t even skimming the surface of what
+    it can do. A lot of what you may find it useful for is just to see the headers
+    for each protocol broken out in a way that you can easily read them. This will
+    help you see what is happening if you run into issues with your testing. One other
+    feature I should mention is the statistics menu. Wireshark will provide graphs
+    and different views of the data you have captured. One such view is the protocol
+    hierarchy, as you can see in [Figure 2-7](#protocol-hierarchy-in-wireshark).
+  id: totrans-189
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Wireshark拥有如此多的功能；我们甚至没有涉及到它的表面。您可能发现它非常有用的一点是，可以按协议分解头部信息，以便您可以轻松阅读。这将帮助您在测试中遇到问题时了解正在发生的情况。我还应该提到的另一个功能是统计菜单。Wireshark将提供捕获数据的图表和不同视图。其中之一是协议层次结构，您可以在[图 2-7](#protocol-hierarchy-in-wireshark)中看到。
+- en: '![images/Ch2Fig7.png](assets/lklx_02in04.png)'
+  id: totrans-190
+  prefs: []
+  type: TYPE_IMG
+  zh: '![images/Ch2Fig7.png](assets/lklx_02in04.png)'
+- en: Figure 2-7\. Protocol hierarchy in Wireshark
+  id: totrans-191
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图 2-7. Wireshark中的协议层次结构
+- en: The protocol hierarchy view is good for, among other things, quickly identifying
+    protocols that you don’t recognize. It also helps you to determine which protocols
+    are the most used. If you believe, for instance, that you are using a lot of UDP-based
+    attacks, but UDP is a small fraction of the total number of messages sent, you
+    may want to do some further investigation.
+  id: totrans-192
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 协议层次结构视图可用于快速识别您不认识的协议，以及帮助您确定哪些协议被最广泛使用。例如，如果您认为自己使用了大量基于UDP的攻击，但UDP只占发送消息总数的一小部分，您可能需要进行进一步的调查。
+- en: Wireshark comes installed out of the box, so to speak, with Kali Linux. However,
+    it can also be installed on other operating systems such as Windows and macOS
+    as well as other Linux distributions. I can’t emphasize enough the value of this
+    particular tool and the amount of work it can save after you get the hang of using
+    it. Being able to completely decode application layer protocols so it can give
+    you a little summary of what is happening with the application can be invaluable.
+  id: totrans-193
+  prefs: []
+  type: TYPE_NORMAL
+  zh: Wireshark预装在Kali Linux上。但是，它也可以安装在其他操作系统，如Windows和macOS，以及其他Linux发行版上。一旦掌握了使用方法，我无法再次强调这个特定工具的价值以及它可以节省的工作量。完全解码应用层协议，以便能够为您提供应用程序运行情况的摘要，是非常宝贵的。
+- en: There is a challenge with the use of encrypted traffic for almost all websites
+    today, but it is possible to get around that. You can add encryption keys into
+    the Preferences but it’s a lot of work ensuring that you have the right keys for
+    the communications streams you want to decode. For everything not encrypted, you
+    can do full protocol decodes and you can always look at headers to see who is
+    communicating with whom.
+  id: totrans-194
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 几乎所有网站现在都存在使用加密流量的挑战，但可以绕过这一点。您可以将加密密钥添加到首选项中，但要确保为您要解码的通信流选择正确的密钥是很费事的。对于所有未加密的内容，您可以进行完全的协议解码，并始终查看头部信息以了解谁与谁通信。
+- en: Poisoning Attacks
+  id: totrans-195
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 毒化攻击
+- en: One of the challenges we have is that most networks are switched. The device
+    you are connecting to sends messages only to the network port where your recipient
+    is located. In the old days, we used hubs. Whereas a switch is a unicast device,
+    a hub is a broadcast device. Any message that came into a hub was sent out to
+    all other ports in the hub, letting the endpoints figure out who the frame belonged
+    to, based on the MAC address. There was no intelligence in the hub at all. It
+    was simply a repeater.
+  id: totrans-196
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 我们面临的挑战之一是大多数网络都是交换网络。您连接的设备只将消息发送到目标位置所在的网络端口。在旧日子里，我们使用的是集线器。而交换机是单播设备，集线器是广播设备。进入集线器的任何消息都会发送到集线器中的所有其他端口，让终端根据
+    MAC 地址确定该帧属于谁。集线器中没有任何智能。它只是一个中继器。
+- en: A switch changes all that. The switch reads the layer 2 header to determine
+    the destination MAC address. It knows the port where the system that owns that
+    MAC address is. It determines this by watching traffic coming into each port.
+    The source MAC address gets attached to the port. The switch will commonly store
+    these mappings in content addressable memory (CAM). Rather than having to scan
+    through an entire table, the switch looks up the details by referring directly
+    to the MAC address. This is the content that becomes the address the switch refers
+    to in order to get the port information.
+  id: totrans-197
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 交换机改变了一切。交换机读取第二层头部以确定目标 MAC 地址。它知道拥有该 MAC 地址的系统所在的端口。它通过监视进入每个端口的流量来确定这一点。源
+    MAC 地址附加到端口上。交换机通常会将这些映射存储在内容可寻址存储器（CAM）中。交换机无需扫描整个表，而是直接通过 MAC 地址查找详细信息。这就是交换机获取端口信息时所引用的内容。
+- en: Why is this relevant here? Because you will sometimes want to collect information
+    from a system that you don’t have access to. If you owned the network and had
+    access to the switch, you may be able to configure the switch to forward traffic
+    from one or more ports to another port. This would be a mirror, rather than a
+    redirection. The recipient gets the traffic, but also a monitoring device or someone
+    capturing traffic for analysis would get the packets.
+  id: totrans-198
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 为什么这在这里相关呢？因为有时您希望收集从您无法访问的系统获取的信息。如果您拥有网络并且可以访问交换机，您可以配置交换机将来自一个或多个端口的流量转发到另一个端口。这将是一个镜像，而不是重定向。接收者将接收到流量，但捕获流量以供分析的监控设备或人员也将获得数据包。
+- en: To obtain the messages you need if you can’t get legitimate access to them,
+    you can use a spoofing attack. In a *spoofing attack*, you pretend to be someone
+    you are not in order to get traffic. There are a couple of ways to do that, and
+    we’ll take a look at these different attacks.
+  id: totrans-199
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果您无法合法获取所需的消息，可以使用欺骗攻击。在*欺骗攻击*中，您会假装成其他人以获取流量。有几种不同的方式可以实现这一点，我们将看看这些不同的攻击方式。
+- en: Ethics Warning
+  id: totrans-200
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 道德警告
+- en: While spoofing attacks are used by attackers, they are not something that you
+    should be doing on a network you are testing, unless it falls into the scope of
+    what you have said you would test against. There is the possibility of data loss
+    using this technique.
+  id: totrans-201
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 虽然攻击者使用欺骗攻击，但这不是您应该在测试的网络上做的事情，除非它属于您说过您要测试的范围内。使用这种技术可能会导致数据丢失的可能性。
+- en: ARP Spoofing
+  id: totrans-202
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: ARP 欺骗
+- en: The Address Resolution Protocol (ARP) is a simple protocol. The assumption is
+    when your system needs to communicate on the network but it has only the IP address
+    and not the MAC address, it will send out a request (who-has) to the network.
+    The system that has that IP address will respond (is-at) by filling in the MAC
+    address for its system. Your system then knows the MAC address for the target
+    system and can send the message it’s been holding to the correct destination.
+  id: totrans-203
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 地址解析协议（ARP）是一个简单的协议。假设当您的系统需要在网络上通信，但只有 IP 地址而没有 MAC 地址时，它会向网络发送一个请求（who-has）。拥有该
+    IP 地址的系统将会响应（is-at），并填写其系统的 MAC 地址。然后您的系统就知道了目标系统的 MAC 地址，并可以将一直持有的消息发送到正确的目的地。
+- en: To be efficient, your system will cache that mapping. In fact, it will cache
+    any mapping that it sees go by. ARP assumes that the only time a system will indicate
+    that it owns an IP address is when someone has asked. As it turns out, though,
+    that’s not the case. If I were to have my system send out an ARP response (is-at)
+    saying that I owned your IP address and that anyone trying to get to that IP address
+    should send to my MAC address, I would get messages destined for you. By sending
+    out an ARP response indicating your IP address is at my MAC address, I put myself
+    into the middle of the communication flow.
+  id: totrans-204
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 为了提高效率，你的系统将缓存这些映射。事实上，它将缓存任何经过的映射。ARP 假设只有在有人询问时，系统才会指示它拥有一个 IP 地址。然而，事实并非如此。如果我让我的系统发送一个
+    ARP 响应（is-at），声称我拥有你的 IP 地址，并且任何试图访问该 IP 地址的人应该发送到我的 MAC 地址，那么我就会收到发给你的消息。通过发送一个
+    ARP 响应，指示你的 IP 地址在我的 MAC 地址上，我把自己置于通信流的中间。
+- en: This is only single-direction, though. If I end up spoofing your IP address
+    with my MAC address, I’m getting only messages that were supposed to go to you.
+    To get the other end of the conversation, I would need to spoof other addresses.
+    You may, for example, spoof the local gateway in order to capture messages to
+    and from you and the internet. This takes care of only getting the messages to
+    me. I have to also get the messages back out to the intended targets, or the communication
+    just stops because no one is getting messages they expect to get. This requires
+    my system to forward the initial message out to the intended target.
+  id: totrans-205
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 然而，这只是单向的。如果我用我的 MAC 地址欺骗你的 IP 地址，那么我只会收到本来应该发给你的消息。要获取另一端的对话，我需要欺骗其他地址。例如，你可以欺骗本地网关以捕获你和互联网之间的消息。这只处理了只给我发送的消息。我还必须将消息转发到预期目标，否则通信将会停止，因为没有人会收到他们预期的消息。这要求我的系统将初始消息转发到预期的目标。
+- en: Since ARP caches do time out, if I don’t keep having my system sending these
+    messages, eventually the cache will time out and then I won’t get the messages
+    I want anymore. This means that I need to keep sending out these messages, called
+    gratuitous ARP messages. A *gratuitous ARP message* is one that hasn’t been requested
+    but offered nonetheless. There are legitimate reasons for this behavior, but they
+    aren’t common.
+  id: totrans-206
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 由于 ARP 缓存会超时，如果我不继续让我的系统发送这些消息，最终缓存会超时，然后我将不再收到我想要的消息。这意味着我需要继续发送这些消息，称为多余的
+    ARP 消息。*多余的 ARP 消息* 是一种未经请求但仍然提供的消息。有合法的原因可以解释这种行为，但并不常见。
+- en: While other tools can be used for this, we can use the program Ettercap. Ettercap
+    has two modes of functioning. The first is a curses-style interface, meaning it
+    runs in a console but isn’t strictly command line. It presents a character-based
+    GUI. The other one is a full Windows-based GUI. [Figure 2-8](#using-ettercap)
+    shows Ettercap after our target hosts have been selected and the ARP poisoning
+    has been started. To start the spoofing attack, I scanned for hosts to get all
+    of the MAC addresses on the network. Then, I selected the two targets and started
+    the ARP spoofing attack.
+  id: totrans-207
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 尽管可以使用其他工具进行此操作，我们可以使用程序 Ettercap。Ettercap 有两种功能模式。第一种是类似 curses 风格的界面，意味着它在控制台中运行，但不严格是命令行。它呈现了一个基于字符的
+    GUI。另一种是完全基于 Windows 的 GUI。[图 2-8](#using-ettercap) 显示了在选择了目标主机并启动 ARP 毒化后的 Ettercap。为了开始欺骗攻击，我扫描主机以获取网络上的所有
+    MAC 地址。然后，我选择了两个目标并启动了 ARP 欺骗攻击。
+- en: '![images/Ch2Fig8.png](assets/lklx_02in05.png)'
+  id: totrans-208
+  prefs: []
+  type: TYPE_IMG
+  zh: '![images/Ch2Fig8.png](assets/lklx_02in05.png)'
+- en: Figure 2-8\. Using Ettercap
+  id: totrans-209
+  prefs:
+  - PREF_H6
+  type: TYPE_NORMAL
+  zh: 图 2-8\. 使用 Ettercap
+- en: The reason for having two targets is to make sure to get both sides of a conversation.
+    If I poison only one party, I will get only half of the conversation. I assume
+    that what I want to gather is communication between my target and the internet.
+    As a result, I set my target as one host and the router on my network as the second
+    host. If I needed to acquire traffic between two systems on my network, I would
+    select those. One would be in Target 1, and the other would be in Target 2\. In
+    [Example 2-18](#EX_2_17), you can see what an ARP poison attack looks like from
+    a packet capture. You will see the two ARP replies where the IP addresses belong
+    to my targets. I included a portion of the *ifconfig* output on my system so you
+    can see that the MAC address caught in the packet capture is the MAC address of
+    my system, where I was running the ARP spoofing attack.
+  id: totrans-210
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 有两个目标的原因是确保获取会话的双方。如果我只毒害一方，我只会得到会话的一半。我假设我想要收集的是目标和互联网之间的通信。因此，我将我的目标设为一个主机，将我的网络上的路由器设为第二个主机。如果我需要获取网络上两个系统之间的流量，我会选择那些系统。一个会在目标1中，另一个会在目标2中。在[示例
+    2-18](#EX_2_17)中，你可以看到ARP欺骗攻击的包捕获。你将看到两个ARP回复，其中IP地址属于我的目标。我包含了我系统上*ifconfig*输出的一部分，所以你可以看到在包捕获中捕获的MAC地址是我运行ARP欺骗攻击的系统的MAC地址。
+- en: Example 2-18\. tcpdump showing ARP poison attack
+  id: totrans-211
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例2-18\. tcpdump显示ARP欺骗攻击
+- en: '[PRE17]'
+  id: totrans-212
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE17]'
+- en: Once I have an ARP spoofing attack in place, I can capture entire conversations
+    by using *tcpdump* or Wireshark. Keep in mind that this sort of attack works on
+    only the local network. This is because the MAC address is a layer 2 address so
+    it stays on the local network and doesn’t cross over any layer 3 boundary (moving
+    from one network to another). Ettercap also supports other layer 2 attacks like
+    DHCP poisoning and ICMP redirect attacks. Any of these may be ways to ensure you
+    are grabbing traffic from other systems on your local network.
+  id: totrans-213
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一旦我实施了ARP欺骗攻击，我可以使用*tcpdump*或Wireshark来捕获整个会话。请注意，这种类型的攻击仅适用于本地网络。这是因为MAC地址是一个第二层地址，因此它仅限于本地网络，不会跨越任何第三层边界（从一个网络移动到另一个网络）。Ettercap还支持其他第二层攻击，如DHCP毒化和ICMP重定向攻击。任何这些方法都可能是确保你从本地网络上其他系统抓取流量的途径。
+- en: DNS Spoofing
+  id: totrans-214
+  prefs:
+  - PREF_H2
+  type: TYPE_NORMAL
+  zh: DNS欺骗
+- en: One solution to the issue of needing to capture traffic that may be outside
+    the local network is using a DNS spoofing attack. In this attack, you interfere
+    with a DNS lookup to ensure that when your target attempts to resolve a hostname
+    into an IP address, the target gets the IP address of a system you control. This
+    type of attack is sometimes called a *cache poisoning attack*. The reason for
+    this is that what you may do is exploit a DNS server close to your target. This
+    would generally be a caching server, meaning it looks up addresses from authoritative
+    servers on your behalf and then caches the answer for a period of time determined
+    by the authoritative server.
+  id: totrans-215
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 解决需要捕获可能超出本地网络的流量的问题的一个方法是使用DNS欺骗攻击。在这种攻击中，你干扰DNS查找，以确保当你的目标试图将主机名解析为IP地址时，目标获取的是你控制的系统的IP地址。这种类型的攻击有时被称为*缓存毒化攻击*。其原因是你可能会利用靠近你目标的DNS服务器。这通常是一个缓存服务器，意味着它代表你查询权威服务器的地址，然后缓存答案，时间由权威服务器决定。
+- en: Once you have access to the caching server, you can modify the cache that’s
+    in place to direct your targets to systems that you control. You can also include
+    any entries that don’t exist by editing the cache. This would impact anyone who
+    used that caching server. This process has the benefit of working outside the
+    local network but has the disadvantage of requiring you to compromise a remote
+    DNS server.
+  id: totrans-216
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 一旦你访问了缓存服务器，你可以修改现有的缓存，将你的目标重定向到你控制的系统。你还可以通过编辑缓存来包括任何不存在的条目。这将影响使用该缓存服务器的任何人。这个过程的好处是在本地网络之外工作，但缺点是需要你妥协一个远程DNS服务器。
+- en: Perhaps easier, though still requiring you to be on the local network, is the
+    program *dnsspoof*. When a system sends out a DNS request to a server, it expects
+    a response from that server. The request includes an identifier so it is protected
+    against attackers sending blind responses. If the attacker can see the request
+    go out, though, it can capture the identifier and include it in a response that
+    has the IP address belonging to the attacker. *dnsspoof* was written by Dug Song
+    many years ago, at a time when it may have been less likely that you would be
+    on a switched network. If you are on a switched network, you would have to go
+    through the extra step of grabbing the DNS messages in order to see the request.
+    This program is not installed by default, but can be installed as part of the
+    package *dsniff*.
+  id: totrans-217
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 或许更容易的是，虽然仍需连接到本地网络，但可以使用*dnsspoof*程序。当系统向服务器发送DNS请求时，它期望从该服务器收到响应。请求包括一个标识符，因此受到保护，防止攻击者发送盲目响应。然而，如果攻击者能看到请求发送出去，它可以捕获标识符，并将其包含在响应中，该响应具有攻击者的IP地址。*dnsspoof*由Dug
+    Song多年前编写，在那时可能较少有人使用交换网络。如果你在交换网络上，你需要通过额外的步骤来捕获DNS消息以查看请求。该程序不会默认安装，但可以作为*dsniff*包的一部分安装。
+- en: Running *dnsspoof* is easy, even if preparing for running it may not be. You
+    need a hosts file mapping IP addresses to hostnames. This takes the form of single-line
+    entries with the IP address followed by spaces and then the hostname that is meant
+    to be associated with that IP address. Once you have the hosts file, you can run
+    *dnsspoof*, as you can see in [Example 2-19](#EX_2_14b).
+  id: totrans-218
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 运行*dnsspoof*很容易，即使准备运行它可能不那么简单。你需要一个将IP地址映射到主机名的hosts文件。这些条目采用一行形式，包含IP地址，然后是一个空格，接着是与该IP地址关联的主机名。一旦你有了hosts文件，就可以运行*dnsspoof*，就像在[示例2-19](#EX_2_14b)中看到的那样。
+- en: Example 2-19\. Using dnsspoof
+  id: totrans-219
+  prefs:
+  - PREF_H5
+  type: TYPE_NORMAL
+  zh: 示例2-19。使用dnsspoof
+- en: '[PRE18]'
+  id: totrans-220
+  prefs: []
+  type: TYPE_PRE
+  zh: '[PRE18]'
+- en: You’ll notice that at the end of the command line, I have included BPF to focus
+    the packets that are captured. Without this, the output would default to looking
+    only datagrams captured to UDP port 53 if they do not originate from the system
+    you are running *dnsspoof* on. You can use BPF just as you would with *tcpdump*
+    to see a broader set of traffic. I removed the part that didn’t capture traffic
+    from the local system and included my own BPF in order to run tests locally. You’ll
+    see any request matching your BPF parameters get printed when they come in. This
+    output is similar to what you might see from *tcpdump*.
+  id: totrans-221
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 在命令行的最后，你会注意到我包含了BPF来集中捕获的数据包。如果没有这个选项，输出将默认仅查看UDP端口53的数据报，除非它们不是从运行*dnsspoof*的系统发出的。你可以像在*tcpdump*中一样使用BPF来查看更广泛的流量。我删除了未捕获来自本地系统流量的部分，并包含了自己的BPF以便本地测试。当符合你的BPF参数的请求进入时，你会看到打印输出。这个输出类似于你从*tcpdump*中看到的内容。
+- en: You may be wondering why you’d bother to take the extra step of using *dnsspoof*
+    if you have to use Ettercap or *arpspoof* (another ARP spoofing utility, though
+    this one was written by Dug Song and included in the same suite of tools as *dnsspoof*).
+    What you can do with *dnsspoof* that you can’t do with just ARP spoofing is directing
+    a system to actually visit another IP address, thinking they are going to somewhere
+    legitimate. You could create a rogue web server, for example, making it look like
+    the real server but including some malicious code to gather data or infect the
+    target. This is not the only purpose for doing DNS spoofing, but is a popular
+    one.
+  id: totrans-222
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 如果你不知道为什么要费力使用*dnsspoof*，如果你必须使用Ettercap或*arpspoof*（另一个ARP欺骗实用工具，尽管这个也是由Dug
+    Song编写并包含在与*dnsspoof*相同的工具套件中），你可能会疑惑。*dnsspoof*能做的是，你只用ARP欺骗无法做到的，即指导系统实际访问另一个IP地址，认为它们正在访问合法的地方。例如，你可以创建一个恶意代码以收集数据或感染目标的恶意Web服务器，使其看起来像真正的服务器。这不是DNS欺骗的唯一目的，但是是一个常见的目的。
+- en: Summary
+  id: totrans-223
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 概要
+- en: 'Typically, attacks against systems will happen over the network. Although not
+    all attacks go after network protocols, there are enough that do that it’s worth
+    spending some time understanding the network elements and the protocols associated
+    with the different layers. Here are some key points to take away from this chapter:'
+  id: totrans-224
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 通常，对系统的攻击会通过网络进行。尽管并非所有攻击都针对网络协议，但有足够多的攻击是针对网络协议的，因此值得花些时间理解不同层次的网络元素和相关的协议。以下是本章节的一些要点：
+- en: Security testing is about finding deficiencies in confidentiality, integrity,
+    and availability.
+  id: totrans-225
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 安全测试旨在发现机密性、完整性和可用性方面的缺陷。
+- en: The network stack based on the OSI model is physical, data, network, transport,
+    session, presentation, and application.
+  id: totrans-226
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 基于OSI模型的网络堆栈依次为物理层、数据链路层、网络层、传输层、会话层、表示层和应用层。
+- en: Stress testing can reveal impacts to at least availability.
+  id: totrans-227
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 压力测试可以揭示至少可用性的影响。
+- en: Encryption can make it difficult to observe network connections, but weak encryption
+    can reveal issues with confidentiality.
+  id: totrans-228
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 加密可以使观察网络连接变得困难，但弱加密可能会揭示机密性问题。
+- en: Spoofing attacks can provide a way to observe and capture network traffic from
+    remote sources.
+  id: totrans-229
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 欺骗攻击可以提供一种从远程源观察和捕获网络流量的方法。
+- en: Capturing packets using tools like tcpdump and Wireshark can provide insights
+    into what’s happening with applications.
+  id: totrans-230
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: 使用类似tcpdump和Wireshark的工具捕获数据包可以洞察应用程序的运行情况。
+- en: Kali provides tools that are useful for network security testing.
+  id: totrans-231
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Kali提供了用于网络安全测试的工具。
+- en: Quiz Questions
+  id: totrans-232
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 测验问题
+- en: 1) What tool would you use to help you with spoofing attacks that would help
+    you capture packets from other systems? a) Wireshark b) Dhcpig c) Scapy d) EttercapSS
+  id: totrans-233
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 1) 你将使用什么工具来帮助你进行欺骗攻击，帮助你从其他系统捕获数据包？a) Wireshark b) Dhcpig c) Scapy d) EttercapSS
+- en: 2) Which layer of the OSI model is where the IP address is? a) Data link b)
+    Network c) Transport d) Application
+  id: totrans-234
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 2) OSI模型的哪一层包含IP地址？a) 数据链路 b) 网络 c) 传输 d) 应用
+- en: 3) Which encryption element is used to mutually derive encryption keys? a) AES
+    b) DES c) SHA384 d) Diffie-Hellman
+  id: totrans-235
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 3) 哪种加密元素用于相互派生加密密钥？a) AES b) DES c) SHA384 d) Diffie-Hellman
+- en: 4) If you wanted to perform a SYN flood against a network target, which of these
+    tools would you be most likely to use? a) Hping b) Dhcpig c) Ettercap d) Slowhttp
+  id: totrans-236
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 4) 如果你想对网络目标执行SYN洪水攻击，你最有可能使用哪个工具？a) Hping b) Dhcpig c) Ettercap d) Slowhttp
+- en: 5) What security property would be impacted if you were to cause a network device
+    to fail if you were performing network testing? a) Confidentiality b) Integrity
+    c) Availability d) Authenticity
+  id: totrans-237
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 5) 如果你在执行网络测试时导致网络设备失效，会影响哪种安全性属性？a) 机密性 b) 完整性 c) 可用性 d) 真实性
+- en: 6) What might be the outcome of running *slowhttptest*? a) Web server failure
+    b) Compromised credentials c) Obtaining cookies d) Stealing data
+  id: totrans-238
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 6) 运行*slowhttptest*可能会导致什么结果？a) Web服务器崩溃 b) 凭据被泄露 c) 获取cookies d) 窃取数据
+- en: 7) What do you call an application that watches a process to ensure the process
+    stays running? a) System manager b) Application manager c) Watchdog d) Log monitor
+  id: totrans-239
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 7) 当一个应用程序监视进程以确保进程保持运行状态时，你称之为什么？a) 系统管理器 b) 应用程序管理器 c) 看门狗 d) 日志监视器
+- en: 8) What BPF syntax would you use to capture only unencrypted web packets with
+    192.168.10.250 as an address? a) host 192.168.10.250 and web b) host 192.168.10.250
+    and port 80 c) ip 192.168.10.250 and port 80 d) ip 192.168.10.250 and port 443
+  id: totrans-240
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 8) 如果你要捕获仅包含未加密Web数据包且源地址为192.168.10.250的数据包，你会使用什么BPF语法？a) host 192.168.10.250
+    and web b) host 192.168.10.250 and port 80 c) ip 192.168.10.250 and port 80 d)
+    ip 192.168.10.250 and port 443
+- en: 9) What function would you use to send and receive using Scapy, printing details
+    from the packet header that has been received? a) sendrecv() b) send() c) sr()
+    d) sr1()
+  id: totrans-241
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 9) 在使用Scapy发送和接收数据，并打印接收到的数据包头部详细信息时，你会使用哪个函数？a) sendrecv() b) send() c) sr()
+    d) sr1()
+- en: 10) If you wanted to make sure devices on a network obtained IP configuration
+    that you controlled, what tool could you use to help you? a) Scapy b) Ettercap
+    c) Dhcpig d) Wireshark
+  id: totrans-242
+  prefs: []
+  type: TYPE_NORMAL
+  zh: 10) 如果你想确保网络上的设备获取由你控制的IP配置，你可以使用什么工具来帮助你？a) Scapy b) Ettercap c) Dhcpig d)
+    Wireshark
+- en: Useful Resources
+  id: totrans-243
+  prefs:
+  - PREF_H1
+  type: TYPE_NORMAL
+  zh: 有用资源
+- en: Dug Song’s [dsniff Page](https://monkey.org/~dugsong/dsniff/)
+  id: totrans-244
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Dug Song的[dsniff页面](https://monkey.org/~dugsong/dsniff/)
+- en: Ric Messier’s [“TCP/IP” video](http://bit.ly/tcp-ip-video) (Infinite Skills,
+    2013)
+  id: totrans-245
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: Ric Messier的[“TCP/IP”视频](http://bit.ly/tcp-ip-video)（Infinite Skills, 2013）
+- en: '[*TCP/IP Network Administration*, 3e](http://bit.ly/tcp-ip-network-admin-3e),
+    by Craig Hunt (O’Reilly, 2010)'
+  id: totrans-246
+  prefs:
+  - PREF_UL
+  type: TYPE_NORMAL
+  zh: '[*TCP/IP网络管理*, 3版](http://bit.ly/tcp-ip-network-admin-3e)，Craig Hunt著（O’Reilly,
+    2010）'
